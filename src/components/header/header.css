@@ -1,0 +1,124 @@
+header {
+    position: sticky !important;
+    top: 0;
+    background-color: var(--bodi);
+    /* box-shadow: 0 50px 30px rgba(0, 0, 0, .2); */
+    /* box-shadow: 0 50px 30px rgb(0 22 84 / 10%); */
+    /* padding: 15px 0; */
+    /* z-index: 999; */
+    z-index: 5;
+    transition: translate var(--trans), opacity var(--trans);
+}
+
+@media screen and (max-width: 768px) {
+    header.dom-scrolling-down {
+        translate: 0 -20%;
+        opacity: 0;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    header.dom-scrolling-down {
+        translate: 0 -20%;
+        opacity: 0;
+    }
+
+    .admin-header {
+        background-image: linear-gradient(to bottom, var(--black2), var(--black2)), url('../../../public/images/saving_illustration_fancy1.webp');
+        background-position: 44.7% 0.8%;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .admin-header .navbar-brand {
+        background-image: linear-gradient(to bottom, var(--black2), var(--black2)), url('../../../public/images/saving_illustration_fancy1.webp');
+        background-position: 44.7% 0%;
+    }
+}
+
+
+header .logo,
+#smNavbar .logo {
+    width: 2.5rem;
+    height: 2.5rem;
+    object-fit: contain;
+}
+
+header .nav.navbar-nav li {
+    position: relative;
+}
+
+/* header .nav.navbar-nav li.active a,
+#smNavbar ul li.active a {
+    color: var(--primaryColorDark);
+} */
+
+#smNavbar ul li.active {
+    position: relative;
+}
+
+#smNavbar ul li.active a {
+    padding-left: .5rem;
+}
+
+#smNavbar ul li.active::after {
+    content: '';
+    position: absolute;
+    top: .5rem;
+    bottom: .5rem;
+    left: .5rem;
+    width: .35rem;
+    border-radius: 0 .5rem .5rem 0;
+    background-color: var(--primaryColor);
+}
+
+#smNavbar .nav-links a {
+    width: 100%;
+}
+
+header .nav.navbar-nav li.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    height: 2px;
+    background-color: var(--primaryColor);
+    border-radius: 100vw;
+    animation: flyInBottom .2s 1;
+    /* z-index: -1; */
+}
+
+header a,
+#smNavbar a {
+    display: inline-block;
+    text-decoration: none;
+    transition: var(--trans);
+}
+
+header a {
+    color: var(--bs-gray-700);
+}
+
+#smNavbar a {
+    color: var(--bs-gray-400);
+}
+
+header a:hover,
+#smNavbar a:hover {
+    color: goldenrod;
+}
+
+
+header .nav.navbar-nav .nav-item .dropdown-menu {
+    border: 0;
+    animation: flyInTop .2s 1;
+}
+
+header .nav.navbar-nav .nav-item:hover .dropdown-menu {
+    display: block;
+    opacity: 1;
+}

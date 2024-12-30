@@ -1,0 +1,80 @@
+.form-input-element {
+    position: relative;
+    display: flex;
+    margin-bottom: 0.8rem;
+    border-bottom: 1px solid var(--black3);
+}
+
+.form-input-element:focus-within {
+    border-bottom-color: transparent;
+}
+
+.form-input-element .form-control {
+    border: 0;
+    outline: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background-color: transparent;
+    color: var(--black2);
+    transition: var(--trans), border 0s;
+}
+
+.form-input-element .form-control::placeholder {
+    opacity: 0;
+}
+
+.form-input-element .form-control:focus::placeholder {
+    opacity: 1;
+}
+
+.form-input-element .form-control.form-control-lg {
+    font-size: 1rem;
+    line-height: 2.15;
+}
+
+.form-input-element .form-control:not(.no-css-validation):focus:valid {
+    border-bottom: 2px solid rgba(74, 255, 80, 0.7);
+}
+
+/* .form-input-element .form-control:not(.no-css-validation):invalid,
+.form-input-element .form-control:not(.no-css-validation):user-invalid {
+    border-bottom: 2px solid rgba(202, 13, 13, 0.4);
+} */
+
+.form-input-element .form-control ~ .form-label {
+    position: absolute;
+    top: 50%;
+    left: .75rem;
+    translate: 0 -50%;
+    pointer-events: none;
+    max-width: 90%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-top: .37rem;
+    transform-origin: 0 0;
+    transition: all .2s ease-out;
+    color: grey;
+    margin-bottom: 0;
+}
+
+.form-control:focus {
+    color: var(--black1);
+}
+
+.form-input-element .form-control:focus ~ .form-label,
+.form-input-element .form-control.has-data ~ .form-label {
+    transform: translateY(-100%) translateX(0.1rem) scale(0.8);
+    /* color: goldenrod; */
+}
+
+.togglePWview {
+    position: absolute;
+    top: 50%;
+    right: .8rem;
+    translate: 0 -50%;
+    height: 80%;
+    border: 0;
+    background-color: transparent;
+    color: var(--black2);
+}

@@ -1,0 +1,26 @@
+.bottom-fixed-card {
+    left: 0;
+    right: 0;
+    border-radius: 1.5rem 1.5rem 0 0;
+    background-color: var(--bs-light);
+    box-shadow: 0 -1rem 3rem rgba(0, 0, 0, 0.15);
+    max-height: calc(100vh - 3rem);
+    max-height: calc(100dvh - 3rem);
+    animation: flyInBottom .5s 1;
+}
+
+.bottom-fixed-card .card-top {
+    background-color: var(--bs-light);
+}
+.bottom-fixed-card .card-top .card-toggler {
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    border-radius: 100vw;
+    width: 15%;
+    max-width: 5rem;
+    height: .35rem;
+    background-color: var(--black2);
+    box-shadow: 0 0 1rem var(--black4);
+}
