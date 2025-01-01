@@ -14,6 +14,8 @@ export const dashboardData = [
 // Members
 export const membersData = [
     {
+        type: 'member',
+        role: 'member',
         husband: {
             firstName: "Bizumuremyi",
             lastName: "Jean Damascène",
@@ -35,6 +37,8 @@ export const membersData = [
         social: 74563,
     },
     {
+        type: 'admin',
+        role: 'accountant',
         husband: {
             firstName: "Mugabe",
             lastName: "Alain",
@@ -56,6 +60,8 @@ export const membersData = [
         social: 74653,
     },
     {
+        type: 'member',
+        role: 'member',
         husband: {
             firstName: "Ndayizeye",
             lastName: "Leonard",
@@ -77,6 +83,8 @@ export const membersData = [
         social: 72653,
     },
     {
+        type: 'member',
+        role: 'member',
         husband: {
             firstName: "Dusabimana",
             lastName: "Leonidas",
@@ -98,6 +106,8 @@ export const membersData = [
         social: 72653,
     },
     {
+        type: 'member',
+        role: 'member',
         husband: {
             firstName: "Rukundo",
             lastName: "Nelly Lambert",
@@ -119,6 +129,8 @@ export const membersData = [
         social: 72653,
     },
     {
+        type: 'admin',
+        role: 'president',
         husband: {
             firstName: "Ngoboka",
             lastName: "Innocent",
@@ -140,11 +152,13 @@ export const membersData = [
         social: 72653,
     },
     {
+        type: 'member',
+        role: 'member',
         husband: {
             firstName: "Nzeyimana",
             lastName: "Bonaventure",
             phone: "(+250) 788 585 815",
-            email: "innocent46@gmail.com",
+            email: "bonaventure57@gmail.com",
             avatar: "images/members/n_bonaventure.jpeg",
             // avatar: "images/man_avatar_image.jpg",
         },
@@ -161,6 +175,8 @@ export const membersData = [
         social: 72653,
     },
     {
+        type: 'member',
+        role: 'member',
         husband: {
             firstName: "Ruzindana",
             lastName: "Théogene",

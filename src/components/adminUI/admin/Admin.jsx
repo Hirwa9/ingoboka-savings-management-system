@@ -1,13 +1,14 @@
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Button, Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretRight, CashRegister, ChartBar, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, Files, FloppyDisk, Gear, Info, List, Notebook, Pen, Plus, SignOut, User, Users, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretRight, CashRegister, ChartBar, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, Files, FloppyDisk, Gear, Info, List, Notebook, Pen, Plus, SignOut, Table, User, Users, X } from '@phosphor-icons/react';
 import { dashboardData, deposits, expenses, expensesTypes, generalReport, incomeExpenses, membersData } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
+import LoadingIndicator from '../../LoadingIndicator';
 
 const Admin = () => {
 
@@ -58,14 +59,42 @@ const Admin = () => {
 	}, [hideSideNavbar]);
 
 	/**
-	 * Exporting data
-	*/
-	// const [showExportDataDialog, setShowExportDataDialog] = useState(false);
-	// const [exportName, setExportName] = useState('exported-file');
-
-	/**
 	 * Data
 	*/
+
+	const BASE_URL = 'http://localhost:5000';
+
+	const [allMembers, setAllMembers] = useState();
+	const [membersToShow, setMembersToShow] = useState();
+	const [loadingMembers, setLoadingMembers] = useState(false);
+	const [errorLoadingMembers, setErrorLoadingMembers] = useState(false);
+
+
+	// Fetch members
+	const fetchMembers = async () => {
+		try {
+			setLoadingMembers(true);
+			const response = await fetch(`${BASE_URL}/users`);
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+			const data = await response.json();
+			// console.log(data);
+			setAllMembers(data);
+			setMembersToShow(data);
+			setErrorLoadingMembers(null);
+		} catch (error) {
+			setErrorLoadingMembers("Failed to load members. Click the button to try again.");
+			console.error("Error fetching members:", error);
+		} finally {
+			setLoadingMembers(false);
+		}
+	};
+
+	useEffect(() => {
+		fetchMembers();
+	}, []);
+	// console.log(membersToShow);
 
 	// const [activeSection, setActiveSection] = useState("dashboard");
 	// const [activeSection, setActiveSection] = useState("messages");
@@ -91,8 +120,8 @@ const Admin = () => {
 
 		const accountingDashboardRef = useRef();
 
-		const totalCotisation = membersData.reduce((sum, item) => sum + item.cotisation, 0);
-		const totalSocial = membersData.reduce((sum, item) => sum + item.social, 0);
+		const totalCotisation = allMembers.reduce((sum, item) => sum + item.cotisation, 0);
+		const totalSocial = allMembers.reduce((sum, item) => sum + item.social, 0);
 		const loanDelivered = dashboardData
 			.filter((item) => item.label === "Loan Delivered")
 			.map((item) => item.value);
@@ -198,7 +227,7 @@ const Admin = () => {
 
 	// Member
 	const Members = () => {
-		const [membersToshow, setMembersToshow] = useState(membersData);
+		const [membersToshow, setMembersToshow] = useState(allMembers);
 		const [memberSearchValue, setMemberSearchValue] = useState('');
 
 		// Search members
@@ -208,22 +237,28 @@ const Admin = () => {
 			const searchString = memberSearchValue.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 			if (searchString !== null && searchString !== undefined && searchString !== '') {
 				// showAllProperties(true);
-				const filteredmembers = membersData.filter(val => (
-					val.husband.firstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
-					val.husband.lastName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
-					val.wife.firstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
-					val.wife.lastName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
-					val.husband.email.toLowerCase().includes(searchString) ||
-					val.wife.email.toLowerCase().includes(searchString) ||
-					val.husband.phone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString) ||
-					val.wife.phone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString)
-				));
+				const filteredmembers = allMembers.filter(val => 
+					{
+						console.log(val.husbandFirstName.toLowerCase());
+						return val.husbandFirstName;
+					}
+				);
+				// const filteredmembers = allMembers.filter(val => (
+				// 	val.husbandFirstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
+				// 	val.husbandFirstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
+				// 	val.wifeFirstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
+				// 	val.wifeLstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
+				// 	val.husbandEmail.toLowerCase().includes(searchString) ||
+				// 	val.wifeEmail.toLowerCase().includes(searchString) ||
+				// 	val.husbandPhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString) ||
+				// 	val.wifePhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString)
+				// ));
 				setMembersToshow(filteredmembers);
 			}
 		}, [memberSearchValue]);
 
 		const resetMembers = () => {
-			setMembersToshow(membersData);
+			setMembersToshow(allMembers);
 		}
 
 		// Reset members
@@ -242,70 +277,10 @@ const Admin = () => {
 						<Button variant="primary" className='btn-sm rounded-0 border-end text-light clickDown'><Plus /> New member</Button>
 					</div>
 				</div>
-				<Form onSubmit={e => e.preventDefault()} className='sticky-top col-lg-6 col-xxl-4 members-search-box'>
-					<Form.Control ref={memberSearcherRef} type="text" placeholder="🔍 Search members..." id='memberSearcher' className="h-2_5rem mb-4 border border-2 bg-gray-200 rounded-0"
-						value={memberSearchValue} onChange={(e) => setMemberSearchValue(e.target.value)}
-						onKeyUp={e => { (e.key === "Enter") && filterMembersBySearch() }}
-					/>
-					{memberSearchValue !== '' && (
-						<X className='ptr r-middle-m me-1' onClick={() => setMemberSearchValue('')} />
-					)}
-				</Form>
-				{/* <Table striped bordered hover>
-					<thead>
-						<tr>
-							<th>Name</th>
-							<th>Email</th>
-							<th>Role</th>
-							<th>Status</th>
-							<th>Actions</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Jane Doe</td>
-							<td>jane.doe@example.com</td>
-							<td>Member</td>
-							<td>Active</td>
-							<td>
-								<Button size="sm" variant="info" className="me-2">Edit</Button>
-								<Button size="sm" variant="danger">Remove</Button>
-							</td>
-						</tr>
-					</tbody>
-				</Table> */}
-
-				{/* <Modal show={show} onHide={handleClose}>
-					<Modal.Header closeButton>
-						<Modal.Title>New member</Modal.Title>
-					</Modal.Header>
-					<Modal.Body>
-						<Form>
-							<Form.Group controlId="name">
-								<Form.Label>Name</Form.Label>
-								<Form.Control type="text" placeholder="Enter name" />
-							</Form.Group>
-							<Form.Group controlId="email" className="mt-3">
-								<Form.Label>Email</Form.Label>
-								<Form.Control type="email" placeholder="Enter email" />
-							</Form.Group>
-							<Form.Group controlId="role" className="mt-3">
-								<Form.Label>Role</Form.Label>
-								<Form.Select>
-									<option>Member</option>
-									<option>Admin</option>
-								</Form.Select>
-							</Form.Group>
-						</Form>
-					</Modal.Body>
-					<Modal.Footer>
-						<Button variant="secondary" onClick={handleClose}>Cancel</Button>
-						<Button variant="primary">Save</Button>
-					</Modal.Footer>
-				</Modal> */}
 
 				<div className="members-wrapper">
-					{membersToshow.length === 0 && (
+					{loadingMembers && (<LoadingIndicator icon={<Users size={80} className="loading-skeleton" />} />)}
+					{!loadingMembers && membersToshow.length === 0 && (
 						<div className="col-sm-8 col-md-6 col-lg-5 col-xl-4 mx-auto my-5 p-3 rounded error-message">
 							<img src="/images/fetch_error_image.jpg" alt="Error" className="w-4rem h-4rem mx-auto mb-2 opacity-50" />
 							<p className="text-center text-muted small">
@@ -316,68 +291,84 @@ const Admin = () => {
 							</button>
 						</div>
 					)}
-					{membersToshow
-						.sort((a, b) => a.husband.firstName.localeCompare(b.husband.firstName))
-						.map((member, index) => (
-							<div className="position-relative mb-3 my-5 px-2 pt-5 border-top border-3 border-secondary border-opacity-25 text-gray-800 member-element"
-								key={index}
-							>
-								<div className="position-absolute top-0 me-3 d-flex gap-3"
-									style={{ right: 0, translate: "0 -50%" }}
-								>
-									<img src={member.husband.avatar}
-										alt={`${member.husband.firstName} ${member.husband.lastName}`}
-										className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
-									/>
-									<img src={member.wife.avatar}
-										alt={`${member.wife.name}`}
-										className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
-									/>
-								</div>
-
-								<button className="btn btn-sm bg-gray-400 text-dark position-absolute top-0 start-0 ms-3 translate-middle-y">
-									<Pen className="me-1" /> Edit
-								</button>
-
-								<div className="px-lg-2">
-									<h5 className="mb-3 fs-4">{`${member.husband.firstName} ${member.husband.lastName}`}</h5>
-									<div className="d-lg-flex">
-										<div className="col-lg-6">
-											<h6 className="flex-align-center px-2 py-1 border-bottom border-2 text-primaryColor fw-bolder">
-												<User className="me-1" /> Husband
-											</h6>
-											<ul className="list-unstyled text-gray-700 px-2 smaller">
-												<li className="py-1">
-													<b>Names:</b> {`${member.husband.firstName} ${member.husband.lastName}`}
-												</li>
-												<li className="py-1">
-													<b>Phone:</b> {member.husband.phone}
-												</li>
-												<li className="py-1">
-													<b>Email:</b> {member.husband.email}
-												</li>
-											</ul>
+					{!loadingMembers && membersToshow.length > 0 && (
+						<>
+							{/* Search bar */}
+							<Form onSubmit={e => e.preventDefault()} className='sticky-top col-lg-6 col-xxl-4 members-search-box'>
+								<Form.Control ref={memberSearcherRef} type="text" placeholder="🔍 Search members..." id='memberSearcher' className="h-2_5rem border border-2 bg-gray-200 rounded-0"
+									value={memberSearchValue} onChange={(e) => setMemberSearchValue(e.target.value)}
+									onKeyUp={e => { (e.key === "Enter") && filterMembersBySearch() }}
+								/>
+								{memberSearchValue !== '' && (
+									<X className='ptr r-middle-m me-1' onClick={() => setMemberSearchValue('')} />
+								)}
+							</Form>
+							{/* Content */}
+							{membersToshow
+								.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
+								.map((member, index) => (
+									<div className="position-relative mb-3 my-5 px-2 pt-5 border-top border-3 border-secondary border-opacity-25 text-gray-800 member-element"
+										key={index}
+									>
+										<div className="position-absolute top-0 me-3 d-flex gap-3"
+											style={{ right: 0, translate: "0 -50%" }}
+										>
+											<img src={member.husbandAvatar}
+												alt={`${member.husbandFirstName.slice(0, 1)}.${member.husbandLastName}`}
+												className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
+											/>
+											<img src={member.wifeAvatar}
+												alt={`${member.wifeFirstName.slice(0, 1)}.${member.wifeLastName}`}
+												className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
+											/>
 										</div>
-										<div className="col-lg-6 px-lg-2">
-											<h6 className="flex-align-center px-2 py-1 border-bottom border-2 text-primaryColor fw-bolder">
-												<User className="me-1" /> Wife
-											</h6>
-											<ul className="list-unstyled text-gray-700 px-2 smaller">
-												<li className="py-1">
-													<b>Names:</b> {`${member.wife.firstName} ${member.wife.lastName}`}
-												</li>
-												<li className="py-1">
-													<b>Phone:</b> {member.wife.phone}
-												</li>
-												<li className="py-1">
-													<b>Email:</b> {member.wife.email}
-												</li>
-											</ul>
+
+										<button className="btn btn-sm bg-gray-400 text-dark position-absolute top-0 start-0 ms-3 translate-middle-y">
+											<Pen className="me-1" /> Edit
+										</button>
+
+										<div className="px-lg-2">
+											<h5 className="mb-3 fs-4">{`${member.husbandFirstName} ${member.husbandLastName}`}</h5>
+											<div className="d-lg-flex">
+												<div className="col-lg-6">
+													<h6 className="flex-align-center px-2 py-1 border-bottom border-2 text-primaryColor fw-bolder">
+														<User className="me-1" /> Husband
+													</h6>
+													<ul className="list-unstyled text-gray-700 px-2 smaller">
+														<li className="py-1">
+															<b>Names:</b> {`${member.husbandFirstName} ${member.husbandLastName}`}
+														</li>
+														<li className="py-1">
+															<b>Phone:</b> {member.husbandPhone}
+														</li>
+														<li className="py-1">
+															<b>Email:</b> {member.husbandEmail}
+														</li>
+													</ul>
+												</div>
+												<div className="col-lg-6 px-lg-2">
+													<h6 className="flex-align-center px-2 py-1 border-bottom border-2 text-primaryColor fw-bolder">
+														<User className="me-1" /> Wife
+													</h6>
+													<ul className="list-unstyled text-gray-700 px-2 smaller">
+														<li className="py-1">
+															<b>Names:</b> {`${member.wifeFirstName} ${member.wifeLastName}`}
+														</li>
+														<li className="py-1">
+															<b>Phone:</b> {member.wifePhone}
+														</li>
+														<li className="py-1">
+															<b>Email:</b> {member.wifeEmail}
+														</li>
+													</ul>
+												</div>
+											</div>
 										</div>
 									</div>
-								</div>
-							</div>
-						))}
+								))
+							}
+						</>
+					)}
 				</div>
 			</div>
 		);
@@ -385,7 +376,7 @@ const Admin = () => {
 
 	// Savings
 	const Savings = () => {
-		const [savingsToshow, setSavingsToshow] = useState(membersData);
+		const [savingsToshow, setSavingsToshow] = useState(allMembers);
 		const [savingSearchValue, setSavingSearchValue] = useState('');
 
 		// Search savings
@@ -395,22 +386,22 @@ const Admin = () => {
 			const searchString = savingSearchValue.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 			if (searchString !== null && searchString !== undefined && searchString !== '') {
 				// showAllProperties(true);
-				const filteredsavings = membersData.filter(val => (
-					val.husband.firstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
-					val.husband.lastName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
-					val.wife.firstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
-					val.wife.lastName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
-					val.husband.email.toLowerCase().includes(searchString) ||
-					val.wife.email.toLowerCase().includes(searchString) ||
-					val.husband.phone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString) ||
-					val.wife.phone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString)
+				const filteredsavings = allMembers.filter(val => (
+					val.husbandFirstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
+					val.husbandLastName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
+					val.wifeFirstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
+					val.wifeLastName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
+					val.husbandEmail.toLowerCase().includes(searchString) ||
+					val.wifeEmail.toLowerCase().includes(searchString) ||
+					val.husbandPhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString) ||
+					val.wifePhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString)
 				));
 				setSavingsToshow(filteredsavings);
 			}
 		}, [savingSearchValue]);
 
 		const resetSavings = () => {
-			setSavingsToshow(membersData);
+			setSavingsToshow(allMembers);
 		}
 
 		// Reset savings
@@ -424,7 +415,7 @@ const Admin = () => {
 		const [showAddSavingRecord, setShowAddSavingRecord] = useState(false);
 		const [savingRecordType, setSavingRecordType] = useState('cotisation');
 		const [savingRecordAmount, setSavingRecordAmount] = useState('');
-		const [selectedMember, setSelectedMember] = useState(membersData[0]);
+		const [selectedMember, setSelectedMember] = useState(allMembers[0]);
 
 
 		// Handle create property
@@ -444,136 +435,145 @@ const Admin = () => {
 					</div>
 				</div>
 				<hr className='mb-4 d-lg-none' />
-				<Form onSubmit={e => e.preventDefault()} className='sticky-top col-lg-6 col-xxl-4 savings-search-box'>
-					<Form.Control ref={savingSearcherRef} type="text" placeholder="🔍 Search members..." id='savingSearcher' className="h-2_5rem mb-4 border border-2 bg-gray-200 rounded-0"
-						value={savingSearchValue} onChange={(e) => setSavingSearchValue(e.target.value)}
-						onKeyUp={e => { (e.key === "Enter") && filterSavingsBySearch() }}
-					/>
-					{savingSearchValue !== '' && (
-						<X className='ptr r-middle-m me-1' onClick={() => setSavingSearchValue('')} />
-					)}
-				</Form>
 
 				<div className="savings-wrapper">
-					{savingsToshow.length === 0 && (
+					{loadingMembers && (<LoadingIndicator icon={<Coin size={80} className="loading-skeleton" />} />)}
+					{!loadingMembers && savingsToshow.length === 0 && (
 						<div className="col-sm-8 col-md-6 col-lg-5 col-xl-4 mx-auto my-5 p-3 rounded error-message">
 							<img src="/images/fetch_error_image.jpg" alt="Error" className="w-4rem h-4rem mx-auto mb-2 opacity-50" />
 							<p className="text-center text-muted small">
-								No savings found.
+								No members found.
 							</p>
 							<button className="btn btn-sm btn-outline-secondary d-block border-0 rounded-pill mx-auto px-4" onClick={resetSavings}>
 								<ArrowClockwise weight="bold" size={18} className="me-1" /> Refresh
 							</button>
 						</div>
 					)}
+					{!loadingMembers && savingsToshow.length > 0 && (
+						<>
+							{/* Search bar */}
+							<Form onSubmit={e => e.preventDefault()} className='sticky-top col-lg-6 col-xxl-4 savings-search-box'>
+								<Form.Control ref={savingSearcherRef} type="text" placeholder="🔍 Search members..." id='savingSearcher' className="h-2_5rem border border-2 bg-gray-200 rounded-0"
+									value={savingSearchValue} onChange={(e) => setSavingSearchValue(e.target.value)}
+									onKeyUp={e => { (e.key === "Enter") && filterSavingsBySearch() }}
+								/>
+								{savingSearchValue !== '' && (
+									<X className='ptr r-middle-m me-1' onClick={() => setSavingSearchValue('')} />
+								)}
+							</Form>
+							{/* Content */}
 
-					<div className="d-lg-flex flex-wrap">
-						{savingsToshow
-							.sort((a, b) => a.husband.firstName.localeCompare(b.husband.firstName))
-							.map((member, index) => (
-								<div key={index} className='col-lg-6 px-lg-3'>
-									<div className="position-relative mb-3 my-5 px-2 pt-5 border-top border-3 border-secondary border-opacity-25 text-gray-800 member-element"
-									>
-										<div className="position-absolute top-0 me-3 d-flex gap-3"
-											style={{ right: 0, translate: "0 -50%" }}
-										>
-											<img src={member.husband.avatar}
-												alt={`${member.husband.firstName} ${member.husband.lastName}`}
-												className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
-											/>
-										</div>
-										<div className="px-lg-2">
-											<h5 className="mb-3 fs-4">{`${member.husband.firstName} ${member.husband.lastName}`}</h5>
-											<ul className="list-unstyled text-gray-700 px-2 smaller">
-												<li className="py-1 w-100">
-													<span className="flex-align-center">
-														<b className='fs-5'>{member.shares} Shares</b>
-														<span className='ms-3 text-primary flex-align-center ptr clickDown' title='Edit multiple shares'><Pen size={22} className='me-2' /> Multiple shares</span>
-													</span>
-												</li>
-												<li className="py-1 d-table-row">
-													<span className='d-table-cell border-start border-secondary ps-2'>Cotisation:</span> <span className='d-table-cell ps-2'>{member.cotisation.toLocaleString()} RWF</span>
-												</li>
-												<li className="py-1 d-table-row">
-													<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'>{member.social.toLocaleString()} RWF</span>
-												</li>
-												<li className="py-1 fs-5 d-table-row">
-													<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'>{(member.cotisation + member.social).toLocaleString()} RWF</span>
-												</li>
-											</ul>
-											<button className="btn btn-sm btn-outline-primary w-100 flex-center rounded-0 clickDown"
-												onClick={() => { setSelectedMember(member); setShowAddSavingRecord(true) }}
-											><Plus className='me-1' /> Save amount</button>
-										</div>
-									</div>
-								</div>
-							))}
-						{showAddSavingRecord &&
-							<>
-								<div className='position-fixed fixed-top inset-0 bg-black2 py-5 inx-high add-property-form'>
-									<div className="container col-md-6 col-lg-5 col-xl-4 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-										<div className="container h-100 bg-light text-gray-700 px-3">
-											<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
-												<div className='flex-align-center'>
-													<CashRegister weight='fill' className="me-1" />
-													<span style={{ lineHeight: 1 }}>Add savings</span>
-												</div>
-												<div title="Cancel" onClick={() => { setShowAddSavingRecord(false); setSavingRecordAmount('') }}>
-													<X size={25} className='ptr' />
-												</div>
-											</h6>
-											<div className="flex-align-center gap-3 mb-3">
-												<img src={selectedMember.husband.avatar}
-													alt={`${selectedMember.husband.firstName} ${selectedMember.husband.lastName}`}
-													className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
-												/>
-												<div>
-													Add savings for <b className='fw-semibold'>{selectedMember.husband.firstName} {selectedMember.husband.lastName}</b>
-												</div>
-											</div>
-											<hr />
-
-											{/* The form */}
-											<form onSubmit={(e) => handleAddSaving(e)} className="px-sm-2 pb-5">
-												<div className="mb-3">
-													<p htmlFor="expenseType" className="fw-bold small">
-														Saving type: <span className="text-primary text-capitalize">{savingRecordType}</span>
-													</p>
-													<ul className="list-unstyled d-flex">
-														<li className={`col-6 px-2 py-1 text-center ${savingRecordType === 'cotisation' ? 'text-bg-primary' : ''} rounded-pill ptr clickDown`}
-															onClick={() => setSavingRecordType('cotisation')}
-														>
-															Cotisation
-														</li>
-														<li className={`col-6 px-2 py-1 text-center ${savingRecordType === 'social' ? 'text-bg-primary' : ''} rounded-pill ptr clickDown`}
-															onClick={() => setSavingRecordType('social')}
-														>
-															Social
-														</li>
-
-													</ul>
-												</div>
-												<div className="mb-3">
-													<label htmlFor="savingAmount" className="form-label fw-bold" required>Saving amount ({savingRecordAmount !== '' ? Number(savingRecordAmount).toLocaleString() : ''} RWF )</label>
-													<input type="number" id="savingAmount" name="savingAmount" className="form-control" required placeholder="Enter amount"
-														value={savingRecordAmount}
-														onChange={e => setSavingRecordAmount(e.target.value)}
+							<div className="d-lg-flex flex-wrap">
+								{savingsToshow
+									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
+									.map((member, index) => (
+										<div key={index} className='col-lg-6 px-lg-3'>
+											<div className="position-relative mb-3 my-5 px-2 pt-5 border-top border-3 border-secondary border-opacity-25 text-gray-800 member-element"
+											>
+												<div className="position-absolute top-0 me-3 d-flex gap-3"
+													style={{ right: 0, translate: "0 -50%" }}
+												>
+													<img src={member.husbandAvatar}
+														alt={`${member.husbandFirstName.slice(0, 1)}.${member.husbandLastName}`}
+														className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
 													/>
 												</div>
-												<button type="submit" className="btn btn-sm btn-dark flex-center w-100 mt-3 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
-												>
-													{!isWaitingAdminEditAction ?
-														<>Save Amount <FloppyDisk size={18} className='ms-2' /></>
-														: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
-													}
-												</button>
-											</form>
+												<div className="px-lg-2">
+													<h5 className="mb-3 fs-4">{`${member.husbandFirstName} ${member.husbandLastName}`}</h5>
+													<ul className="list-unstyled text-gray-700 px-2 smaller">
+														<li className="py-1 w-100">
+															<span className="flex-align-center">
+																<b className='fs-5'>{member.shares} Shares</b>
+																<span className='ms-3 text-primary flex-align-center ptr clickDown' title='Edit multiple shares'><Pen size={22} className='me-2' /> Multiple shares</span>
+															</span>
+														</li>
+														<li className="py-1 d-table-row">
+															<span className='d-table-cell border-start border-secondary ps-2'>Cotisation:</span> <span className='d-table-cell ps-2'>{member.cotisation.toLocaleString()} RWF</span>
+														</li>
+														<li className="py-1 d-table-row">
+															<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'>{member.social.toLocaleString()} RWF</span>
+														</li>
+														<li className="py-1 fs-5 d-table-row">
+															<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'>{(member.cotisation + member.social).toLocaleString()} RWF</span>
+														</li>
+													</ul>
+													<button className="btn btn-sm btn-outline-primary w-100 flex-center rounded-0 clickDown"
+														onClick={() => { setSelectedMember(member); setShowAddSavingRecord(true) }}
+													><Plus className='me-1' /> Save amount</button>
+												</div>
+											</div>
+										</div>
+									))
+								}
+							</div>
+
+							{showAddSavingRecord &&
+								<>
+									<div className='position-fixed fixed-top inset-0 bg-black2 py-5 inx-high add-property-form'>
+										<div className="container col-md-6 col-lg-5 col-xl-4 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
+											<div className="container h-100 bg-light text-gray-700 px-3">
+												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
+													<div className='flex-align-center'>
+														<CashRegister weight='fill' className="me-1" />
+														<span style={{ lineHeight: 1 }}>Add savings</span>
+													</div>
+													<div title="Cancel" onClick={() => { setShowAddSavingRecord(false); setSavingRecordAmount('') }}>
+														<X size={25} className='ptr' />
+													</div>
+												</h6>
+												<div className="flex-align-center gap-3 mb-3">
+													<img src={selectedMember.husbandAvatar}
+														alt={`${selectedMember.husbandFirstName.slice(0, 1)}.${selectedMember.husbandLastName}`}
+														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
+													/>
+													<div>
+														Add savings for <b className='fw-semibold'>{selectedMember.husbandFirstName} {selectedMember.husbandLastName}</b>
+													</div>
+												</div>
+												<hr />
+
+												{/* The form */}
+												<form onSubmit={(e) => handleAddSaving(e)} className="px-sm-2 pb-5">
+													<div className="mb-3">
+														<p htmlFor="expenseType" className="fw-bold small">
+															Saving type: <span className="text-primary text-capitalize">{savingRecordType}</span>
+														</p>
+														<ul className="list-unstyled d-flex">
+															<li className={`col-6 px-2 py-1 text-center ${savingRecordType === 'cotisation' ? 'text-bg-primary' : ''} rounded-pill ptr clickDown`}
+																onClick={() => setSavingRecordType('cotisation')}
+															>
+																Cotisation
+															</li>
+															<li className={`col-6 px-2 py-1 text-center ${savingRecordType === 'social' ? 'text-bg-primary' : ''} rounded-pill ptr clickDown`}
+																onClick={() => setSavingRecordType('social')}
+															>
+																Social
+															</li>
+
+														</ul>
+													</div>
+													<div className="mb-3">
+														<label htmlFor="savingAmount" className="form-label fw-bold" required>Saving amount ({savingRecordAmount !== '' ? Number(savingRecordAmount).toLocaleString() : ''} RWF )</label>
+														<input type="number" id="savingAmount" name="savingAmount" className="form-control" required placeholder="Enter amount"
+															value={savingRecordAmount}
+															onChange={e => setSavingRecordAmount(e.target.value)}
+														/>
+													</div>
+													<button type="submit" className="btn btn-sm btn-dark flex-center w-100 mt-3 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
+													>
+														{!isWaitingAdminEditAction ?
+															<>Save Amount <FloppyDisk size={18} className='ms-2' /></>
+															: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
+														}
+													</button>
+												</form>
+											</div>
 										</div>
 									</div>
-								</div>
-							</>
-						}
-					</div>
+								</>
+							}
+						</>
+					)}
 				</div>
 			</div>
 		);
@@ -582,7 +582,11 @@ const Admin = () => {
 	// Interest
 	const Interest = () => {
 
-		const totalShares = membersData.reduce((sum, item) => sum + item.shares, 0);
+
+		const [showExportDataDialog, setShowExportDataDialog] = useState(false);
+		const interestPartitionViewRef = useRef();
+
+		const totalShares = allMembers.reduce((sum, item) => sum + item.shares, 0);
 		const interestToReceive = dashboardData
 			.filter((item) => item.label === "Interest Receivable")
 			.map((item) => item.value);
@@ -608,104 +612,131 @@ const Admin = () => {
 					</div>
 				</div>
 				<hr className='mb-4 d-lg-none' />
-				<div className="alert alert-info smaller">
-					<p className='display-6'>
-						Statut des intérêts annuels
-					</p>
-					<Calendar size={25} className='me-2' /> Année {new Date().getFullYear()}
-				</div>
-				<div className='overflow-auto mb-5'>
-					<table className="table table-hover h-100 properties-table">
-						<thead className='table-success position-sticky top-0 inx-1'>
-							<tr>
-								<th className='py-3 text-nowrap text-gray-700'>N°</th>
-								<th className='py-3 text-nowrap text-gray-700'>Member</th>
-								<th className='py-3 text-nowrap text-gray-700'>Shares</th>
-								<th className='py-3 text-nowrap text-gray-700'>Percentage (%)</th>
-								<th className='py-3 text-nowrap text-gray-700'>Interest <sub className='fs-60'>/RWF</sub></th>
-								<th className='py-3 text-nowrap text-gray-700'>Receavable<sub className='fs-60'>/RWF</sub></th>
-								<th className='py-3 text-nowrap text-gray-700'>Remains<sub className='fs-60'>/RWF</sub></th>
-								<th className='py-3 text-nowrap text-gray-700'>Status</th>
-							</tr>
-						</thead>
-						<tbody>
-							{membersData
-								.sort((a, b) => a.husband.firstName.localeCompare(b.husband.firstName))
-								.map((item, index) => {
-									const memberNames = `${item.husband.firstName} ${item.husband.lastName}`;
-									const percentageShares = ((item.shares * 100) / totalShares).toFixed(3);
-									// Interest = (Total interest * Percentage shares) / 100
-									const interest = (((item.shares * 100) / totalShares) * Number(interestToReceive)) / 100;
-									// Interest to receive => divisible by 20000
-									const interestReceivable = Math.floor((interest) / 20000) * 20000;
-									const interestRemains = interest - interestReceivable;
-									totalInterestReceivable += interestReceivable;
-									totalInterestRemain += interestRemains;
+				<div ref={interestPartitionViewRef}  >
+					<div className="alert alert-info smaller">
+						<p className='display-6'>
+							Statut des intérêts annuels
+						</p>
+						<Calendar size={25} className='me-2' /> Année {new Date().getFullYear()}
+					</div>
+					<div className='overflow-auto mb-5'>
+						<table className="table table-hover h-100 properties-table">
+							<thead className='table-success position-sticky top-0 inx-1'>
+								<tr>
+									<th className='py-3 text-nowrap text-gray-700'>N°</th>
+									<th className='py-3 text-nowrap text-gray-700'>Member</th>
+									<th className='py-3 text-nowrap text-gray-700'>Shares</th>
+									<th className='py-3 text-nowrap text-gray-700'>Percentage (%)</th>
+									<th className='py-3 text-nowrap text-gray-700'>Interest <sub className='fs-60'>/RWF</sub></th>
+									<th className='py-3 text-nowrap text-gray-700'>Receavable<sub className='fs-60'>/RWF</sub></th>
+									<th className='py-3 text-nowrap text-gray-700'>Remains<sub className='fs-60'>/RWF</sub></th>
+									<th className='py-3 text-nowrap text-gray-700'>Status</th>
+								</tr>
+							</thead>
+							<tbody>
+								{allMembers
+									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
+									.map((item, index) => {
+										const memberNames = `${item.husbandFirstName} ${item.husbandLastName}`;
+										const percentageShares = ((item.shares * 100) / totalShares).toFixed(3);
+										// Interest = (Total interest * Percentage shares) / 100
+										const interest = (((item.shares * 100) / totalShares) * Number(interestToReceive)) / 100;
+										// Interest to receive => divisible by 20000
+										const interestReceivable = Math.floor((interest) / 20000) * 20000;
+										const interestRemains = interest - interestReceivable;
+										totalInterestReceivable += interestReceivable;
+										totalInterestRemain += interestRemains;
 
-									return (
-										<tr
-											key={index}
-											className="small cursor-default clickDown interest-row"
-										>
-											<td className="border-bottom-3 border-end">
-												{index + 1}
-											</td>
-											<td className='text-nowrap'>
-												{memberNames}
-											</td>
-											<td>
-												{item.shares}
-											</td>
-											<td className="text-nowrap">
-												{percentageShares} %
-											</td>
-											<td className="text-nowrap fw-bold text-gray-700">
-												<CurrencyText amount={interest} smallCurrency />
-											</td>
-											<td className="text-nowrap fw-bold text-success">
-												<CurrencyText amount={interestReceivable} smallCurrency />
-											</td>
-											<td className="text-nowrap text-gray-700">
-												<CurrencyText amount={interestRemains} smallCurrency />
-											</td>
-											<td>
-												Pending
-											</td>
-										</tr>
-									)
-								})
-							}
-							<tr className="small cursor-default fs-5 table-success clickDown interest-row">
-								<td className="border-bottom-3 border-end" title='Total'>
-									T
-								</td>
-								<td className='text-nowrap'>
-									{membersData.length} <span className="fs-60">members</span>
-								</td>
-								<td className='text-nowrap'>
-									{totalShares} <span className="fs-60">shares</span>
-								</td>
-								<td className="text-nowrap">
-									100 <span className="fs-60">%</span>
-								</td>
-								<td className="text-nowrap fw-bold">
-									<CurrencyText amount={interestToReceive} smallCurrency />
-								</td>
-								<td className="text-nowrap fw-bold text-success">
-									<CurrencyText amount={totalInterestReceivable} smallCurrency />
-								</td>
-								<td className="text-nowrap">
-									<CurrencyText amount={totalInterestRemain} smallCurrency />
-								</td>
-								<td>
-									<div className='d-flex flex-column'></div>
-									<div className='text-nowrap fs-65 text-success'>4 Delivered</div>
-									<div className='text-nowrap fs-65'>3 Pending</div>
-								</td>
-							</tr>
-						</tbody>
-					</table>
+										return (
+											<tr
+												key={index}
+												className="small cursor-default clickDown interest-row"
+											>
+												<td className="border-bottom-3 border-end">
+													{index + 1}
+												</td>
+												<td className='text-nowrap'>
+													{memberNames}
+												</td>
+												<td>
+													{item.shares}
+												</td>
+												<td className="text-nowrap">
+													{percentageShares} %
+												</td>
+												<td className="text-nowrap fw-bold text-gray-700">
+													<CurrencyText amount={interest} smallCurrency />
+												</td>
+												<td className="text-nowrap fw-bold text-success">
+													<CurrencyText amount={interestReceivable} smallCurrency />
+												</td>
+												<td className="text-nowrap text-gray-700">
+													<CurrencyText amount={interestRemains} smallCurrency />
+												</td>
+												<td>
+													Pending
+												</td>
+											</tr>
+										)
+									})
+								}
+								<tr className="small cursor-default fs-5 table-success clickDown interest-row">
+									<td className="border-bottom-3 border-end" title='Total'>
+										T
+									</td>
+									<td className='text-nowrap'>
+										{allMembers.length} <span className="fs-60">members</span>
+									</td>
+									<td className='text-nowrap'>
+										{totalShares} <span className="fs-60">shares</span>
+									</td>
+									<td className="text-nowrap">
+										100 <span className="fs-60">%</span>
+									</td>
+									<td className="text-nowrap fw-bold">
+										<CurrencyText amount={interestToReceive} smallCurrency />
+									</td>
+									<td className="text-nowrap fw-bold text-success">
+										<CurrencyText amount={totalInterestReceivable} smallCurrency />
+									</td>
+									<td className="text-nowrap">
+										<CurrencyText amount={totalInterestRemain} smallCurrency />
+									</td>
+									<td>
+										<div className='d-flex flex-column'></div>
+										{/* <div className='text-nowrap fs-65 text-success'>4 Delivered</div> */}
+										<div className='text-nowrap fs-65'>8 Pending</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 				</div>
+
+				{/* Exporter */}
+				<div className='small'>
+					<div className="d-flex flex-wrap gap-2">
+						<button className="btn btn-sm bg-primaryColor text-light rounded-0 clickDown"
+							onClick={() => setShowExportDataDialog(true)}
+						>
+							<Files size={22} /> Generate Report
+						</button>
+						<p className='p-2 smaller'>
+							<Info className='me-1' />
+							Click the button to generate selected year's interest partition status.
+						</p>
+					</div>
+				</div>
+
+
+
+				{/* Export report tables */}
+				<ExportDomAsFile
+					show={showExportDataDialog}
+					container={interestPartitionViewRef}
+					exportName={`Statut des intérêts annuels __ Année ${new Date().getFullYear()}`}
+					onClose={() => { setShowExportDataDialog(false) }}
+				/>
 
 			</div>
 		)
@@ -715,9 +746,57 @@ const Admin = () => {
 	const Credit = () => {
 		const [activeLoanSection, setActiveLoanSection] = useState('approved');
 		const [activeLoanSectionColor, setActiveLoanSectionColor] = useState('#a3d5bb75');
+
+		// Filtering credits
+
+		const [membersToshow, setMembersToshow] = useState(allMembers);
+		const [memberSearchValue, setMemberSearchValue] = useState('');
+
+		// Search members
+		const memberSearcherRef = useRef();
+
+		const filterMembersBySearch = useCallback(() => {
+			const searchString = memberSearchValue.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+			if (searchString !== null && searchString !== undefined && searchString !== '') {
+				// showAllProperties(true);
+				const filteredmembers = allMembers.filter(val => (
+					val.husbandFirstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
+					val.husbandLastName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
+					val.wifeFirstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
+					val.wifeLastName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
+					val.husbandEmail.toLowerCase().includes(searchString) ||
+					val.wifeEmail.toLowerCase().includes(searchString) ||
+					val.husbandPhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString) ||
+					val.wifePhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString)
+				));
+				setMembersToshow(filteredmembers);
+			}
+		}, [memberSearchValue]);
+
+		const resetMembers = () => {
+			setMembersToshow(allMembers);
+		}
+
+		// Reset members
+		useEffect(() => {
+			if (memberSearchValue === '') {
+				resetMembers();
+			}
+		}, [memberSearchValue]);
+
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<h2><Blueprint weight='fill' className="me-1 opacity-50" /> Credit panel</h2>
+
+				<Form onSubmit={e => e.preventDefault()} className='sticky-top col-lg-6 col-xxl-4 members-search-box'>
+					<Form.Control ref={memberSearcherRef} type="text" placeholder="🔍 Search members..." id='memberSearcher' className="h-2_5rem border border-2 bg-gray-200 rounded-0"
+						value={memberSearchValue} onChange={(e) => setMemberSearchValue(e.target.value)}
+						onKeyUp={e => { (e.key === "Enter") && filterMembersBySearch() }}
+					/>
+					{memberSearchValue !== '' && (
+						<X className='ptr r-middle-m me-1' onClick={() => setMemberSearchValue('')} />
+					)}
+				</Form>
 				<div className='text-gray-700 selective-options' style={{ backgroundColor: activeLoanSectionColor }}>
 					{/* <h4 className='h6 mb-2 text-center fw-bold text-decoration-underline' style={{ textUnderlineOffset: '3px' }}>Loan requests</h4> */}
 
@@ -1358,9 +1437,9 @@ const Admin = () => {
 		const [activeReportSection, setActiveReportSection] = useState('incomeExpenses');
 		useEffect(() => {
 			if (activeReportSection === 'incomeExpenses') {
-				setExportFileName('Income and Expenses report');
+				setExportFileName('Rapport sur les revenus et les dépenses');
 			} else if (activeReportSection === 'general') {
-				setExportFileName('General report');
+				setExportFileName('Rapport général');
 			}
 		}, [activeReportSection]);
 
@@ -1371,7 +1450,6 @@ const Admin = () => {
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="mb-3">
 					<h2><Files weight='fill' className="me-1 opacity-50" /> Report panel</h2>
-
 					<div className="d-lg-flex align-items-center">
 						<img src="images/reports_visual.png" alt="" className='d-none d-lg-block col-md-5' />
 						<div className='alert mb-4 rounded-0 smaller fw-light'>

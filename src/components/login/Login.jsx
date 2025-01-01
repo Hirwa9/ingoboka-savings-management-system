@@ -4,12 +4,14 @@ import '../common/formInput/formInput.css';
 import MyToast from '../common/Toast';
 import { isValidEmail } from '../../scripts/myScripts';
 import { useLocation } from 'react-router';
+import { useNavigate } from "react-router-dom";
 import $ from 'jquery';
 import { SignIn, UserCircleDashed, Wallet } from '@phosphor-icons/react';
 
 
 const Login = () => {
 
+    const navigate = useNavigate();
     const location = useLocation();
     const signInId = useId();
 
@@ -32,16 +34,7 @@ const Login = () => {
     const [email, setEmail] = useState();
     const [password, setPassword] = useState();
 
-    // Submit sign in form
-    // const handleSignIn = (e) => {
-    //   e.preventDefault();
-    //   axios.post('http://localhost:5000/login', { email, password })
-    //     .then(res => {
-    //       console.log(res);
-    //     }).catch(err => {
-    //       console.error(err)
-    //     });
-    // }
+    // Handle sign in
 
     const handleSignIn = async (e) => {
         e.preventDefault();
@@ -49,9 +42,6 @@ const Login = () => {
             return alert('Enter a valid email address.');
         }
         try {
-            // await axios.post('http://localhost:5000/login', { email, password });
-            // location.push("../Dashboard.js");
-
             const response = await fetch(`http://localhost:5000/login`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -65,20 +55,31 @@ const Login = () => {
             const data = await response.json();
             toast(data.message, 'success');
 
-            // Clear the reply message and refresh the messages list
-            // setShowContactUsMessage(false);
-            // setReplyMessage('');
-            // setTimeout(() => {
-            //     fetchMessages();
-            // }, 1000);
+            // Authentication code
+            if (data.success) {
+                const { type } = data.user; // Assuming the server sends back user type
 
+                if (type === "admin") {
+                    navigate("/admin");
+                } else if (type === "member") {
+                    navigate("/user");
+                } else {
+                    toast("Unknown user type. Please contact support.", "error");
+                }
+            } else {
+                toast("Invalid credentials. Please try again.", "warning");
+            }
         } catch (error) {
             if (error.response) {
                 console.error(error.response.data.message);
                 toast(error.response.data.message, 'warning');
+            } else {
+                console.error(error.message);
+                toast("An error occurred. Please try again.", "error");
             }
         }
-    }
+    };
+
 
     // Handle input's UI
     // Handle input changes
@@ -106,7 +107,7 @@ const Login = () => {
                                 Your savings management system ...
                             </p>
                             <div className='d-none d-lg-block'>
-                                <img src="images/saving_illustration.png" alt="" className='mt-5 col-7'/>
+                                <img src="images/saving_illustration.png" alt="" className='mt-5 col-7' />
 
                             </div>
                         </div>

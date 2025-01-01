@@ -10,6 +10,7 @@ import User from '../userUI/user/User';
 import Header from '../header/Header';
 // import Footer from '../footer/Footer';
 import Login from '../login/Login';
+import ProtectedRoute from '../ProtectedRoute';
 
 const Pages = () => {
     // let location = window.location;
@@ -27,11 +28,23 @@ const Pages = () => {
             {/* <Header /> */}
             {/* {!isExcludedRoute && <Header />} */}
             <Routes>
-                {/* <Route path="/*" element={<Pages />} /> */}
+                <Route path="/" element={<Login />} />
                 <Route path="/login" element={<Login />} />
-                {/* Use the `element` prop for rendering components */}
-                <Route path="/admin" element={<Admin />} />
-                <Route path="/user/:userId" element={<User />} />
+                {/* Admin */}
+                {/* <Route path="/admin" element={
+                    <ProtectedRoute>
+                        <Admin />
+                    </ProtectedRoute>
+                } /> */}
+                <Route path="/admin" element={
+                    <Admin />
+                } />
+                {/* User */}
+                <Route path="/user/:userId" element={
+                    <ProtectedRoute>
+                        <User />
+                    </ProtectedRoute>
+                } />
             </Routes>
             {/* Conditionally render the Footer */}
             {/* <Footer /> */}
