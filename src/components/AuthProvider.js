@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import LoadingIndicator from "./LoadingIndicator";
-import { Bank, Building, Coins } from "@phosphor-icons/react";
+import { Bank } from "@phosphor-icons/react";
 
 // Create the AuthContext
 const AuthContext = createContext();
