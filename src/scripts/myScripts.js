@@ -164,3 +164,18 @@ export const isValidUsername = (str) => {
     const usernameRegex = /^[A-Za-z][A-Za-z0-9 _]*$/;
     return usernameRegex.test(str.trim());
 };
+
+// Data deep comparison
+export const deepEqual = (data1, data2) => {
+    return JSON.stringify(data1) === JSON.stringify(data2);
+};
+
+// Console log
+export const cLog = (data) => {
+    return console.log(data);
+};
+
+// Console error
+export const cError = (data) => {
+    return console.error(data);
+};
