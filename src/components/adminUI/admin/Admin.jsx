@@ -3,12 +3,14 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretRight, CashRegister, ChartBar, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, Files, FloppyDisk, Gear, Info, List, Notebook, Pen, Plus, SignOut, Table, User, Users, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretRight, CashRegister, ChartBar, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, Files, FloppyDisk, Gear, Info, List, Notebook, Pen, Plus, SignOut, Table, User, Users, X } from '@phosphor-icons/react';
 import { dashboardData, deposits, expenses, expensesTypes, generalReport, incomeExpenses, membersData } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
 import LoadingIndicator from '../../LoadingIndicator';
+import { cLog } from '../../../scripts/myScripts';
+import FormatedDate from '../../common/FormatedDate';
 
 const Admin = () => {
 
@@ -100,10 +102,10 @@ const Admin = () => {
 	// const [activeSection, setActiveSection] = useState("messages");
 	// const [activeSection, setActiveSection] = useState("members");
 	// const [activeSection, setActiveSection] = useState("savings");
-	// const [activeSection, setActiveSection] = useState("credits");
+	const [activeSection, setActiveSection] = useState("credits");
 	// const [activeSection, setActiveSection] = useState("interest");
 	// const [activeSection, setActiveSection] = useState("transactions");
-	const [activeSection, setActiveSection] = useState("reports");
+	// const [activeSection, setActiveSection] = useState("reports");
 	// const [activeSection, setActiveSection] = useState("settings");
 	// const [activeSection, setActiveSection] = useState("auditLogs");
 
@@ -227,7 +229,7 @@ const Admin = () => {
 
 	// Member
 	const Members = () => {
-		const [membersToshow, setMembersToshow] = useState(allMembers);
+		const [membersToShow, setMembersToShow] = useState(allMembers);
 		const [memberSearchValue, setMemberSearchValue] = useState('');
 
 		// Search members
@@ -237,11 +239,10 @@ const Admin = () => {
 			const searchString = memberSearchValue.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 			if (searchString !== null && searchString !== undefined && searchString !== '') {
 				// showAllProperties(true);
-				const filteredmembers = allMembers.filter(val => 
-					{
-						console.log(val.husbandFirstName.toLowerCase());
-						return val.husbandFirstName;
-					}
+				const filteredmembers = allMembers.filter(val => {
+					console.log(val.husbandFirstName.toLowerCase());
+					return val.husbandFirstName;
+				}
 				);
 				// const filteredmembers = allMembers.filter(val => (
 				// 	val.husbandFirstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
@@ -253,12 +254,12 @@ const Admin = () => {
 				// 	val.husbandPhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString) ||
 				// 	val.wifePhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString)
 				// ));
-				setMembersToshow(filteredmembers);
+				setMembersToShow(filteredmembers);
 			}
 		}, [memberSearchValue]);
 
 		const resetMembers = () => {
-			setMembersToshow(allMembers);
+			setMembersToShow(allMembers);
 		}
 
 		// Reset members
@@ -280,7 +281,7 @@ const Admin = () => {
 
 				<div className="members-wrapper">
 					{loadingMembers && (<LoadingIndicator icon={<Users size={80} className="loading-skeleton" />} />)}
-					{!loadingMembers && membersToshow.length === 0 && (
+					{!loadingMembers && membersToShow.length === 0 && (
 						<div className="col-sm-8 col-md-6 col-lg-5 col-xl-4 mx-auto my-5 p-3 rounded error-message">
 							<img src="/images/fetch_error_image.jpg" alt="Error" className="w-4rem h-4rem mx-auto mb-2 opacity-50" />
 							<p className="text-center text-muted small">
@@ -291,7 +292,7 @@ const Admin = () => {
 							</button>
 						</div>
 					)}
-					{!loadingMembers && membersToshow.length > 0 && (
+					{!loadingMembers && membersToShow.length > 0 && (
 						<>
 							{/* Search bar */}
 							<Form onSubmit={e => e.preventDefault()} className='sticky-top col-lg-6 col-xxl-4 members-search-box'>
@@ -304,7 +305,7 @@ const Admin = () => {
 								)}
 							</Form>
 							{/* Content */}
-							{membersToshow
+							{membersToShow
 								.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
 								.map((member, index) => (
 									<div className="position-relative mb-3 my-5 px-2 pt-5 border-top border-3 border-secondary border-opacity-25 text-gray-800 member-element"
@@ -376,7 +377,7 @@ const Admin = () => {
 
 	// Savings
 	const Savings = () => {
-		const [savingsToshow, setSavingsToshow] = useState(allMembers);
+		const [savingsToShow, setSavingsToShow] = useState(allMembers);
 		const [savingSearchValue, setSavingSearchValue] = useState('');
 
 		// Search savings
@@ -396,12 +397,12 @@ const Admin = () => {
 					val.husbandPhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString) ||
 					val.wifePhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString)
 				));
-				setSavingsToshow(filteredsavings);
+				setSavingsToShow(filteredsavings);
 			}
 		}, [savingSearchValue]);
 
 		const resetSavings = () => {
-			setSavingsToshow(allMembers);
+			setSavingsToShow(allMembers);
 		}
 
 		// Reset savings
@@ -438,7 +439,7 @@ const Admin = () => {
 
 				<div className="savings-wrapper">
 					{loadingMembers && (<LoadingIndicator icon={<Coin size={80} className="loading-skeleton" />} />)}
-					{!loadingMembers && savingsToshow.length === 0 && (
+					{!loadingMembers && savingsToShow.length === 0 && (
 						<div className="col-sm-8 col-md-6 col-lg-5 col-xl-4 mx-auto my-5 p-3 rounded error-message">
 							<img src="/images/fetch_error_image.jpg" alt="Error" className="w-4rem h-4rem mx-auto mb-2 opacity-50" />
 							<p className="text-center text-muted small">
@@ -449,7 +450,7 @@ const Admin = () => {
 							</button>
 						</div>
 					)}
-					{!loadingMembers && savingsToshow.length > 0 && (
+					{!loadingMembers && savingsToShow.length > 0 && (
 						<>
 							{/* Search bar */}
 							<Form onSubmit={e => e.preventDefault()} className='sticky-top col-lg-6 col-xxl-4 savings-search-box'>
@@ -464,7 +465,7 @@ const Admin = () => {
 							{/* Content */}
 
 							<div className="d-lg-flex flex-wrap">
-								{savingsToshow
+								{savingsToShow
 									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
 									.map((member, index) => (
 										<div key={index} className='col-lg-6 px-lg-3'>
@@ -749,7 +750,7 @@ const Admin = () => {
 
 		// Filtering credits
 
-		const [membersToshow, setMembersToshow] = useState(allMembers);
+		const [membersToShow, setMembersToShow] = useState(allMembers || []);
 		const [memberSearchValue, setMemberSearchValue] = useState('');
 
 		// Search members
@@ -769,12 +770,12 @@ const Admin = () => {
 					val.husbandPhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString) ||
 					val.wifePhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString)
 				));
-				setMembersToshow(filteredmembers);
+				setMembersToShow(filteredmembers);
 			}
 		}, [memberSearchValue]);
 
 		const resetMembers = () => {
-			setMembersToshow(allMembers);
+			setMembersToShow(allMembers);
 		}
 
 		// Reset members
@@ -783,6 +784,10 @@ const Admin = () => {
 				resetMembers();
 			}
 		}, [memberSearchValue]);
+
+		// Show credits per member
+		const [showSelectedMemberCredits, setShowSelectedMemberCredits] = useState(false);
+		const [selectedMember, setSelectedMember] = useState(null);
 
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
@@ -797,6 +802,151 @@ const Admin = () => {
 						<X className='ptr r-middle-m me-1' onClick={() => setMemberSearchValue('')} />
 					)}
 				</Form>
+
+				{loadingMembers && (<LoadingIndicator icon={<Users size={80} className="loading-skeleton" />} />)}
+				{!loadingMembers && membersToShow.length === 0 && (
+					<div className="col-sm-8 col-md-6 col-lg-5 col-xl-4 mx-auto my-5 p-3 rounded error-message">
+						<img src="/images/fetch_error_image.jpg" alt="Error" className="w-4rem h-4rem mx-auto mb-2 opacity-50" />
+						<p className="text-center text-muted small">
+							No members found.
+						</p>
+						<button className="btn btn-sm btn-outline-secondary d-block border-0 rounded-pill mx-auto px-4" onClick={resetMembers}>
+							<ArrowClockwise weight="bold" size={18} className="me-1" /> Refresh
+						</button>
+					</div>
+				)}
+				{!loadingMembers && membersToShow.length > 0 && (
+					<>
+						<div className="mb-3">
+							<div className="d-flex justify-content-lg-between gap-2 mt-3 overflow-auto">
+								{membersToShow
+									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
+									.map((member, index) => (
+										<div key={index} className='w-4rem clickDown ptr'
+											title={`${member.husbandFirstName} ${member.husbandLastName}`}
+											onClick={() => { setSelectedMember(member); setShowSelectedMemberCredits(true) }}
+										>
+											<img src={member.husbandAvatar}
+												alt={`${member.husbandFirstName} ${member.husbandLastName}`}
+												className="w-100 ratio-1-1 object-fit-cover p-1 bg-light rounded-circle"
+											/>
+											<div className="text-truncate fs-70 text-center mt-1">
+												{`${member.husbandFirstName} ${member.husbandLastName}`}
+											</div>
+										</div>
+									))}
+							</div>
+							<div className="d-flex d-lg-none">
+								<DotsThreeOutline size={30} weight='fill' className='ms-auto me-2 text-gray-500' />
+							</div>
+						</div>
+
+						{showSelectedMemberCredits &&
+							<>
+								<div className='position-fixed fixed-top inset-0 bg-black2 inx-high add-property-form'>
+									<div className="container offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
+										<div className="container h-100 bg-light text-gray-700 px-3">
+											<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom">
+												<div className='flex-align-center'>
+													{/* <Blueprint weight='fill' className="me-1" /> */}
+													<img src={selectedMember.husbandAvatar}
+														alt={`${selectedMember.husbandFirstName.slice(0, 1)}.${selectedMember.husbandLastName}`}
+														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
+													/>
+													<span className='ms-2' style={{ lineHeight: 1 }}>
+														Credits of {`${selectedMember.husbandFirstName} ${selectedMember.husbandLastName}`}
+													</span>
+												</div>
+												<div onClick={() => { setShowSelectedMemberCredits(false); }}>
+													<X size={25} className='ptr' />
+												</div>
+											</h6>
+											<div className="flex-align-center gap-3 mb-3">
+												<div className='overflow-auto'>
+													<table className="table table-hover h-100 properties-table">
+														<thead className='table-warning position-sticky top-0 inx-1'>
+															<tr>
+																{/* <th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th> */}
+																<th className='py-3 text-nowrap text-gray-700'>Title</th>
+																<th className='py-3 text-nowrap text-gray-700'>Taken  <sub className='fs-60'>/RWF</sub></th>
+																<th className='py-3 text-nowrap text-gray-700'>Paid  <sub className='fs-60'>/RWF</sub></th>
+																<th className='py-3 text-nowrap text-gray-700'>Pending  <sub className='fs-60'>/RWF</sub></th>
+																{/* <th className='py-3 text-nowrap text-gray-700'>Fines</th> */}
+															</tr>
+														</thead>
+														<tbody>
+															<tr className={`small credit-row`}
+															>
+																<td className={`ps-sm-3  border-bottom-3 border-end fw-bold`}>
+																	Loan
+																</td>
+																<td>
+																	<CurrencyText amount={19960000} />
+																</td>
+																<td className='text-primary-emphasis'>
+																	<CurrencyText amount={18415000} />
+																</td>
+																<td className='text-warning-emphasis'>
+																	<CurrencyText amount={1545000} />
+																</td>
+															</tr>
+															<tr className={`small credit-row`}
+															>
+																<td className={`ps-sm-3  border-bottom-3 border-end fw-bold`}>
+																	Interest
+																</td>
+																<td>
+																	<CurrencyText amount={998000} />
+																</td>
+																<td></td>
+																<td></td>
+															</tr>
+															<tr className={`small credit-row`}
+															>
+																<td className={`ps-sm-3  border-bottom-3 border-end fw-bold`}>
+																	Tranches
+																</td>
+																<td>
+																	52
+																</td>
+																<td className='text-primary-emphasis'>
+																	47
+																</td>
+																<td className='text-warning-emphasis'>
+																	5
+																</td>
+															</tr>
+														</tbody>
+													</table>
+
+													<div className="d-flex">
+														<div className='col p-2'>
+															<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' />  First loan</div>
+															<div className='text-center bg-gray-300'>2022-12-01</div>
+														</div>
+														<div className='col p-2'>
+															<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' />  Recent loan</div>
+															<div className='text-center bg-gray-300'><FormatedDate date="2020-04-30" /></div>
+														</div>
+													</div>
+
+												</div>
+												{/* <div>
+													Add savings for <b className='fw-semibold'>{selectedMember.husbandFirstName} {selectedMember.husbandLastName}</b>
+												</div> */}
+											</div>
+											<hr />
+
+											{/* The form */}
+										</div>
+									</div>
+								</div>
+							</>
+						}
+
+					</>
+				)}
+
 				<div className='text-gray-700 selective-options' style={{ backgroundColor: activeLoanSectionColor }}>
 					{/* <h4 className='h6 mb-2 text-center fw-bold text-decoration-underline' style={{ textUnderlineOffset: '3px' }}>Loan requests</h4> */}
 
