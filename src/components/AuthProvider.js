@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import LoadingIndicator from "./LoadingIndicator";
-import { Bank } from "@phosphor-icons/react";
+import { Bank, CaretDown } from "@phosphor-icons/react";
 
 // Create the AuthContext
 const AuthContext = createContext();
@@ -47,8 +47,11 @@ export const AuthProvider = ({ children }) => {
     // Show a loading indicator until the auth check is complete
     if (loading) {
         return (
-            <div className="h-100vh flex-center">
-                <LoadingIndicator icon={<Bank size={80} className="loading-skeleton" />} />
+            <div className="h-100vh d-flex flex-column app-loading-page">
+                <LoadingIndicator className="h-80 text-gray-200" icon={<Bank size={80} className="loading-skeleton" />} />
+                <p className="grid-center gap-3 mt-auto p-4 smaller text-gray-200 text-center fw-semibold" style={{ animation: 'zoomInBack .8s 1' }}>
+                    <CaretDown className="opacity-75 me-2" /> IKIMINA INGOBOKA. Your savings management system
+                </p>
             </div>
         );
     }
