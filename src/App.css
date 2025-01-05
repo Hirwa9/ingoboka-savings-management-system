@@ -215,6 +215,15 @@ body {
 
 /* Customs */
 
+
+.app-loading-page {
+  /* background-image: linear-gradient(150deg, rgba(39, 128, 157, 0.3), rgba(195, 133, 0, 0.3)); */
+
+  background-image: linear-gradient(150deg, rgba(39, 128, 157, 0.9), rgba(101, 73, 13, 0.9)), url(../public/images/saving_illustration_fancy1.webp);
+  background-position: center;
+  background-size: cover;
+}
+
 .heading p {
   /* font-size: 1.25rem; */
   color: #27809d;
@@ -4105,90 +4114,102 @@ hr.hr-lg {
   color: #fff;
   color: var(--bs-gray-700);
   box-shadow: -10px -10px 0 5px,
-              -10px -10px 0 5px,
-              -10px -10px 0 5px,
-              -10px -10px 0 5px;
+    -10px -10px 0 5px,
+    -10px -10px 0 5px,
+    -10px -10px 0 5px;
   animation: loader-38 3s infinite;
 }
 
 @keyframes loader-38 {
   0% {
     box-shadow: -10px -10px 0 5px,
-                -10px -10px 0 5px,
-                -10px -10px 0 5px,
-                -10px -10px 0 5px;
+      -10px -10px 0 5px,
+      -10px -10px 0 5px,
+      -10px -10px 0 5px;
   }
+
   8.33% {
     box-shadow: -10px -10px 0 5px,
-                10px -10px 0 5px,
-                10px -10px 0 5px,
-                10px -10px 0 5px;
+      10px -10px 0 5px,
+      10px -10px 0 5px,
+      10px -10px 0 5px;
   }
+
   16.66% {
     box-shadow: -10px -10px 0 5px,
-                10px -10px 0 5px,
-                10px 10px 0 5px,
-                10px 10px 0 5px;
+      10px -10px 0 5px,
+      10px 10px 0 5px,
+      10px 10px 0 5px;
   }
+
   24.99% {
     box-shadow: -10px -10px 0 5px,
-                10px -10px 0 5px,
-                10px 10px 0 5px,
-                -10px 10px 0 5px;
+      10px -10px 0 5px,
+      10px 10px 0 5px,
+      -10px 10px 0 5px;
   }
+
   33.32% {
     box-shadow: -10px -10px 0 5px,
-                10px -10px 0 5px,
-                10px 10px 0 5px,
-                -10px -10px 0 5px;
+      10px -10px 0 5px,
+      10px 10px 0 5px,
+      -10px -10px 0 5px;
   }
+
   41.65% {
     box-shadow: 10px -10px 0 5px,
-                10px -10px 0 5px,
-                10px 10px 0 5px,
-                10px -10px 0 5px;
+      10px -10px 0 5px,
+      10px 10px 0 5px,
+      10px -10px 0 5px;
   }
+
   49.98% {
     box-shadow: 10px 10px 0 5px,
-              10px 10px 0 5px,
-              10px 10px 0 5px,
-              10px 10px 0 5px;
+      10px 10px 0 5px,
+      10px 10px 0 5px,
+      10px 10px 0 5px;
   }
+
   58.31% {
     box-shadow: -10px 10px 0 5px,
-                -10px 10px 0 5px,
-                10px 10px 0 5px,
-                -10px 10px 0 5px;
+      -10px 10px 0 5px,
+      10px 10px 0 5px,
+      -10px 10px 0 5px;
   }
+
   66.64% {
     box-shadow: -10px -10px 0 5px,
-                -10px -10px 0 5px,
-                10px 10px 0 5px,
-                -10px 10px 0 5px;
+      -10px -10px 0 5px,
+      10px 10px 0 5px,
+      -10px 10px 0 5px;
   }
+
   74.97% {
     box-shadow: -10px -10px 0 5px,
-                10px -10px 0 5px,
-                10px 10px 0 5px,
-                -10px 10px 0 5px;
+      10px -10px 0 5px,
+      10px 10px 0 5px,
+      -10px 10px 0 5px;
   }
+
   83.3% {
     box-shadow: -10px -10px 0 5px,
-                10px 10px 0 5px,
-                10px 10px 0 5px,
-                -10px 10px 0 5px;
+      10px 10px 0 5px,
+      10px 10px 0 5px,
+      -10px 10px 0 5px;
   }
+
   91.63% {
     box-shadow: -10px -10px 0 5px,
-                -10px 10px 0 5px,
-                -10px 10px 0 5px,
-                -10px 10px 0 5px;
+      -10px 10px 0 5px,
+      -10px 10px 0 5px,
+      -10px 10px 0 5px;
   }
+
   100% {
     box-shadow: -10px -10px 0 5px,
-                -10px -10px 0 5px,
-                -10px -10px 0 5px,
-                -10px -10px 0 5px;
+      -10px -10px 0 5px,
+      -10px -10px 0 5px,
+      -10px -10px 0 5px;
   }
 }
 
