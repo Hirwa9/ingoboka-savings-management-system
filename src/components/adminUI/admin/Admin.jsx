@@ -922,7 +922,7 @@ const Admin = () => {
 													<div className="d-flex">
 														<div className='col p-2'>
 															<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' />  First loan</div>
-															<div className='text-center bg-gray-300'>2022-12-01</div>
+															<div className='text-center bg-gray-300'><FormatedDate date="2022-12-01" /></div>
 														</div>
 														<div className='col p-2'>
 															<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' />  Recent loan</div>
