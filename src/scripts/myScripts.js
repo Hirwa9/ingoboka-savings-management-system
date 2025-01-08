@@ -77,6 +77,41 @@ export const getDateHoursMinutes = (d, params) => {
     }
 };
 
+export const printDatesInterval = (startDate, endDate) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (end < start) {
+        return "Invalid date range"; // Handle case where endDate is earlier than startDate
+    }
+
+    let years = end.getFullYear() - start.getFullYear();
+    let months = end.getMonth() - start.getMonth();
+    let days = end.getDate() - start.getDate();
+
+    // Adjust for negative days
+    if (days < 0) {
+        months -= 1;
+        const previousMonth = new Date(end.getFullYear(), end.getMonth(), 0);
+        days += previousMonth.getDate();
+    }
+
+    // Adjust for negative months
+    if (months < 0) {
+        years -= 1;
+        months += 12;
+    }
+
+    // Build the result string dynamically
+    const durationParts = [];
+    if (years > 0) durationParts.push(`${years} ${years === 1 ? "Year" : "Years"}`);
+    if (months > 0) durationParts.push(`${months} ${months === 1 ? "Month" : "Months"}`);
+    if (days > 0) durationParts.push(`${days} ${days === 1 ? "Day" : "Days"}`);
+
+    return durationParts.join(", ");
+};
+
+
 // Format big numbers
 export const formatBigCountNumbers = (number) => {
     let formattedNumber;
