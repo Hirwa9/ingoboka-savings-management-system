@@ -3,14 +3,15 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretRight, CashRegister, ChartBar, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, Files, FloppyDisk, Gear, Info, List, Notebook, Pen, Plus, SignOut, Table, User, Users, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretRight, CashRegister, ChartBar, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, Files, FloppyDisk, Gear, Info, List, Notebook, Pen, Plus, Receipt, SignOut, Table, Upload, User, Users, X } from '@phosphor-icons/react';
 import { dashboardData, deposits, expenses, expensesTypes, generalReport, incomeExpenses, membersData } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
 import LoadingIndicator from '../../LoadingIndicator';
-import { cLog } from '../../../scripts/myScripts';
+import { cLog, printDatesInterval } from '../../../scripts/myScripts';
 import FormatedDate from '../../common/FormatedDate';
+import FetchError from '../../common/FetchError';
 
 const Admin = () => {
 
@@ -66,8 +67,12 @@ const Admin = () => {
 
 	const BASE_URL = 'http://localhost:5000';
 
-	const [allMembers, setAllMembers] = useState();
-	const [membersToShow, setMembersToShow] = useState();
+	/**
+	 * Members
+	 */
+
+	const [allMembers, setAllMembers] = useState([]);
+	const [membersToShow, setMembersToShow] = useState([]);
 	const [loadingMembers, setLoadingMembers] = useState(false);
 	const [errorLoadingMembers, setErrorLoadingMembers] = useState(false);
 
@@ -96,7 +101,40 @@ const Admin = () => {
 	useEffect(() => {
 		fetchMembers();
 	}, []);
-	// console.log(membersToShow);
+
+	/**
+	 * Credits
+	 */
+
+	const [allCredits, setAllCredits] = useState([]);
+	const [creditsToShow, setCreditsToShow] = useState([]);
+	const [loadingCredits, setLoadingCredits] = useState(false);
+	const [errorLoadingCredits, setErrorLoadingCredits] = useState(false);
+
+	// Fetch credits
+	const fetchCredits = async () => {
+		try {
+			setLoadingCredits(true);
+			const response = await fetch(`${BASE_URL}/credits`);
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+			const data = await response.json();
+			// console.log(data);
+			setAllCredits(data);
+			setCreditsToShow(data);
+			setErrorLoadingCredits(null);
+		} catch (error) {
+			setErrorLoadingCredits("Failed to load credits. Click the button to try again.");
+			console.error("Error fetching credits:", error);
+		} finally {
+			setLoadingCredits(false);
+		}
+	};
+
+	useEffect(() => {
+		fetchCredits();
+	}, []);
 
 	// const [activeSection, setActiveSection] = useState("dashboard");
 	// const [activeSection, setActiveSection] = useState("messages");
@@ -281,7 +319,14 @@ const Admin = () => {
 
 				<div className="members-wrapper">
 					{loadingMembers && (<LoadingIndicator icon={<Users size={80} className="loading-skeleton" />} />)}
-					{!loadingMembers && membersToShow.length === 0 && (
+					{!loadingMembers && errorLoadingMembers && (
+						<FetchError
+							errorMessage={errorLoadingMembers}
+							refreshFunction={() => fetchMembers()}
+							className="mb-5 mt-4"
+						/>
+					)}
+					{!loadingMembers && !errorLoadingMembers && membersToShow.length === 0 && (
 						<div className="col-sm-8 col-md-6 col-lg-5 col-xl-4 mx-auto my-5 p-3 rounded error-message">
 							<img src="/images/fetch_error_image.jpg" alt="Error" className="w-4rem h-4rem mx-auto mb-2 opacity-50" />
 							<p className="text-center text-muted small">
@@ -292,7 +337,7 @@ const Admin = () => {
 							</button>
 						</div>
 					)}
-					{!loadingMembers && membersToShow.length > 0 && (
+					{!loadingMembers && !errorLoadingMembers && membersToShow.length > 0 && (
 						<>
 							{/* Search bar */}
 							<Form onSubmit={e => e.preventDefault()} className='sticky-top col-lg-6 col-xxl-4 members-search-box'>
@@ -439,7 +484,14 @@ const Admin = () => {
 
 				<div className="savings-wrapper">
 					{loadingMembers && (<LoadingIndicator icon={<Coin size={80} className="loading-skeleton" />} />)}
-					{!loadingMembers && savingsToShow.length === 0 && (
+					{!loadingMembers && errorLoadingMembers && (
+						<FetchError
+							errorMessage={errorLoadingMembers}
+							refreshFunction={() => fetchMembers()}
+							className="mb-5 mt-4"
+						/>
+					)}
+					{!loadingMembers && !errorLoadingMembers && savingsToShow.length === 0 && (
 						<div className="col-sm-8 col-md-6 col-lg-5 col-xl-4 mx-auto my-5 p-3 rounded error-message">
 							<img src="/images/fetch_error_image.jpg" alt="Error" className="w-4rem h-4rem mx-auto mb-2 opacity-50" />
 							<p className="text-center text-muted small">
@@ -450,7 +502,7 @@ const Admin = () => {
 							</button>
 						</div>
 					)}
-					{!loadingMembers && savingsToShow.length > 0 && (
+					{!loadingMembers && !errorLoadingMembers && savingsToShow.length > 0 && (
 						<>
 							{/* Search bar */}
 							<Form onSubmit={e => e.preventDefault()} className='sticky-top col-lg-6 col-xxl-4 savings-search-box'>
@@ -512,7 +564,7 @@ const Admin = () => {
 								<>
 									<div className='position-fixed fixed-top inset-0 bg-black2 py-5 inx-high add-property-form'>
 										<div className="container col-md-6 col-lg-5 col-xl-4 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-											<div className="container h-100 bg-light text-gray-700 px-3">
+											<div className="px-3 bg-light text-gray-700">
 												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
 													<div className='flex-align-center'>
 														<CashRegister weight='fill' className="me-1" />
@@ -749,7 +801,6 @@ const Admin = () => {
 		const [activeLoanSectionColor, setActiveLoanSectionColor] = useState('#a3d5bb75');
 
 		// Filtering credits
-
 		const [membersToShow, setMembersToShow] = useState(allMembers || []);
 		const [memberSearchValue, setMemberSearchValue] = useState('');
 
@@ -789,6 +840,22 @@ const Admin = () => {
 		const [showSelectedMemberCredits, setShowSelectedMemberCredits] = useState(false);
 		const [selectedMember, setSelectedMember] = useState(null);
 
+		// Show credits per member
+		const [showBackfillPlanCard, setShowBackfillPlanCard] = useState(false);
+		const [selectedCredit, setSelectedCredit] = useState([]);
+		const [associatedMember, setAssociatedMember] = useState({});
+		// cLog(associatedMember);
+
+		useEffect(() => {
+			if (selectedCredit.length !== 0) {
+				const id = selectedCredit.memberId;
+				setAssociatedMember(allMembers.filter(m => m.id === id));
+				cLog(id);
+			}
+		}, [selectedCredit,]);
+
+		cLog(associatedMember.husbandFirstName);
+
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<h2><Blueprint weight='fill' className="me-1 opacity-50" /> Credit panel</h2>
@@ -804,7 +871,14 @@ const Admin = () => {
 				</Form>
 
 				{loadingMembers && (<LoadingIndicator icon={<Users size={80} className="loading-skeleton" />} />)}
-				{!loadingMembers && membersToShow.length === 0 && (
+				{!loadingMembers && errorLoadingMembers && (
+					<FetchError
+						errorMessage={errorLoadingMembers}
+						refreshFunction={() => fetchMembers()}
+						className="mb-5 mt-4"
+					/>
+				)}
+				{!loadingMembers && !errorLoadingMembers && membersToShow.length === 0 && (
 					<div className="col-sm-8 col-md-6 col-lg-5 col-xl-4 mx-auto my-5 p-3 rounded error-message">
 						<img src="/images/fetch_error_image.jpg" alt="Error" className="w-4rem h-4rem mx-auto mb-2 opacity-50" />
 						<p className="text-center text-muted small">
@@ -815,14 +889,14 @@ const Admin = () => {
 						</button>
 					</div>
 				)}
-				{!loadingMembers && membersToShow.length > 0 && (
+				{!loadingMembers && !errorLoadingMembers && membersToShow.length > 0 && (
 					<>
 						<div className="mb-3">
 							<div className="d-flex justify-content-lg-between gap-2 mt-3 overflow-auto">
 								{membersToShow
 									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
 									.map((member, index) => (
-										<div key={index} className='w-4rem clickDown ptr'
+										<div key={index} className='w-4rem ptr clickDown'
 											title={`${member.husbandFirstName} ${member.husbandLastName}`}
 											onClick={() => { setSelectedMember(member); setShowSelectedMemberCredits(true) }}
 										>
@@ -845,7 +919,7 @@ const Admin = () => {
 							<>
 								<div className='position-fixed fixed-top inset-0 bg-black2 inx-high add-property-form'>
 									<div className="container offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-										<div className="container h-100 bg-light text-gray-700 px-3">
+										<div className="container h-100 px-3 bg-light text-gray-700">
 											<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom">
 												<div className='flex-align-center'>
 													{/* <Blueprint weight='fill' className="me-1" /> */}
@@ -921,11 +995,11 @@ const Admin = () => {
 
 													<div className="d-flex">
 														<div className='col p-2'>
-															<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' />  First loan</div>
+															<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">First loan</span></div>
 															<div className='text-center bg-gray-300'><FormatedDate date="2022-12-01" /></div>
 														</div>
 														<div className='col p-2'>
-															<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' />  Recent loan</div>
+															<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Recent loan</span></div>
 															<div className='text-center bg-gray-300'><FormatedDate date="2020-04-30" /></div>
 														</div>
 													</div>
@@ -949,303 +1023,454 @@ const Admin = () => {
 
 				<div className='text-gray-700 selective-options' style={{ backgroundColor: activeLoanSectionColor }}>
 					{/* <h4 className='h6 mb-2 text-center fw-bold text-decoration-underline' style={{ textUnderlineOffset: '3px' }}>Loan requests</h4> */}
-
-					{/* Selectors */}
-					<div className="d-flex flex-wrap justify-content-center">
-						<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-warning border-opacity-25 tab-selector ${activeLoanSection === 'pending' ? 'active' : ''} user-select-none ptr clickDown`}
-							style={{ '--_activeColor': '#f4e4b6' }}
-							onClick={() => { setActiveLoanSection('pending'); setActiveLoanSectionColor('#f4e4b675') }}
-						>
-							<h5 className='mb-0 small'>Pending</h5>
-							<p className='mb-0 fs-75'>( 1 )</p>
+					{loadingCredits && (<LoadingIndicator text="Loading credits..." />)}
+					{!loadingCredits && errorLoadingCredits && (
+						<FetchError
+							errorMessage={errorLoadingCredits}
+							refreshFunction={() => fetchCredits()}
+							className="mb-5 mt-4"
+						/>
+					)}
+					{!loadingCredits && !errorLoadingCredits && creditsToShow.length === 0 && (
+						<div className="col-sm-8 col-md-6 col-lg-5 col-xl-4 mx-auto my-5 p-3 rounded error-message">
+							<img src="/images/fetch_error_image.jpg" alt="Error" className="w-4rem h-4rem mx-auto mb-2 opacity-50" />
+							<p className="text-center text-muted small">
+								No credits found.
+							</p>
+							<button className="btn btn-sm btn-outline-secondary d-block border-0 rounded-pill mx-auto px-4" onClick={fetchCredits}>
+								<ArrowClockwise weight="bold" size={18} className="me-1" /> Refresh
+							</button>
 						</div>
-						<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-success border-opacity-25 tab-selector ${activeLoanSection === 'approved' ? 'active' : ''} user-select-none ptr clickDown`}
-							style={{ '--_activeColor': '#a3d5bb' }}
-							onClick={() => { setActiveLoanSection('approved'); setActiveLoanSectionColor('#a3d5bb75') }}
-						>
-							<h5 className='mb-0 small'>Approved</h5>
-							<p className='mb-0 fs-75'>( 3 )</p>
-						</div>
-						<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-danger border-opacity-25 tab-selector ${activeLoanSection === 'rejected' ? 'active' : ''} user-select-none ptr clickDown`}
-							style={{ '--_activeColor': '#ebc1c5' }}
-							onClick={() => { setActiveLoanSection('rejected'); setActiveLoanSectionColor('#ebc1c575') }}
-						>
-							<h5 className='mb-0 small'>Rejected</h5>
-							<p className='mb-0 fs-75'>( 2 )</p>
-						</div>
-					</div>
-
-					{/* Selected content */}
-					<div>
-						{activeLoanSection === 'pending' && (
-							<div className='overflow-auto'>
-								<table className="table table-hover h-100 properties-table">
-									<thead className='table-warning position-sticky top-0 inx-1'>
-										<tr>
-											<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
-											<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Member</th>
-											<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
-											<th className='py-3 text-nowrap text-gray-700'>Date & Interval</th>
-											<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
-											<th className='py-3 text-nowrap text-gray-700'>Action</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr
-											className={`small cursor-default clickDown loan-row`}
-										>
-											<td className={`ps-sm-3  border-bottom-3 border-end`}>
-												1
-											</td>
-											<td >
-												Alain Mugabe
-											</td>
-											<td className="d-flex flex-column gap-2 text-muted small" >
-												<div>
-													<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
-													<span>10,000,000</span>
-												</div>
-												<div>
-													<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
-													<span>50,000</span>
-												</div>
-											</td>
-											<td className='text-nowrap'>
-												<div className='d-flex flex-column gap-2 smaller'>
-													<span className='fw-bold'>13-11-2024 <CaretRight /> 13-03-2025</span>
-													<span>0 Years, 4 Months, 2 Days</span>
-												</div>
-											</td>
-											<td style={{ maxWidth: '13rem' }}>
-												Demande de credit
-											</td>
-											<td className='text-nowrap fs-75'>
-												<div className="dim-100 d-flex">
-													<button className='btn btn-sm text-primary-emphasis border-primary border-opacity-25 mb-auto rounded-pill'>
-														<Check /> Approve
-													</button>
-													<button className='btn btn-sm text-danger-emphasis border-danger border-opacity-25 mt-auto rounded-pill'>
-														<X /> Reject
-													</button>
-												</div>
-											</td>
-										</tr>
-									</tbody>
-								</table>
+					)}
+					{!loadingCredits && !errorLoadingCredits && creditsToShow.length > 0 && (
+						<>
+							{/* Selectors */}
+							<div className="d-flex flex-wrap justify-content-center">
+								<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-warning border-opacity-25 tab-selector ${activeLoanSection === 'pending' ? 'active' : ''} user-select-none ptr clickDown`}
+									style={{ '--_activeColor': '#f4e4b6' }}
+									onClick={() => { setActiveLoanSection('pending'); setActiveLoanSectionColor('#f4e4b675') }}
+								>
+									<h5 className='mb-0 small'>Pending</h5>
+									<p className='mb-0 fs-75'>( {creditsToShow.filter(cr => cr.status === 'pending').length} )</p>
+								</div>
+								<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-success border-opacity-25 tab-selector ${activeLoanSection === 'approved' ? 'active' : ''} user-select-none ptr clickDown`}
+									style={{ '--_activeColor': '#a3d5bb' }}
+									onClick={() => { setActiveLoanSection('approved'); setActiveLoanSectionColor('#a3d5bb75') }}
+								>
+									<h5 className='mb-0 small'>Approved</h5>
+									<p className='mb-0 fs-75'>( {creditsToShow.filter(cr => cr.status === 'approved').length} )</p>
+								</div>
+								<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-danger border-opacity-25 tab-selector ${activeLoanSection === 'rejected' ? 'active' : ''} user-select-none ptr clickDown`}
+									style={{ '--_activeColor': '#ebc1c5' }}
+									onClick={() => { setActiveLoanSection('rejected'); setActiveLoanSectionColor('#ebc1c575') }}
+								>
+									<h5 className='mb-0 small'>Rejected</h5>
+									<p className='mb-0 fs-75'>( {creditsToShow.filter(cr => cr.status === 'rejected').length} )</p>
+								</div>
 							</div>
-						)}
 
-						{activeLoanSection === 'approved' && (
-							<div className='overflow-auto'>
-								<table className="table table-hover h-100 properties-table">
-									<thead className='table-success position-sticky top-0 inx-1'>
-										<tr>
-											<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
-											<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Member</th>
-											<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
-											<th className='py-3 text-nowrap text-gray-700'>Date & Interval</th>
-											<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
-											<th className='py-3 text-nowrap text-gray-700'>Credit Status</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr
-											className={`small cursor-default clickDown loan-row`}
-										>
-											<td className={`ps-sm-3  border-bottom-3 border-end`}>
-												1
-											</td>
-											<td >
-												Leonidas Dusabimana
-											</td>
-											<td className="d-flex flex-column gap-2 text-muted small" >
-												<div>
-													<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
-													<span>6,000,000</span>
-												</div>
-												<div>
-													<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
-													<span>300,000</span>
-												</div>
-											</td>
-											<td className='text-nowrap'>
-												<div className='d-flex flex-column gap-2 smaller'>
-													<span className='fw-bold'>03-12-2024 <CaretRight /> 03-06-2025</span>
-													<span>0 Years, 6 Months, 2 Days</span>
-												</div>
-											</td>
-											<td style={{ maxWidth: '13rem' }}>
-												Top up
-											</td>
-											<td className='text-nowrap fs-75'>
-												Transfered
-											</td>
-										</tr>
-										<tr
-											className={`small cursor-default clickDown loan-row`}
-										>
-											<td className={`ps-sm-3  border-bottom-3 border-0 border-end`}>
-												2
-											</td>
-											<td >
-												Innocent Ngoboka
-											</td>
-											<td className="d-flex flex-column gap-2 text-muted small" >
-												<div>
-													<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
-													<span>100,000</span>
-												</div>
-												<div>
-													<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
-													<span>5,000</span>
-												</div>
-											</td>
-											<td className='text-nowrap'>
-												<div className='d-flex flex-column gap-2 smaller'>
-													<span className='fw-bold'>07-11-2024 <CaretRight /> 07-03-2025</span>
-													<span>0 Years, 4 Months, 0 Days</span>
-												</div>
-											</td>
-											<td style={{ maxWidth: '13rem' }}>
-												Demande de credit
-											</td>
-											<td className='text-nowrap fs-75'>
-												Transfered
-											</td>
-										</tr>
-										<tr
-											className={`small cursor-default clickDown loan-row`}
-										>
-											<td className={`ps-sm-3  border-bottom-3 border-0 border-end`}>
-												3
-											</td>
-											<td >
-												Alain Mugabe
-											</td>
-											<td className="d-flex flex-column gap-2 text-muted small" >
-												<div>
-													<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
-													<span>900,000</span>
-												</div>
-												<div>
-													<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
-													<span>45,000</span>
-												</div>
-											</td>
-											<td className='text-nowrap'>
-												<div className='d-flex flex-column gap-2 smaller'>
-													<span className='fw-bold'>15-10-2024 <CaretRight /> 15-04-2025</span>
-													<span>0 Years, 6 Months, 2 Days</span>
-													<span>6 tranches</span>
-												</div>
-											</td>
-											<td style={{ maxWidth: '13rem' }}>
-												Demande de credit
-											</td>
-											<td className='text-nowrap fs-75'>
-												Transfered
-											</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
-						)}
+							{/* Selected content */}
+							<div>
+								{activeLoanSection === 'pending' && (
+									<div className='overflow-auto'>
+										<table className="table table-hover h-100 properties-table">
+											<thead className='table-warning position-sticky top-0 inx-1'>
+												<tr>
+													<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+													<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Member</th>
+													<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
+													<th className='py-3 text-nowrap text-gray-700'>Date & Interval</th>
+													<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
+													<th className='py-3 text-nowrap text-gray-700'>Action</th>
+												</tr>
+											</thead>
+											<tbody>
+												{creditsToShow
+													.filter(cr => cr.status === 'pending')
+													.map((credit, index) => {
+														const associatedMember = allMembers.find(m => m.id === credit.memberId);
+														const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+														const creditInterest = Number(credit.creditAmount) * (5 / 100);
 
-						{activeLoanSection === 'rejected' && (
-							<div className='overflow-auto'>
-								<table className="table table-hover h-100 properties-table">
-									<thead className='table-danger position-sticky top-0 inx-1'>
-										<tr>
-											<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
-											<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Member</th>
-											<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
-											<th className='py-3 text-nowrap text-gray-700'>Date & Interval</th>
-											<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
-											<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Rejection</th>
-											<th className='py-3 text-nowrap text-gray-700'>Action</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr
-											className={`small cursor-default clickDown loan-row`}
-										>
-											<td className={`ps-sm-3  border-bottom-3 border-end`}>
-												1
-											</td>
-											<td >
-												Alain Mugabe
-											</td>
-											<td className="d-flex flex-column gap-2 text-muted small" >
-												<div>
-													<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
-													<span>10,000,000</span>
+														return (
+															<tr
+																key={index}
+																className={`small loan-row`}
+															>
+																<td className={`ps-sm-3  border-bottom-3 border-end`}>
+																	{index + 1}
+																</td>
+																<td >
+																	{memberNames}
+																</td>
+																<td className="d-flex flex-column gap-2 text-muted small" >
+																	<div>
+																		<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
+																		<span>{Number(credit.creditAmount).toLocaleString()}</span>
+																	</div>
+																	<div>
+																		<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
+																		<span>{creditInterest.toLocaleString()}</span>
+																	</div>
+																</td>
+																<td className='text-nowrap'>
+																	<div className='d-flex flex-column gap-2 smaller'>
+																		{/* <span className='fw-bold'>13-11-2024 <CaretRight /> 13-03-2025</span> */}
+																		<span className='fw-bold'>
+																			<FormatedDate date={credit.requestDate} monthFormat='numeric' /> <CaretRight /> <FormatedDate date={credit.dueDate} monthFormat='numeric' />
+																		</span>
+																		<span>{printDatesInterval(credit.requestDate, credit.dueDate)}</span>
+																		<span className="flex-align-center text-primaryColor ptr clickDown"
+																			onClick={() => { setSelectedCredit(credit); setShowBackfillPlanCard(true); }}
+																		><Receipt weight='fill' size={18} className='me-1' /> View backfill plan</span>
+																	</div>
+																</td>
+																<td style={{ maxWidth: '13rem' }}>
+																	{credit.comment}
+																</td>
+																<td className='text-nowrap fs-75'>
+																	<div className="dim-100 d-flex">
+																		<button className='btn btn-sm text-primary-emphasis border-primary border-opacity-25 mb-auto rounded-pill'>
+																			<Check /> Approve
+																		</button>
+																		<button className='btn btn-sm text-danger-emphasis border-danger border-opacity-25 mt-auto rounded-pill'>
+																			<X /> Reject
+																		</button>
+																	</div>
+																</td>
+															</tr>
+														)
+													}
+													)
+												}
+											</tbody>
+										</table>
+									</div>
+								)}
+
+								{activeLoanSection === 'approved' && (
+									<div className='overflow-auto'>
+										<table className="table table-hover h-100 properties-table">
+											<thead className='table-success position-sticky top-0 inx-1'>
+												<tr>
+													<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+													<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Member</th>
+													<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
+													<th className='py-3 text-nowrap text-gray-700'>Date & Interval</th>
+													<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
+													<th className='py-3 text-nowrap text-gray-700'>Credit Status</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr
+													className={`small cursor-default clickDown loan-row`}
+												>
+													<td className={`ps-sm-3  border-bottom-3 border-end`}>
+														1
+													</td>
+													<td >
+														Leonidas Dusabimana
+													</td>
+													<td className="d-flex flex-column gap-2 text-muted small" >
+														<div>
+															<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
+															<span>6,000,000</span>
+														</div>
+														<div>
+															<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
+															<span>300,000</span>
+														</div>
+													</td>
+													<td className='text-nowrap'>
+														<div className='d-flex flex-column gap-2 smaller'>
+															<span className='fw-bold'>03-12-2024 <CaretRight /> 03-06-2025</span>
+															<span>0 Years, 6 Months, 2 Days</span>
+														</div>
+													</td>
+													<td style={{ maxWidth: '13rem' }}>
+														Top up
+													</td>
+													<td className='text-nowrap fs-75'>
+														Transfered
+													</td>
+												</tr>
+												<tr
+													className={`small cursor-default clickDown loan-row`}
+												>
+													<td className={`ps-sm-3  border-bottom-3 border-0 border-end`}>
+														2
+													</td>
+													<td >
+														Innocent Ngoboka
+													</td>
+													<td className="d-flex flex-column gap-2 text-muted small" >
+														<div>
+															<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
+															<span>100,000</span>
+														</div>
+														<div>
+															<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
+															<span>5,000</span>
+														</div>
+													</td>
+													<td className='text-nowrap'>
+														<div className='d-flex flex-column gap-2 smaller'>
+															<span className='fw-bold'>07-11-2024 <CaretRight /> 07-03-2025</span>
+															<span>0 Years, 4 Months, 0 Days</span>
+														</div>
+													</td>
+													<td style={{ maxWidth: '13rem' }}>
+														Demande de credit
+													</td>
+													<td className='text-nowrap fs-75'>
+														Transfered
+													</td>
+												</tr>
+												<tr
+													className={`small cursor-default clickDown loan-row`}
+												>
+													<td className={`ps-sm-3  border-bottom-3 border-0 border-end`}>
+														3
+													</td>
+													<td >
+														Alain Mugabe
+													</td>
+													<td className="d-flex flex-column gap-2 text-muted small" >
+														<div>
+															<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
+															<span>900,000</span>
+														</div>
+														<div>
+															<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
+															<span>45,000</span>
+														</div>
+													</td>
+													<td className='text-nowrap'>
+														<div className='d-flex flex-column gap-2 smaller'>
+															<span className='fw-bold'>15-10-2024 <CaretRight /> 15-04-2025</span>
+															<span>0 Years, 6 Months, 2 Days</span>
+															<span>6 tranches</span>
+														</div>
+													</td>
+													<td style={{ maxWidth: '13rem' }}>
+														Demande de credit
+													</td>
+													<td className='text-nowrap fs-75'>
+														Transfered
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								)}
+
+								{activeLoanSection === 'rejected' && (
+									<div className='overflow-auto'>
+										<table className="table table-hover h-100 properties-table">
+											<thead className='table-danger position-sticky top-0 inx-1'>
+												<tr>
+													<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+													<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Member</th>
+													<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
+													<th className='py-3 text-nowrap text-gray-700'>Date & Interval</th>
+													<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
+													<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Rejection</th>
+													<th className='py-3 text-nowrap text-gray-700'>Action</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr
+													className={`small cursor-default clickDown loan-row`}
+												>
+													<td className={`ps-sm-3  border-bottom-3 border-end`}>
+														1
+													</td>
+													<td >
+														Alain Mugabe
+													</td>
+													<td className="d-flex flex-column gap-2 text-muted small" >
+														<div>
+															<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
+															<span>10,000,000</span>
+														</div>
+														<div>
+															<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
+															<span>50,000</span>
+														</div>
+													</td>
+													<td className='text-nowrap'>
+														<div className='d-flex flex-column gap-2 smaller'>
+															<span className='fw-bold'>13-11-2024 <CaretRight /> 13-03-2025</span>
+															<span>0 Years, 4 Months, 2 Days</span>
+														</div>
+													</td>
+													<td style={{ maxWidth: '13rem' }}>
+														Demande de credit
+													</td>
+													<td style={{ maxWidth: '13rem' }}>
+														Insufficient balance
+													</td>
+													<td className='text-nowrap fs-75'>
+														<button className='btn btn-sm btn-outline-secondary rounded-0'>
+															<ArrowArcLeft /> Restore
+														</button>
+													</td>
+												</tr>
+												<tr
+													className={`small cursor-default clickDown loan-row`}
+												>
+													<td className={`ps-sm-3  border-bottom-3 border-end`}>
+														2
+													</td>
+													<td >
+														Bonaventure Nzeyimana
+													</td>
+													<td className="d-flex flex-column gap-2 text-muted small" >
+														<div>
+															<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
+															<span>4,000,000</span>
+														</div>
+														<div>
+															<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
+															<span>200,000</span>
+														</div>
+													</td>
+													<td className='text-nowrap'>
+														<div className='d-flex flex-column gap-2 smaller'>
+															<span className='fw-bold'>13-11-2024 <CaretRight /> 13-03-2025</span>
+															<span>0 Years, 4 Months, 2 Days</span>
+															<span>6 tranches</span>
+														</div>
+													</td>
+													<td style={{ maxWidth: '13rem' }}>
+														Payment will be due on 15th each month
+													</td>
+													<td style={{ maxWidth: '13rem' }}>
+														Some reasons
+													</td>
+													<td className='text-nowrap fs-75'>
+														<button className='btn btn-sm btn-outline-secondary rounded-0'>
+															<ArrowArcLeft /> Restore
+														</button>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								)}
+
+								{showBackfillPlanCard && (
+									<>
+										<div className='position-fixed fixed-top inset-0 bg-black2 py-3 inx-high add-property-form'>
+											<div className="container offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
+												<div className="px-3 bg-light text-gray-700">
+													<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
+														<div className='flex-align-center text-primaryColor'>
+															<Receipt weight='fill' className="me-1" />
+															<span style={{ lineHeight: 1 }}>Backfill plan</span>
+														</div>
+														<div onClick={() => { setShowBackfillPlanCard(false); }}>
+															<X size={25} className='ptr' />
+														</div>
+													</h6>
+
+													<div className="pb-5">
+														<div className='alert d-lg-flex align-items-end gap-3 border-0 rounded-0 shadow-sm'>
+															<div>
+																<div className='d-flex'>
+																	{/* <img src={associatedMember.husbandAvatar}
+																		alt={`${associatedMember.husbandFirstName.slice(0, 1)}.${associatedMember.husbandLastName}`}
+																		className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
+																	/> */}
+																	<p className='text-center'>
+																		Backfill plan of {`${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`}
+																	</p>
+																</div>
+																<p className='smaller'>
+																	{selectedCredit.comment}
+																</p>
+															</div>
+															<div className="d-flex ms-lg-auto flex-wrap">
+																<div className='col px-2'>
+																	<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Payment start date</span></div>
+																	<div className='text-center bg-gray-300'><FormatedDate date={selectedCredit.requestDate} /></div>
+																</div>
+																<div className='col px-2'>
+																	<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Payment end date</span></div>
+																	<div className='text-center bg-gray-300'><FormatedDate date={selectedCredit.dueDate} /></div>
+																</div>
+															</div>
+														</div>
+														<ul className="list-unstyled small">
+															<li>
+																<b>Amount requested</b>: <CurrencyText amount={Number(selectedCredit.creditAmount)} />
+															</li>
+															<li>
+																<b>Interest</b>: <CurrencyText className="text-primary-emphasis" amount={(Number(selectedCredit.creditAmount) * (5 / 100))} />
+															</li>
+															<li>
+																<b>Amount to pay</b>: <CurrencyText className="text-primaryColor" amount={(Number(selectedCredit.creditAmount) + (Number(selectedCredit.creditAmount) * (5 / 100)))} />
+															</li>
+														</ul>
+
+														{/* The plan */}
+														<div className='overflow-auto'>
+															<table className="table table-hover h-100 properties-table">
+																<thead className='table-primary position-sticky top-0 inx-1'>
+																	<tr>
+																		<th className='ps-sm-3 py-3 text-nowrap text-gray-700 fw-normal'>Tranche</th>
+																		<th className='py-3 text-nowrap text-gray-700 fw-normal'>Backfill amount</th>
+																		<th className='py-3 text-nowrap text-gray-700 fw-normal'>Backfill date</th>
+																		<th className='py-3 text-nowrap text-gray-700 fw-normal'>Backfill slip</th>
+																	</tr>
+																</thead>
+																<tbody>
+																	{JSON.parse(selectedCredit.creditPayment)
+																		.sort((a, b) => a.tranchNumber - b.tranchNumber) // Sort tranches
+																		.map((item, index) => {
+																			const amountToPay = Number(selectedCredit.creditAmount) + (Number(selectedCredit.creditAmount) * (5 / 100));
+																			const backFillAmount = amountToPay / selectedCredit.tranches;
+																			return (
+																				<tr
+																					key={index}
+																					className="small expense-row"
+																				>
+																					<td className="ps-sm-3 border-bottom-3 border-end">
+																						{item.tranchNumber}
+																					</td>
+																					<td>
+																						<CurrencyText amount={backFillAmount} />
+																					</td>
+																					<td>
+																						<FormatedDate date={item.tranchDueDate} />
+																					</td>
+																					<td className="text-nowrap">
+																						{item.slipUrl ? (
+																							<img src={item.slipUrl} alt="Payment Slip" />
+																						) : (
+																							<button type="button" className='btn btn-sm text-primaryColor border-0 rounded-0 clickDown' onClick={() => alert('Upload a file')}
+																							>
+																								Upload slip <Upload />
+																							</button>
+																						)}
+																					</td>
+																				</tr>
+																			)
+																		})
+																	}
+																</tbody>
+															</table>
+														</div>
+													</div>
+
 												</div>
-												<div>
-													<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
-													<span>50,000</span>
-												</div>
-											</td>
-											<td className='text-nowrap'>
-												<div className='d-flex flex-column gap-2 smaller'>
-													<span className='fw-bold'>13-11-2024 <CaretRight /> 13-03-2025</span>
-													<span>0 Years, 4 Months, 2 Days</span>
-												</div>
-											</td>
-											<td style={{ maxWidth: '13rem' }}>
-												Demande de credit
-											</td>
-											<td style={{ maxWidth: '13rem' }}>
-												Insufficient balance
-											</td>
-											<td className='text-nowrap fs-75'>
-												<button className='btn btn-sm btn-outline-secondary rounded-0'>
-													<ArrowArcLeft /> Restore
-												</button>
-											</td>
-										</tr>
-										<tr
-											className={`small cursor-default clickDown loan-row`}
-										>
-											<td className={`ps-sm-3  border-bottom-3 border-end`}>
-												2
-											</td>
-											<td >
-												Bonaventure Nzeyimana
-											</td>
-											<td className="d-flex flex-column gap-2 text-muted small" >
-												<div>
-													<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
-													<span>4,000,000</span>
-												</div>
-												<div>
-													<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
-													<span>200,000</span>
-												</div>
-											</td>
-											<td className='text-nowrap'>
-												<div className='d-flex flex-column gap-2 smaller'>
-													<span className='fw-bold'>13-11-2024 <CaretRight /> 13-03-2025</span>
-													<span>0 Years, 4 Months, 2 Days</span>
-													<span>6 tranches</span>
-												</div>
-											</td>
-											<td style={{ maxWidth: '13rem' }}>
-												Payment will be due on 15th each month
-											</td>
-											<td style={{ maxWidth: '13rem' }}>
-												Some reasons
-											</td>
-											<td className='text-nowrap fs-75'>
-												<button className='btn btn-sm btn-outline-secondary rounded-0'>
-													<ArrowArcLeft /> Restore
-												</button>
-											</td>
-										</tr>
-									</tbody>
-								</table>
+											</div>
+										</div>
+									</>
+								)}
 							</div>
-						)}
-					</div>
+						</>
+					)}
 				</div>
 			</div>
 		);
@@ -1371,7 +1596,7 @@ const Admin = () => {
 									<>
 										<div className='position-fixed fixed-top inset-0 bg-black2 py-5 inx-high add-property-form'>
 											<div className="container col-md-6 col-lg-5 col-xl-4 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-												<div className="container h-100 bg-light text-gray-700 px-3">
+												<div className="h-100 px-3 bg-light text-gray-700">
 													<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
 														<div className='flex-align-center'>
 															<CashRegister weight='fill' className="me-1" />
