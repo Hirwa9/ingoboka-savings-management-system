@@ -199,6 +199,45 @@ export const membersData = [
     },
 ];
 
+// Credits
+export const credits = [
+    {
+        id: 0, // The default column's incrementing id
+        memberId: 5, // As defined
+        creditAmount: 3000000, // As defined
+        requestDate: "04-01-2025", // Default is the current timestamp
+        dueDate: "04-04-2025", // As defined
+        tranches: 3, // Tranches number as defined
+        comment: "Requesting a loan", // Loan requesting comment
+        status: "pending", // Enum of "pending", "approved", "rejected", with pending as the default
+        rejectionMessage: "Insufficient balance", // Default is null.
+        creditPayment: [ // Will have all tranches details according to tranches number defined
+            {
+                tranchNumber: 1,
+                tranchDueDate: '04-02-2025',
+                paid: false, // Default is false
+                slipUrl: 'url of the uploaded file', // Default is null
+                finesCount: 0, // Default is 0
+            },
+            {
+                tranchNumber: 2,
+                tranchDueDate: '04-03-2025',
+                paid: false, // Default is false
+                slipUrl: 'url of the uploaded file', // Default is null
+                finesCount: 0, // Default is 0
+            },
+            {
+                tranchNumber: 3,
+                tranchDueDate: '04-04-2025',
+                paid: false, // Default is false
+                slipUrl: 'url of the uploaded file', // Default is null
+                finesCount: 0, // Default is 0
+            },
+        ],
+        fullyPaid: false, // Default is false
+    }
+];
+
 // Expenses
 export const expenses = [
     {
