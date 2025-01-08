@@ -29,7 +29,7 @@ const MyToast = ({ show, message, type, selfClose, onClose }) => {
         if (selfClose && show) {
             timer = setTimeout(() => {
                 onClose();
-            }, 5000);
+            }, 4000);
         }
 
         // Cleanup: Clear timer if component unmounts or `show` changes
@@ -42,15 +42,16 @@ const MyToast = ({ show, message, type, selfClose, onClose }) => {
         <Toast
             show={show}
             onClose={onClose}
-            className={`my-3 position-fixed inx-high mx-auto bg-${type} text-${textColor}`}
+            className={`position-fixed ${selfClose ? 'w-fit' : ''} mx-auto my-3 bg-${type} text-${textColor} border-0 rounded-0`}
             style={{
                 top: '1.5rem',
                 left: '0',
                 right: '0',
                 animation: 'flyInTop .5s 1',
+                zIndex: 4001
             }}
         >
-            <Toast.Body className="d-flex">
+            <Toast.Body className={`d-flex ${selfClose ? 'justify-content-center' : ''}`}>
                 {message}{' '}
                 {!selfClose && (
                     <Button
