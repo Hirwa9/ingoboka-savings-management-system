@@ -1,0 +1,19 @@
+.top-fixed-prompt {
+    left: 0;
+    right: 0;
+    width: calc(100% - 1rem);
+    max-width: 23rem;
+    max-height: calc(100vh - 3rem);
+    max-height: calc(100dvh - 3rem);
+    padding: .75rem 1.25rem;
+    padding-bottom: 1.5rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.15);
+    animation: fallInTop .5s 1 ease-out;
+}
+
+:has(> .top-fixed-prompt) {
+    perspective: 1000px;
+}
