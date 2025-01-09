@@ -4111,7 +4111,6 @@ hr.hr-lg {
 .loader {
   height: 5px;
   width: 5px;
-  color: #fff;
   color: var(--bs-gray-700);
   box-shadow: -10px -10px 0 5px,
     -10px -10px 0 5px,
