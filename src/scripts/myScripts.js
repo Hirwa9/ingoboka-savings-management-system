@@ -200,6 +200,12 @@ export const isValidUsername = (str) => {
     return usernameRegex.test(str.trim());
 };
 
+// Normalized string
+export const normalizedLowercaseString = (str) => {
+    const normalized = str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    return normalized;
+};
+
 // Data deep comparison
 export const deepEqual = (data1, data2) => {
     return JSON.stringify(data1) === JSON.stringify(data2);
