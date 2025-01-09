@@ -3,28 +3,59 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretRight, CashRegister, ChartBar, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, Files, FloppyDisk, Gear, Info, List, Notebook, Pen, Plus, Receipt, SignOut, Table, Upload, User, Users, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, Files, FloppyDisk, Gear, Info, List, Notebook, Pen, Plus, Receipt, ReceiptX, SignOut, Table, Upload, User, Users, X } from '@phosphor-icons/react';
 import { dashboardData, deposits, expenses, expensesTypes, generalReport, incomeExpenses, membersData } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
 import LoadingIndicator from '../../LoadingIndicator';
-import { cLog, printDatesInterval } from '../../../scripts/myScripts';
+import { cError, cLog, normalizedLowercaseString, printDatesInterval } from '../../../scripts/myScripts';
 import FormatedDate from '../../common/FormatedDate';
 import FetchError from '../../common/FetchError';
+import useCustomDialogs from '../../common/hooks/useCustomDialogs';
+import ActionPrompt from '../../common/actionPrompt/ActionPrompt';
+import ConfirmDialog from '../../common/confirmDialog/ConfirmDialog';
+import NotFount from '../../common/NotFount';
+import JsonJsFormatter from '../../common/JsonJsFormatter';
 
 const Admin = () => {
 
-	// Toast
-	const [showToast, setShowToast] = useState(false);
-	const [toastMessage, setToastMessage] = useState('');
-	const [toastType, setToastType] = useState('purple');
+	// Custom hooks
+	const {
+		// Toast
+		showToast,
+		setShowToast,
+		toastMessage,
+		toastType,
+		toast,
 
-	const toast = (message, type) => {
-		setShowToast(true);
-		setToastMessage(message);
-		setToastType(type || toastType);
-	};
+		// Confirm Dialog
+		showConfirmDialog,
+		confirmDialogMessage,
+		confirmDialogAction,
+		confirmDialogActionText,
+		confirmDialogCloseText,
+		confirmDialogCloseCallback,
+		confirmDialogType,
+		confirmDialogActionWaiting,
+		setConfirmDialogActionWaiting,
+		customConfirmDialog,
+		resetConfirmDialog,
+
+		// Prompt
+		showPrompt,
+		promptMessage,
+		promptType,
+		promptInputType,
+		promptSelectInputOptions,
+		promptInputValue,
+		promptInputPlaceholder,
+		promptAction,
+		promptActionWaiting,
+		setPromptActionWaiting,
+		customPrompt,
+		resetPrompt,
+	} = useCustomDialogs();
 
 	const sideNavbarRef = useRef();
 	const sideNavbarTogglerRef = useRef();
@@ -147,7 +178,8 @@ const Admin = () => {
 	// const [activeSection, setActiveSection] = useState("settings");
 	// const [activeSection, setActiveSection] = useState("auditLogs");
 
-	const [isWaitingAdminEditAction, setIsWaitingAdminEditAction] = useState(false);
+	const [isWaitingFetchAction, setIsWaitingFetchAction] = useState(false);
+	const [errorWithFetchAction, setErrorWithFetchAction] = useState(null);
 
 	/**
 	 * Sections
@@ -274,27 +306,37 @@ const Admin = () => {
 		const memberSearcherRef = useRef();
 
 		const filterMembersBySearch = useCallback(() => {
-			const searchString = memberSearchValue.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
-			if (searchString !== null && searchString !== undefined && searchString !== '') {
-				// showAllProperties(true);
-				const filteredmembers = allMembers.filter(val => {
-					console.log(val.husbandFirstName.toLowerCase());
-					return val.husbandFirstName;
-				}
-				);
-				// const filteredmembers = allMembers.filter(val => (
-				// 	val.husbandFirstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
-				// 	val.husbandFirstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
-				// 	val.wifeFirstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
-				// 	val.wifeLstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
-				// 	val.husbandEmail.toLowerCase().includes(searchString) ||
-				// 	val.wifeEmail.toLowerCase().includes(searchString) ||
-				// 	val.husbandPhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString) ||
-				// 	val.wifePhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString)
-				// ));
-				setMembersToShow(filteredmembers);
+			const searchString = normalizedLowercaseString(memberSearchValue).trim();
+
+			if (searchString) {
+				const filteredMembers = allMembers.filter((val) => {
+					return (
+						(val.husbandFirstName &&
+							normalizedLowercaseString(val.husbandFirstName)
+								.includes(searchString)) ||
+						(val.husbandLastName &&
+							normalizedLowercaseString(val.husbandLastName)
+								.includes(searchString)) ||
+						(val.wifeFirstName &&
+							normalizedLowercaseString(val.wifeFirstName)
+								.includes(searchString)) ||
+						(val.wifeLstName &&
+							normalizedLowercaseString(val.wifeLstName)
+								.includes(searchString)) ||
+						(val.husbandEmail &&
+							val.husbandEmail.toLowerCase().includes(searchString)) ||
+						(val.wifeEmail &&
+							val.wifeEmail.toLowerCase().includes(searchString)) ||
+						(val.husbandPhone &&
+							val.husbandPhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString)) ||
+						(val.wifePhone &&
+							val.wifePhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString))
+					);
+				});
+
+				setMembersToShow(filteredMembers);
 			}
-		}, [memberSearchValue]);
+		}, [memberSearchValue, allMembers]);
 
 		const resetMembers = () => {
 			setMembersToShow(allMembers);
@@ -327,15 +369,11 @@ const Admin = () => {
 						/>
 					)}
 					{!loadingMembers && !errorLoadingMembers && membersToShow.length === 0 && (
-						<div className="col-sm-8 col-md-6 col-lg-5 col-xl-4 mx-auto my-5 p-3 rounded error-message">
-							<img src="/images/fetch_error_image.jpg" alt="Error" className="w-4rem h-4rem mx-auto mb-2 opacity-50" />
-							<p className="text-center text-muted small">
-								No members found.
-							</p>
-							<button className="btn btn-sm btn-outline-secondary d-block border-0 rounded-pill mx-auto px-4" onClick={resetMembers}>
-								<ArrowClockwise weight="bold" size={18} className="me-1" /> Refresh
-							</button>
-						</div>
+						<NotFount
+							notFoundMessage="No member found"
+							icon={<Users size={80} className="text-center w-100 mb-3 opacity-50" />}
+							refreshFunction={resetMembers}
+						/>
 					)}
 					{!loadingMembers && !errorLoadingMembers && membersToShow.length > 0 && (
 						<>
@@ -614,7 +652,7 @@ const Admin = () => {
 													</div>
 													<button type="submit" className="btn btn-sm btn-dark flex-center w-100 mt-3 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
 													>
-														{!isWaitingAdminEditAction ?
+														{!isWaitingFetchAction ?
 															<>Save Amount <FloppyDisk size={18} className='ms-2' /></>
 															: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
 														}
@@ -635,16 +673,18 @@ const Admin = () => {
 	// Interest
 	const Interest = () => {
 
-
 		const [showExportDataDialog, setShowExportDataDialog] = useState(false);
 		const interestPartitionViewRef = useRef();
 
-		const totalShares = allMembers.reduce((sum, item) => sum + item.shares, 0);
+		const totalShares = 818;
+		const totalBoughtShares = allMembers.reduce((sum, item) => sum + item.shares, 0);
 		const interestToReceive = dashboardData
 			.filter((item) => item.label === "Interest Receivable")
 			.map((item) => item.value);
+		let totalSharesPercentage = 0;
+		let totalMonetaryInterest = 0;
 		let totalInterestReceivable = 0;
-		let totalInterestRemain = 0;
+		let totalInterestRemains = 0;
 
 		// const [activeTransactionSection, setActiveTransactionSection] = useState('withdrawals');
 		// const [activeTransactionSectionColor, setActiveTransactionSectionColor] = useState('#f4e4b675');
@@ -670,6 +710,17 @@ const Admin = () => {
 						<p className='display-6'>
 							Statut des intérêts annuels
 						</p>
+						<div className="d-flex flex-wrap gap-2 ms-lg-auto mb-2">
+							<div className='col'>
+								<div className='flex-align-center text-muted border-bottom'><ChartPie className='me-1 opacity-50' /> <span className="text-nowrap">All shares</span></div>
+								<div className='text-center bg-bodi fs-6'>{totalShares}</div>
+							</div>
+							<div className='col'>
+								<div className='flex-align-center text-muted border-bottom'><Coins className='me-1 opacity-50' /> <span className="text-nowrap">Interest receivable</span></div>
+								<div className='text-center bg-bodi fs-6'><CurrencyText amount={interestToReceive} /></div>
+							</div>
+						</div>
+
 						<Calendar size={25} className='me-2' /> Année {new Date().getFullYear()}
 					</div>
 					<div className='overflow-auto mb-5'>
@@ -679,9 +730,9 @@ const Admin = () => {
 									<th className='py-3 text-nowrap text-gray-700'>N°</th>
 									<th className='py-3 text-nowrap text-gray-700'>Member</th>
 									<th className='py-3 text-nowrap text-gray-700'>Shares</th>
-									<th className='py-3 text-nowrap text-gray-700'>Percentage (%)</th>
+									<th className='py-3 text-nowrap text-gray-700'>Share % to {totalShares}</th>
 									<th className='py-3 text-nowrap text-gray-700'>Interest <sub className='fs-60'>/RWF</sub></th>
-									<th className='py-3 text-nowrap text-gray-700'>Receavable<sub className='fs-60'>/RWF</sub></th>
+									<th className='py-3 text-nowrap text-gray-700'>Receivable<sub className='fs-60'>/RWF</sub></th>
 									<th className='py-3 text-nowrap text-gray-700'>Remains<sub className='fs-60'>/RWF</sub></th>
 									<th className='py-3 text-nowrap text-gray-700'>Status</th>
 								</tr>
@@ -691,14 +742,19 @@ const Admin = () => {
 									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
 									.map((item, index) => {
 										const memberNames = `${item.husbandFirstName} ${item.husbandLastName}`;
-										const percentageShares = ((item.shares * 100) / totalShares).toFixed(3);
-										// Interest = (Total interest * Percentage shares) / 100
-										const interest = (((item.shares * 100) / totalShares) * Number(interestToReceive)) / 100;
-										// Interest to receive => divisible by 20000
+										const sharesProportion = (item.shares / totalShares);
+
+										const sharesPercentage = (sharesProportion * 100).toFixed(3);
+										// Actual interest = (Shares percentage  * Total interest receivable)
+										const interest = sharesProportion * Number(interestToReceive);
+										// Interest to receive => 20,000 multiples of Actual interest
 										const interestReceivable = Math.floor((interest) / 20000) * 20000;
 										const interestRemains = interest - interestReceivable;
+
+										totalSharesPercentage += Number(sharesPercentage);
+										totalMonetaryInterest += Number(interest);
 										totalInterestReceivable += interestReceivable;
-										totalInterestRemain += interestRemains;
+										totalInterestRemains += interestRemains;
 
 										return (
 											<tr
@@ -715,7 +771,7 @@ const Admin = () => {
 													{item.shares}
 												</td>
 												<td className="text-nowrap">
-													{percentageShares} %
+													{sharesPercentage} %
 												</td>
 												<td className="text-nowrap fw-bold text-gray-700">
 													<CurrencyText amount={interest} smallCurrency />
@@ -741,19 +797,21 @@ const Admin = () => {
 										{allMembers.length} <span className="fs-60">members</span>
 									</td>
 									<td className='text-nowrap'>
-										{totalShares} <span className="fs-60">shares</span>
+										<div className="d-grid">
+											{totalBoughtShares} <span className="fs-60">of {totalShares} shares</span>
+										</div>
 									</td>
 									<td className="text-nowrap">
-										100 <span className="fs-60">%</span>
+										{totalSharesPercentage.toFixed(3)} <span className="fs-60">%</span>
 									</td>
 									<td className="text-nowrap fw-bold">
-										<CurrencyText amount={interestToReceive} smallCurrency />
+										<CurrencyText amount={totalMonetaryInterest} smallCurrency />
 									</td>
 									<td className="text-nowrap fw-bold text-success">
 										<CurrencyText amount={totalInterestReceivable} smallCurrency />
 									</td>
 									<td className="text-nowrap">
-										<CurrencyText amount={totalInterestRemain} smallCurrency />
+										<CurrencyText amount={totalInterestRemains} smallCurrency />
 									</td>
 									<td>
 										<div className='d-flex flex-column'></div>
@@ -790,7 +848,6 @@ const Admin = () => {
 					exportName={`Statut des intérêts annuels __ Année ${new Date().getFullYear()}`}
 					onClose={() => { setShowExportDataDialog(false) }}
 				/>
-
 			</div>
 		)
 	}
@@ -808,22 +865,37 @@ const Admin = () => {
 		const memberSearcherRef = useRef();
 
 		const filterMembersBySearch = useCallback(() => {
-			const searchString = memberSearchValue.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
-			if (searchString !== null && searchString !== undefined && searchString !== '') {
-				// showAllProperties(true);
-				const filteredmembers = allMembers.filter(val => (
-					val.husbandFirstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
-					val.husbandLastName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
-					val.wifeFirstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
-					val.wifeLastName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
-					val.husbandEmail.toLowerCase().includes(searchString) ||
-					val.wifeEmail.toLowerCase().includes(searchString) ||
-					val.husbandPhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString) ||
-					val.wifePhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString)
-				));
-				setMembersToShow(filteredmembers);
+			const searchString = normalizedLowercaseString(memberSearchValue).trim();
+
+			if (searchString) {
+				const filteredMembers = allMembers.filter((val) => {
+					return (
+						(val.husbandFirstName &&
+							normalizedLowercaseString(val.husbandFirstName)
+								.includes(searchString)) ||
+						(val.husbandLastName &&
+							normalizedLowercaseString(val.husbandLastName)
+								.includes(searchString)) ||
+						(val.wifeFirstName &&
+							normalizedLowercaseString(val.wifeFirstName)
+								.includes(searchString)) ||
+						(val.wifeLstName &&
+							normalizedLowercaseString(val.wifeLstName)
+								.includes(searchString)) ||
+						(val.husbandEmail &&
+							val.husbandEmail.toLowerCase().includes(searchString)) ||
+						(val.wifeEmail &&
+							val.wifeEmail.toLowerCase().includes(searchString)) ||
+						(val.husbandPhone &&
+							val.husbandPhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString)) ||
+						(val.wifePhone &&
+							val.wifePhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString))
+					);
+				});
+
+				setMembersToShow(filteredMembers);
 			}
-		}, [memberSearchValue]);
+		}, [memberSearchValue, allMembers]);
 
 		const resetMembers = () => {
 			setMembersToShow(allMembers);
@@ -856,6 +928,66 @@ const Admin = () => {
 
 		cLog(associatedMember.husbandFirstName);
 
+		// handle rejecting a credit
+		const rejectCreditRequest = async (id) => {
+			try {
+				setIsWaitingFetchAction(true);
+				const response = await fetch(`${BASE_URL}/credit/${id}/reject`, {
+					method: 'PATCH',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ status: 'rejected', rejectionMessage: promptInputValue.current }),
+				});
+
+				// Fetch error
+				if (!response.ok) {
+					const errorData = await response.json();
+					throw new Error(errorData.message || 'Error rejecting credit request');
+				}
+				// Successfull fetch
+				const data = await response.json();
+				toast({ message: data.message, type: "dark" });
+				resetPrompt();
+				setErrorWithFetchAction(null);
+				fetchCredits();
+			} catch (error) {
+				setErrorWithFetchAction(error);
+				cError("Error fetching members:", error);
+				toast({ message: error, type: "danger" });
+			} finally {
+				setIsWaitingFetchAction(false);
+			}
+		}
+
+		// handle rejecting a credit
+		const restoreCreditRequest = async (id) => {
+			try {
+				setIsWaitingFetchAction(true);
+				const response = await fetch(`${BASE_URL}/credit/${id}/restore`, {
+					method: 'PATCH',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ status: 'pending' }),
+				});
+
+				// Fetch error
+				if (!response.ok) {
+					const errorData = await response.json();
+					throw new Error(errorData.message || 'Error restoring credit request');
+				}
+				// Successfull fetch
+				const data = await response.json();
+				toast({ message: data.message, type: "dark" });
+				resetConfirmDialog();
+				setErrorWithFetchAction(null);
+				fetchCredits();
+			} catch (error) {
+				setErrorWithFetchAction(error);
+				cError("Error fetching members:", error);
+				toast({ message: error, type: "danger" });
+			} finally {
+				setIsWaitingFetchAction(false);
+			}
+		}
+
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<h2><Blueprint weight='fill' className="me-1 opacity-50" /> Credit panel</h2>
@@ -879,15 +1011,11 @@ const Admin = () => {
 					/>
 				)}
 				{!loadingMembers && !errorLoadingMembers && membersToShow.length === 0 && (
-					<div className="col-sm-8 col-md-6 col-lg-5 col-xl-4 mx-auto my-5 p-3 rounded error-message">
-						<img src="/images/fetch_error_image.jpg" alt="Error" className="w-4rem h-4rem mx-auto mb-2 opacity-50" />
-						<p className="text-center text-muted small">
-							No members found.
-						</p>
-						<button className="btn btn-sm btn-outline-secondary d-block border-0 rounded-pill mx-auto px-4" onClick={resetMembers}>
-							<ArrowClockwise weight="bold" size={18} className="me-1" /> Refresh
-						</button>
-					</div>
+					<NotFount
+						notFoundMessage="No member found"
+						icon={<Users size={80} className="text-center w-100 mb-3 opacity-50" />}
+						refreshFunction={resetMembers}
+					/>
 				)}
 				{!loadingMembers && !errorLoadingMembers && membersToShow.length > 0 && (
 					<>
@@ -1042,7 +1170,7 @@ const Admin = () => {
 							</button>
 						</div>
 					)}
-					{!loadingCredits && !errorLoadingCredits && creditsToShow.length > 0 && (
+					{!loadingCredits && !errorLoadingCredits && !loadingMembers && !errorLoadingMembers && creditsToShow.length > 0 && (
 						<>
 							{/* Selectors */}
 							<div className="d-flex flex-wrap justify-content-center">
@@ -1070,299 +1198,315 @@ const Admin = () => {
 							</div>
 
 							{/* Selected content */}
-							<div>
+							<div style={{ minHeight: '60vh' }}>
 								{activeLoanSection === 'pending' && (
-									<div className='overflow-auto'>
-										<table className="table table-hover h-100 properties-table">
-											<thead className='table-warning position-sticky top-0 inx-1'>
-												<tr>
-													<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
-													<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Member</th>
-													<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
-													<th className='py-3 text-nowrap text-gray-700'>Date & Interval</th>
-													<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
-													<th className='py-3 text-nowrap text-gray-700'>Action</th>
-												</tr>
-											</thead>
-											<tbody>
-												{creditsToShow
-													.filter(cr => cr.status === 'pending')
-													.map((credit, index) => {
-														const associatedMember = allMembers.find(m => m.id === credit.memberId);
-														const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
-														const creditInterest = Number(credit.creditAmount) * (5 / 100);
+									<>
+										{creditsToShow.filter(cr => cr.status === 'pending').length > 0 && (
+											<div className='overflow-auto'>
+												<table className="table table-hover h-100 properties-table">
+													<thead className='table-warning position-sticky top-0 inx-1'>
+														<tr>
+															<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+															<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Member</th>
+															<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
+															<th className='py-3 text-nowrap text-gray-700'>Date & Interval</th>
+															<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
+															<th className='py-3 text-nowrap text-gray-700'>Action</th>
+														</tr>
+													</thead>
+													<tbody>
+														{creditsToShow
+															.filter(cr => cr.status === 'pending')
+															.sort((a, b) => new Date(a.updatedAt) - new Date(b.updatedAt))
+															.map((credit, index) => {
+																const associatedMember = allMembers.find(m => m.id === credit.memberId);
+																const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+																const creditInterest = Number(credit.creditAmount) * (5 / 100);
 
-														return (
-															<tr
-																key={index}
-																className={`small loan-row`}
-															>
-																<td className={`ps-sm-3  border-bottom-3 border-end`}>
-																	{index + 1}
-																</td>
-																<td >
-																	{memberNames}
-																</td>
-																<td className="d-flex flex-column gap-2 text-muted small" >
-																	<div>
-																		<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
-																		<span>{Number(credit.creditAmount).toLocaleString()}</span>
-																	</div>
-																	<div>
-																		<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
-																		<span>{creditInterest.toLocaleString()}</span>
-																	</div>
-																</td>
-																<td className='text-nowrap'>
-																	<div className='d-flex flex-column gap-2 smaller'>
-																		{/* <span className='fw-bold'>13-11-2024 <CaretRight /> 13-03-2025</span> */}
-																		<span className='fw-bold'>
-																			<FormatedDate date={credit.requestDate} monthFormat='numeric' /> <CaretRight /> <FormatedDate date={credit.dueDate} monthFormat='numeric' />
-																		</span>
-																		<span>{printDatesInterval(credit.requestDate, credit.dueDate)}</span>
-																		<span className="flex-align-center text-primaryColor ptr clickDown"
-																			onClick={() => { setSelectedCredit(credit); setShowBackfillPlanCard(true); }}
-																		><Receipt weight='fill' size={18} className='me-1' /> View backfill plan</span>
-																	</div>
-																</td>
-																<td style={{ maxWidth: '13rem' }}>
-																	{credit.comment}
-																</td>
-																<td className='text-nowrap fs-75'>
-																	<div className="dim-100 d-flex">
-																		<button className='btn btn-sm text-primary-emphasis border-primary border-opacity-25 mb-auto rounded-pill'>
-																			<Check /> Approve
-																		</button>
-																		<button className='btn btn-sm text-danger-emphasis border-danger border-opacity-25 mt-auto rounded-pill'>
-																			<X /> Reject
-																		</button>
-																	</div>
-																</td>
-															</tr>
-														)
-													}
-													)
-												}
-											</tbody>
-										</table>
-									</div>
+																return (
+																	<tr
+																		key={index}
+																		className={`small loan-row`}
+																	>
+																		<td className={`ps-sm-3  border-bottom-3 border-end`}>
+																			{index + 1}
+																		</td>
+																		<td >
+																			{memberNames}
+																		</td>
+																		<td className="d-flex flex-column gap-2 text-muted small" >
+																			<div>
+																				<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
+																				<span>{Number(credit.creditAmount).toLocaleString()}</span>
+																			</div>
+																			<div>
+																				<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
+																				<span>{creditInterest.toLocaleString()}</span>
+																			</div>
+																			<div className='text-primaryColor'>{credit.tranches} tranche{credit.tranches > 1 ? 's' : ''}</div>
+																		</td>
+																		<td className='text-nowrap'>
+																			<div className='d-flex flex-column gap-2 smaller'>
+																				<span className='fw-bold'>
+																					<FormatedDate date={credit.requestDate} monthFormat='numeric' /> <CaretRight /> <FormatedDate date={credit.dueDate} monthFormat='numeric' />
+																				</span>
+																				<span>{printDatesInterval(credit.requestDate, credit.dueDate)}</span>
+																				<span className="flex-align-center text-primaryColor ptr clickDown"
+																					onClick={() => { setSelectedCredit(credit); setShowBackfillPlanCard(true); }}
+																				><Receipt weight='fill' size={18} className='me-1' /> View backfill plan</span>
+																			</div>
+																		</td>
+																		<td style={{ maxWidth: '13rem' }}>
+																			{credit.comment}
+																		</td>
+																		<td className='text-nowrap fs-75'>
+																			<div className="dim-100 d-flex">
+																				<button className='btn btn-sm text-primary-emphasis border-primary border-opacity-25 mb-auto rounded-0'
+																					onClick={
+																						() => { alert('Aprove credit') }
+																					}
+																				>
+																					<Check /> Approve
+																				</button>
+																				<button className='btn btn-sm text-danger-emphasis border-danger border-opacity-25 mt-auto rounded-0'
+																					onClick={
+																						() => {
+																							customPrompt(
+																								{
+																									message: (
+																										<>
+																											<h5 className='h6 border-bottom mb-3 pb-2'><ReceiptX size={25} weight='fill' className='opacity-50' /> Reject Credit Request</h5>
+																											<p>
+																												Provide a reason for rejecting this request and any helpful feedback.
+																											</p>
+																										</>
+																									),
+																									inputType: 'textarea',
+																									action: () => rejectCreditRequest(credit.id),
+																									placeholder: 'Rejection message',
+																								}
+																							)
+																						}
+																					}
+																				>
+																					<X /> Reject
+																				</button>
+																			</div>
+																		</td>
+																	</tr>
+																)
+															}
+															)
+														}
+													</tbody>
+												</table>
+											</div>
+										)}
+										{/* Zero content - no credits */}
+										{creditsToShow.filter(cr => cr.status === 'pending').length === 0 && (
+											<NotFount
+												notFoundMessage="No credit found"
+												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
+												refreshFunction={fetchCredits}
+											/>
+										)}
+									</>
 								)}
 
 								{activeLoanSection === 'approved' && (
-									<div className='overflow-auto'>
-										<table className="table table-hover h-100 properties-table">
-											<thead className='table-success position-sticky top-0 inx-1'>
-												<tr>
-													<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
-													<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Member</th>
-													<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
-													<th className='py-3 text-nowrap text-gray-700'>Date & Interval</th>
-													<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
-													<th className='py-3 text-nowrap text-gray-700'>Credit Status</th>
-												</tr>
-											</thead>
-											<tbody>
-												<tr
-													className={`small cursor-default clickDown loan-row`}
-												>
-													<td className={`ps-sm-3  border-bottom-3 border-end`}>
-														1
-													</td>
-													<td >
-														Leonidas Dusabimana
-													</td>
-													<td className="d-flex flex-column gap-2 text-muted small" >
-														<div>
-															<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
-															<span>6,000,000</span>
-														</div>
-														<div>
-															<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
-															<span>300,000</span>
-														</div>
-													</td>
-													<td className='text-nowrap'>
-														<div className='d-flex flex-column gap-2 smaller'>
-															<span className='fw-bold'>03-12-2024 <CaretRight /> 03-06-2025</span>
-															<span>0 Years, 6 Months, 2 Days</span>
-														</div>
-													</td>
-													<td style={{ maxWidth: '13rem' }}>
-														Top up
-													</td>
-													<td className='text-nowrap fs-75'>
-														Transfered
-													</td>
-												</tr>
-												<tr
-													className={`small cursor-default clickDown loan-row`}
-												>
-													<td className={`ps-sm-3  border-bottom-3 border-0 border-end`}>
-														2
-													</td>
-													<td >
-														Innocent Ngoboka
-													</td>
-													<td className="d-flex flex-column gap-2 text-muted small" >
-														<div>
-															<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
-															<span>100,000</span>
-														</div>
-														<div>
-															<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
-															<span>5,000</span>
-														</div>
-													</td>
-													<td className='text-nowrap'>
-														<div className='d-flex flex-column gap-2 smaller'>
-															<span className='fw-bold'>07-11-2024 <CaretRight /> 07-03-2025</span>
-															<span>0 Years, 4 Months, 0 Days</span>
-														</div>
-													</td>
-													<td style={{ maxWidth: '13rem' }}>
-														Demande de credit
-													</td>
-													<td className='text-nowrap fs-75'>
-														Transfered
-													</td>
-												</tr>
-												<tr
-													className={`small cursor-default clickDown loan-row`}
-												>
-													<td className={`ps-sm-3  border-bottom-3 border-0 border-end`}>
-														3
-													</td>
-													<td >
-														Alain Mugabe
-													</td>
-													<td className="d-flex flex-column gap-2 text-muted small" >
-														<div>
-															<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
-															<span>900,000</span>
-														</div>
-														<div>
-															<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
-															<span>45,000</span>
-														</div>
-													</td>
-													<td className='text-nowrap'>
-														<div className='d-flex flex-column gap-2 smaller'>
-															<span className='fw-bold'>15-10-2024 <CaretRight /> 15-04-2025</span>
-															<span>0 Years, 6 Months, 2 Days</span>
-															<span>6 tranches</span>
-														</div>
-													</td>
-													<td style={{ maxWidth: '13rem' }}>
-														Demande de credit
-													</td>
-													<td className='text-nowrap fs-75'>
-														Transfered
-													</td>
-												</tr>
-											</tbody>
-										</table>
-									</div>
+									<>
+										{creditsToShow.filter(cr => cr.status === 'approved').length > 0 && (
+											<div className='overflow-auto'>
+												<table className="table table-hover h-100 properties-table">
+													<thead className='table-success position-sticky top-0 inx-1'>
+														<tr>
+															<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+															<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Member</th>
+															<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
+															<th className='py-3 text-nowrap text-gray-700'>Date & Interval</th>
+															<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
+															<th className='py-3 text-nowrap text-gray-700'>Credit Status</th>
+														</tr>
+													</thead>
+													<tbody>
+														{creditsToShow
+															.filter(cr => cr.status === 'approved')
+															.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+															.map((credit, index) => {
+																const associatedMember = allMembers.find(m => m.id === credit.memberId);
+																const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+																const creditInterest = Number(credit.creditAmount) * (5 / 100);
+
+																return (
+																	<tr
+																		key={index}
+																		className={`small loan-row`}
+																	>
+																		<td className={`ps-sm-3  border-bottom-3 border-end`}>
+																			{index + 1}
+																		</td>
+																		<td >
+																			{memberNames}
+																		</td>
+																		<td className="d-flex flex-column gap-2 text-muted small" >
+																			<div>
+																				<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
+																				<span>{Number(credit.creditAmount).toLocaleString()}</span>
+																			</div>
+																			<div>
+																				<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
+																				<span>{creditInterest.toLocaleString()}</span>
+																			</div>
+																			<div className='text-primaryColor'>{credit.tranches} tranche{credit.tranches > 1 ? 's' : ''}</div>
+																		</td>
+																		<td className='text-nowrap'>
+																			<div className='d-flex flex-column gap-2 smaller'>
+																				<span className='fw-bold'>
+																					<FormatedDate date={credit.requestDate} monthFormat='numeric' /> <CaretRight /> <FormatedDate date={credit.dueDate} monthFormat='numeric' />
+																				</span>
+																				<span>{printDatesInterval(credit.requestDate, credit.dueDate)}</span>
+																				<span className="flex-align-center text-primaryColor ptr clickDown"
+																					onClick={() => { setSelectedCredit(credit); setShowBackfillPlanCard(true); }}
+																				><Receipt weight='fill' size={18} className='me-1' /> View backfill plan</span>
+																			</div>
+																		</td>
+																		<td style={{ maxWidth: '13rem' }}>
+																			{credit.comment}
+																		</td>
+																		<td className='text-nowrap fs-75'>
+																			Transfered
+																		</td>
+																	</tr>
+																)
+															}
+															)
+														}
+													</tbody>
+												</table>
+											</div>
+										)}
+										{/* Zero content - no credits */}
+										{creditsToShow.filter(cr => cr.status === 'approved').length === 0 && (
+											<NotFount
+												notFoundMessage="No credit found"
+												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
+												refreshFunction={fetchCredits}
+											/>
+										)}
+									</>
+
 								)}
 
 								{activeLoanSection === 'rejected' && (
-									<div className='overflow-auto'>
-										<table className="table table-hover h-100 properties-table">
-											<thead className='table-danger position-sticky top-0 inx-1'>
-												<tr>
-													<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
-													<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Member</th>
-													<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
-													<th className='py-3 text-nowrap text-gray-700'>Date & Interval</th>
-													<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
-													<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Rejection</th>
-													<th className='py-3 text-nowrap text-gray-700'>Action</th>
-												</tr>
-											</thead>
-											<tbody>
-												<tr
-													className={`small cursor-default clickDown loan-row`}
-												>
-													<td className={`ps-sm-3  border-bottom-3 border-end`}>
-														1
-													</td>
-													<td >
-														Alain Mugabe
-													</td>
-													<td className="d-flex flex-column gap-2 text-muted small" >
-														<div>
-															<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
-															<span>10,000,000</span>
-														</div>
-														<div>
-															<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
-															<span>50,000</span>
-														</div>
-													</td>
-													<td className='text-nowrap'>
-														<div className='d-flex flex-column gap-2 smaller'>
-															<span className='fw-bold'>13-11-2024 <CaretRight /> 13-03-2025</span>
-															<span>0 Years, 4 Months, 2 Days</span>
-														</div>
-													</td>
-													<td style={{ maxWidth: '13rem' }}>
-														Demande de credit
-													</td>
-													<td style={{ maxWidth: '13rem' }}>
-														Insufficient balance
-													</td>
-													<td className='text-nowrap fs-75'>
-														<button className='btn btn-sm btn-outline-secondary rounded-0'>
-															<ArrowArcLeft /> Restore
-														</button>
-													</td>
-												</tr>
-												<tr
-													className={`small cursor-default clickDown loan-row`}
-												>
-													<td className={`ps-sm-3  border-bottom-3 border-end`}>
-														2
-													</td>
-													<td >
-														Bonaventure Nzeyimana
-													</td>
-													<td className="d-flex flex-column gap-2 text-muted small" >
-														<div>
-															<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
-															<span>4,000,000</span>
-														</div>
-														<div>
-															<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
-															<span>200,000</span>
-														</div>
-													</td>
-													<td className='text-nowrap'>
-														<div className='d-flex flex-column gap-2 smaller'>
-															<span className='fw-bold'>13-11-2024 <CaretRight /> 13-03-2025</span>
-															<span>0 Years, 4 Months, 2 Days</span>
-															<span>6 tranches</span>
-														</div>
-													</td>
-													<td style={{ maxWidth: '13rem' }}>
-														Payment will be due on 15th each month
-													</td>
-													<td style={{ maxWidth: '13rem' }}>
-														Some reasons
-													</td>
-													<td className='text-nowrap fs-75'>
-														<button className='btn btn-sm btn-outline-secondary rounded-0'>
-															<ArrowArcLeft /> Restore
-														</button>
-													</td>
-												</tr>
-											</tbody>
-										</table>
-									</div>
+									<>
+										{creditsToShow.filter(cr => cr.status === 'rejected').length > 0 && (
+											<div className='overflow-auto'>
+												<table className="table table-hover h-100 properties-table">
+													<thead className='table-danger position-sticky top-0 inx-1'>
+														<tr>
+															<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+															<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Member</th>
+															<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
+															<th className='py-3 text-nowrap text-gray-700'>Date & Interval</th>
+															<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
+															<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Rejection</th>
+															<th className='py-3 text-nowrap text-gray-700'>Action</th>
+														</tr>
+													</thead>
+													<tbody>
+														{creditsToShow
+															.filter(cr => cr.status === 'rejected')
+															.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+															.map((credit, index) => {
+																const associatedMember = allMembers.find(m => m.id === credit.memberId);
+																const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+																const creditInterest = Number(credit.creditAmount) * (5 / 100);
+
+																return (
+																	<tr
+																		key={index}
+																		className={`small cursor-default clickDown loan-row`}
+																	>
+																		<td className={`ps-sm-3  border-bottom-3 border-end`}>
+																			{index + 1}
+																		</td>
+																		<td >
+																			{memberNames}
+																		</td>
+																		<td className="d-flex flex-column gap-2 text-muted small" >
+																			<div>
+																				<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
+																				<span>{Number(credit.creditAmount).toLocaleString()}</span>
+																			</div>
+																			<div>
+																				<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
+																				<span>{creditInterest.toLocaleString()}</span>
+																			</div>
+																			<div className='text-primaryColor'>{credit.tranches} tranche{credit.tranches > 1 ? 's' : ''}</div>
+																		</td>
+																		<td className='text-nowrap'>
+																			<div className='d-flex flex-column gap-2 smaller'>
+																				<span className='fw-bold'>
+																					<FormatedDate date={credit.requestDate} monthFormat='numeric' /> <CaretRight /> <FormatedDate date={credit.dueDate} monthFormat='numeric' />
+																				</span>
+																				<span>{printDatesInterval(credit.requestDate, credit.dueDate)}</span>
+																				<span className="flex-align-center text-primaryColor ptr clickDown"
+																					onClick={() => { setSelectedCredit(credit); setShowBackfillPlanCard(true); }}
+																				><Receipt weight='fill' size={18} className='me-1' /> View backfill plan</span>
+																			</div>
+																		</td>
+																		<td style={{ maxWidth: '13rem' }}>
+																			{credit.comment}
+																		</td>
+																		<td style={{ maxWidth: '13rem' }}>
+																			{credit.rejectionMessage}
+																		</td>
+																		<td className='text-nowrap fs-75'>
+																			<button className='btn btn-sm btn-outline-secondary rounded-0'
+																				onClick={
+																					() => {
+																						customConfirmDialog({
+																							message: (
+																								<>
+																									<h5 className='h6 border-bottom mb-3 pb-2'><Receipt size={25} weight='fill' className='opacity-50' /> Restore Credit Request</h5>
+																									<p>
+																										This credit of <CurrencyText amount={Number(credit.creditAmount)} /> will be restored and marked pending.
+																									</p>
+																								</>
+																							),
+																							type: 'gray-700',
+																							action: () => restoreCreditRequest(credit.id),
+																							actionText: 'Restore',
+																						});
+																					}
+																				}
+																			>
+																				<ArrowArcLeft /> Restore
+																			</button>
+																		</td>
+																	</tr>
+																)
+															})
+														}
+													</tbody>
+												</table>
+											</div>
+										)}
+										{/* Zero content - no credits */}
+										{creditsToShow.filter(cr => cr.status === 'rejected').length === 0 && (
+											<NotFount
+												notFoundMessage="No credit found"
+												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
+												refreshFunction={fetchCredits}
+											/>
+										)}
+									</>
 								)}
 
 								{showBackfillPlanCard && (
 									<>
 										<div className='position-fixed fixed-top inset-0 bg-black2 py-3 inx-high add-property-form'>
-											<div className="container offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
+											<div className="container offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 peak-borders-tb overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 												<div className="px-3 bg-light text-gray-700">
 													<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
 														<div className='flex-align-center text-primaryColor'>
@@ -1375,7 +1519,7 @@ const Admin = () => {
 													</h6>
 
 													<div className="pb-5">
-														<div className='alert d-lg-flex align-items-end gap-3 border-0 rounded-0 shadow-sm'>
+														<div className='alert bg-primaryColor text-gray-200 d-lg-flex align-items-end gap-3 border-0 rounded-0 shadow-sm'>
 															<div>
 																<div className='d-flex'>
 																	{/* <img src={associatedMember.husbandAvatar}
@@ -1390,14 +1534,14 @@ const Admin = () => {
 																	{selectedCredit.comment}
 																</p>
 															</div>
-															<div className="d-flex ms-lg-auto flex-wrap">
+															<div className="d-flex flex-wrap ms-lg-auto">
 																<div className='col px-2'>
-																	<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Payment start date</span></div>
-																	<div className='text-center bg-gray-300'><FormatedDate date={selectedCredit.requestDate} /></div>
+																	<div className='flex-align-center smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Payment start date</span></div>
+																	<div className='text-center bg-black3'><FormatedDate date={selectedCredit.requestDate} /></div>
 																</div>
 																<div className='col px-2'>
-																	<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Payment end date</span></div>
-																	<div className='text-center bg-gray-300'><FormatedDate date={selectedCredit.dueDate} /></div>
+																	<div className='flex-align-center smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Payment end date</span></div>
+																	<div className='text-center bg-black3'><FormatedDate date={selectedCredit.dueDate} /></div>
 																</div>
 															</div>
 														</div>
@@ -1421,7 +1565,9 @@ const Admin = () => {
 																		<th className='ps-sm-3 py-3 text-nowrap text-gray-700 fw-normal'>Tranche</th>
 																		<th className='py-3 text-nowrap text-gray-700 fw-normal'>Backfill amount</th>
 																		<th className='py-3 text-nowrap text-gray-700 fw-normal'>Backfill date</th>
-																		<th className='py-3 text-nowrap text-gray-700 fw-normal'>Backfill slip</th>
+																		{!['pending', 'rejected'].includes(activeLoanSection) && (
+																			<th className='py-3 text-nowrap text-gray-700 fw-normal'>Backfill slip</th>
+																		)}
 																	</tr>
 																</thead>
 																<tbody>
@@ -1444,16 +1590,18 @@ const Admin = () => {
 																					<td>
 																						<FormatedDate date={item.tranchDueDate} />
 																					</td>
-																					<td className="text-nowrap">
-																						{item.slipUrl ? (
-																							<img src={item.slipUrl} alt="Payment Slip" />
-																						) : (
-																							<button type="button" className='btn btn-sm text-primaryColor border-0 rounded-0 clickDown' onClick={() => alert('Upload a file')}
-																							>
-																								Upload slip <Upload />
-																							</button>
-																						)}
-																					</td>
+																					{!['pending', 'rejected'].includes(activeLoanSection) && (
+																						<td className="text-nowrap">
+																							{item.slipUrl ? (
+																								<img src={item.slipUrl} alt="Payment Slip" className='w-2rem h-2rem object-fit-contain img-thumbnail ptr clickDown' />
+																							) : (
+																								<button type="button" className='btn btn-sm text-primaryColor border-0 rounded-0 clickDown' onClick={() => alert('Upload a file')}
+																								>
+																									Upload slip <Upload />
+																								</button>
+																							)}
+																						</td>
+																					)}
 																				</tr>
 																			)
 																		})
@@ -1461,8 +1609,39 @@ const Admin = () => {
 																</tbody>
 															</table>
 														</div>
-													</div>
 
+														{activeLoanSection === 'pending' && (
+															<div className='d-flex flex-wrap align-items-center justify-content-end gap-3 mb-4 py-4'>
+																<button className='btn btn-sm flex-align-center text-danger-emphasis border-danger border-opacity-25 mt-auto rounded-0'
+																	onClick={
+																		() => {
+																			customPrompt(
+																				{
+																					message: (
+																						<>
+																							<h5 className='h6 border-bottom mb-3 pb-2'><ReceiptX size={25} weight='fill' className='opacity-50' /> Reject Credit Request</h5>
+																							<p>
+																								Provide a reason for rejecting this request and any helpful feedback.
+																							</p>
+																						</>
+																					),
+																					inputType: 'textarea',
+																					action: () => rejectCreditRequest(selectedCredit.id),
+																					placeholder: 'Rejection message',
+																				}
+																			)
+																		}
+																	}
+																>
+																	<X /> Reject credit</button>
+																<button className='btn btn-sm flex-align-center text-primary-emphasis border-primary border-opacity-25 mb-auto rounded-0'
+																	onClick={() => { alert('Aprove credit') }}
+																>
+																	<Check /> Approve credit
+																</button>
+															</div>
+														)}
+													</div>
 												</div>
 											</div>
 										</div>
@@ -1544,7 +1723,7 @@ const Admin = () => {
 					</div>
 
 					{/* Selected content */}
-					<div>
+					<div style={{ minHeight: '60vh' }}>
 						{activeTransactionSection === 'withdrawals' && (
 							<>
 								<div className='overflow-auto'>
@@ -1560,7 +1739,7 @@ const Admin = () => {
 										</thead>
 										<tbody>
 											{expenses
-												.sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort expenses by date
+												.sort((a, b) => new Date(b.date) - new Date(a.date))
 												.map((item, index) => (
 													<tr
 														key={index}
@@ -1638,7 +1817,7 @@ const Admin = () => {
 
 														<button type="submit" className="btn btn-sm btn-dark flex-center w-100 mt-3 py-2 px-4 rounded-pill clickDown" id="addExpenseBtn"
 														>
-															{!isWaitingAdminEditAction ?
+															{!isWaitingFetchAction ?
 																<>Save Record <FloppyDisk size={18} className='ms-2' /></>
 																: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
 															}
@@ -1667,7 +1846,7 @@ const Admin = () => {
 									</thead>
 									<tbody>
 										{deposits
-											.sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort expenses by date
+											.sort((a, b) => new Date(b.date) - new Date(a.date))
 											.map((item, index) => (
 												<tr
 													key={index}
@@ -1877,7 +2056,7 @@ const Admin = () => {
 						</div>
 
 						{/* Selected content */}
-						<div>
+						<div style={{ minHeight: '60vh' }}>
 							{activeReportSection === 'incomeExpenses' && (
 								<>
 									<div className='overflow-auto'>
@@ -2079,7 +2258,8 @@ const Admin = () => {
 					- Track changes made by admins or staff to maintain transparency.
 					- Log edits to member details, savings, loans, or settings.
 				</section>
-				<DateLocaleFormat />
+				{/* <DateLocaleFormat /> */}
+				<JsonJsFormatter />
 			</>
 		)
 	}
@@ -2119,6 +2299,42 @@ const Admin = () => {
 	return (
 		<>
 			<MyToast show={showToast} message={toastMessage} type={toastType} selfClose onClose={() => setShowToast(false)} />
+
+			{/* Prompt actions */}
+			<ActionPrompt
+				show={showPrompt}
+				// isStatic
+				message={promptMessage}
+				type={promptType}
+				inputType={promptInputType}
+				selectInputOptions={promptSelectInputOptions}
+				promptInputValue={promptInputValue}
+				inputPlaceholder={promptInputPlaceholder}
+				action={() => { promptAction(); setPromptActionWaiting(true); }}
+				actionIsWaiting={promptActionWaiting}
+				onClose={resetPrompt}
+			/>
+
+			{/* Dialog actions */}
+			<ConfirmDialog
+				show={showConfirmDialog}
+				message={confirmDialogMessage}
+				type={confirmDialogType}
+				action={() => { confirmDialogAction(); setConfirmDialogActionWaiting(true); }}
+				actionText={confirmDialogActionText}
+				actionIsWaiting={confirmDialogActionWaiting}
+				closeText={confirmDialogCloseText}
+				onClose={resetConfirmDialog}
+				onCloseCallback={confirmDialogCloseCallback}
+			/>
+
+			{/* Ongoing/unsettled fetch indicator */}
+			{isWaitingFetchAction && (
+				<div className='position-fixed fixed-top inset-0 bg-black3 flex-center py-md-3 px-lg-5 inx-high'>
+					<LoadingIndicator loaderColor="gray-200" />
+				</div>
+			)}
+
 			<header className="navbar navbar-light sticky-top flex-md-nowrap py-0 admin-header">
 				<div className='nav-item navbar-brand col-12 col-md-3 col-xl-2 d-flex align-items-center me-0 px-2'>
 					<div className="me-2 logo">
