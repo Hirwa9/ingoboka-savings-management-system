@@ -3,7 +3,7 @@ export const dashboardData = [
     { label: "Cotisation", value: 14660080 },
     { label: "Social", value: 571224 },
     { label: "Loan Delivered", value: 108680000 },
-    { label: "Interest Receivable", value: 5434000 },
+    { label: "Interest Receivable", value: 5694000 },
     { label: "Paid Capital", value: 90010000 },
     { label: "Paid Interest", value: 5134000 },
     { label: "Penalties", value: 187955 },
