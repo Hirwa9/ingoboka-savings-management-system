@@ -107,6 +107,8 @@ const Admin = () => {
 	const [loadingMembers, setLoadingMembers] = useState(false);
 	const [errorLoadingMembers, setErrorLoadingMembers] = useState(false);
 
+	const totalCotisation = allMembers.reduce((sum, m) => (sum + (m.shares * 20000)), 0);
+	const totalSocial = allMembers.reduce((sum, m) => sum + m.social, 0);
 
 	// Fetch members
 	const fetchMembers = async () => {
@@ -117,7 +119,6 @@ const Admin = () => {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
 			const data = await response.json();
-			// console.log(data);
 			setAllMembers(data);
 			setMembersToShow(data);
 			setErrorLoadingMembers(null);
@@ -151,7 +152,6 @@ const Admin = () => {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
 			const data = await response.json();
-			// console.log(data);
 			setAllCredits(data);
 			setCreditsToShow(data);
 			setErrorLoadingCredits(null);
@@ -192,8 +192,8 @@ const Admin = () => {
 
 		const accountingDashboardRef = useRef();
 
-		const totalCotisation = allMembers.reduce((sum, item) => sum + item.cotisation, 0);
-		const totalSocial = allMembers.reduce((sum, item) => sum + item.social, 0);
+		// const totalCotisation = allMembers.reduce((sum, item) => sum + item.cotisation, 0);
+		// const totalSocial = allMembers.reduce((sum, item) => sum + item.social, 0);
 		const loanDelivered = dashboardData
 			.filter((item) => item.label === "Loan Delivered")
 			.map((item) => item.value);
@@ -216,15 +216,15 @@ const Admin = () => {
 			.filter((item) => item.label === "Balance")
 			.map((item) => item.value);
 
-		let labelvalue;
-		switch (true) {
-			case 'Cotisation':
-				labelvalue = totalCotisation
-				break;
+		// let labelvalue;
+		// switch (true) {
+		// 	case 'Cotisation':
+		// 		labelvalue = totalCotisation
+		// 		break;
 
-			default:
-				break;
-		}
+		// 	default:
+		// 		break;
+		// }
 
 		return (
 			<>
@@ -557,44 +557,49 @@ const Admin = () => {
 							<div className="d-lg-flex flex-wrap">
 								{savingsToShow
 									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
-									.map((member, index) => (
-										<div key={index} className='col-lg-6 px-lg-3'>
-											<div className="position-relative mb-3 my-5 px-2 pt-5 border-top border-3 border-secondary border-opacity-25 text-gray-800 member-element"
-											>
-												<div className="position-absolute top-0 me-3 d-flex gap-3"
-													style={{ right: 0, translate: "0 -50%" }}
+									.map((member, index) => {
+										const { husbandFirstName, husbandLastName, husbandAvatar, shares, cotisation, social } = member;
+										const cotisationAmount = shares * 20000;
+
+										return (
+											<div key={index} className='col-lg-6 px-lg-3'>
+												<div className="position-relative mb-3 my-5 px-2 pt-5 border-top border-3 border-secondary border-opacity-25 text-gray-800 member-element"
 												>
-													<img src={member.husbandAvatar}
-														alt={`${member.husbandFirstName.slice(0, 1)}.${member.husbandLastName}`}
-														className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
-													/>
-												</div>
-												<div className="px-lg-2">
-													<h5 className="mb-3 fs-4">{`${member.husbandFirstName} ${member.husbandLastName}`}</h5>
-													<ul className="list-unstyled text-gray-700 px-2 smaller">
-														<li className="py-1 w-100">
-															<span className="flex-align-center">
-																<b className='fs-5'>{member.shares} Shares</b>
-																<span className='ms-3 text-primary flex-align-center ptr clickDown' title='Edit multiple shares'><Pen size={22} className='me-2' /> Multiple shares</span>
-															</span>
-														</li>
-														<li className="py-1 d-table-row">
-															<span className='d-table-cell border-start border-secondary ps-2'>Cotisation:</span> <span className='d-table-cell ps-2'>{member.cotisation.toLocaleString()} RWF</span>
-														</li>
-														<li className="py-1 d-table-row">
-															<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'>{member.social.toLocaleString()} RWF</span>
-														</li>
-														<li className="py-1 fs-5 d-table-row">
-															<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'>{(member.cotisation + member.social).toLocaleString()} RWF</span>
-														</li>
-													</ul>
-													<button className="btn btn-sm btn-outline-primary w-100 flex-center rounded-0 clickDown"
-														onClick={() => { setSelectedMember(member); setShowAddSavingRecord(true) }}
-													><Plus className='me-1' /> Save amount</button>
+													<div className="position-absolute top-0 me-3 d-flex gap-3"
+														style={{ right: 0, translate: "0 -50%" }}
+													>
+														<img src={husbandAvatar}
+															alt={`${husbandFirstName.slice(0, 1)}.${husbandLastName}`}
+															className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
+														/>
+													</div>
+													<div className="px-lg-2">
+														<h5 className="mb-3 fs-4">{`${husbandFirstName} ${husbandLastName}`}</h5>
+														<ul className="list-unstyled text-gray-700 px-2 smaller">
+															<li className="py-1 w-100">
+																<span className="flex-align-center">
+																	<b className='fs-5'>{shares} Shares</b>
+																	<span className='ms-3 text-primary flex-align-center ptr clickDown' title='Edit multiple shares'><Pen size={22} className='me-2' /> Multiple shares</span>
+																</span>
+															</li>
+															<li className="py-1 d-table-row">
+																<span className='d-table-cell border-start border-secondary ps-2'>Cotisation:</span> <span className='d-table-cell ps-2'>{cotisationAmount.toLocaleString()} RWF</span>
+															</li>
+															<li className="py-1 d-table-row">
+																<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'>{social.toLocaleString()} RWF</span>
+															</li>
+															<li className="py-1 fs-5 d-table-row">
+																<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'>{(cotisationAmount + social).toLocaleString()} RWF</span>
+															</li>
+														</ul>
+														<button className="btn btn-sm btn-outline-primary w-100 flex-center rounded-0 clickDown"
+															onClick={() => { setSelectedMember(member); setShowAddSavingRecord(true) }}
+														><Plus className='me-1' /> Save amount</button>
+													</div>
 												</div>
 											</div>
-										</div>
-									))
+										)
+									})
 								}
 							</div>
 
@@ -802,7 +807,10 @@ const Admin = () => {
 										</div>
 									</td>
 									<td className="text-nowrap">
-										{totalSharesPercentage.toFixed(3)} <span className="fs-60">%</span>
+										<div className="d-grid">
+											<span>{totalSharesPercentage.toFixed(3)} <span className="fs-60">%</span></span>
+											<span className="fs-60">of {totalShares} shares</span>
+										</div>
 									</td>
 									<td className="text-nowrap fw-bold">
 										<CurrencyText amount={totalMonetaryInterest} smallCurrency />
@@ -915,18 +923,15 @@ const Admin = () => {
 		// Show credits per member
 		const [showBackfillPlanCard, setShowBackfillPlanCard] = useState(false);
 		const [selectedCredit, setSelectedCredit] = useState([]);
-		const [associatedMember, setAssociatedMember] = useState({});
+		const [associatedMember, setAssociatedMember] = useState([]);
 		// cLog(associatedMember);
 
 		useEffect(() => {
 			if (selectedCredit.length !== 0) {
 				const id = selectedCredit.memberId;
 				setAssociatedMember(allMembers.filter(m => m.id === id));
-				cLog(id);
 			}
 		}, [selectedCredit,]);
-
-		cLog(associatedMember.husbandFirstName);
 
 		// handle rejecting a credit
 		const rejectCreditRequest = async (id) => {
@@ -1506,7 +1511,7 @@ const Admin = () => {
 								{showBackfillPlanCard && (
 									<>
 										<div className='position-fixed fixed-top inset-0 bg-black2 py-3 inx-high add-property-form'>
-											<div className="container offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 peak-borders-tb overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
+											<div className="container offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 												<div className="px-3 bg-light text-gray-700">
 													<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
 														<div className='flex-align-center text-primaryColor'>
@@ -1520,19 +1525,37 @@ const Admin = () => {
 
 													<div className="pb-5">
 														<div className='alert bg-primaryColor text-gray-200 d-lg-flex align-items-end gap-3 border-0 rounded-0 shadow-sm'>
-															<div>
-																<div className='d-flex'>
-																	{/* <img src={associatedMember.husbandAvatar}
-																		alt={`${associatedMember.husbandFirstName.slice(0, 1)}.${associatedMember.husbandLastName}`}
-																		className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
-																	/> */}
-																	<p className='text-center'>
-																		Backfill plan of {`${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`}
-																	</p>
-																</div>
-																<p className='smaller'>
-																	{selectedCredit.comment}
-																</p>
+															<div className='fw-light'>
+																{associatedMember[0] && (
+																	<>
+																		<div className='d-flex gap-2 mb-2'>
+																			<img src={associatedMember[0].husbandAvatar}
+																				alt={`${associatedMember[0].husbandFirstName.slice(0, 1)}.${associatedMember[0].husbandLastName}`}
+																				className="w-3rem h-3rem flex-shrink-0 object-fit-cover p-1 border border-3 border-light border-opacity-25 rounded-circle"
+																			/>
+																			<div className='mt-1 fs-4 text-dark' style={{ lineHeight: 1 }}>
+																				Backfill Plan of {
+																					`${associatedMember[0].husbandFirstName} ${associatedMember[0].husbandLastName}`
+																				}
+																			</div>
+																		</div>
+																		<ul className='list-unstyled smaller'>
+																			<li>
+																				{/* Sort by most recent, filter with corresponding member's id and find index
+																				 of the credit + 1 in the array which will be the nth credit requested*/}
+																				<b className='fw-semibold me-1'>Credit N°:</b> {
+																					creditsToShow
+																						.sort((a, b) => new Date(a.requestDate) - new Date(b.requestDate))
+																						.filter(cr => cr.memberId === associatedMember[0].id)
+																						.findIndex(cr => cr.id === selectedCredit.id) + 1
+																				}
+																			</li>
+																			<li>
+																				<b className='fw-semibold me-1'>Comment:</b> {selectedCredit.comment}
+																			</li>
+																		</ul>
+																	</>
+																)}
 															</div>
 															<div className="d-flex flex-wrap ms-lg-auto">
 																<div className='col px-2'>
@@ -1545,15 +1568,15 @@ const Admin = () => {
 																</div>
 															</div>
 														</div>
-														<ul className="list-unstyled small">
-															<li>
+														<ul className="list-unstyled d-flex flex-wrap gap-3 px-1 px-sm-2 px-lg-3 text-primaryColor small">
+															<li className='border-start border-dark border-opacity-50 ps-2'>
 																<b>Amount requested</b>: <CurrencyText amount={Number(selectedCredit.creditAmount)} />
 															</li>
-															<li>
-																<b>Interest</b>: <CurrencyText className="text-primary-emphasis" amount={(Number(selectedCredit.creditAmount) * (5 / 100))} />
+															<li className='border-start border-dark border-opacity-50 ps-2'>
+																<b>Interest</b>: <CurrencyText amount={(Number(selectedCredit.creditAmount) * (5 / 100))} />
 															</li>
-															<li>
-																<b>Amount to pay</b>: <CurrencyText className="text-primaryColor" amount={(Number(selectedCredit.creditAmount) + (Number(selectedCredit.creditAmount) * (5 / 100)))} />
+															<li className='border-start border-dark border-opacity-50 ps-2'>
+																<b>Amount to pay</b>: <CurrencyText amount={(Number(selectedCredit.creditAmount) + (Number(selectedCredit.creditAmount) * (5 / 100)))} />
 															</li>
 														</ul>
 
@@ -2135,7 +2158,7 @@ const Admin = () => {
 																<b>{index + 1}</b>. {item.member}
 															</td>
 															<td className="text-nowrap">
-																Credit: <b className='text-gray-700'><CurrencyText amount={item.credit} smallCurrency /></b>
+																Credit: <CurrencyText amount={item.credit} boldAmount smallCurrency className='text-gray-700' />
 															</td>
 															<td>
 																{item.member}
