@@ -167,6 +167,73 @@ const Admin = () => {
 		fetchCredits();
 	}, []);
 
+	/**
+	 * Loans
+	 */
+
+	const [allLoans, setAllLoans] = useState([]);
+	const [loansToShow, setLoansToShow] = useState(allLoans);
+	const [loadingLoans, setLoadingLoans] = useState(false);
+	const [errorLoadingLoans, setErrorLoadingLoans] = useState(false);
+
+	// Fetch loans
+	const fetchLoans = async () => {
+		try {
+			setLoadingLoans(true);
+			const response = await fetch(`${BASE_URL}/loans`);
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+			const data = await response.json();
+			console.log(data);
+			setAllLoans(data);
+			setLoansToShow(data);
+			setErrorLoadingLoans(null);
+		} catch (error) {
+			setErrorLoadingLoans("Failed to load loans. Click the button to try again.");
+			console.error("Error fetching loans:", error);
+		} finally {
+			setLoadingLoans(false);
+		}
+	};
+
+	useEffect(() => {
+		fetchLoans();
+	}, []);
+
+	/**
+	 * Records
+	 */
+
+	const [allRecords, setAllRecords] = useState([]);
+	const [recordsToShow, setRecordsToShow] = useState(allRecords);
+	const [loadingRecords, setLoadingRecords] = useState(false);
+	const [errorLoadingRecords, setErrorLoadingRecords] = useState(false);
+
+	// Fetch records
+	const fetchRecords = async () => {
+		try {
+			setLoadingRecords(true);
+			const response = await fetch(`${BASE_URL}/records`);
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+			const data = await response.json();
+			setAllRecords(data);
+			setRecordsToShow(data);
+			setErrorLoadingRecords(null);
+		} catch (error) {
+			setErrorLoadingRecords("Failed to load records. Click the button to try again.");
+			console.error("Error fetching records:", error);
+		} finally {
+			setLoadingRecords(false);
+		}
+	};
+
+	useEffect(() => {
+		fetchRecords();
+	}, []);
+
 	// const [activeSection, setActiveSection] = useState("dashboard");
 	// const [activeSection, setActiveSection] = useState("messages");
 	// const [activeSection, setActiveSection] = useState("members");
@@ -231,7 +298,7 @@ const Admin = () => {
 
 				<div ref={accountingDashboardRef} className="container py-4 bg-bodi">
 					<h2 className="mb-3 text-center text-uppercase text-primaryColor">Accounting Dashboard</h2>
-					<div className='flex-align-center mb-3'>
+					{/* <div className='flex-align-center mb-3'>
 						<hr className='flex-grow-1 my-0' />
 						<CurrencyDollarSimple size={45} className='mx-2 p-2 text-gray-500 border border-2 border-secondary border-opacity-25 rounded-circle' />
 						<hr className='flex-grow-1 my-0' />
@@ -241,7 +308,7 @@ const Admin = () => {
 						<div className='alert mb-4 rounded-0 smaller fw-light'>
 							This numerical report provides a financial status overview for IKIMINA INGOBOKA saving management system. It highlights key metrics, including contributions, social funds, loans disbursed, interest receivables, paid capital, and other financial indicators. The report reflects the financial management system's performance, tracking transactions from stakeholder contributions, savings, investments, and other financial activities, all aligned with the system's saving balance and agreements established among its members.
 						</div>
-					</div>
+					</div> */}
 					<div className="row gx-3 gy-4 gy-lg-3 pb-3 rounded-4">
 						{dashboardData.map((item, index) => (
 							<div className="col-md-6 col-lg-4" key={index}>
@@ -501,11 +568,88 @@ const Admin = () => {
 		const [savingRecordAmount, setSavingRecordAmount] = useState('');
 		const [selectedMember, setSelectedMember] = useState(allMembers[0]);
 
+		// Handle add savings
+		const handleAddSaving = async (id) => {
+			if (!savingRecordAmount || Number(savingRecordAmount) <= 0) {
+				return toast({ message: 'Enter a valid saving amount', type: 'gray-700' });
+			}
 
-		// Handle create property
-		const handleAddSaving = async (e) => {
-			e.preventDefault();
-		}
+			try {
+				setIsWaitingFetchAction(true);
+
+				const response = await fetch(`${BASE_URL}/member/${id}/${savingRecordType}`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						savingAmount: savingRecordAmount,
+						comment: savingRecordType[0].toUpperCase() + savingRecordType.slice(1)
+					}),
+				});
+
+				// Fetch error
+				if (!response.ok) {
+					const errorData = await response.json();
+					throw new Error(errorData.message || 'Error adding savings');
+				}
+
+				// Successful fetch
+				const data = await response.json();
+				toast({ message: data.message, type: "dark" });
+				setShowAddSavingRecord(false);
+				setErrorWithFetchAction(null);
+				fetchMembers(); // Ensure this fetches the updated member list
+				fetchRecords(); // Uncomment if you want to refresh records as well
+			} catch (error) {
+				setErrorWithFetchAction(error);
+				cError("Error adding savings:", error);
+				toast({ message: error.message || "An unknown error occurred", type: "danger" });
+			} finally {
+				setIsWaitingFetchAction(false);
+			}
+		};
+
+		// const [shares, setShares] = useState(false);
+		// const [showEditSharesRecord, setShowEditSharesRecord] = useState(false);
+
+		// // Handle add shares
+		// const handleEditShares = async (id) => {
+		// 	if (!shares || Number(shares) <= 0) {
+		// 		return toast({ message: 'Enter a valid number of shares', type: 'gray-700' });
+		// 	}
+
+		// 	try {
+		// 		setIsWaitingFetchAction(true);
+
+		// 		const response = await fetch(`${BASE_URL}/member/${id}/shares`, {
+		// 			method: 'POST',
+		// 			headers: { 'Content-Type': 'application/json' },
+		// 			body: JSON.stringify({
+		// 				shares,
+		// 				comment: shares[0].toUpperCase() + shares.slice(1),
+		// 			}),
+		// 		});
+
+		// 		// Fetch error
+		// 		if (!response.ok) {
+		// 			const errorData = await response.json();
+		// 			throw new Error(errorData.message || 'Error updating shares');
+		// 		}
+
+		// 		// Successful fetch
+		// 		const data = await response.json();
+		// 		toast({ message: data.message, type: "dark" });
+		// 		setShowEditSharesRecord(false); // Adjust based on your UI logic
+		// 		setErrorWithFetchAction(null);
+		// 		fetchMembers(); // Ensure the member data is updated
+		// 		// fetchRecords(); // Uncomment if records need to be refreshed
+		// 	} catch (error) {
+		// 		setErrorWithFetchAction(error);
+		// 		cError("Error updating shares:", error);
+		// 		toast({ message: error.message || "An unknown error occurred", type: "danger" });
+		// 	} finally {
+		// 		setIsWaitingFetchAction(false);
+		// 	}
+		// };
 
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
@@ -579,17 +723,17 @@ const Admin = () => {
 															<li className="py-1 w-100">
 																<span className="flex-align-center">
 																	<b className='fs-5'>{shares} Shares</b>
-																	<span className='ms-3 text-primary flex-align-center ptr clickDown' title='Edit multiple shares'><Pen size={22} className='me-2' /> Multiple shares</span>
+																	<span className='ms-3 text-primary flex-align-center ptr clickDown' title='Edit multiple shares'><Pen size={22} className='me-2' /> Umuhigo</span>
 																</span>
 															</li>
 															<li className="py-1 d-table-row">
-																<span className='d-table-cell border-start border-secondary ps-2'>Cotisation:</span> <span className='d-table-cell ps-2'>{cotisationAmount.toLocaleString()} RWF</span>
+																<span className='d-table-cell border-start border-secondary ps-2'>Cotisation:</span> <span className='d-table-cell ps-2'>{cotisation.toLocaleString()} RWF</span>
 															</li>
 															<li className="py-1 d-table-row">
 																<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'>{social.toLocaleString()} RWF</span>
 															</li>
 															<li className="py-1 fs-5 d-table-row">
-																<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'>{(cotisationAmount + social).toLocaleString()} RWF</span>
+																<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'>{(cotisation + social).toLocaleString()} RWF</span>
 															</li>
 														</ul>
 														<button className="btn btn-sm btn-outline-primary w-100 flex-center rounded-0 clickDown"
@@ -629,7 +773,7 @@ const Admin = () => {
 												<hr />
 
 												{/* The form */}
-												<form onSubmit={(e) => handleAddSaving(e)} className="px-sm-2 pb-5">
+												<form onSubmit={(e) => e.preventDefault()} className="px-sm-2 pb-5">
 													<div className="mb-3">
 														<p htmlFor="expenseType" className="fw-bold small">
 															Saving type: <span className="text-primary text-capitalize">{savingRecordType}</span>
@@ -656,6 +800,7 @@ const Admin = () => {
 														/>
 													</div>
 													<button type="submit" className="btn btn-sm btn-dark flex-center w-100 mt-3 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
+														onClick={() => handleAddSaving(selectedMember.id)}
 													>
 														{!isWaitingFetchAction ?
 															<>Save Amount <FloppyDisk size={18} className='ms-2' /></>
@@ -747,7 +892,7 @@ const Admin = () => {
 									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
 									.map((item, index) => {
 										const memberNames = `${item.husbandFirstName} ${item.husbandLastName}`;
-										const sharesProportion = (item.shares / totalShares);
+										const sharesProportion = (item.shares / totalBoughtShares);
 
 										const sharesPercentage = (sharesProportion * 100).toFixed(3);
 										// Actual interest = (Shares percentage  * Total interest receivable)
@@ -803,13 +948,14 @@ const Admin = () => {
 									</td>
 									<td className='text-nowrap'>
 										<div className="d-grid">
-											{totalBoughtShares} <span className="fs-60">of {totalShares} shares</span>
+											{totalBoughtShares}
+											 {/* <span className="fs-60">of {totalShares} shares</span> */}
 										</div>
 									</td>
 									<td className="text-nowrap">
 										<div className="d-grid">
 											<span>{totalSharesPercentage.toFixed(3)} <span className="fs-60">%</span></span>
-											<span className="fs-60">of {totalShares} shares</span>
+											{/* <span className="fs-60">of {totalShares} shares</span> */}
 										</div>
 									</td>
 									<td className="text-nowrap fw-bold">
@@ -1082,47 +1228,58 @@ const Admin = () => {
 															</tr>
 														</thead>
 														<tbody>
-															<tr className={`small credit-row`}
-															>
-																<td className={`ps-sm-3  border-bottom-3 border-end fw-bold`}>
-																	Loan
-																</td>
-																<td>
-																	<CurrencyText amount={19960000} />
-																</td>
-																<td className='text-primary-emphasis'>
-																	<CurrencyText amount={18415000} />
-																</td>
-																<td className='text-warning-emphasis'>
-																	<CurrencyText amount={1545000} />
-																</td>
-															</tr>
-															<tr className={`small credit-row`}
-															>
-																<td className={`ps-sm-3  border-bottom-3 border-end fw-bold`}>
-																	Interest
-																</td>
-																<td>
-																	<CurrencyText amount={998000} />
-																</td>
-																<td></td>
-																<td></td>
-															</tr>
-															<tr className={`small credit-row`}
-															>
-																<td className={`ps-sm-3  border-bottom-3 border-end fw-bold`}>
-																	Tranches
-																</td>
-																<td>
-																	52
-																</td>
-																<td className='text-primary-emphasis'>
-																	47
-																</td>
-																<td className='text-warning-emphasis'>
-																	5
-																</td>
-															</tr>
+															{allLoans
+																.filter(loan => loan.memberId === selectedMember.id)
+																.map((loan, index) => (
+																	<>
+																		<tr className={`small credit-row`}
+																		>
+																			<td className={`ps-sm-3  border-bottom-3 border-end fw-bold`}>
+																				Loan
+																			</td>
+																			<td>
+																				<CurrencyText amount={loan.loanTaken} />
+																			</td>
+																			<td className='text-primary-emphasis'>
+																				<CurrencyText amount={loan.loanPaid} />
+																			</td>
+																			<td className='text-warning-emphasis'>
+																				<CurrencyText amount={loan.loanPending} />
+																			</td>
+																		</tr>
+																		<tr className={`small credit-row`}
+																		>
+																			<td className={`ps-sm-3  border-bottom-3 border-end fw-bold`}>
+																				Interest
+																			</td>
+																			<td>
+																				<CurrencyText amount={loan.loanTaken} />
+																			</td>
+																			<td>
+																				<CurrencyText amount={loan.loanPaid} />
+																			</td>
+																			<td>
+																				<CurrencyText amount={loan.loanPending} />
+																			</td>
+																		</tr>
+																		<tr className={`small credit-row`}
+																		>
+																			<td className={`ps-sm-3  border-bottom-3 border-end fw-bold`}>
+																				Tranches
+																			</td>
+																			<td>
+																				<CurrencyText amount={loan.tranchesTaken} />
+																			</td>
+																			<td className='text-primary-emphasis'>
+																				<CurrencyText amount={loan.tranchesPaid} />
+																			</td>
+																			<td className='text-warning-emphasis'>
+																				<CurrencyText amount={loan.tranchesPending} />
+																			</td>
+																		</tr>
+																	</>
+																))
+															}
 														</tbody>
 													</table>
 
@@ -1854,6 +2011,11 @@ const Admin = () => {
 							</>
 						)}
 
+						{/* <>
+							{creditsToShow.filter(r => r.recordType === 'deposit').length > 0 && (
+
+							)}
+							</> */}
 						{activeTransactionSection === 'deposits' && (
 							<div className='overflow-auto'>
 								<table className="table table-hover h-100 properties-table">
@@ -1868,37 +2030,45 @@ const Admin = () => {
 										</tr>
 									</thead>
 									<tbody>
-										{deposits
-											.sort((a, b) => new Date(b.date) - new Date(a.date))
-											.map((item, index) => (
-												<tr
-													key={index}
-													className="small cursor-default clickDown expense-row"
-												>
-													<td className="ps-sm-3 border-bottom-3 border-end">
-														{index + 1}
-													</td>
-													<td className="text-nowrap">
-														{item.member}
-													</td>
-													<td>
-														{item.type}
-													</td>
-													<td>
-														{item.amount.toLocaleString()}
-													</td>
-													<td className="text-nowrap">
-														{item.comment}
-													</td>
-													<td style={{ maxWidth: '13rem' }}>
-														{new Intl.DateTimeFormat('en-gb', {
-															day: '2-digit',
-															month: '2-digit',
-															year: 'numeric',
-														}).format(new Date(item.date))} {/* Formats the date */}
-													</td>
-												</tr>
-											))
+										{recordsToShow
+											.filter(cr => cr.recordType === 'deposit')
+											.sort((a, b) => new Date(a.updatedAt) - new Date(b.updatedAt))
+											.map((record, index) => {
+												const associatedMember = allMembers.find(m => m.id === record.memberId);
+												const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+
+												return (
+													<tr
+														key={index}
+														className="small cursor-default clickDown expense-row"
+													>
+														<td className="ps-sm-3 border-bottom-3 border-end">
+															{index + 1}
+														</td>
+														<td className="text-nowrap">
+															{/* {record.member} */}
+															{memberNames}
+														</td>
+														<td>
+															{record.recordType[0].toUpperCase() + record.recordType.slice(1)}
+														</td>
+														<td>
+															<CurrencyText amount={Number(record.recordAmount)} />
+														</td>
+														<td className="text-nowrap">
+															{record.comment}
+														</td>
+														<td style={{ maxWidth: '13rem' }}>
+															{new Intl.DateTimeFormat('en-gb', {
+																day: '2-digit',
+																month: '2-digit',
+																year: 'numeric',
+															}).format(new Date(record.createdAt))} {/* Formats the date */}
+														</td>
+													</tr>
+												)
+											}
+											)
 										}
 									</tbody>
 								</table>
@@ -2478,13 +2648,13 @@ const Admin = () => {
 
 								<hr />
 
-								<li className={`nav-item mb-2 ${activeSection === 'auditLogs' ? 'active' : ''}`}
+								{/* <li className={`nav-item mb-2 ${activeSection === 'auditLogs' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("auditLogs"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Notebook size={20} weight='fill' className="me-2" /> Audit Logs
 									</button>
-								</li>
+								</li> */}
 
 								<li className={`nav-item mb-2 ${activeSection === 'settings' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("settings"); hideSideNavbar() }}
