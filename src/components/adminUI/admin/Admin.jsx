@@ -114,16 +114,14 @@ const Admin = () => {
 	const fetchMembers = async () => {
 		try {
 			setLoadingMembers(true);
-			const response = await fetch(`${BASE_URL}/users`);
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-			const data = await response.json();
+			const response = await axios.get(`${BASE_URL}/users`);
+			const data = response.data;
 			setAllMembers(data);
 			setMembersToShow(data);
 			setErrorLoadingMembers(null);
 		} catch (error) {
 			setErrorLoadingMembers("Failed to load members. Click the button to try again.");
+			toast({ message: errorLoadingMembers, type: "danger" });
 			console.error("Error fetching members:", error);
 		} finally {
 			setLoadingMembers(false);
@@ -147,16 +145,14 @@ const Admin = () => {
 	const fetchCredits = async () => {
 		try {
 			setLoadingCredits(true);
-			const response = await fetch(`${BASE_URL}/credits`);
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-			const data = await response.json();
+			const response = await axios.get(`${BASE_URL}/credits`);
+			const data = response.data;
 			setAllCredits(data);
 			setCreditsToShow(data);
 			setErrorLoadingCredits(null);
 		} catch (error) {
 			setErrorLoadingCredits("Failed to load credits. Click the button to try again.");
+			toast({ message: errorLoadingCredits, type: "warning" });
 			console.error("Error fetching credits:", error);
 		} finally {
 			setLoadingCredits(false);
@@ -178,7 +174,6 @@ const Admin = () => {
 
 	// Fetch loans
 	const fetchLoans = async () => {
-		
 		try {
 			setLoadingLoans(true);
 			const response = await axios.get(`${BASE_URL}/loans`);
@@ -189,29 +184,11 @@ const Admin = () => {
 			setErrorLoadingLoans(null);
 		} catch (error) {
 			setErrorLoadingLoans("Failed to load loans. Click the button to try again.");
-			toast("An error occurred. Please try again.", "error");
+			toast({ message: errorLoadingLoans, type: "warning" });
 			console.error("Error fetching loans:", error);
 		} finally {
 			setLoadingLoans(false);
-		}		
-
-		// try {
-		// 	setLoadingLoans(true);
-		// 	const response = await fetch(`${BASE_URL}/loans`);
-		// 	if (!response.ok) {
-		// 		throw new Error(`HTTP error! status: ${response.status}`);
-		// 	}
-		// 	const data = await response.json();
-		// 	console.log(data);
-		// 	setAllLoans(data);
-		// 	setLoansToShow(data);
-		// 	setErrorLoadingLoans(null);
-		// } catch (error) {
-		// 	setErrorLoadingLoans("Failed to load loans. Click the button to try again.");
-		// 	console.error("Error fetching loans:", error);
-		// } finally {
-		// 	setLoadingLoans(false);
-		// }
+		}
 	};
 
 	useEffect(() => {
@@ -231,16 +208,15 @@ const Admin = () => {
 	const fetchRecords = async () => {
 		try {
 			setLoadingRecords(true);
-			const response = await fetch(`${BASE_URL}/records`);
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-			const data = await response.json();
+			const response = await axios.get(`${BASE_URL}/records`);
+			const data = response.data;
+			console.log(data);
 			setAllRecords(data);
 			setRecordsToShow(data);
 			setErrorLoadingRecords(null);
 		} catch (error) {
 			setErrorLoadingRecords("Failed to load records. Click the button to try again.");
+			toast({ message: errorLoadingRecords, type: "warning" });
 			console.error("Error fetching records:", error);
 		} finally {
 			setLoadingRecords(false);
@@ -966,7 +942,7 @@ const Admin = () => {
 									<td className='text-nowrap'>
 										<div className="d-grid">
 											{totalBoughtShares}
-											 {/* <span className="fs-60">of {totalShares} shares</span> */}
+											{/* <span className="fs-60">of {totalShares} shares</span> */}
 										</div>
 									</td>
 									<td className="text-nowrap">
