@@ -7,6 +7,7 @@ import { useLocation } from 'react-router';
 import { useNavigate } from "react-router-dom";
 import $ from 'jquery';
 import { SignIn, UserCircleDashed, Wallet } from '@phosphor-icons/react';
+import useCustomDialogs from '../common/hooks/useCustomDialogs';
 
 
 const Login = () => {
@@ -15,17 +16,15 @@ const Login = () => {
     const location = useLocation();
     const signInId = useId();
 
-    // Toast
-    const [showToast, setShowToast] = useState(false);
-    const [toastMessage, setToastMessage] = useState('');
-    const [toastType, setToastType] = useState('purple');
-
-    const toast = (message, type) => {
-        setShowToast(true);
-        setToastMessage(message);
-        setToastType(type || toastType);
-    };
-
+    // Custom hooks
+    const {
+        // Toast
+        showToast,
+        setShowToast,
+        toastMessage,
+        toastType,
+        toast,
+    } = useCustomDialogs();
 
     /**
      * Login
@@ -53,7 +52,7 @@ const Login = () => {
             }
 
             const data = await response.json();
-            toast(data.message, 'success');
+            toast({ message: data.message, type: 'success' });
 
             // Authentication code
             if (data.success) {
@@ -64,18 +63,18 @@ const Login = () => {
                 } else if (type === "member") {
                     navigate("/user");
                 } else {
-                    toast("Unknown user type. Please contact support.", "error");
+                    toast({ message: "Unknown user type. Please contact support.", type: "error" });
                 }
             } else {
-                toast("Invalid credentials. Please try again.", "warning");
+                toast({ message: "Invalid credentials. Please try again.", type: "warning" });
             }
         } catch (error) {
             if (error.response) {
                 console.error(error.response.data.message);
-                toast(error.response.data.message, 'warning');
+                toast({ message: error.response.data.message, type: 'warning' });
             } else {
                 console.error(error.message);
-                toast("An error occurred. Please try again.", "error");
+                toast({ message: "An error occurred. Please try again.", type: "error" });
             }
         }
     };
