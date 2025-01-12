@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-
+import axios from 'axios'
 import { Button, Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
@@ -178,23 +178,40 @@ const Admin = () => {
 
 	// Fetch loans
 	const fetchLoans = async () => {
+		
 		try {
 			setLoadingLoans(true);
-			const response = await fetch(`${BASE_URL}/loans`);
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-			const data = await response.json();
+			const response = await axios.get(`${BASE_URL}/loanss`);
+			const data = response.data;
 			console.log(data);
 			setAllLoans(data);
 			setLoansToShow(data);
 			setErrorLoadingLoans(null);
 		} catch (error) {
 			setErrorLoadingLoans("Failed to load loans. Click the button to try again.");
+			toast("An error occurred. Please try again.", "error");
 			console.error("Error fetching loans:", error);
 		} finally {
 			setLoadingLoans(false);
-		}
+		}		
+
+		// try {
+		// 	setLoadingLoans(true);
+		// 	const response = await fetch(`${BASE_URL}/loans`);
+		// 	if (!response.ok) {
+		// 		throw new Error(`HTTP error! status: ${response.status}`);
+		// 	}
+		// 	const data = await response.json();
+		// 	console.log(data);
+		// 	setAllLoans(data);
+		// 	setLoansToShow(data);
+		// 	setErrorLoadingLoans(null);
+		// } catch (error) {
+		// 	setErrorLoadingLoans("Failed to load loans. Click the button to try again.");
+		// 	console.error("Error fetching loans:", error);
+		// } finally {
+		// 	setLoadingLoans(false);
+		// }
 	};
 
 	useEffect(() => {
