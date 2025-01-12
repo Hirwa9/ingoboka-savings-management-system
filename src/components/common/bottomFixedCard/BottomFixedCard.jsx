@@ -2,19 +2,19 @@ import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react
 import './bottomFixedCard.css';
 import MyToast from '../Toast';
 import { CaretDown } from '@phosphor-icons/react';
+import useCustomDialogs from '../hooks/useCustomDialogs';
 
 const BottomFixedCard = ({ show, content, className, id, blurBg, toggler, closeButton, onClose, avoidCloseReasons }) => {
 
-    // Toast state and helper
-    const [showToast, setShowToast] = useState(false);
-    const [toastMessage, setToastMessage] = useState('');
-    const [toastType, setToastType] = useState('light');
-
-    const toast = (message, type) => {
-        setToastMessage(message);
-        setToastType(type || 'light');
-        setShowToast(true);
-    };
+    // Custom hooks
+    const {
+        // Toast
+        showToast,
+        setShowToast,
+        toastMessage,
+        toastType,
+        toast,
+    } = useCustomDialogs();
 
     const cardRef = useRef(null);
     const cardContainerRef = useRef(null);
@@ -31,7 +31,7 @@ const BottomFixedCard = ({ show, content, className, id, blurBg, toggler, closeB
     // Hide card
     const slideOutCard = useCallback(() => {
         if (processing) {
-            toast('Wait, there is something in progress...', 'gray-700');
+            toast({ message: 'Wait, there is something in progress...', type: 'gray-700' });
         } else {
             cardRef.current.classList.add('flyOutB');
             setTimeout(() => {
