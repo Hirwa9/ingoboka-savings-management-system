@@ -181,7 +181,7 @@ const Admin = () => {
 		
 		try {
 			setLoadingLoans(true);
-			const response = await axios.get(`${BASE_URL}/loanss`);
+			const response = await axios.get(`${BASE_URL}/loans`);
 			const data = response.data;
 			console.log(data);
 			setAllLoans(data);
