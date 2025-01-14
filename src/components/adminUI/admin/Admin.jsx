@@ -178,7 +178,6 @@ const Admin = () => {
 			setLoadingLoans(true);
 			const response = await axios.get(`${BASE_URL}/loans`);
 			const data = response.data;
-			console.log(data);
 			setAllLoans(data);
 			setLoansToShow(data);
 			setErrorLoadingLoans(null);
@@ -210,7 +209,6 @@ const Admin = () => {
 			setLoadingRecords(true);
 			const response = await axios.get(`${BASE_URL}/records`);
 			const data = response.data;
-			console.log(data);
 			setAllRecords(data);
 			setRecordsToShow(data);
 			setErrorLoadingRecords(null);
@@ -1738,9 +1736,6 @@ const Admin = () => {
 																		<th className='ps-sm-3 py-3 text-nowrap text-gray-700 fw-normal'>Tranche</th>
 																		<th className='py-3 text-nowrap text-gray-700 fw-normal'>Backfill amount</th>
 																		<th className='py-3 text-nowrap text-gray-700 fw-normal'>Backfill date</th>
-																		{!['pending', 'rejected'].includes(activeLoanSection) && (
-																			<th className='py-3 text-nowrap text-gray-700 fw-normal'>Backfill slip</th>
-																		)}
 																	</tr>
 																</thead>
 																<tbody>
@@ -1763,18 +1758,6 @@ const Admin = () => {
 																					<td>
 																						<FormatedDate date={item.tranchDueDate} />
 																					</td>
-																					{!['pending', 'rejected'].includes(activeLoanSection) && (
-																						<td className="text-nowrap">
-																							{item.slipUrl ? (
-																								<img src={item.slipUrl} alt="Payment Slip" className='w-2rem h-2rem object-fit-contain img-thumbnail ptr clickDown' />
-																							) : (
-																								<button type="button" className='btn btn-sm text-primaryColor border-0 rounded-0 clickDown' onClick={() => alert('Upload a file')}
-																								>
-																									Upload slip <Upload />
-																								</button>
-																							)}
-																						</td>
-																					)}
 																				</tr>
 																			)
 																		})
