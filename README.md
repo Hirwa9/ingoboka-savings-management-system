@@ -1,4 +1,4 @@
-# Sam Real Estate
+# Savings management system
 
 A web application designed to manage the financial savings of members in the **IKIMINA INGOBOKA** savings group. The platform allows members to register, track their savings, and calculate interest.
 
