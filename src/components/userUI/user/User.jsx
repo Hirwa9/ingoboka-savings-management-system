@@ -15,7 +15,7 @@ import FetchError from '../../common/FetchError';
 import useCustomDialogs from '../../common/hooks/useCustomDialogs';
 import ActionPrompt from '../../common/actionPrompt/ActionPrompt';
 import ConfirmDialog from '../../common/confirmDialog/ConfirmDialog';
-import NotFount from '../../common/NotFount';
+import NotFound from '../../common/NotFound';
 import JsonJsFormatter from '../../common/JsonJsFormatter';
 
 const UserUI = () => {
@@ -369,7 +369,7 @@ const UserUI = () => {
 						/>
 					)}
 					{!loadingMembers && !errorLoadingMembers && membersToShow.length === 0 && (
-						<NotFount
+						<NotFound
 							notFoundMessage="No member found"
 							icon={<Users size={80} className="text-center w-100 mb-3 opacity-50" />}
 							refreshFunction={resetMembers}
@@ -1011,7 +1011,7 @@ const UserUI = () => {
 					/>
 				)}
 				{!loadingMembers && !errorLoadingMembers && membersToShow.length === 0 && (
-					<NotFount
+					<NotFound
 						notFoundMessage="No member found"
 						icon={<Users size={80} className="text-center w-100 mb-3 opacity-50" />}
 						refreshFunction={resetMembers}
@@ -1304,7 +1304,7 @@ const UserUI = () => {
 										)}
 										{/* Zero content - no credits */}
 										{creditsToShow.filter(cr => cr.status === 'pending').length === 0 && (
-											<NotFount
+											<NotFound
 												notFoundMessage="No credit found"
 												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
 												refreshFunction={fetchCredits}
@@ -1387,7 +1387,7 @@ const UserUI = () => {
 										)}
 										{/* Zero content - no credits */}
 										{creditsToShow.filter(cr => cr.status === 'approved').length === 0 && (
-											<NotFount
+											<NotFound
 												notFoundMessage="No credit found"
 												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
 												refreshFunction={fetchCredits}
@@ -1494,7 +1494,7 @@ const UserUI = () => {
 										)}
 										{/* Zero content - no credits */}
 										{creditsToShow.filter(cr => cr.status === 'rejected').length === 0 && (
-											<NotFount
+											<NotFound
 												notFoundMessage="No credit found"
 												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
 												refreshFunction={fetchCredits}
