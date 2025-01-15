@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowClockwise } from '@phosphor-icons/react';
 
-const NotFount = ({ notFoundMessage, icon, refreshKeyword, refreshFunction, className }) => {
+const NotFound = ({ notFoundMessage, icon, refreshKeyword, refreshFunction, className }) => {
     refreshKeyword = refreshKeyword || "Refresh";
 
     return (
@@ -19,4 +19,4 @@ const NotFount = ({ notFoundMessage, icon, refreshKeyword, refreshFunction, clas
     )
 }
 
-export default NotFount;
+export default NotFound;
