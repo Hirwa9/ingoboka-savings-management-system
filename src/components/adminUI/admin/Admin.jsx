@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios'
 import { Button, Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, Files, FloppyDisk, Gear, Info, List, Notebook, Pen, Plus, Receipt, ReceiptX, SignOut, Table, Upload, User, Users, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, Files, FloppyDisk, Gear, Info, List, Notebook, Pen, Plus, Receipt, ReceiptX, SignOut, Table, Upload, User, Users, Warning, X } from '@phosphor-icons/react';
 import { dashboardData, deposits, expenses, expensesTypes, generalReport, incomeExpenses, membersData } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
@@ -15,8 +15,9 @@ import FetchError from '../../common/FetchError';
 import useCustomDialogs from '../../common/hooks/useCustomDialogs';
 import ActionPrompt from '../../common/actionPrompt/ActionPrompt';
 import ConfirmDialog from '../../common/confirmDialog/ConfirmDialog';
-import NotFount from '../../common/NotFount';
+import NotFound from '../../common/NotFound';
 import JsonJsFormatter from '../../common/JsonJsFormatter';
+import EmptyBox from '../../common/EmptyBox';
 
 const Admin = () => {
 
@@ -289,12 +290,12 @@ const Admin = () => {
 
 				<div ref={accountingDashboardRef} className="container py-4 bg-bodi">
 					<h2 className="mb-3 text-center text-uppercase text-primaryColor">Accounting Dashboard</h2>
-					{/* <div className='flex-align-center mb-3'>
+					<div className='flex-align-center mb-3'>
 						<hr className='flex-grow-1 my-0' />
 						<CurrencyDollarSimple size={45} className='mx-2 p-2 text-gray-500 border border-2 border-secondary border-opacity-25 rounded-circle' />
 						<hr className='flex-grow-1 my-0' />
 					</div>
-					<div className="d-lg-flex align-items-center">
+					{/* <div className="d-lg-flex align-items-center">
 						<img src="images/dashboard_visual.png" alt="" className='col-md-5' />
 						<div className='alert mb-4 rounded-0 smaller fw-light'>
 							This numerical report provides a financial status overview for IKIMINA INGOBOKA saving management system. It highlights key metrics, including contributions, social funds, loans disbursed, interest receivables, paid capital, and other financial indicators. The report reflects the financial management system's performance, tracking transactions from stakeholder contributions, savings, investments, and other financial activities, all aligned with the system's saving balance and agreements established among its members.
@@ -427,7 +428,7 @@ const Admin = () => {
 						/>
 					)}
 					{!loadingMembers && !errorLoadingMembers && membersToShow.length === 0 && (
-						<NotFount
+						<NotFound
 							notFoundMessage="No member found"
 							icon={<Users size={80} className="text-center w-100 mb-3 opacity-50" />}
 							refreshFunction={resetMembers}
@@ -780,12 +781,11 @@ const Admin = () => {
 															>
 																Social
 															</li>
-
 														</ul>
 													</div>
 													<div className="mb-3">
 														<label htmlFor="savingAmount" className="form-label fw-bold" required>Saving amount ({savingRecordAmount !== '' ? Number(savingRecordAmount).toLocaleString() : ''} RWF )</label>
-														<input type="number" id="savingAmount" name="savingAmount" className="form-control" required placeholder="Enter amount"
+														<input type="number" id="savingAmount" name="savingAmount" className="form-control" min="1" required placeholder="Enter amount"
 															value={savingRecordAmount}
 															onChange={e => setSavingRecordAmount(e.target.value)}
 														/>
@@ -794,7 +794,7 @@ const Admin = () => {
 														onClick={() => handleAddSaving(selectedMember.id)}
 													>
 														{!isWaitingFetchAction ?
-															<>Save Amount <FloppyDisk size={18} className='ms-2' /></>
+															<>Save amount <FloppyDisk size={18} className='ms-2' /></>
 															: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
 														}
 													</button>
@@ -871,7 +871,7 @@ const Admin = () => {
 									<th className='py-3 text-nowrap text-gray-700'>N°</th>
 									<th className='py-3 text-nowrap text-gray-700'>Member</th>
 									<th className='py-3 text-nowrap text-gray-700'>Shares</th>
-									<th className='py-3 text-nowrap text-gray-700'>Share % to {totalShares}</th>
+									<th className='py-3 text-nowrap text-gray-700'>Share % to {totalBoughtShares}</th>
 									<th className='py-3 text-nowrap text-gray-700'>Interest <sub className='fs-60'>/RWF</sub></th>
 									<th className='py-3 text-nowrap text-gray-700'>Receivable<sub className='fs-60'>/RWF</sub></th>
 									<th className='py-3 text-nowrap text-gray-700'>Remains<sub className='fs-60'>/RWF</sub></th>
@@ -1130,6 +1130,48 @@ const Admin = () => {
 			}
 		}
 
+		/**
+		 * Pay Loans
+		 */
+
+		const [payLoanAmount, setPayLoanAmount] = useState('');
+		const [payInterestAmount, setPayInterestAmount] = useState('');
+		const [payTranchesAmount, setPayTranchesAmount] = useState('');
+
+		const resetPaymentinputs = () => {
+			setPayLoanAmount('');
+			setPayInterestAmount('');
+			setPayTranchesAmount('');
+		}
+
+		const handeLoanPaymemnt = async (id) => {
+			if (payLoanAmount <= 0 || payTranchesAmount <= 0) {
+				return toast({ message: 'Enter valid payment values to continue', type: 'warning' });
+			}
+
+			try {
+				setIsWaitingFetchAction(true);
+				const response = await axios.put(`${BASE_URL}/loan/${id}/pay`, {
+					loanToPay: payLoanAmount,
+					interestToPay: payInterestAmount,
+					tranchesToPay: payTranchesAmount,
+				});
+				// Successfull fetch
+				const data = response.data;
+				toast({ message: data.message, type: "dark" });
+				resetPaymentinputs();
+				setErrorWithFetchAction(null);
+				fetchLoans();
+				fetchCredits();
+			} catch (error) {
+				setErrorWithFetchAction(error);
+				cError("Error fetching members:", error);
+				toast({ message: error, type: "danger" });
+			} finally {
+				setIsWaitingFetchAction(false);
+			}
+		}
+
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<h2><Blueprint weight='fill' className="me-1 opacity-50" /> Credit panel</h2>
@@ -1153,7 +1195,7 @@ const Admin = () => {
 					/>
 				)}
 				{!loadingMembers && !errorLoadingMembers && membersToShow.length === 0 && (
-					<NotFount
+					<NotFound
 						notFoundMessage="No member found"
 						icon={<Users size={80} className="text-center w-100 mb-3 opacity-50" />}
 						refreshFunction={resetMembers}
@@ -1188,11 +1230,10 @@ const Admin = () => {
 						{showSelectedMemberCredits &&
 							<>
 								<div className='position-fixed fixed-top inset-0 bg-black2 inx-high add-property-form'>
-									<div className="container offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-										<div className="container h-100 px-3 bg-light text-gray-700">
+									<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
+										<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
 											<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom">
 												<div className='flex-align-center'>
-													{/* <Blueprint weight='fill' className="me-1" /> */}
 													<img src={selectedMember.husbandAvatar}
 														alt={`${selectedMember.husbandFirstName.slice(0, 1)}.${selectedMember.husbandLastName}`}
 														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
@@ -1205,94 +1246,228 @@ const Admin = () => {
 													<X size={25} className='ptr' />
 												</div>
 											</h6>
-											<div className="flex-align-center gap-3 mb-3">
-												<div className='overflow-auto'>
-													<table className="table table-hover h-100 properties-table">
-														<thead className='table-warning position-sticky top-0 inx-1'>
-															<tr>
-																{/* <th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th> */}
-																<th className='py-3 text-nowrap text-gray-700'>Title</th>
-																<th className='py-3 text-nowrap text-gray-700'>Taken  <sub className='fs-60'>/RWF</sub></th>
-																<th className='py-3 text-nowrap text-gray-700'>Paid  <sub className='fs-60'>/RWF</sub></th>
-																<th className='py-3 text-nowrap text-gray-700'>Pending  <sub className='fs-60'>/RWF</sub></th>
-																{/* <th className='py-3 text-nowrap text-gray-700'>Fines</th> */}
-															</tr>
-														</thead>
-														<tbody>
-															{allLoans
-																.filter(loan => loan.memberId === selectedMember.id)
-																.map((loan, index) => (
-																	<>
-																		<tr className={`small credit-row`}
-																		>
-																			<td className={`ps-sm-3  border-bottom-3 border-end fw-bold`}>
-																				Loan
-																			</td>
-																			<td>
-																				<CurrencyText amount={loan.loanTaken} />
-																			</td>
-																			<td className='text-primary-emphasis'>
-																				<CurrencyText amount={loan.loanPaid} />
-																			</td>
-																			<td className='text-warning-emphasis'>
-																				<CurrencyText amount={loan.loanPending} />
-																			</td>
-																		</tr>
-																		<tr className={`small credit-row`}
-																		>
-																			<td className={`ps-sm-3  border-bottom-3 border-end fw-bold`}>
-																				Interest
-																			</td>
-																			<td>
-																				<CurrencyText amount={loan.loanTaken} />
-																			</td>
-																			<td>
-																				<CurrencyText amount={loan.loanPaid} />
-																			</td>
-																			<td>
-																				<CurrencyText amount={loan.loanPending} />
-																			</td>
-																		</tr>
-																		<tr className={`small credit-row`}
-																		>
-																			<td className={`ps-sm-3  border-bottom-3 border-end fw-bold`}>
-																				Tranches
-																			</td>
-																			<td>
-																				<CurrencyText amount={loan.tranchesTaken} />
-																			</td>
-																			<td className='text-primary-emphasis'>
-																				<CurrencyText amount={loan.tranchesPaid} />
-																			</td>
-																			<td className='text-warning-emphasis'>
-																				<CurrencyText amount={loan.tranchesPending} />
-																			</td>
-																		</tr>
-																	</>
-																))
-															}
-														</tbody>
-													</table>
+											{allLoans.filter(loan => (loan.memberId === selectedMember.id && loan.loanTaken > 0)).length > 0 ? (
+												<>
+													{allLoans.filter(loan => (loan.memberId === selectedMember.id && loan.loanTaken > 0))
+														.map((item, index) => {
+															const selectedLoan = item;
+															return (
+																<Fragment key={index} >
+																	<div className="d-xxl-flex gap-3 pb-5">
+																		{/* Loan status */}
+																		<div className="col member-loan-status mb-4 mb-xxl-0">
+																			<div className="fs-6 fw-semibold text-primaryColor text-center">Loan status</div>
+																			<hr />
+																			<div className='overflow-auto'>
+																				<table className="table table-hover h-100 properties-table">
+																					<thead className='table-warning position-sticky top-0 inx-1'>
+																						<tr>
+																							<th className='py-3 text-nowrap text-gray-700'>Title</th>
+																							<th className='py-3 text-nowrap text-gray-700'>Taken  <sub className='fs-60'>/RWF</sub></th>
+																							<th className='py-3 text-nowrap text-gray-700'>Paid  <sub className='fs-60'>/RWF</sub></th>
+																							<th className='py-3 text-nowrap text-gray-700'>Pending  <sub className='fs-60'>/RWF</sub></th>
+																						</tr>
+																					</thead>
+																					<tbody>
+																						<tr className={`small credit-row`}
+																						>
+																							<td className={`ps-sm-3  border-bottom-3 border-end fw-bold`}>
+																								Loan
+																							</td>
+																							<td>
+																								<CurrencyText amount={selectedLoan.loanTaken} />
+																							</td>
+																							<td className='text-primary-emphasis'>
+																								<CurrencyText amount={selectedLoan.loanPaid} />
+																							</td>
+																							<td className='text-warning-emphasis'>
+																								<CurrencyText amount={selectedLoan.loanPending} />
+																							</td>
+																						</tr>
+																						<tr className={`small credit-row`}
+																						>
+																							<td className={`ps-sm-3  border-bottom-3 border-end fw-bold`}>
+																								Interest
+																							</td>
+																							<td>
+																								<CurrencyText amount={selectedLoan.interestTaken} />
+																							</td>
+																							<td className='text-primary-emphasis'>
+																								<CurrencyText amount={selectedLoan.interestPaid} />
+																							</td>
+																							<td className='text-warning-emphasis'>
+																								<CurrencyText amount={selectedLoan.interestPending} />
+																							</td>
+																						</tr>
+																						<tr className={`small credit-row`}
+																						>
+																							<td className={`ps-sm-3  border-bottom-3 border-end fw-bold`}>
+																								Tranches
+																							</td>
+																							<td>
+																								{selectedLoan.tranchesTaken}
+																							</td>
+																							<td className='text-primary-emphasis'>
+																								{selectedLoan.tranchesPaid}
+																							</td>
+																							<td className='text-warning-emphasis'>
+																								{selectedLoan.tranchesPending}
+																							</td>
+																						</tr>
+																					</tbody>
+																				</table>
+																			</div>
+																			<div className="d-flex">
+																				<div className='col p-2'>
+																					<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">First loan</span></div>
+																					<div className='text-center bg-gray-300'>
+																						<FormatedDate date={allCredits
+																							.sort((a, b) => new Date(a.requestDate) - new Date(b.requestDate))
+																							.filter(cr => cr.memberId === selectedMember.id)[0].requestDate
+																						} />
+																					</div>
+																				</div>
+																				<div className='col p-2'>
+																					<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Recent loan</span></div>
+																					<div className='text-center bg-gray-300'>
+																						<FormatedDate date={allCredits
+																							.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate))
+																							.filter(cr => cr.memberId === selectedMember.id)[0].requestDate
+																						} />
+																					</div>
+																				</div>
+																			</div>
+																		</div>
 
-													<div className="d-flex">
-														<div className='col p-2'>
-															<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">First loan</span></div>
-															<div className='text-center bg-gray-300'><FormatedDate date="2022-12-01" /></div>
-														</div>
-														<div className='col p-2'>
-															<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Recent loan</span></div>
-															<div className='text-center bg-gray-300'><FormatedDate date="2020-04-30" /></div>
-														</div>
-													</div>
+																		{/* Loan payment form */}
+																		<div className='col col-xxl-5 member-loan-payment'>
+																			{selectedLoan.loanPending > 0 ? (
+																				<>
+																					<div className="fs-6 fw-semibold text-primaryColor text-center">Payment</div>
+																					<hr />
+																					<div>
+																						<div className='mb-3'>
+																							<div className="d-sm-flex px-1">
+																								<div className="col mb-2 ps-2 mb-sm-0 border-start border-secondary border-opacity-50">
+																									<div className='small mb-sm-3'>Remaining Loan</div>
+																									<div className="px-2 text-danger-emphasis">
+																										<CurrencyText amount={selectedLoan.loanPending} />
+																									</div>
+																								</div>
+																								<div className='col'>
+																									<label htmlFor="payLoanAmount" className="form-label" required>Pay loan ({payLoanAmount !== '' ? Number(payLoanAmount).toLocaleString() : ''} RWF )</label>
+																									<input type="number" id="payLoanAmount" name="payLoanAmount" className="form-control rounded-0 border-secondary border-opacity-50 shadow-none" min="1" required placeholder="Enter amount"
+																										value={payLoanAmount}
+																										onChange={e => setPayLoanAmount(e.target.value)}
+																									/>
+																								</div>
+																							</div>
+																							{payLoanAmount > Number(selectedLoan.loanPending) && (
+																								<div className='form-text d-flex gap-2 bg-danger-subtle mt-2 p-2 rounded-bottom-4'>
+																									<Warning />
+																									<span className='fs-75'>Amount to pay cannot be grater than the remaining amount</span>
+																								</div>
+																							)}
+																						</div>
 
-												</div>
-												{/* <div>
-													Add savings for <b className='fw-semibold'>{selectedMember.husbandFirstName} {selectedMember.husbandLastName}</b>
-												</div> */}
-											</div>
-											<hr />
+																						{selectedLoan.interestPending > 0 && (
+																							<div className='mb-3'>
+																								<div className="d-sm-flex px-1">
+																									<div className="col mb-2 ps-2 mb-sm-0 border-start border-secondary border-opacity-50">
+																										<div className='small mb-sm-3'>Remaining Interest</div>
+																										<div className="px-2 text-danger-emphasis">
+																											<CurrencyText amount={selectedLoan.interestPending} />
+																										</div>
+																									</div>
+																									<div className='col'>
+																										<label htmlFor="payInterestAmount" className="form-label" required>Pay interest ({payInterestAmount !== '' ? Number(payInterestAmount).toLocaleString() : ''} RWF )</label>
+																										<input type="number" id="payInterestAmount" name="payInterestAmount" className="form-control rounded-0 border-secondary border-opacity-50 shadow-none" min="1" required placeholder="Enter amount"
+																											value={payInterestAmount}
+																											onChange={e => setPayInterestAmount(e.target.value)}
+																										/>
+																									</div>
+																								</div>
+																								{payInterestAmount > Number(selectedLoan.interestPending) && (
+																									<div className='form-text d-flex gap-2 bg-danger-subtle mt-2 p-2 rounded-bottom-4'>
+																										<Warning />
+																										<span className='fs-75'>Amount to pay cannot be grater than the remaining amount</span>
+																									</div>
+																								)}
+																							</div>
+																						)}
 
-											{/* The form */}
+																						<div className='mb-3'>
+																							<div className="d-sm-flex px-1">
+																								<div className="col mb-2 ps-2 mb-sm-0 border-start border-secondary border-opacity-50">
+																									<div className='small mb-sm-3'>Remaining Traches</div>
+																									<div className="px-2 text-danger-emphasis">
+																										{selectedLoan.tranchesPending}
+																									</div>
+																								</div>
+																								<div className='col'>
+																									<label htmlFor="payTranchesAmount" className="form-label" required>Pay tranches ({payTranchesAmount !== '' ? Number(payTranchesAmount).toLocaleString() : ''} RWF )</label>
+																									<input type="number" id="payTranchesAmount" name="payTranchesAmount" className="form-control rounded-0 border-secondary border-opacity-50 shadow-none" min="1" required placeholder="Enter amount"
+																										value={payTranchesAmount}
+																										onChange={e => setPayTranchesAmount(e.target.value)}
+																									/>
+																								</div>
+																							</div>
+																							{payTranchesAmount > Number(selectedLoan.tranchesPending) && (
+																								<div className='form-text d-flex gap-2 bg-danger-subtle mt-2 p-2 rounded-bottom-4'>
+																									<Warning />
+																									<span className='fs-75'>Amount to pay cannot be grater than the remaining amount</span>
+																								</div>
+																							)}
+																						</div>
+																					</div>
+
+																					<div className="d-flex">
+																						<button className="col btn btn-sm text-dark w-100 flex-center py-2 border-dark rounded-0 clickDown"
+																							onClick={() => resetPaymentinputs()}
+																						>
+																							Clear
+																						</button>
+																						<button className="col btn btn-sm btn-dark w-100 flex-center py-2 border-dark rounded-0 clickDown"
+																							disabled={(
+																								payLoanAmount > Number(selectedLoan.loanPending)
+																								|| payInterestAmount > Number(selectedLoan.interestPending)
+																								|| payTranchesAmount > Number(selectedLoan.tranchesPending)
+																								|| isWaitingFetchAction
+																							)}
+																							onClick={() => { handeLoanPaymemnt(selectedLoan.id); }}
+																						>
+																							{!isWaitingFetchAction ?
+																								<>Save payment <FloppyDisk size={18} className='ms-2' /></>
+																								: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
+																							}
+																						</button>
+																					</div>
+
+																				</>
+																			) : (
+																				<div className="grid-center fs-5 py-5">
+																					<CheckCircle size={40} weight='fill' className="w-4rem h-4rem d-block mx-auto mb-2 text-success" />
+																					<p className="text-center text-gray-800 fw-light small">Requested loan is fully paid.</p>
+																				</div>
+																			)}
+																		</div>
+																	</div>
+																</Fragment>
+															)
+														})
+													}
+												</>
+											) : (
+												<>
+													<EmptyBox
+														notFoundMessage={`No credit records found for ${selectedMember.husbandLastName}. It appears they have not received a loan yet.`}
+														refreshKeyword="Got it"
+
+														refreshFunction={() => setShowSelectedMemberCredits(false)}
+													/>
+												</>
+											)}
+
 										</div>
 									</div>
 								</div>
@@ -1457,7 +1632,7 @@ const Admin = () => {
 										)}
 										{/* Zero content - no credits */}
 										{creditsToShow.filter(cr => cr.status === 'pending').length === 0 && (
-											<NotFount
+											<NotFound
 												notFoundMessage="No credit found"
 												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
 												refreshFunction={fetchCredits}
@@ -1540,7 +1715,7 @@ const Admin = () => {
 										)}
 										{/* Zero content - no credits */}
 										{creditsToShow.filter(cr => cr.status === 'approved').length === 0 && (
-											<NotFount
+											<NotFound
 												notFoundMessage="No credit found"
 												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
 												refreshFunction={fetchCredits}
@@ -1647,7 +1822,7 @@ const Admin = () => {
 										)}
 										{/* Zero content - no credits */}
 										{creditsToShow.filter(cr => cr.status === 'rejected').length === 0 && (
-											<NotFount
+											<NotFound
 												notFoundMessage="No credit found"
 												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
 												refreshFunction={fetchCredits}
