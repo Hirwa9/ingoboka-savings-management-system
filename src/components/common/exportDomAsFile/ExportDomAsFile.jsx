@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import domtoimage from "dom-to-image";
 import jsPDF from "jspdf";
 import { FileImage, FilePdf, X } from '@phosphor-icons/react';
+import AbsoluteCloseButton from '../AbsoluteCloseButton';
 
 const ExportDomAsFile = ({ show, container, exportName, onClose }) => {
 
@@ -61,9 +62,7 @@ const ExportDomAsFile = ({ show, container, exportName, onClose }) => {
                 <div className='position-fixed fixed-top inset-0 py-4 bg-black3 inx-high add-property-form'>
                     <div className="container w-100 h-100 d-flex overflow-auto" style={{ animation: "flyInBottom .2s 1", maxHeight: '100%' }}>
                         <div className="position-relative mx-auto mt-auto p-3 pt-4 bg-primaryColor blur-bg-3px rounded-3">
-                            <X size={40} className='position-absolute top-0 end-0 translate-middle-y bg-primaryColor border border-light border-opacity-25 rounded-3 me-2 p-2 text-light clickDown ptr'
-                                onClick={() => onClose()}
-                            />
+                            <AbsoluteCloseButton bg="primaryColor" text="light" onClose={() => onClose()} />
                             <div className='flex-center flex-wrap gap-3 mb-4'>
                                 <button className='btn btn-sm btn-outline-light px-3 text-nowrap rounded-pill clickDown'
                                     onClick={() => exportAsImage({ node: container.current, name: exportName })}
