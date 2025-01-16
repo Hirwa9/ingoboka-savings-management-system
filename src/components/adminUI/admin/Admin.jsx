@@ -9,7 +9,7 @@ import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
 import LoadingIndicator from '../../LoadingIndicator';
-import { cError, cLog, normalizedLowercaseString, printDatesInterval } from '../../../scripts/myScripts';
+import { cError, cLog, formatDate, normalizedLowercaseString, printDatesInterval } from '../../../scripts/myScripts';
 import FormatedDate from '../../common/FormatedDate';
 import FetchError from '../../common/FetchError';
 import useCustomDialogs from '../../common/hooks/useCustomDialogs';
@@ -18,6 +18,7 @@ import ConfirmDialog from '../../common/confirmDialog/ConfirmDialog';
 import NotFound from '../../common/NotFound';
 import JsonJsFormatter from '../../common/JsonJsFormatter';
 import EmptyBox from '../../common/EmptyBox';
+import AbsoluteCloseButton from '../../common/AbsoluteCloseButton';
 
 const Admin = () => {
 
@@ -226,11 +227,11 @@ const Admin = () => {
 		fetchRecords();
 	}, []);
 
-	// const [activeSection, setActiveSection] = useState("dashboard");
+	const [activeSection, setActiveSection] = useState("dashboard");
 	// const [activeSection, setActiveSection] = useState("messages");
 	// const [activeSection, setActiveSection] = useState("members");
 	// const [activeSection, setActiveSection] = useState("savings");
-	const [activeSection, setActiveSection] = useState("credits");
+	// const [activeSection, setActiveSection] = useState("credits");
 	// const [activeSection, setActiveSection] = useState("interest");
 	// const [activeSection, setActiveSection] = useState("transactions");
 	// const [activeSection, setActiveSection] = useState("reports");
@@ -2638,6 +2639,7 @@ const Admin = () => {
 
 	// Set notifications
 
+	const [showNotifications, setShowNotifications] = useState(false);
 	const [adminHasNewNotifications, setAdminHasNewNotifications] = useState(true);
 
 	return (
@@ -2688,7 +2690,9 @@ const Admin = () => {
 						INGOBOKA
 					</small>
 					<div className="d-flex gap-2 d-md-none ms-auto me-2 text-light" style={{ '--_activeColor': 'var(--bs-gray-500)' }}>
-						<button className={`nav-link px-2 ${adminHasNewNotifications ? 'active-with-dot' : ''} text-gray-400 rounded-0 clickDown`} title='Notifications'>
+						<button className={`nav-link px-2 ${adminHasNewNotifications ? 'active-with-dot' : ''} text-gray-400 rounded-0 clickDown`} title='Notifications'
+							onClick={() => setShowNotifications(true)}
+						>
 							<BellSimple weight={adminHasNewNotifications ? 'fill' : undefined} size={20}
 								style={{ animation: adminHasNewNotifications ? 'shakeX 10s infinite' : 'unset' }}
 							/>
@@ -2701,7 +2705,9 @@ const Admin = () => {
 				<div className='d-none d-md-flex flex-grow-1 border-bottom py-1'>
 					<div className="me-3 ms-auto navbar-nav">
 						<div className="nav-item d-flex gap-2 text-nowrap small" style={{ '--_activeColor': 'var(--primaryColor)' }}>
-							<button className={`nav-link px-2 ${adminHasNewNotifications ? 'bg-gray-300 text-primaryColor active-with-dot' : 'text-gray-600'} rounded-pill clickDown`} title='Notifications'>
+							<button className={`nav-link px-2 ${adminHasNewNotifications ? 'bg-gray-300 text-primaryColor active-with-dot' : 'text-gray-600'} rounded-pill clickDown`} title='Notifications'
+								onClick={() => setShowNotifications(true)}
+							>
 								<BellSimple weight={adminHasNewNotifications ? 'fill' : undefined} size={20}
 									style={{ animation: adminHasNewNotifications ? 'shakeX 10s infinite' : 'unset' }}
 								/>
@@ -2720,7 +2726,39 @@ const Admin = () => {
 					</div>
 				</div>
 			</header>
+
 			<main className="container-fluid">
+				{/* Notifications */}
+				{showNotifications && (
+					<div className='position-fixed fixed-top inset-0 bg-black2 px-2 py-5 inx-max'>
+						<div className="position-relative h-100 col-sm-7 col-md-5 col-lg-4 col-xxl-3 mx-auto me-md-0 bg-light border-secondary border-opacity-25 rounded-4 notifications-card" style={{ animation: 'flyInTop .3s 1' }}>
+							{/* Icon */}
+							<div className="position-absolute start-50 w-fit h-fit px-2 py-1 bg-light rounded-3" style={{ translate: "-50% -120%", animation: 'flyInBottom .3s 1' }}>
+								<BellSimple weight="fill" size={20} className='text-primaryColor' /> <span className='smaller text-gray-600'>Notifications</span>
+							</div>
+							<AbsoluteCloseButton text="primaryColor" onClose={() => setShowNotifications(false)} />
+							{/* Content */}
+							<div className="h-100 p-3 overflow-auto">
+								<div className="d-flex mb-2 py-2 border-bottom">
+									<img src="images/members/m_alain.jpg" alt="User" className='w-2rem h-2rem flex-grow-0 flex-shrink-0 me-2 object-fit-cover bg-light rounded-circle' />
+									<div className="">
+										<div className="d-flex align-items-center justify-content-between mb-1 pb-1 border-bottom text-primaryColor small">
+											<span>Loan request</span>
+											<small className='text-gray-500'>{formatDate(Date())}</small>
+										</div>
+										<p className='mb-1 fs-75 text-gray-600'>
+											Mugabe Alain is requesting a loan of <CurrencyText amount={45000} />
+										</p>
+										<button className='btn btn-sm pe-1 fs-60 rounded-pill bg-primaryColor text-light clickDown' style={{ paddingBlock: '.125rem' }}
+											onClick={() => { setActiveSection('credits'); setShowNotifications(false); }}
+										>Respond <CaretRight /></button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+
 				<div className="row">
 					{/* Sidebar Navigation */}
 					<nav className={`col-12 col-md-3 col-xl-2 d-md-block border-end overflow-y-auto sidebar ${sideNavbarIsFloated ? 'floated bg-black3' : ''}`} id="sidebarMenu">
