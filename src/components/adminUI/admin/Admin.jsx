@@ -527,9 +527,9 @@ const Admin = () => {
 							{showAddMemberForm &&
 								<>
 									<div className='position-fixed fixed-top inset-0 bg-black2 py-3 py-md-5 inx-high add-property-form'>
-										<div className="container col-md-6 col-lg-5 col-xl-4 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
+										<div className="container col-md-6 col-lg-5 col-xl-4 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 											<div className="px-3 bg-light text-gray-700">
-												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
+												<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
 													<div className='flex-align-center'>
 														<UserCirclePlus weight='fill' className="me-1" />
 														<span style={{ lineHeight: 1 }}>Register a new member </span>
@@ -538,21 +538,20 @@ const Admin = () => {
 														<X size={25} className='ptr' />
 													</div>
 												</h6>
-												<div className='smaller'>
-													Enter the primary details for the new member. You can update their financial status details later.
+												<div className='alert alert-primary rounded-0 smaller'>
+													Enter primary details for the new member. You can update their financial details later.
 												</div>
-												<hr />
 
 												{/* The form */}
 												<form onSubmit={(e) => e.preventDefault()} className="px-sm-2 pb-5">
 													{/* Husband Details */}
 													<div className="mb-3">
 														<label htmlFor="husbandFirstName" className="form-label fw-semibold">First Name</label>
-														<input type="text" className="form-control" id="husbandFirstName" placeholder="Enter first name" required />
+														<input type="text" className="form-control" id="husbandFirstName" placeholder="Eg: Alain" required />
 													</div>
 													<div className="mb-3">
 														<label htmlFor="husbandLastName" className="form-label fw-semibold">Last Name</label>
-														<input type="text" className="form-control" id="husbandLastName" placeholder="Enter last name" required />
+														<input type="text" className="form-control" id="husbandLastName" placeholder="Eg: Mugabe" required />
 													</div>
 													<div className="mb-3">
 														<label htmlFor="husbandPhone" className="form-label fw-semibold">Phone</label>
@@ -582,11 +581,11 @@ const Admin = () => {
 														<>
 															<div className="mb-3">
 																<label htmlFor="wifeFirstName" className="form-label fw-semibold">Wife's First Name</label>
-																<input type="text" className="form-control" id="wifeFirstName" placeholder="Enter first name" />
+																<input type="text" className="form-control" id="wifeFirstName" placeholder="Eg: Laetitia" />
 															</div>
 															<div className="mb-3">
 																<label htmlFor="wifeLastName" className="form-label fw-semibold">Wife's Last Name</label>
-																<input type="text" className="form-control" id="wifeLastName" placeholder="Enter last name" />
+																<input type="text" className="form-control" id="wifeLastName" placeholder="Eg: Ingabire" />
 															</div>
 															<div className="mb-3">
 																<label htmlFor="wifePhone" className="form-label fw-semibold">Wife's Phone</label>
@@ -866,7 +865,7 @@ const Admin = () => {
 														alt={`${selectedMember.husbandFirstName.slice(0, 1)}.${selectedMember.husbandLastName}`}
 														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
 													/>
-													<div>
+													<div className='smaller'>
 														Add savings for {selectedMember.husbandFirstName} {selectedMember.husbandLastName}
 													</div>
 												</div>
@@ -2216,7 +2215,7 @@ const Admin = () => {
 
 								{showAddExpenseRecord &&
 									<>
-										<div className='position-fixed fixed-top inset-0 bg-black2 py-5 inx-high add-property-form'>
+										<div className='position-fixed fixed-top inset-0 bg-black2 py-3 py-md-5 inx-high add-property-form'>
 											<div className="container col-md-6 col-lg-5 col-xl-4 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 												<div className="h-100 px-3 bg-light text-gray-700">
 													<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
