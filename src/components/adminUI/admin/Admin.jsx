@@ -526,7 +526,7 @@ const Admin = () => {
 							{/* Registration */}
 							{showAddMemberForm &&
 								<>
-									<div className='position-fixed fixed-top inset-0 bg-black2 py-5 inx-high add-property-form'>
+									<div className='position-fixed fixed-top inset-0 bg-black2 py-3 py-md-5 inx-high add-property-form'>
 										<div className="container col-md-6 col-lg-5 col-xl-4 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 											<div className="px-3 bg-light text-gray-700">
 												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
@@ -538,6 +538,9 @@ const Admin = () => {
 														<X size={25} className='ptr' />
 													</div>
 												</h6>
+												<div className='smaller'>
+													Enter the primary details for the new member. You can update their financial status details later.
+												</div>
 												<hr />
 
 												{/* The form */}
