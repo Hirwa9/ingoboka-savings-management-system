@@ -3,7 +3,7 @@ import axios from 'axios'
 import { Button, Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, Files, FloppyDisk, Gear, Info, List, Notebook, Pen, Plus, Receipt, ReceiptX, SignOut, Table, Upload, User, Users, Warning, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, Files, FloppyDisk, Gear, Info, List, Minus, Notebook, Pen, Plus, Receipt, ReceiptX, SignOut, Table, Upload, User, UserCirclePlus, Users, Warning, X } from '@phosphor-icons/react';
 import { dashboardData, deposits, expenses, expensesTypes, generalReport, incomeExpenses, membersData } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
@@ -409,13 +409,24 @@ const Admin = () => {
 			}
 		}, [memberSearchValue]);
 
+		// Registration
+
+		const [showAddMemberForm, setShowAddMemberForm] = useState(false);
+		const [showWifeDetails, setShowWifeDetails] = useState(false);
+
+		const handleRegisterNewMember = async () => {
+			// Code
+		}
+
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="d-flex flex-wrap justify-content-between align-items-center mb-3">
 					<h2><Users weight='fill' className="me-1 opacity-50" /> Members</h2>
 					<div className="ms-auto">
 						<Button variant="primary" className='btn-sm rounded-0 border-end text-light clickDown'><ChartBar /> <span className='d-none d-sm-inline'>Statistics</span></Button>
-						<Button variant="primary" className='btn-sm rounded-0 border-end text-light clickDown'><Plus /> New member</Button>
+						<Button variant="primary" className='btn-sm rounded-0 border-end text-light clickDown'
+							onClick={() => setShowAddMemberForm(true)}
+						><Plus /> New member</Button>
 					</div>
 				</div>
 
@@ -510,6 +521,99 @@ const Admin = () => {
 										</div>
 									</div>
 								))
+							}
+
+							{/* Registration */}
+							{showAddMemberForm &&
+								<>
+									<div className='position-fixed fixed-top inset-0 bg-black2 py-5 inx-high add-property-form'>
+										<div className="container col-md-6 col-lg-5 col-xl-4 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
+											<div className="px-3 bg-light text-gray-700">
+												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
+													<div className='flex-align-center'>
+														<UserCirclePlus weight='fill' className="me-1" />
+														<span style={{ lineHeight: 1 }}>Register a new member </span>
+													</div>
+													<div title="Cancel" onClick={() => { setShowAddMemberForm(false); }}>
+														<X size={25} className='ptr' />
+													</div>
+												</h6>
+												<hr />
+
+												{/* The form */}
+												<form onSubmit={(e) => e.preventDefault()} className="px-sm-2 pb-5">
+													{/* Husband Details */}
+													<div className="mb-3">
+														<label htmlFor="husbandFirstName" className="form-label fw-semibold">First Name</label>
+														<input type="text" className="form-control" id="husbandFirstName" placeholder="Enter first name" required />
+													</div>
+													<div className="mb-3">
+														<label htmlFor="husbandLastName" className="form-label fw-semibold">Last Name</label>
+														<input type="text" className="form-control" id="husbandLastName" placeholder="Enter last name" required />
+													</div>
+													<div className="mb-3">
+														<label htmlFor="husbandPhone" className="form-label fw-semibold">Phone</label>
+														<input type="text" className="form-control" id="husbandPhone" placeholder="Enter phone number" required />
+													</div>
+													<div className="mb-3">
+														<label htmlFor="husbandEmail" className="form-label fw-semibold">Email</label>
+														<input type="email" className="form-control" id="husbandEmail" placeholder="Enter email" required />
+													</div>
+
+													{/* Toggle Wife Details */}
+													<div className="my-5 d-flex">
+														<button
+															type="button"
+															className={`btn btn-sm btn-outline-${showWifeDetails ? 'danger' : 'secondary'} border-start-0 border-end-0 mx-auto rounded-0`}
+															onClick={() => setShowWifeDetails(!showWifeDetails)}
+														>
+															{showWifeDetails ?
+																<><Minus /><Users /> Remove partner details</>
+																: <><Plus /><Users /> Add partner details</>
+															}
+														</button>
+													</div>
+
+													{/* Wife Details (optional) */}
+													{showWifeDetails && (
+														<>
+															<div className="mb-3">
+																<label htmlFor="wifeFirstName" className="form-label fw-semibold">Wife's First Name</label>
+																<input type="text" className="form-control" id="wifeFirstName" placeholder="Enter first name" />
+															</div>
+															<div className="mb-3">
+																<label htmlFor="wifeLastName" className="form-label fw-semibold">Wife's Last Name</label>
+																<input type="text" className="form-control" id="wifeLastName" placeholder="Enter last name" />
+															</div>
+															<div className="mb-3">
+																<label htmlFor="wifePhone" className="form-label fw-semibold">Wife's Phone</label>
+																<input type="text" className="form-control" id="wifePhone" placeholder="Enter phone number" />
+															</div>
+															<div className="mb-3">
+																<label htmlFor="wifeEmail" className="form-label fw-semibold">Wife's Email</label>
+																<input type="email" className="form-control" id="wifeEmail" placeholder="Enter email" />
+															</div>
+														</>
+													)}
+
+													{/* Submit Button */}
+													<button
+														type="submit"
+														className="btn btn-sm btn-dark flex-center w-100 mt-3 py-2 px-4 rounded-pill clickDown"
+														id="registerNewMemberBtn"
+														onClick={() => handleRegisterNewMember()}
+													>
+														{!isWaitingFetchAction ? (
+															<>Register  <UserCirclePlus size={18} className="ms-2" /></>
+														) : (
+															<>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
+														)}
+													</button>
+												</form>
+											</div>
+										</div>
+									</div>
+								</>
 							}
 						</>
 					)}
@@ -760,7 +864,7 @@ const Admin = () => {
 														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
 													/>
 													<div>
-														Add savings for <b className='fw-semibold'>{selectedMember.husbandFirstName} {selectedMember.husbandLastName}</b>
+														Add savings for {selectedMember.husbandFirstName} {selectedMember.husbandLastName}
 													</div>
 												</div>
 												<hr />
@@ -768,8 +872,8 @@ const Admin = () => {
 												{/* The form */}
 												<form onSubmit={(e) => e.preventDefault()} className="px-sm-2 pb-5">
 													<div className="mb-3">
-														<p htmlFor="expenseType" className="fw-bold small">
-															Saving type: <span className="text-primary text-capitalize">{savingRecordType}</span>
+														<p htmlFor="expenseType" className="small">
+															<b>Saving type</b>: <span className="text-primary text-capitalize">{savingRecordType}</span>
 														</p>
 														<ul className="list-unstyled d-flex">
 															<li className={`col-6 px-2 py-1 text-center ${savingRecordType === 'cotisation' ? 'text-bg-primary' : ''} rounded-pill ptr clickDown`}
@@ -1000,7 +1104,11 @@ const Admin = () => {
 
 	// Credit
 	const Credit = () => {
-		const [activeLoanSection, setActiveLoanSection] = useState('approved');
+		const [activeLoanSection, setActiveLoanSection] = useState(
+			allCredits.filter(cr => cr.status === 'pending').length > 0
+				? 'pending'
+				: 'approved'
+		);
 		const [activeLoanSectionColor, setActiveLoanSectionColor] = useState('#a3d5bb75');
 
 		// Filtering credits
@@ -1461,7 +1569,7 @@ const Admin = () => {
 											) : (
 												<>
 													<EmptyBox
-														notFoundMessage={`No credit records found for ${selectedMember.husbandLastName}. It appears they have not received a loan yet.`}
+														notFoundMessage={`No credit records found for this member. It appears they have not received a loan yet.`}
 														refreshKeyword="Got it"
 
 														refreshFunction={() => setShowSelectedMemberCredits(false)}
@@ -2640,7 +2748,16 @@ const Admin = () => {
 	// Set notifications
 
 	const [showNotifications, setShowNotifications] = useState(false);
-	const [adminHasNewNotifications, setAdminHasNewNotifications] = useState(true);
+	const [adminHasNewNotifications, setAdminHasNewNotifications] = useState(false);
+
+	useEffect(() => {
+		if (allCredits.filter(cr => cr.status === 'pending').length > 0) {
+			setAdminHasNewNotifications(true);
+		} else {
+			setAdminHasNewNotifications(false);
+		}
+	}, [allCredits]);
+
 
 	return (
 		<>
@@ -2730,30 +2847,53 @@ const Admin = () => {
 			<main className="container-fluid">
 				{/* Notifications */}
 				{showNotifications && (
-					<div className='position-fixed fixed-top inset-0 bg-black2 px-2 py-5 inx-max'>
+					<div className='position-fixed fixed-top inset-0 bg-black2 px-2 pt-5 pb-3 inx-max'>
 						<div className="position-relative h-100 col-sm-7 col-md-5 col-lg-4 col-xxl-3 mx-auto me-md-0 bg-light border-secondary border-opacity-25 rounded-4 notifications-card" style={{ animation: 'flyInTop .3s 1' }}>
 							{/* Icon */}
-							<div className="position-absolute start-50 w-fit h-fit px-2 py-1 bg-light rounded-3" style={{ translate: "-50% -120%", animation: 'flyInBottom .3s 1' }}>
-								<BellSimple weight="fill" size={20} className='text-primaryColor' /> <span className='smaller text-gray-600'>Notifications</span>
+							<div className="position-absolute start-50 w-fit h-fit px-3 py-1 blur-bg-3px border border-light border-opacity-50 rounded-pill" style={{ translate: "-50% -120%", animation: 'flyInBottom .5s 1' }}>
+								<BellSimple weight="fill" size={20} className='text-light' /> <span className='smaller text-gray-200'>Notifications</span>
 							</div>
 							<AbsoluteCloseButton text="primaryColor" onClose={() => setShowNotifications(false)} />
 							{/* Content */}
 							<div className="h-100 p-3 overflow-auto">
-								<div className="d-flex mb-2 py-2 border-bottom">
-									<img src="images/members/m_alain.jpg" alt="User" className='w-2rem h-2rem flex-grow-0 flex-shrink-0 me-2 object-fit-cover bg-light rounded-circle' />
-									<div className="">
-										<div className="d-flex align-items-center justify-content-between mb-1 pb-1 border-bottom text-primaryColor small">
-											<span>Loan request</span>
-											<small className='text-gray-500'>{formatDate(Date())}</small>
-										</div>
-										<p className='mb-1 fs-75 text-gray-600'>
-											Mugabe Alain is requesting a loan of <CurrencyText amount={45000} />
-										</p>
-										<button className='btn btn-sm pe-1 fs-60 rounded-pill bg-primaryColor text-light clickDown' style={{ paddingBlock: '.125rem' }}
-											onClick={() => { setActiveSection('credits'); setShowNotifications(false); }}
-										>Respond <CaretRight /></button>
-									</div>
-								</div>
+								{allCredits.filter(cr => cr.status === 'pending').length === 0 ? (
+									<EmptyBox
+										notFoundMessage="All clear. Any new notifications will show up here."
+										fluid
+										className="mt-5"
+									/>
+								) : (
+									<>
+										{allCredits
+											.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate))
+											.filter(cr => cr.status === 'pending')
+											.map((cr, index) => {
+												const associatedMember = allMembers.find(m => m.id === cr.memberId);
+												const names = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+
+												return (
+													<div key={index} className="d-flex mb-2 py-2 border-bottom">
+														<img src={associatedMember.husbandAvatar} alt="User" className='w-2rem h-2rem flex-grow-0 flex-shrink-0 me-2 object-fit-cover bg-light rounded-circle' />
+														<div className="">
+															<div className="d-flex align-items-center justify-content-between mb-1 pb-1 border-bottom text-primaryColor small">
+																<span>Loan request</span>
+																<small className='text-gray-500'>
+																	{formatDate(cr.updatedAt, { todayKeyword: true })}
+																</small>
+															</div>
+															<p className='mb-1 fs-75 text-gray-600'>
+																{names} is requesting a loan of <CurrencyText amount={Number(cr.creditAmount)} />
+															</p>
+															<button className='btn btn-sm pe-1 fs-60 rounded-pill bg-primaryColor text-light clickDown' style={{ paddingBlock: '.125rem' }}
+																onClick={() => { setActiveSection('credits'); setShowNotifications(false); }}
+															>Respond <CaretRight /></button>
+														</div>
+													</div>
+												)
+											})
+										}
+									</>
+								)}
 							</div>
 						</div>
 					</div>
@@ -2807,6 +2947,13 @@ const Admin = () => {
 									<button className="nav-link w-100">
 										<Blueprint size={20} weight='fill' className="me-2" /> Credits
 									</button>
+									{adminHasNewNotifications && (
+										<span
+											className='r-middle-m h-1rem flex-center me-3 px-2 bg-gray-300 text-gray-900 fs-60 fw-medium rounded-pill'
+											style={{ lineHeight: 1 }}>
+											{allCredits.filter(cr => cr.status === 'pending').length}
+										</span>
+									)}
 								</li>
 								<li className={`nav-item mb-2 ${activeSection === 'transactions' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("transactions"); hideSideNavbar() }}
