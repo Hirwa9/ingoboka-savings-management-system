@@ -600,7 +600,7 @@ const UserUI = () => {
 
 							{showAddSavingRecord &&
 								<>
-									<div className='position-fixed fixed-top inset-0 bg-black2 py-5 inx-high add-property-form'>
+									<div className='position-fixed fixed-top inset-0 py-5 bg-black2 inx-high add-property-form'>
 										<div className="container col-md-6 col-lg-5 col-xl-4 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 											<div className="px-3 bg-light text-gray-700">
 												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
@@ -1773,7 +1773,7 @@ const UserUI = () => {
 
 								{showAddExpenseRecord &&
 									<>
-										<div className='position-fixed fixed-top inset-0 bg-black2 py-5 inx-high add-property-form'>
+										<div className='position-fixed fixed-top inset-0 py-5 bg-black2 inx-high add-property-form'>
 											<div className="container col-md-6 col-lg-5 col-xl-4 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 												<div className="h-100 px-3 bg-light text-gray-700">
 													<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">

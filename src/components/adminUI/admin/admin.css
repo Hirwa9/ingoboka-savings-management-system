@@ -9,8 +9,6 @@
     left: 0;
     padding: 3.125rem 0 0;
     z-index: 1021;
-    /* height: calc(100vh);
-    height: calc(100dvh); */
 }
 
 .sidebar.floated {
@@ -27,7 +25,7 @@
     bottom: 0;
     height: calc(100% - 3.125rem);
     -webkit-backdrop-filter: blur(2px);
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(1px);
     z-index: -1;
 }
 
@@ -119,6 +117,7 @@
 }
 
 @media screen and (min-width: 768px) {
+
     .members-search-box,
     .savings-search-box {
         top: 1.5rem;
