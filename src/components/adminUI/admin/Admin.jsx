@@ -3,8 +3,8 @@ import axios from 'axios'
 import { Button, Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, Files, FloppyDisk, Gear, Info, List, Minus, Notebook, Pen, Plus, Receipt, ReceiptX, SignOut, Table, Upload, User, UserCirclePlus, Users, Warning, X } from '@phosphor-icons/react';
-import { dashboardData, deposits, expenses, expensesTypes, generalReport, incomeExpenses, membersData } from '../../../data/data';
+import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CaretUp, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, Files, FloppyDisk, Gear, Info, List, Minus, Pen, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, Users, Warning, X } from '@phosphor-icons/react';
+import { dashboardData, expensesTypes, generalReport, incomeExpenses } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
@@ -329,12 +329,7 @@ const Admin = () => {
 					<hr />
 					<div>
 						<p className='text'>
-							Done on <span className="fw-semibold">{new Intl.DateTimeFormat('en-CA', {
-								year: 'numeric',
-								month: 'long',
-								day: 'numeric',
-								hour12: true,
-							}).format(new Date())}</span> by IKIMINA INGOBOKA Accountant, Alain Mugabe.
+							Done on <FormatedDate date={new Date()} locale='en-CA' monthFormat='long' hour12Format={true} className="fw-semibold" /> by IKIMINA INGOBOKA Accountant, Alain Mugabe.
 						</p>
 					</div>
 				</div>
@@ -696,8 +691,8 @@ const Admin = () => {
 				toast({ message: data.message, type: "dark" });
 				setShowAddSavingRecord(false);
 				setErrorWithFetchAction(null);
-				fetchMembers(); // Ensure this fetches the updated member list
-				fetchRecords(); // Uncomment if you want to refresh records as well
+				fetchMembers();
+				fetchRecords();
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError("Error adding savings:", error);
@@ -740,7 +735,7 @@ const Admin = () => {
 		// 		setShowEditSharesRecord(false); // Adjust based on your UI logic
 		// 		setErrorWithFetchAction(null);
 		// 		fetchMembers(); // Ensure the member data is updated
-		// 		// fetchRecords(); // Uncomment if records need to be refreshed
+		// 		fetchRecords();
 		// 	} catch (error) {
 		// 		setErrorWithFetchAction(error);
 		// 		cError("Error updating shares:", error);
@@ -934,13 +929,6 @@ const Admin = () => {
 		let totalInterestReceivable = 0;
 		let totalInterestRemains = 0;
 
-		// const [activeTransactionSection, setActiveTransactionSection] = useState('withdrawals');
-		// const [activeTransactionSectionColor, setActiveTransactionSectionColor] = useState('#f4e4b675');
-
-		// // Adding expense records
-		// const [showAddExpenseRecord, setShowAddExpenseRecord] = useState(false);
-		// const [expenseRecordAmount, setExpenseRecordAmount] = useState('');
-
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="mb-3">
@@ -968,7 +956,6 @@ const Admin = () => {
 								<div className='text-center bg-bodi fs-6'><CurrencyText amount={interestToReceive} /></div>
 							</div>
 						</div>
-
 						<Calendar size={25} className='me-2' /> Année {new Date().getFullYear()}
 					</div>
 					<div className='overflow-auto mb-5'>
@@ -1167,6 +1154,7 @@ const Admin = () => {
 		// Show credits per member
 		const [showSelectedMemberCredits, setShowSelectedMemberCredits] = useState(false);
 		const [selectedMember, setSelectedMember] = useState(null);
+		const [showSelectedMemberCreditRecords, setShowSelectedMemberCreditRecords] = useState(false);
 
 		// Show credits per member
 		const [showBackfillPlanCard, setShowBackfillPlanCard] = useState(false);
@@ -1364,9 +1352,9 @@ const Admin = () => {
 															const selectedLoan = item;
 															return (
 																<Fragment key={index} >
-																	<div className="d-xxl-flex gap-3 pb-5">
+																	<div className="d-xl-flex gap-3 pb-5">
 																		{/* Loan status */}
-																		<div className="col member-loan-status mb-4 mb-xxl-0">
+																		<div className="col member-loan-status mb-4 mb-xl-0">
 																			<div className="fs-6 fw-semibold text-primaryColor text-center">Loan status</div>
 																			<hr />
 																			<div className='overflow-auto'>
@@ -1428,30 +1416,32 @@ const Admin = () => {
 																					</tbody>
 																				</table>
 																			</div>
-																			<div className="d-flex">
-																				<div className='col p-2'>
-																					<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">First loan</span></div>
-																					<div className='text-center bg-gray-300'>
-																						<FormatedDate date={allCredits
-																							.sort((a, b) => new Date(a.requestDate) - new Date(b.requestDate))
-																							.filter(cr => cr.memberId === selectedMember.id)[0].requestDate
-																						} />
+																			{allCredits.filter(cr => cr.memberId === selectedMember.id).length > 0 && (
+																				<div className="d-flex">
+																					<div className='col p-2'>
+																						<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">First loan</span></div>
+																						<div className='text-center bg-gray-300'>
+																							<FormatedDate date={allCredits
+																								.sort((a, b) => new Date(a.requestDate) - new Date(b.requestDate))
+																								.filter(cr => cr.memberId === selectedMember.id)[0].requestDate
+																							} />
+																						</div>
+																					</div>
+																					<div className='col p-2'>
+																						<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Recent loan</span></div>
+																						<div className='text-center bg-gray-300'>
+																							<FormatedDate date={allCredits
+																								.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate))
+																								.filter(cr => cr.memberId === selectedMember.id)[0].requestDate
+																							} />
+																						</div>
 																					</div>
 																				</div>
-																				<div className='col p-2'>
-																					<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Recent loan</span></div>
-																					<div className='text-center bg-gray-300'>
-																						<FormatedDate date={allCredits
-																							.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate))
-																							.filter(cr => cr.memberId === selectedMember.id)[0].requestDate
-																						} />
-																					</div>
-																				</div>
-																			</div>
+																			)}
 																		</div>
 
 																		{/* Loan payment form */}
-																		<div className='col col-xxl-5 member-loan-payment'>
+																		<div className='col col-xl-5 member-loan-payment'>
 																			{selectedLoan.loanPending > 0 ? (
 																				<>
 																					<div className="fs-6 fw-semibold text-primaryColor text-center">Payment</div>
@@ -1563,6 +1553,93 @@ const Admin = () => {
 																			)}
 																		</div>
 																	</div>
+
+																	{/* Toggle Credit Records */}
+																	<div className="my-5 d-flex">
+																		<button
+																			type="button"
+																			className={`btn btn-sm btn-outline-${showSelectedMemberCreditRecords ? 'danger' : 'secondary'} border-start-0 border-end-0 mx-auto rounded-0`}
+																			onClick={() => setShowSelectedMemberCreditRecords(!showSelectedMemberCreditRecords)}
+																		>
+																			{showSelectedMemberCreditRecords ?
+																				<CaretUp />
+																				: <CaretDown />
+																			} Credit records for {selectedMember.husbandFirstName}
+																		</button>
+																	</div>
+
+																	{showSelectedMemberCreditRecords && (
+																		<>
+																			<div className='overflow-auto'>
+																				<table className="table table-hover h-100 properties-table">
+																					<thead className='table-success position-sticky top-0 inx-1'>
+																						<tr>
+																							<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+																							<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Member</th>
+																							<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
+																							<th className='py-3 text-nowrap text-gray-700'>Date & Interval</th>
+																							<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
+																							<th className='py-3 text-nowrap text-gray-700'>Credit Status</th>
+																						</tr>
+																					</thead>
+																					<tbody>
+
+																						{allCredits.filter(cr => (cr.memberId === selectedMember.id && cr.status === 'approved'))
+																							.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+																							.map((credit, index) => {
+																								const associatedMember = allMembers.find(m => m.id === credit.memberId);
+																								const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+																								const creditInterest = Number(credit.creditAmount) * (5 / 100);
+
+																								return (
+																									<tr
+																										key={index}
+																										className={`small loan-row`}
+																									>
+																										<td className={`ps-sm-3  border-bottom-3 border-end`}>
+																											{index + 1}
+																										</td>
+																										<td >
+																											{memberNames}
+																										</td>
+																										<td className="d-flex flex-column gap-2 text-muted small" >
+																											<div>
+																												<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
+																												<span>{Number(credit.creditAmount).toLocaleString()}</span>
+																											</div>
+																											<div>
+																												<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
+																												<span>{creditInterest.toLocaleString()}</span>
+																											</div>
+																											<div className='text-primaryColor'>{credit.tranches} tranche{credit.tranches > 1 ? 's' : ''}</div>
+																										</td>
+																										<td className='text-nowrap'>
+																											<div className='d-flex flex-column gap-2 smaller'>
+																												<span className='fw-bold'>
+																													<FormatedDate date={credit.requestDate} monthFormat='numeric' /> <CaretRight /> <FormatedDate date={credit.dueDate} monthFormat='numeric' />
+																												</span>
+																												<span>{printDatesInterval(credit.requestDate, credit.dueDate)}</span>
+																												<span className="flex-align-center text-primaryColor ptr clickDown"
+																													onClick={() => { setSelectedCredit(credit); setShowBackfillPlanCard(true); }}
+																												><Receipt weight='fill' size={18} className='me-1' /> View backfill plan</span>
+																											</div>
+																										</td>
+																										<td style={{ maxWidth: '13rem' }}>
+																											{credit.comment}
+																										</td>
+																										<td className='text-nowrap fs-75'>
+																											Transfered
+																										</td>
+																									</tr>
+																								)
+																							})
+																						}
+																					</tbody>
+																				</table>
+																			</div>
+																		</>
+																	)}
+
 																</Fragment>
 															)
 														})
@@ -1734,8 +1811,7 @@ const Admin = () => {
 																		</td>
 																	</tr>
 																)
-															}
-															)
+															})
 														}
 													</tbody>
 												</table>
@@ -1817,8 +1893,7 @@ const Admin = () => {
 																		</td>
 																	</tr>
 																)
-															}
-															)
+															})
 														}
 													</tbody>
 												</table>
@@ -2052,7 +2127,7 @@ const Admin = () => {
 															</table>
 														</div>
 
-														{activeLoanSection === 'pending' && (
+														{activeLoanSection === 'pending' && selectedCredit.status === 'pending' && (
 															<div className='d-flex flex-wrap align-items-center justify-content-end gap-3 mb-4 py-4'>
 																<button className='btn btn-sm flex-align-center text-danger-emphasis border-danger border-opacity-25 mt-auto rounded-0'
 																	onClick={
@@ -2104,12 +2179,51 @@ const Admin = () => {
 
 		// Adding expense records
 		const [showAddExpenseRecord, setShowAddExpenseRecord] = useState(false);
+		const [expenseRecordType, setExpenseRecordType] = useState('');
 		const [expenseRecordAmount, setExpenseRecordAmount] = useState('');
+		const [expenseComment, setExpenseComment] = useState('');
 
-		// Handle create property
+		// Handle add expense
 		const handleAddExpense = async (e) => {
 			e.preventDefault();
-		}
+			if (!expenseRecordAmount || Number(expenseRecordAmount) <= 0) {
+				return toast({ message: 'Enter a valid expense amount', type: 'gray-700' });
+			}
+
+			try {
+				setIsWaitingFetchAction(true);
+
+				const response = await fetch(`${BASE_URL}/records/recordExpense`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						secondaryType: expenseRecordType,
+						expenseAmount: expenseRecordAmount,
+						comment: expenseComment[0].toUpperCase() + expenseComment.slice(1)
+					}),
+				});
+
+				// Fetch error
+				if (!response.ok) {
+					const errorData = await response.json();
+					throw new Error(errorData.message || 'Error recording the expense');
+				}
+
+				// Successful fetch
+				const data = await response.json();
+				toast({ message: data.message, type: "dark" });
+				setShowAddExpenseRecord(false);
+				setErrorWithFetchAction(null);
+				fetchMembers();
+				fetchRecords();
+			} catch (error) {
+				setErrorWithFetchAction(error);
+				cError("Error adding savings:", error);
+				toast({ message: error.message || "An unknown error occurred", type: "danger" });
+			} finally {
+				setIsWaitingFetchAction(false);
+			}
+		};
 
 		useEffect(() => {
 			if (activeTransactionSection === 'withdrawals') {
@@ -2146,14 +2260,14 @@ const Admin = () => {
 							onClick={() => { setActiveTransactionSection('withdrawals'); }}
 						>
 							<h5 className='mb-0 small'>Expenses</h5>
-							<p className='mb-0 fs-75'>( {expenses.length} )</p>
+							<p className='mb-0 fs-75'>( {recordsToShow.filter(cr => cr.recordType === 'expense').length} )</p>
 						</div>
 						<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-success border-opacity-25 tab-selector ${activeTransactionSection === 'deposits' ? 'active' : ''} user-select-none ptr clickDown`}
 							style={{ '--_activeColor': '#a3d5bb' }}
 							onClick={() => { setActiveTransactionSection('deposits'); }}
 						>
 							<h5 className='mb-0 small'>Deposits</h5>
-							<p className='mb-0 fs-75'>( {deposits.length} )</p>
+							<p className='mb-0 fs-75'>( {recordsToShow.filter(cr => cr.recordType === 'deposit').length} )</p>
 						</div>
 						<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-danger border-opacity-25 tab-selector ${activeTransactionSection === 'fines' ? 'active' : ''} user-select-none ptr clickDown`}
 							style={{ '--_activeColor': '#ebc1c5' }}
@@ -2166,6 +2280,7 @@ const Admin = () => {
 
 					{/* Selected content */}
 					<div style={{ minHeight: '60vh' }}>
+						{/* Expenses table */}
 						{activeTransactionSection === 'withdrawals' && (
 							<>
 								<div className='overflow-auto'>
@@ -2180,34 +2295,36 @@ const Admin = () => {
 											</tr>
 										</thead>
 										<tbody>
-											{expenses
-												.sort((a, b) => new Date(b.date) - new Date(a.date))
-												.map((item, index) => (
-													<tr
-														key={index}
-														className="small cursor-default clickDown expense-row"
-													>
-														<td className="ps-sm-3 border-bottom-3 border-end">
-															{index + 1}
-														</td>
-														<td>
-															{item.type}
-														</td>
-														<td>
-															{item.amount.toLocaleString()}
-														</td>
-														<td className="text-nowrap">
-															{item.comment}
-														</td>
-														<td style={{ maxWidth: '13rem' }}>
-															{new Intl.DateTimeFormat('en-gb', {
-																day: '2-digit',
-																month: '2-digit',
-																year: 'numeric',
-															}).format(new Date(item.date))} {/* Formats the date */}
-														</td>
-													</tr>
-												))
+											{recordsToShow
+												.filter(cr => cr.recordType === 'expense')
+												.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+												.map((record, index) => {
+													const associatedMember = allMembers.find(m => m.id === record.memberId);
+													const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+
+													return (
+														<tr
+															key={index}
+															className="small cursor-default clickDown expense-row"
+														>
+															<td className="ps-sm-3 border-bottom-3 border-end">
+																{index + 1}
+															</td>
+															<td>
+																{record.recordSecondaryType}
+															</td>
+															<td>
+																<CurrencyText amount={Number(record.recordAmount)} />
+															</td>
+															<td className="text-nowrap">
+																{record.comment}
+															</td>
+															<td style={{ maxWidth: '13rem' }}>
+																<FormatedDate date={record.createdAt} />
+															</td>
+														</tr>
+													)
+												})
 											}
 										</tbody>
 									</table>
@@ -2233,7 +2350,8 @@ const Admin = () => {
 														<div className="mb-3">
 															<label htmlFor="expenseType" className="form-label fw-bold">Expense type</label>
 															<select id="expenseType" name="expenseType" className="form-select"
-																defaultValue=""
+																value={expenseRecordType}
+																onChange={(e) => setExpenseRecordType(e.target.value)}
 																required>
 																<option value="" disabled className='p-2 px-3 small text-gray-500'>Select type</option>
 																{expensesTypes
@@ -2247,14 +2365,17 @@ const Admin = () => {
 														</div>
 														<div className="mb-3">
 															<label htmlFor="expenseAmount" className="form-label fw-bold" required>Expense amount ({expenseRecordAmount !== '' ? Number(expenseRecordAmount).toLocaleString() : ''} RWF )</label>
-															<input type="number" id="expenseAmount" name="expenseAmount" className="form-control" required placeholder="Enter amount"
+															<input type="number" id="expenseAmount" name="expenseAmount" className="form-control" min="1" required placeholder="Enter amount"
 																value={expenseRecordAmount}
 																onChange={e => setExpenseRecordAmount(e.target.value)}
 															/>
 														</div>
 														<div className="mb-3">
 															<label htmlFor="expenseComment" className="form-label fw-bold" required>Expense comment</label>
-															<textarea rows={3} id="expenseComment" name="expenseComment" className="form-control" placeholder="Enter comment"></textarea>
+															<textarea rows={3} id="expenseComment" name="expenseComment" className="form-control" placeholder="Enter comment"
+																value={expenseComment}
+																onChange={e => setExpenseComment(e.target.value)}
+															></textarea>
 														</div>
 
 														<button type="submit" className="btn btn-sm btn-dark flex-center w-100 mt-3 py-2 px-4 rounded-pill clickDown" id="addExpenseBtn"
@@ -2273,11 +2394,7 @@ const Admin = () => {
 							</>
 						)}
 
-						{/* <>
-							{creditsToShow.filter(r => r.recordType === 'deposit').length > 0 && (
-
-							)}
-							</> */}
+						{/* Deposits table */}
 						{activeTransactionSection === 'deposits' && (
 							<div className='overflow-auto'>
 								<table className="table table-hover h-100 properties-table">
@@ -2294,7 +2411,7 @@ const Admin = () => {
 									<tbody>
 										{recordsToShow
 											.filter(cr => cr.recordType === 'deposit')
-											.sort((a, b) => new Date(a.updatedAt) - new Date(b.updatedAt))
+											.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 											.map((record, index) => {
 												const associatedMember = allMembers.find(m => m.id === record.memberId);
 												const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
@@ -2308,7 +2425,6 @@ const Admin = () => {
 															{index + 1}
 														</td>
 														<td className="text-nowrap">
-															{/* {record.member} */}
 															{memberNames}
 														</td>
 														<td>
@@ -2321,11 +2437,7 @@ const Admin = () => {
 															{record.comment}
 														</td>
 														<td style={{ maxWidth: '13rem' }}>
-															{new Intl.DateTimeFormat('en-gb', {
-																day: '2-digit',
-																month: '2-digit',
-																year: 'numeric',
-															}).format(new Date(record.createdAt))} {/* Formats the date */}
+															<FormatedDate date={record.createdAt} monthFormat='2-digit' />
 														</td>
 													</tr>
 												)
@@ -2485,13 +2597,7 @@ const Admin = () => {
 										: 'REPORT'
 							}
 						</p>
-						{/* <Calendar size={25} className='me-2' /> {Date()} */}
-						<Calendar size={25} className='me-2' /> {new Intl.DateTimeFormat('en-GB', {
-							year: 'numeric',
-							month: 'numeric',
-							day: 'numeric',
-							hour12: true,
-						}).format(new Date())}
+						<Calendar size={25} className='me-2' /> <FormatedDate date={new Date()} monthFormat='numeric' hour12Format={true} />
 					</div>
 					<div className='text-gray-700 selective-options' style={{ backgroundColor: '#a3d5bb75' }}>
 						{/* Selectors */}
