@@ -8,6 +8,7 @@ const FormatedDate = ({
     dayFormat = "numeric",
     hour12Format = false,
     showDateKeyword = false,
+    className,
 }) => {
     // List of valid locales
     const validLocales = [
@@ -274,10 +275,10 @@ const FormatedDate = ({
         <>
             {showDateKeyword ? (
                 <>
-                    Date: <span>{formattedDate}</span>
+                    <span className={`${className ? className : ''}`}>Date: {formattedDate}</span>
                 </>
             ) : (
-                <span>{formattedDate}</span>
+                <span className={`${className ? className : ''}`}>{formattedDate}</span>
             )}
         </>
     );
