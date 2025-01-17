@@ -1,9 +1,9 @@
-import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
-import axios from 'axios'
+import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import axios from 'axios';
 import { Button, Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CaretUp, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, Files, FloppyDisk, Gear, Info, List, Minus, Pen, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, Users, Warning, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CaretUp, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, Files, FloppyDisk, Gear, GenderFemale, GenderMale, Info, List, Minus, Pen, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, Users, Warning, X } from '@phosphor-icons/react';
 import { dashboardData, expensesTypes, generalReport, incomeExpenses } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
@@ -19,6 +19,9 @@ import NotFound from '../../common/NotFound';
 import JsonJsFormatter from '../../common/JsonJsFormatter';
 import EmptyBox from '../../common/EmptyBox';
 import AbsoluteCloseButton from '../../common/AbsoluteCloseButton';
+import LineGraph from '../../chartJS/LineGraph';
+import BarGraph from '../../chartJS/BarGraph';
+import PieGraph from '../../chartJS/PieGraph';
 
 const Admin = () => {
 
@@ -133,6 +136,32 @@ const Admin = () => {
 	useEffect(() => {
 		fetchMembers();
 	}, []);
+
+
+	// Members statistics
+	const [menCount, setMenCount] = useState(0);
+	const [womenCount, setWomenCount] = useState(0);
+
+	const membersChartData = useMemo(() => {
+		if (allMembers.length > 0) {
+			setMenCount(allMembers.filter(member => member.husbandFirstName !== null).length);
+			setWomenCount(allMembers.filter(member => ![null, 'N', 'N/A', 'NA'].includes(member.wifeFirstName)).length);
+
+			return {
+				labels: ['Men', 'Women'],
+				datasets: [
+					{
+						label: 'Total Number',
+						data: [menCount, womenCount],
+						borderColor: ['rgba(106, 142, 35, 1)', 'rgba(219, 29, 213, 1)'],
+						backgroundColor: ['rgba(106, 142, 35, 0.5)', 'rgba(219, 29, 213, 0.5)'],
+						borderWidth: 1,
+					},
+				],
+				hoverOffset: 5,
+			};
+		}
+	}, [allMembers]);
 
 	/**
 	 * Credits
@@ -249,7 +278,6 @@ const Admin = () => {
 	const Dashboard = () => {
 
 		const [showExportDataDialog, setShowExportDataDialog] = useState(false);
-
 		const accountingDashboardRef = useRef();
 
 		// const totalCotisation = allMembers.reduce((sum, item) => sum + item.cotisation, 0);
@@ -276,16 +304,6 @@ const Admin = () => {
 			.filter((item) => item.label === "Balance")
 			.map((item) => item.value);
 
-		// let labelvalue;
-		// switch (true) {
-		// 	case 'Cotisation':
-		// 		labelvalue = totalCotisation
-		// 		break;
-
-		// 	default:
-		// 		break;
-		// }
-
 		return (
 			<>
 
@@ -305,12 +323,12 @@ const Admin = () => {
 					<div className="row gx-3 gy-4 gy-lg-3 pb-3 rounded-4">
 						{dashboardData.map((item, index) => (
 							<div className="col-md-6 col-lg-4" key={index}>
-								<div className="card py-3 border-0 rounded-0 h-100 border-end border-4 border-secondaryColor">
+								<div className="card py-3 border-0 rounded-0 h-100 border-end border-4 border-primaryColor">
 									<div className="card-body">
-										<h6 className="card-title mb-4 fs-5 text-uppercase fw-bold text-primaryColor">
+										<h6 className="card-title mb-4 fs-5 text-uppercase fw-bold text-gray-700">
 											{item.label}
 										</h6>
-										<p className="card-text text-secondaryColor">
+										<p className="card-text text-primaryColor">
 											{item.label === 'Cotisation' && <CurrencyText amount={totalCotisation} />}
 											{item.label === 'Social' && <CurrencyText amount={totalSocial} />}
 											{item.label === 'Loan Delivered' && <CurrencyText amount={loanDelivered} />}
@@ -356,6 +374,7 @@ const Admin = () => {
 	const Members = () => {
 		const [membersToShow, setMembersToShow] = useState(allMembers);
 		const [memberSearchValue, setMemberSearchValue] = useState('');
+		const [showMemberStats, setShowMemberStats] = useState(false);
 
 		// Search members
 		const memberSearcherRef = useRef();
@@ -391,7 +410,7 @@ const Admin = () => {
 
 				setMembersToShow(filteredMembers);
 			}
-		}, [memberSearchValue, allMembers]);
+		}, [memberSearchValue]);
 
 		const resetMembers = () => {
 			setMembersToShow(allMembers);
@@ -416,14 +435,42 @@ const Admin = () => {
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="d-flex flex-wrap justify-content-between align-items-center mb-3">
-					<h2><Users weight='fill' className="me-1 opacity-50" /> Members</h2>
-					<div className="ms-auto">
-						<Button variant="primary" className='btn-sm rounded-0 border-end text-light clickDown'><ChartBar /> <span className='d-none d-sm-inline'>Statistics</span></Button>
-						<Button variant="primary" className='btn-sm rounded-0 border-end text-light clickDown'
+					<h2 className='text-appColor'><Users weight='fill' className="me-1 opacity-50" /> Members</h2>
+					<div className="ms-auto d-flex gap-1">
+						<Button className='btn-sm btn-primaryColor rounded-0 border-0 clickDown'
+							onClick={() => setShowMemberStats(!showMemberStats)}
+						><ChartBar /> <span className='d-none d-sm-inline'>Statistics</span></Button>
+						<Button className='btn-sm btn-primaryColor rounded-0 border-0 clickDown'
 							onClick={() => setShowAddMemberForm(true)}
 						><Plus /> New member</Button>
 					</div>
 				</div>
+
+				{showMemberStats && (
+					<div className={`collapsible-grid-y ${showMemberStats ? 'working' : ''}`}>
+						<div className="row mb-3 collapsing-content statistics-wrapper">
+							<div className="col-12 col-lg-6">
+								<BarGraph data={membersChartData} title='Member statistics' />
+							</div>
+							<div className="col-12 col-lg-6 alert mb-4 rounded-0 smaller fw-light">
+								<p>
+									Simple statistics of the members registered in Ikimina Ingoboka system
+								</p>
+								<ul className="list-unstyled d-flex flex-wrap gap-3 fs-6 text-primaryColor">
+									<li className='border-start border-dark border-opacity-50 ps-2'>
+										<b>Total men</b>: {menCount}
+									</li>
+									<li className='border-start border-dark border-opacity-50 ps-2'>
+										<b>Total women</b>: {womenCount}
+									</li>
+									<li className='border-start border-dark border-opacity-50 ps-2'>
+										<b>Total members</b>: {menCount + womenCount}
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				)}
 
 				<div className="members-wrapper">
 					{loadingMembers && (<LoadingIndicator icon={<Users size={80} className="loading-skeleton" />} />)}
@@ -748,7 +795,7 @@ const Admin = () => {
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="mb-3">
-					<h2><Coin weight='fill' className="me-1 opacity-50" /> Savings panel</h2>
+					<h2 className='text-appColor'><Coin weight='fill' className="me-1 opacity-50" /> Savings panel</h2>
 					<div className="d-lg-flex align-items-center">
 						<img src="images/savings_visual.png" alt="" className='col-md-5' />
 						<div className='alert mb-4 rounded-0 smaller fw-light'>
@@ -817,7 +864,7 @@ const Admin = () => {
 															<li className="py-1 w-100">
 																<span className="flex-align-center">
 																	<b className='fs-5'>{shares} Shares</b>
-																	<span className='ms-3 text-primary flex-align-center ptr clickDown' title='Edit multiple shares'><Pen size={22} className='me-2' /> Umuhigo</span>
+																	<span className='ms-3 text-primaryColor flex-align-center ptr clickDown' title='Edit multiple shares'><Pen size={22} className='me-2' /> Umuhigo</span>
 																</span>
 															</li>
 															<li className="py-1 d-table-row">
@@ -830,7 +877,7 @@ const Admin = () => {
 																<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'>{(cotisation + social).toLocaleString()} RWF</span>
 															</li>
 														</ul>
-														<button className="btn btn-sm btn-outline-primary w-100 flex-center rounded-0 clickDown"
+														<button className="btn btn-sm text-primaryColor border-primaryColor w-100 flex-center rounded-0 clickDown"
 															onClick={() => { setSelectedMember(member); setShowAddSavingRecord(true) }}
 														><Plus className='me-1' /> Save amount</button>
 													</div>
@@ -870,15 +917,15 @@ const Admin = () => {
 												<form onSubmit={(e) => e.preventDefault()} className="px-sm-2 pb-5">
 													<div className="mb-3">
 														<p htmlFor="expenseType" className="small">
-															<b>Saving type</b>: <span className="text-primary text-capitalize">{savingRecordType}</span>
+															<b>Saving type</b>: <span className="text-primaryColor text-capitalize">{savingRecordType}</span>
 														</p>
 														<ul className="list-unstyled d-flex">
-															<li className={`col-6 px-2 py-1 text-center ${savingRecordType === 'cotisation' ? 'text-bg-primary' : ''} rounded-pill ptr clickDown`}
+															<li className={`col-6 px-2 py-1 text-center ${savingRecordType === 'cotisation' ? 'btn-primaryColor' : ''} rounded-pill ptr clickDown`}
 																onClick={() => setSavingRecordType('cotisation')}
 															>
 																Cotisation
 															</li>
-															<li className={`col-6 px-2 py-1 text-center ${savingRecordType === 'social' ? 'text-bg-primary' : ''} rounded-pill ptr clickDown`}
+															<li className={`col-6 px-2 py-1 text-center ${savingRecordType === 'social' ? 'btn-primaryColor' : ''} rounded-pill ptr clickDown`}
 																onClick={() => setSavingRecordType('social')}
 															>
 																Social
@@ -932,7 +979,7 @@ const Admin = () => {
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="mb-3">
-					<h2><Coins weight='fill' className="me-1 opacity-50" /> Interest panel</h2>
+					<h2 className='text-appColor'><Coins weight='fill' className="me-1 opacity-50" /> Interest panel</h2>
 					<div className="d-lg-flex align-items-center">
 						<img src="images/interests_visual.png" alt="" className='d-none d-lg-block col-md-5' />
 						<div className='alert mb-4 rounded-0 smaller fw-light'>
@@ -1138,7 +1185,7 @@ const Admin = () => {
 
 				setMembersToShow(filteredMembers);
 			}
-		}, [memberSearchValue, allMembers]);
+		}, [memberSearchValue]);
 
 		const resetMembers = () => {
 			setMembersToShow(allMembers);
@@ -1273,7 +1320,7 @@ const Admin = () => {
 
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
-				<h2><Blueprint weight='fill' className="me-1 opacity-50" /> Credit panel</h2>
+				<h2 className='text-appColor'><Blueprint weight='fill' className="me-1 opacity-50" /> Credit panel</h2>
 
 				<Form onSubmit={e => e.preventDefault()} className='sticky-top col-lg-6 col-xxl-4 members-search-box'>
 					<Form.Control ref={memberSearcherRef} type="text" placeholder="🔍 Search members..." id='memberSearcher' className="h-2_5rem border border-2 bg-gray-200 rounded-0"
@@ -1341,7 +1388,7 @@ const Admin = () => {
 														Credits of {`${selectedMember.husbandFirstName} ${selectedMember.husbandLastName}`}
 													</span>
 												</div>
-												<div onClick={() => { setShowSelectedMemberCredits(false); }}>
+												<div onClick={() => { setShowSelectedMemberCredits(false); setShowSelectedMemberCreditRecords(false) }}>
 													<X size={25} className='ptr' />
 												</div>
 											</h6>
@@ -1621,7 +1668,7 @@ const Admin = () => {
 																												<span>{printDatesInterval(credit.requestDate, credit.dueDate)}</span>
 																												<span className="flex-align-center text-primaryColor ptr clickDown"
 																													onClick={() => { setSelectedCredit(credit); setShowBackfillPlanCard(true); }}
-																												><Receipt weight='fill' size={18} className='me-1' /> View backfill plan</span>
+																												><Receipt weight='fill' size={18} className='me-1' /> Tableau d'amortissement</span>
 																											</div>
 																										</td>
 																										<td style={{ maxWidth: '13rem' }}>
@@ -1769,7 +1816,7 @@ const Admin = () => {
 																				<span>{printDatesInterval(credit.requestDate, credit.dueDate)}</span>
 																				<span className="flex-align-center text-primaryColor ptr clickDown"
 																					onClick={() => { setSelectedCredit(credit); setShowBackfillPlanCard(true); }}
-																				><Receipt weight='fill' size={18} className='me-1' /> View backfill plan</span>
+																				><Receipt weight='fill' size={18} className='me-1' /> Tableau d'amortissement</span>
 																			</div>
 																		</td>
 																		<td style={{ maxWidth: '13rem' }}>
@@ -1882,7 +1929,7 @@ const Admin = () => {
 																				<span>{printDatesInterval(credit.requestDate, credit.dueDate)}</span>
 																				<span className="flex-align-center text-primaryColor ptr clickDown"
 																					onClick={() => { setSelectedCredit(credit); setShowBackfillPlanCard(true); }}
-																				><Receipt weight='fill' size={18} className='me-1' /> View backfill plan</span>
+																				><Receipt weight='fill' size={18} className='me-1' /> Tableau d'amortissement</span>
 																			</div>
 																		</td>
 																		<td style={{ maxWidth: '13rem' }}>
@@ -1966,7 +2013,7 @@ const Admin = () => {
 																				<span>{printDatesInterval(credit.requestDate, credit.dueDate)}</span>
 																				<span className="flex-align-center text-primaryColor ptr clickDown"
 																					onClick={() => { setSelectedCredit(credit); setShowBackfillPlanCard(true); }}
-																				><Receipt weight='fill' size={18} className='me-1' /> View backfill plan</span>
+																				><Receipt weight='fill' size={18} className='me-1' /> Tableau d'amortissement</span>
 																			</div>
 																		</td>
 																		<td style={{ maxWidth: '13rem' }}>
@@ -2020,20 +2067,19 @@ const Admin = () => {
 								{showBackfillPlanCard && (
 									<>
 										<div className='position-fixed fixed-top inset-0 bg-black2 py-3 inx-high add-property-form'>
-											<div className="container offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
+											<div className="container offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 												<div className="px-3 bg-light text-gray-700">
-													<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
+													<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
 														<div className='flex-align-center text-primaryColor'>
 															<Receipt weight='fill' className="me-1" />
-															<span style={{ lineHeight: 1 }}>Backfill plan</span>
+															<span style={{ lineHeight: 1 }}>Tableau d'amortissement</span>
 														</div>
 														<div onClick={() => { setShowBackfillPlanCard(false); }}>
 															<X size={25} className='ptr' />
 														</div>
 													</h6>
-
 													<div className="pb-5">
-														<div className='alert bg-primaryColor text-gray-200 d-lg-flex align-items-end gap-3 border-0 rounded-0 shadow-sm'>
+														<div className='alert d-lg-flex align-items-end gap-3 border-0 rounded-0 shadow-sm'>
 															<div className='fw-light'>
 																{associatedMember[0] && (
 																	<>
@@ -2069,15 +2115,15 @@ const Admin = () => {
 															<div className="d-flex flex-wrap ms-lg-auto">
 																<div className='col px-2'>
 																	<div className='flex-align-center smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Payment start date</span></div>
-																	<div className='text-center bg-black3'><FormatedDate date={selectedCredit.requestDate} /></div>
+																	<div className='text-center bg-gray-300'><FormatedDate date={selectedCredit.requestDate} /></div>
 																</div>
 																<div className='col px-2'>
 																	<div className='flex-align-center smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Payment end date</span></div>
-																	<div className='text-center bg-black3'><FormatedDate date={selectedCredit.dueDate} /></div>
+																	<div className='text-center bg-gray-300'><FormatedDate date={selectedCredit.dueDate} /></div>
 																</div>
 															</div>
 														</div>
-														<ul className="list-unstyled d-flex flex-wrap gap-3 px-1 px-sm-2 px-lg-3 text-primaryColor small">
+														<ul className="list-unstyled d-flex flex-wrap gap-3 px-1 px-sm-2 px-lg-3 small">
 															<li className='border-start border-dark border-opacity-50 ps-2'>
 																<b>Amount requested</b>: <CurrencyText amount={Number(selectedCredit.creditAmount)} />
 															</li>
@@ -2239,9 +2285,9 @@ const Admin = () => {
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="mb-3">
 					<div className="d-flex flex-wrap justify-content-between align-items-center">
-						<h2><CashRegister weight='fill' className="me-1 opacity-50" /> Transactions panel</h2>
-						<div className="ms-auto">
-							<Button variant="primary" onClick={() => { setActiveTransactionSection('withdrawals'); setShowAddExpenseRecord(true) }} className='btn-sm rounded-0 border-end text-light clickDown'><Plus /> Record expenses</Button>
+						<h2 className='text-appColor'><CashRegister weight='fill' className="me-1 opacity-50" /> Transactions panel</h2>
+						<div className="ms-auto d-flex gap-1">
+							<Button onClick={() => { setActiveTransactionSection('withdrawals'); setShowAddExpenseRecord(true) }} className='btn-sm btn-primaryColor rounded-0 border-0 clickDown'><Plus /> Record expenses</Button>
 						</div>
 					</div>
 					<div className="d-lg-flex align-items-center">
@@ -2570,7 +2616,7 @@ const Admin = () => {
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="mb-3">
-					<h2><Files weight='fill' className="me-1 opacity-50" /> Report panel</h2>
+					<h2 className='text-appColor'><Files weight='fill' className="me-1 opacity-50" /> Report panel</h2>
 					<div className="d-lg-flex align-items-center">
 						<img src="images/reports_visual.png" alt="" className='d-none d-lg-block col-md-5' />
 						<div className='alert mb-4 rounded-0 smaller fw-light'>
