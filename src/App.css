@@ -1150,6 +1150,7 @@ label {
 
 .btn-primaryColor {
   background-color: var(--primaryColor) !important;
+  color: var(--bs-light);
 }
 
 .btn-secondaryColor {
