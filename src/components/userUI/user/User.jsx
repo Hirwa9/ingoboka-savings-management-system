@@ -352,7 +352,7 @@ const UserUI = () => {
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="d-flex flex-wrap justify-content-between align-items-center mb-3">
-					<h2><Users weight='fill' className="me-1 opacity-50" /> Members</h2>
+					<h2 className='text-appColor'><Users weight='fill' className="me-1 opacity-50" /> Members</h2>
 					<div className="ms-auto">
 						<Button variant="primary" className='btn-sm rounded-0 border-end text-light clickDown'><ChartBar /> <span className='d-none d-sm-inline'>Statistics</span></Button>
 						<Button variant="primary" className='btn-sm rounded-0 border-end text-light clickDown'><Plus /> New member</Button>
@@ -510,7 +510,7 @@ const UserUI = () => {
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="mb-3">
-					<h2><Coin weight='fill' className="me-1 opacity-50" /> Savings panel</h2>
+					<h2 className='text-appColor'><Coin weight='fill' className="me-1 opacity-50" /> Savings panel</h2>
 					<div className="d-lg-flex align-items-center">
 						<img src="images/savings_visual.png" alt="" className='col-md-5' />
 						<div className='alert mb-4 rounded-0 smaller fw-light'>
@@ -696,7 +696,7 @@ const UserUI = () => {
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="mb-3">
-					<h2><Coins weight='fill' className="me-1 opacity-50" /> Interest panel</h2>
+					<h2 className='text-appColor'><Coins weight='fill' className="me-1 opacity-50" /> Interest panel</h2>
 					<div className="d-lg-flex align-items-center">
 						<img src="images/interests_visual.png" alt="" className='d-none d-lg-block col-md-5' />
 						<div className='alert mb-4 rounded-0 smaller fw-light'>
@@ -990,7 +990,7 @@ const UserUI = () => {
 
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
-				<h2><Blueprint weight='fill' className="me-1 opacity-50" /> Credit panel</h2>
+				<h2 className='text-appColor'><Blueprint weight='fill' className="me-1 opacity-50" /> Credit panel</h2>
 
 				<Form onSubmit={e => e.preventDefault()} className='sticky-top col-lg-6 col-xxl-4 members-search-box'>
 					<Form.Control ref={memberSearcherRef} type="text" placeholder="🔍 Search members..." id='memberSearcher' className="h-2_5rem border border-2 bg-gray-200 rounded-0"
@@ -1683,7 +1683,7 @@ const UserUI = () => {
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="mb-3">
 					<div className="d-flex flex-wrap justify-content-between align-items-center">
-						<h2><CashRegister weight='fill' className="me-1 opacity-50" /> Transactions panel</h2>
+						<h2 className='text-appColor'><CashRegister weight='fill' className="me-1 opacity-50" /> Transactions panel</h2>
 						<div className="ms-auto">
 							<Button variant="primary" onClick={() => { setActiveTransactionSection('withdrawals'); setShowAddExpenseRecord(true) }} className='btn-sm rounded-0 border-end text-light clickDown'><Plus /> Record expenses</Button>
 						</div>
@@ -2003,7 +2003,7 @@ const UserUI = () => {
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="mb-3">
-					<h2><Files weight='fill' className="me-1 opacity-50" /> Report panel</h2>
+					<h2 className='text-appColor'><Files weight='fill' className="me-1 opacity-50" /> Report panel</h2>
 					<div className="d-lg-flex align-items-center">
 						<img src="images/reports_visual.png" alt="" className='d-none d-lg-block col-md-5' />
 						<div className='alert mb-4 rounded-0 smaller fw-light'>
