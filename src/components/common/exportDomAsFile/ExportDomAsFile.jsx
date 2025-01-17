@@ -61,17 +61,17 @@ const ExportDomAsFile = ({ show, container, exportName, onClose }) => {
             {show && (
                 <div className='position-fixed fixed-top inset-0 py-4 bg-black3 inx-high add-property-form'>
                     <div className="container w-100 h-100 d-flex overflow-auto" style={{ animation: "flyInBottom .2s 1", maxHeight: '100%' }}>
-                        <div className="position-relative mx-auto mt-auto p-3 pt-4 bg-primaryColor blur-bg-3px rounded-3">
-                            <AbsoluteCloseButton bg="primaryColor" text="light" onClose={() => onClose()} />
+                        <div className="position-relative mx-auto mt-auto p-3 pt-4 bg-gray-200 blur-bg-3px rounded-3">
+                            <AbsoluteCloseButton bg="gray-200" text="primaryColor" onClose={() => onClose()} />
                             <div className='flex-center flex-wrap gap-3 mb-4'>
-                                <button className='btn btn-sm btn-outline-light px-3 text-nowrap rounded-pill clickDown'
+                                <button className='btn btn-sm btn-outline-dark border-0 px-3 text-nowrap rounded-pill clickDown shadow-sm'
                                     onClick={() => exportAsImage({ node: container.current, name: exportName })}
                                 ><FileImage weight='fill' size={20} /> Export as Image</button>
-                                <button className='btn btn-sm btn-outline-light px-3 text-nowrap rounded-pill clickDown'
+                                <button className='btn btn-sm btn-outline-dark border-0 px-3 text-nowrap rounded-pill clickDown shadow-sm'
                                     onClick={() => exportAsPDF({ node: container.current, name: exportName })}
                                 ><FilePdf weight='fill' size={20} /> Export as PDF</button>
                             </div>
-                            <button className='btn btn-sm btn-secondary w-100 px-3 text-nowrap rounded-pill clickDown'
+                            <button className='btn btn-sm text-uppercase text-primaryColor w-100 px-3 text-nowrap rounded-pill clickDown shadow-sm'
                                 onClick={() => onClose()}
                             ><X /> Cancel</button>
                         </div>
