@@ -456,7 +456,7 @@ const Admin = () => {
 								<p>
 									Simple statistics of the members registered in Ikimina Ingoboka system
 								</p>
-								<ul className="list-unstyled d-flex flex-wrap gap-3 fs-6 text-primaryColor">
+								<ul className="list-unstyled d-flex flex-wrap row-gap-1 column-gap-3 fs-6 fw-medium text-primaryColor">
 									<li className='border-start border-dark border-opacity-50 ps-2'>
 										<b>Total men</b>: {menCount}
 									</li>
@@ -890,8 +890,8 @@ const Admin = () => {
 
 							{showAddSavingRecord &&
 								<>
-									<div className='position-fixed fixed-top inset-0 bg-black2 py-5 inx-high add-property-form'>
-										<div className="container col-md-6 col-lg-5 col-xl-4 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
+									<div className='position-fixed fixed-top inset-0 flex-center py-5 bg-black2 inx-high add-property-form'>
+										<div className="container col-md-6 col-lg-5 col-xl-4 my-auto peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 											<div className="px-3 bg-light text-gray-700">
 												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
 													<div className='flex-align-center'>
@@ -920,12 +920,12 @@ const Admin = () => {
 															<b>Saving type</b>: <span className="text-primaryColor text-capitalize">{savingRecordType}</span>
 														</p>
 														<ul className="list-unstyled d-flex">
-															<li className={`col-6 px-2 py-1 text-center ${savingRecordType === 'cotisation' ? 'btn-primaryColor' : ''} rounded-pill ptr clickDown`}
+															<li className={`col-6 px-2 py-1 text-center small border-2 ${savingRecordType === 'cotisation' ? 'border-bottom border-primaryColor text-primaryColor' : ''} ptr clickDown`}
 																onClick={() => setSavingRecordType('cotisation')}
 															>
 																Cotisation
 															</li>
-															<li className={`col-6 px-2 py-1 text-center ${savingRecordType === 'social' ? 'btn-primaryColor' : ''} rounded-pill ptr clickDown`}
+															<li className={`col-6 px-2 py-1 text-center small border-2 ${savingRecordType === 'social' ? 'border-bottom border-primaryColor text-primaryColor' : ''} ptr clickDown`}
 																onClick={() => setSavingRecordType('social')}
 															>
 																Social
@@ -939,7 +939,7 @@ const Admin = () => {
 															onChange={e => setSavingRecordAmount(e.target.value)}
 														/>
 													</div>
-													<button type="submit" className="btn btn-sm btn-dark flex-center w-100 mt-3 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
+													<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
 														onClick={() => handleAddSaving(selectedMember.id)}
 													>
 														{!isWaitingFetchAction ?
@@ -3056,7 +3056,7 @@ const Admin = () => {
 				<div className="row">
 					{/* Sidebar Navigation */}
 					<nav className={`col-12 col-md-3 col-xl-2 d-md-block border-end overflow-y-auto sidebar ${sideNavbarIsFloated ? 'floated bg-black3' : ''}`} id="sidebarMenu">
-						<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit pt-2 pt-md-3 pb-3 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'peak-borders-b' : ''}`}>
+						<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit pt-2 pt-md-3 pb-3 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded-bottom-3' : ''}`}>
 
 							<div className="d-flex align-items-center d-md-none mb-3 px-3 pb-2 border-bottom border-light border-opacity-25">
 								<div className='ms-auto d-grid pb-1'>
@@ -3166,9 +3166,6 @@ const Admin = () => {
 					{/* Content Area */}
 					<div className="col-md-9 col-xl-10 ms-sm-auto px-md-4 py-2">
 						{renderContent()}
-
-						{/* Reply to messages */}
-
 					</div>
 
 				</div>
