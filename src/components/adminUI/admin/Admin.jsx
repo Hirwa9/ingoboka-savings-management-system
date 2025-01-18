@@ -394,8 +394,8 @@ const Admin = () => {
 						(val.wifeFirstName &&
 							normalizedLowercaseString(val.wifeFirstName)
 								.includes(searchString)) ||
-						(val.wifeLstName &&
-							normalizedLowercaseString(val.wifeLstName)
+						(val.wifeLastName &&
+							normalizedLowercaseString(val.wifeLastName)
 								.includes(searchString)) ||
 						(val.husbandEmail &&
 							val.husbandEmail.toLowerCase().includes(searchString)) ||
@@ -426,11 +426,78 @@ const Admin = () => {
 		// Registration
 
 		const [showAddMemberForm, setShowAddMemberForm] = useState(false);
-		const [showWifeDetails, setShowWifeDetails] = useState(false);
 
-		const handleRegisterNewMember = async () => {
-			// Code
-		}
+		const [formData, setFormData] = useState({
+			husbandFirstName: '',
+			husbandLastName: '',
+			husbandPhone: '',
+			husbandEmail: '',
+			wifeFirstName: '',
+			wifeLastName: '',
+			wifePhone: '',
+			wifeEmail: '',
+		});
+
+		const resetRegistrationForm = () => {
+			setFormData({
+				husbandFirstName: '',
+				husbandLastName: '',
+				husbandPhone: '',
+				husbandEmail: '',
+				wifeFirstName: '',
+				wifeLastName: '',
+				wifePhone: '',
+				wifeEmail: '',
+			});
+			setAutoGeneratePassword(true);
+		};
+
+		const [showWifeDetails, setShowWifeDetails] = useState(false);
+		const [autoGeneratePassword, setAutoGeneratePassword] = useState(true);
+		const [registrationPassword, setRegistrationPassword] = useState('');
+
+		useEffect(() => {
+			if (autoGeneratePassword) {
+				setRegistrationPassword('');
+			}
+		}, [autoGeneratePassword]);
+
+		const handleChange = (e) => {
+			const { name, value } = e.target;
+			setFormData((prevData) => ({
+				...prevData,
+				[name]: value,
+			}));
+		};
+
+		// Handle registration
+		const handleRegisterNewMember = async (e) => {
+			if (e) e.preventDefault();
+
+			const payload = {
+				...formData,
+				password: registrationPassword,
+				autoGeneratePassword,
+			};
+
+			try {
+				setIsWaitingFetchAction(true);
+				const response = await axios.post(`${BASE_URL}/users/register`, payload);
+				// Successfull fetch
+				const data = response.data;
+				toast({ message: `Success: ${data.message}`, type: "dark" });
+				resetRegistrationForm();
+				setErrorWithFetchAction(null);
+				fetchLoans();
+				fetchMembers();
+			} catch (error) {
+				setErrorWithFetchAction(error);
+				cError('Registration error:', error.response?.data || error.message);
+				toast({ message: `Error: ${error.response?.data.message || 'Registration failed'}`, type: 'warning' });
+			} finally {
+				setIsWaitingFetchAction(false);
+			}
+		};
 
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
@@ -510,12 +577,12 @@ const Admin = () => {
 										<div className="position-absolute top-0 me-3 d-flex gap-3"
 											style={{ right: 0, translate: "0 -50%" }}
 										>
-											<img src={member.husbandAvatar}
+											<img src={member.husbandAvatar ? member.husbandAvatar : '/images/man_avatar_image.jpg'}
 												alt={`${member.husbandFirstName.slice(0, 1)}.${member.husbandLastName}`}
 												className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
 											/>
-											<img src={member.wifeAvatar}
-												alt={`${member.wifeFirstName.slice(0, 1)}.${member.wifeLastName}`}
+											<img src={member.wifeAvatar ? member.wifeAvatar : '/images/woman_avatar_image.jpg'}
+												alt={member.wifeFirstName ? `${member.wifeFirstName.slice(0, 1)}.${member.wifeLastName}` : 'Partner image'}
 												className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
 											/>
 										</div>
@@ -549,13 +616,13 @@ const Admin = () => {
 													</h6>
 													<ul className="list-unstyled text-gray-700 px-2 smaller">
 														<li className="py-1">
-															<b>Names:</b> {`${member.wifeFirstName} ${member.wifeLastName}`}
+															<b>Names:</b> {member.wifeFirstName ? `${member.wifeFirstName} ${member.wifeLastName}` : 'Not provided'}
 														</li>
 														<li className="py-1">
-															<b>Phone:</b> {member.wifePhone}
+															<b>Phone:</b> {member.wifePhone ? member.wifePhone : 'Not provided'}
 														</li>
 														<li className="py-1">
-															<b>Email:</b> {member.wifeEmail}
+															<b>Email:</b> {member.wifeEmail ? member.wifeEmail : 'Not provided'}
 														</li>
 													</ul>
 												</div>
@@ -585,24 +652,83 @@ const Admin = () => {
 												</div>
 
 												{/* The form */}
-												<form onSubmit={(e) => e.preventDefault()} className="px-sm-2 pb-5">
+												<form onSubmit={handleRegisterNewMember} className="px-sm-2 pb-5">
 													{/* Husband Details */}
 													<div className="mb-3">
 														<label htmlFor="husbandFirstName" className="form-label fw-semibold">First Name</label>
-														<input type="text" className="form-control" id="husbandFirstName" placeholder="Eg: Alain" required />
+														<input
+															type="text"
+															className="form-control"
+															id="husbandFirstName"
+															name="husbandFirstName"
+															value={formData.husbandFirstName}
+															onChange={handleChange}
+															placeholder="Eg: Mugabe"
+															required
+														/>
 													</div>
 													<div className="mb-3">
 														<label htmlFor="husbandLastName" className="form-label fw-semibold">Last Name</label>
-														<input type="text" className="form-control" id="husbandLastName" placeholder="Eg: Mugabe" required />
+														<input
+															type="text"
+															className="form-control"
+															id="husbandLastName"
+															name="husbandLastName"
+															value={formData.husbandLastName}
+															onChange={handleChange}
+															placeholder="Eg: Alain"
+															required
+														/>
 													</div>
 													<div className="mb-3">
 														<label htmlFor="husbandPhone" className="form-label fw-semibold">Phone</label>
-														<input type="text" className="form-control" id="husbandPhone" placeholder="Enter phone number" required />
+														<input
+															type="text"
+															className="form-control"
+															id="husbandPhone"
+															name="husbandPhone"
+															value={formData.husbandPhone}
+															onChange={handleChange}
+															placeholder="Enter phone number"
+															required
+														/>
 													</div>
 													<div className="mb-3">
 														<label htmlFor="husbandEmail" className="form-label fw-semibold">Email</label>
-														<input type="email" className="form-control" id="husbandEmail" placeholder="Enter email" required />
+														<input
+															type="email"
+															className="form-control"
+															id="husbandEmail"
+															name="husbandEmail"
+															value={formData.husbandEmail}
+															onChange={handleChange}
+															placeholder="Enter email"
+															required
+														/>
 													</div>
+
+													{/* Password Fields */}
+													<div className="mb-3 form-check">
+														<input
+															type="checkbox"
+															className="form-check-input border-2 border-primary"
+															id="autoGeneratePassword"
+															checked={autoGeneratePassword}
+															onChange={() => setAutoGeneratePassword(!autoGeneratePassword)}
+														/>
+														<label htmlFor="autoGeneratePassword" className="form-check-label">
+															Auto-generate a strong password
+														</label>
+													</div>
+													{!autoGeneratePassword && (
+														<div className="mb-3">
+															<label htmlFor="password" className="form-label fw-semibold">Password</label>
+															<input type="password" className="form-control" id="password" placeholder="Enter password"
+																value={registrationPassword}
+																onChange={e => setRegistrationPassword(e.target.value)}
+															/>
+														</div>
+													)}
 
 													{/* Toggle Wife Details */}
 													<div className="my-5 d-flex">
@@ -611,10 +737,7 @@ const Admin = () => {
 															className={`btn btn-sm btn-outline-${showWifeDetails ? 'danger' : 'secondary'} border-start-0 border-end-0 mx-auto rounded-0`}
 															onClick={() => setShowWifeDetails(!showWifeDetails)}
 														>
-															{showWifeDetails ?
-																<><Minus /><Users /> Remove partner details</>
-																: <><Plus /><Users /> Add partner details</>
-															}
+															{showWifeDetails ? 'Remove partner details' : 'Add partner details'}
 														</button>
 													</div>
 
@@ -623,19 +746,51 @@ const Admin = () => {
 														<>
 															<div className="mb-3">
 																<label htmlFor="wifeFirstName" className="form-label fw-semibold">Wife's First Name</label>
-																<input type="text" className="form-control" id="wifeFirstName" placeholder="Eg: Laetitia" />
+																<input
+																	type="text"
+																	className="form-control"
+																	id="wifeFirstName"
+																	name="wifeFirstName"
+																	value={formData.wifeFirstName}
+																	onChange={handleChange}
+																	placeholder="Eg: Ingabire"
+																/>
 															</div>
 															<div className="mb-3">
 																<label htmlFor="wifeLastName" className="form-label fw-semibold">Wife's Last Name</label>
-																<input type="text" className="form-control" id="wifeLastName" placeholder="Eg: Ingabire" />
+																<input
+																	type="text"
+																	className="form-control"
+																	id="wifeLastName"
+																	name="wifeLastName"
+																	value={formData.wifeLastName}
+																	onChange={handleChange}
+																	placeholder="Eg: Laetitia"
+																/>
 															</div>
 															<div className="mb-3">
 																<label htmlFor="wifePhone" className="form-label fw-semibold">Wife's Phone</label>
-																<input type="text" className="form-control" id="wifePhone" placeholder="Enter phone number" />
+																<input
+																	type="text"
+																	className="form-control"
+																	id="wifePhone"
+																	name="wifePhone"
+																	value={formData.wifePhone}
+																	onChange={handleChange}
+																	placeholder="Enter phone number"
+																/>
 															</div>
 															<div className="mb-3">
 																<label htmlFor="wifeEmail" className="form-label fw-semibold">Wife's Email</label>
-																<input type="email" className="form-control" id="wifeEmail" placeholder="Enter email" />
+																<input
+																	type="email"
+																	className="form-control"
+																	id="wifeEmail"
+																	name="wifeEmail"
+																	value={formData.wifeEmail}
+																	onChange={handleChange}
+																	placeholder="Enter email"
+																/>
 															</div>
 														</>
 													)}
@@ -643,15 +798,9 @@ const Admin = () => {
 													{/* Submit Button */}
 													<button
 														type="submit"
-														className="btn btn-sm btn-dark flex-center w-100 mt-3 py-2 px-4 rounded-pill clickDown"
-														id="registerNewMemberBtn"
-														onClick={() => handleRegisterNewMember()}
+														className="btn btn-sm btn-dark flex-center w-100 mt-3 py-2 px-4 rounded-pill"
 													>
-														{!isWaitingFetchAction ? (
-															<>Register  <UserCirclePlus size={18} className="ms-2" /></>
-														) : (
-															<>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
-														)}
+														Register
 													</button>
 												</form>
 											</div>
@@ -678,16 +827,30 @@ const Admin = () => {
 			const searchString = savingSearchValue.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 			if (searchString !== null && searchString !== undefined && searchString !== '') {
 				// showAllProperties(true);
-				const filteredsavings = allMembers.filter(val => (
-					val.husbandFirstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
-					val.husbandLastName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
-					val.wifeFirstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
-					val.wifeLastName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchString) ||
-					val.husbandEmail.toLowerCase().includes(searchString) ||
-					val.wifeEmail.toLowerCase().includes(searchString) ||
-					val.husbandPhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString) ||
-					val.wifePhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString)
-				));
+				const filteredsavings = allMembers.filter((val) => {
+					return (
+						(val.husbandFirstName &&
+							normalizedLowercaseString(val.husbandFirstName)
+								.includes(searchString)) ||
+						(val.husbandLastName &&
+							normalizedLowercaseString(val.husbandLastName)
+								.includes(searchString)) ||
+						(val.wifeFirstName &&
+							normalizedLowercaseString(val.wifeFirstName)
+								.includes(searchString)) ||
+						(val.wifeLastName &&
+							normalizedLowercaseString(val.wifeLastName)
+								.includes(searchString)) ||
+						(val.husbandEmail &&
+							val.husbandEmail.toLowerCase().includes(searchString)) ||
+						(val.wifeEmail &&
+							val.wifeEmail.toLowerCase().includes(searchString)) ||
+						(val.husbandPhone &&
+							val.husbandPhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString)) ||
+						(val.wifePhone &&
+							val.wifePhone.replace(/[ ()+]/g, '').toLowerCase().includes(searchString))
+					);
+				});
 				setSavingsToShow(filteredsavings);
 			}
 		}, [savingSearchValue]);
@@ -853,7 +1016,7 @@ const Admin = () => {
 													<div className="position-absolute top-0 me-3 d-flex gap-3"
 														style={{ right: 0, translate: "0 -50%" }}
 													>
-														<img src={husbandAvatar}
+														<img src={husbandAvatar ? husbandAvatar : '/images/man_avatar_image.jpg'}
 															alt={`${husbandFirstName.slice(0, 1)}.${husbandLastName}`}
 															className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
 														/>
@@ -903,7 +1066,7 @@ const Admin = () => {
 													</div>
 												</h6>
 												<div className="flex-align-center gap-3 mb-3">
-													<img src={selectedMember.husbandAvatar}
+													<img src={selectedMember.husbandAvatar ? selectedMember.husbandAvatar : '/images/man_avatar_image.jpg'}
 														alt={`${selectedMember.husbandFirstName.slice(0, 1)}.${selectedMember.husbandLastName}`}
 														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
 													/>
@@ -1169,8 +1332,8 @@ const Admin = () => {
 						(val.wifeFirstName &&
 							normalizedLowercaseString(val.wifeFirstName)
 								.includes(searchString)) ||
-						(val.wifeLstName &&
-							normalizedLowercaseString(val.wifeLstName)
+						(val.wifeLastName &&
+							normalizedLowercaseString(val.wifeLastName)
 								.includes(searchString)) ||
 						(val.husbandEmail &&
 							val.husbandEmail.toLowerCase().includes(searchString)) ||
@@ -1358,7 +1521,7 @@ const Admin = () => {
 											title={`${member.husbandFirstName} ${member.husbandLastName}`}
 											onClick={() => { setSelectedMember(member); setShowSelectedMemberCredits(true) }}
 										>
-											<img src={member.husbandAvatar}
+											<img src={member.husbandAvatar ? member.husbandAvatar : '/images/man_avatar_image.jpg'}
 												alt={`${member.husbandFirstName} ${member.husbandLastName}`}
 												className="w-100 ratio-1-1 object-fit-cover p-1 bg-light rounded-circle"
 											/>
@@ -1380,7 +1543,7 @@ const Admin = () => {
 										<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
 											<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom">
 												<div className='flex-align-center'>
-													<img src={selectedMember.husbandAvatar}
+													<img src={selectedMember.husbandAvatar ? selectedMember.husbandAvatar : '/images/man_avatar_image.jpg'}
 														alt={`${selectedMember.husbandFirstName.slice(0, 1)}.${selectedMember.husbandLastName}`}
 														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
 													/>
@@ -2084,7 +2247,7 @@ const Admin = () => {
 																{associatedMember[0] && (
 																	<>
 																		<div className='d-flex gap-2 mb-2'>
-																			<img src={associatedMember[0].husbandAvatar}
+																			<img src={associatedMember[0].husbandAvatar ? associatedMember[0].husbandAvatar : '/images/man_avatar_image.jpg'}
 																				alt={`${associatedMember[0].husbandFirstName.slice(0, 1)}.${associatedMember[0].husbandLastName}`}
 																				className="w-3rem h-3rem flex-shrink-0 object-fit-cover p-1 border border-3 border-light border-opacity-25 rounded-circle"
 																			/>
@@ -3027,7 +3190,7 @@ const Admin = () => {
 
 												return (
 													<div key={index} className="d-flex mb-2 py-2 border-bottom">
-														<img src={associatedMember.husbandAvatar} alt="User" className='w-2rem h-2rem flex-grow-0 flex-shrink-0 me-2 object-fit-cover bg-light rounded-circle' />
+														<img src={associatedMember.husbandAvatar ? associatedMember.husbandAvatar : '/images/man_avatar_image.jpg'} alt="User" className='w-2rem h-2rem flex-grow-0 flex-shrink-0 me-2 object-fit-cover bg-light rounded-circle' />
 														<div className="">
 															<div className="d-flex align-items-center justify-content-between mb-1 pb-1 border-bottom text-primaryColor small">
 																<span>Loan request</span>
@@ -3058,7 +3221,7 @@ const Admin = () => {
 					<nav className={`col-12 col-md-3 col-xl-2 d-md-block border-end overflow-y-auto sidebar ${sideNavbarIsFloated ? 'floated bg-black3' : ''}`} id="sidebarMenu">
 						<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit pt-2 pt-md-3 pb-3 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded-bottom-3' : ''}`}>
 
-							<div className="d-flex align-items-center d-md-none mb-3 px-3 pb-2 border-bottom border-light border-opacity-25">
+							<div className="d-flex align-items-center d-md-none mb-3 px-3 pb-2 border-light border-opacity-25">
 								<div className='ms-auto d-grid pb-1'>
 									<span className='ms-auto smaller'>Mugabe Alain</span>
 									<span className='ms-auto fs-70 opacity-75' style={{ lineHeight: 1 }}>Accountant</span>
