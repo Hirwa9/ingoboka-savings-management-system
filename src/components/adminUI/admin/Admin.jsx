@@ -22,6 +22,8 @@ import AbsoluteCloseButton from '../../common/AbsoluteCloseButton';
 import LineGraph from '../../chartJS/LineGraph';
 import BarGraph from '../../chartJS/BarGraph';
 import PieGraph from '../../chartJS/PieGraph';
+import CountUp from 'react-countup'
+
 
 const Admin = () => {
 
@@ -137,13 +139,16 @@ const Admin = () => {
 		fetchMembers();
 	}, []);
 
+	const totalMembers = useMemo(() => {
+		return allMembers.length;
+	}, [allMembers]);
 
 	// Members statistics
 	const [menCount, setMenCount] = useState(0);
 	const [womenCount, setWomenCount] = useState(0);
 
 	const membersChartData = useMemo(() => {
-		if (allMembers.length > 0) {
+		if (totalMembers > 0) {
 			setMenCount(allMembers.filter(member => member.husbandFirstName !== null).length);
 			setWomenCount(allMembers.filter(member => ![null, 'N', 'N/A', 'NA'].includes(member.wifeFirstName)).length);
 
@@ -161,7 +166,7 @@ const Admin = () => {
 				hoverOffset: 5,
 			};
 		}
-	}, [allMembers]);
+	}, [allMembers, totalMembers, menCount, womenCount]);
 
 	/**
 	 * Credits
@@ -424,7 +429,6 @@ const Admin = () => {
 		}, [memberSearchValue]);
 
 		// Registration
-
 		const [showAddMemberForm, setShowAddMemberForm] = useState(false);
 
 		const [formData, setFormData] = useState({
@@ -488,8 +492,8 @@ const Admin = () => {
 				toast({ message: `Success: ${data.message}`, type: "dark" });
 				resetRegistrationForm();
 				setErrorWithFetchAction(null);
-				fetchLoans();
 				fetchMembers();
+				fetchLoans();
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError('Registration error:', error.response?.data || error.message);
@@ -499,6 +503,98 @@ const Admin = () => {
 			}
 		};
 
+		// Edit member data
+		const [showEditMemberForm, setShowEditMemberForm] = useState(false);
+		const [selectedMember, setSelectedMember] = useState(allMembers[0]);
+		const [editHeadOfFamily, setEditHeadOfFamily] = useState(true);
+
+		const [editSelectedmemberFName, setEditSelectedmemberFName] = useState('');
+		const [editSelectedmemberLName, setEditSelectedmemberLName] = useState('');
+		const [editSelectedmemberPhone, setEditSelectedmemberPhone] = useState('');
+		const [editSelectedmemberEmail, setEditSelectedmemberEmail] = useState('');
+
+		// Togger member editor
+		useEffect(() => {
+			if (editHeadOfFamily) {
+				setEditSelectedmemberFName(selectedMember.husbandFirstName);
+				setEditSelectedmemberLName(selectedMember.husbandLastName);
+				setEditSelectedmemberPhone(selectedMember.husbandPhone);
+				setEditSelectedmemberEmail(selectedMember.husbandEmail);
+			} else {
+				setEditSelectedmemberFName(selectedMember.wifeFirstName || '');
+				setEditSelectedmemberLName(selectedMember.wifeLastName || '');
+				setEditSelectedmemberPhone(selectedMember.wifePhone || '');
+				setEditSelectedmemberEmail(selectedMember.wifeEmail || '');
+			}
+		}, [selectedMember, editHeadOfFamily]);
+
+		const [showAddImageForm, setShowAddImageForm] = useState(false);
+		const [imageFile, setImageFile] = useState(null);
+		const [imageFileName, setImageFileName] = useState(null);
+
+		const handleImageFileChange = (e) => {
+			const file = e.target.files[0];
+			if (file && !file.type.startsWith("image/")) {
+				toast({
+					message: "Please upload a valid image file.",
+					type: "danger",
+				});
+				return;
+			}
+			setImageFile(file);
+			setImageFileName(file?.name || ""); // Set the file name
+		};
+
+		// Handle edit member photo/avatar
+		// const handleEditMemberAvatar = async (id, type) => {
+		// 	try {
+		// 		setIsWaitingFetchAction(true);
+		// 		const response = await axios.post(`${BASE_URL}/user/${id}/edit-${type}-info`, payload);
+		// 		// Successfull fetch
+		// 		const data = response.data;
+		// 		toast({ message: data.message, type: "dark" });
+		// 		resetRegistrationForm();
+		// 		setErrorWithFetchAction(null);
+		// 		fetchLoans();
+		// 		fetchMembers();
+		// 	} catch (error) {
+		// 		setErrorWithFetchAction(error);
+		// 		cError('Registration error:', error.response?.data || error.message);
+		// 		toast({ message: `Error: ${error.response?.data.message || 'Registration failed'}`, type: 'warning' });
+		// 	} finally {
+		// 		setIsWaitingFetchAction(false);
+		// 	}
+		// };
+
+		// Handle edit member info
+		const handleEditMemberInfo = async (id, type) => {
+
+			return alert('Finish up.');
+			// const payload = {
+			// 	...formData,
+			// 	password: registrationPassword,
+			// 	autoGeneratePassword,
+			// };
+
+			// try {
+			// 	setIsWaitingFetchAction(true);
+			// 	const response = await axios.post(`${BASE_URL}/user/${id}/edit-${type}-info`, payload);
+			// 	// Successfull fetch
+			// 	const data = response.data;
+			// 	toast({ message: data.message, type: "dark" });
+			// 	resetRegistrationForm();
+			// 	setErrorWithFetchAction(null);
+			// 	fetchLoans();
+			// 	fetchMembers();
+			// } catch (error) {
+			// 	setErrorWithFetchAction(error);
+			// 	cError('Registration error:', error.response?.data || error.message);
+			// 	toast({ message: `Error: ${error.response?.data.message || 'Registration failed'}`, type: 'warning' });
+			// } finally {
+			// 	setIsWaitingFetchAction(false);
+			// }
+		};
+
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="d-flex flex-wrap justify-content-between align-items-center mb-3">
@@ -506,7 +602,7 @@ const Admin = () => {
 					<div className="ms-auto d-flex gap-1">
 						<Button className='btn-sm btn-primaryColor rounded-0 border-0 clickDown'
 							onClick={() => setShowMemberStats(!showMemberStats)}
-						><ChartBar /> <span className='d-none d-sm-inline'>Statistics</span></Button>
+						><ChartBar /> <span className='d-none d-sm-inline'> Statistics</span></Button>
 						<Button className='btn-sm btn-primaryColor rounded-0 border-0 clickDown'
 							onClick={() => setShowAddMemberForm(true)}
 						><Plus /> New member</Button>
@@ -514,7 +610,7 @@ const Admin = () => {
 				</div>
 
 				{showMemberStats && (
-					<div className={`collapsible-grid-y ${showMemberStats ? 'working' : ''}`}>
+					<div className={`collapsible-grid-y ${showMemberStats ? 'working' : ''}`} style={{ animation: "zoomInBack .5s 1", }}>
 						<div className="row mb-3 collapsing-content statistics-wrapper">
 							<div className="col-12 col-lg-6">
 								<BarGraph data={membersChartData} title='Member statistics' />
@@ -523,17 +619,22 @@ const Admin = () => {
 								<p>
 									Simple statistics of the members registered in Ikimina Ingoboka system
 								</p>
-								<ul className="list-unstyled d-flex flex-wrap row-gap-1 column-gap-3 fs-6 fw-medium text-primaryColor">
-									<li className='border-start border-dark border-opacity-50 ps-2'>
-										<b>Total men</b>: {menCount}
-									</li>
-									<li className='border-start border-dark border-opacity-50 ps-2'>
-										<b>Total women</b>: {womenCount}
-									</li>
-									<li className='border-start border-dark border-opacity-50 ps-2'>
-										<b>Total members</b>: {menCount + womenCount}
-									</li>
-								</ul>
+								<div className="d-flex align-items-end gap-4 text-gray-600">
+									<div className="position-relative flex-shrink-0 flex-center h-7rem px-3 fw-bold border border-3 border-secondary border-opacity-25 text-primaryColor rounded-pill" style={{ minWidth: '7rem' }}>
+										<span className="display-1 fw-bold"><CountUp end={totalMembers} /> </span> <small className='position-absolute start-50 bottom-0 border border-2 px-2 rounded-pill bg-light'>accounts</small>
+									</div>
+									<ul className="list-unstyled d-flex flex-wrap row-gap-1 column-gap-3 fs-6">
+										<li className='border-start border-dark border-opacity-50 ps-2'>
+											<b>Total men</b>: <CountUp end={menCount} />
+										</li>
+										<li className='border-start border-dark border-opacity-50 ps-2'>
+											<b>Total women</b>: <CountUp end={womenCount} />
+										</li>
+										<li className='border-start border-dark border-opacity-50 ps-2'>
+											<b>Total members</b>: <CountUp end={menCount + womenCount} />
+										</li>
+									</ul>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -587,7 +688,9 @@ const Admin = () => {
 											/>
 										</div>
 
-										<button className="btn btn-sm bg-gray-400 text-dark position-absolute top-0 start-0 ms-3 translate-middle-y">
+										<button className="btn btn-sm btn-light border border-2 position-absolute top-0 start-0 ms-3 translate-middle-y"
+											onClick={() => { setSelectedMember(member); setShowEditMemberForm(true); }}
+										>
 											<Pen className="me-1" /> Edit
 										</button>
 
@@ -801,6 +904,132 @@ const Admin = () => {
 														className="btn btn-sm btn-dark flex-center w-100 mt-3 py-2 px-4 rounded-pill"
 													>
 														Register
+													</button>
+												</form>
+											</div>
+										</div>
+									</div>
+								</>
+							}
+
+							{showEditMemberForm &&
+								<>
+									<div className='position-fixed fixed-top inset-0 bg-black2 py-3 py-md-5 inx-high add-property-form'>
+										<div className="container col-md-6 col-lg-5 col-xl-4 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
+											<div className="px-3 bg-light text-gray-700">
+												<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
+													<div className='flex-align-center'>
+														<Users weight='fill' className="me-1" />
+														<span style={{ lineHeight: 1 }}>Edit Member</span>
+													</div>
+													<div title="Cancel" onClick={() => { setShowEditMemberForm(false); }}>
+														<X size={25} className='ptr' />
+													</div>
+												</h6>
+												<div className="mb-3">
+													<p className="small text-center">
+														Select whose information to edit.
+													</p>
+													<ul className="list-unstyled d-flex">
+														<li className={`col-6 px-2 py-1 text-center small border-2 ${editHeadOfFamily ? 'border-bottom border-primaryColor text-primaryColor' : ''} ptr clickDown`}
+															onClick={() => { setEditHeadOfFamily(true); }}
+														>
+															Husband
+														</li>
+														<li className={`col-6 px-2 py-1 text-center small border-2 ${!editHeadOfFamily ? 'border-bottom border-primaryColor text-primaryColor' : ''} ptr clickDown`}
+															onClick={() => { setEditHeadOfFamily(false); }}
+														>
+															Wife
+														</li>
+													</ul>
+												</div>
+
+												<div className="flex-align-center gap-3 mb-3">
+													<img src={
+														editHeadOfFamily ? (
+															selectedMember.husbandAvatar ? selectedMember.husbandAvatar : '/images/man_avatar_image.jpg'
+														) : (
+															selectedMember.wifeAvatar ? selectedMember.wifeAvatar : '/images/woman_avatar_image.jpg'
+														)
+													}
+														alt={`${selectedMember.husbandFirstName.slice(0, 1)}.${selectedMember.husbandLastName}`}
+														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
+													/>
+													<div className='smaller'>
+														Edit {
+															editHeadOfFamily ? (
+																selectedMember.husbandFirstName ? `${selectedMember.husbandFirstName} ${selectedMember.husbandLastName}` : 'Not provided'
+															) : (
+																selectedMember.wifeFirstName ? `${selectedMember.wifeFirstName} ${selectedMember.wifeLastName}` : 'wife information'
+															)
+														}
+
+													</div>
+												</div>
+												<hr />
+
+												{/* The form */}
+												<form onSubmit={(e) => e.preventDefault()} className="px-sm-2 pb-5">
+													{/* Selected member info */}
+													<div className="mb-3">
+														<label htmlFor="husbandFirstName" className="form-label fw-semibold">First Name</label>
+														<input
+															type="text"
+															className="form-control"
+															id="husbandFirstName"
+															name="husbandFirstName"
+															value={editSelectedmemberFName}
+															onChange={e => setEditSelectedmemberFName(e.target.value)}
+															placeholder={`Eg: ${editHeadOfFamily ? 'Mugabe' : 'Ingabire'}`}
+															required
+														/>
+													</div>
+													<div className="mb-3">
+														<label htmlFor="husbandLastName" className="form-label fw-semibold">Last Name</label>
+														<input
+															type="text"
+															className="form-control"
+															id="husbandLastName"
+															name="husbandLastName"
+															value={editSelectedmemberLName}
+															onChange={e => setEditSelectedmemberLName(e.target.value)}
+															placeholder={`Eg: ${editHeadOfFamily ? 'Alain' : 'Laetitia'}`}
+															required
+														/>
+													</div>
+													<div className="mb-3">
+														<label htmlFor="husbandPhone" className="form-label fw-semibold">Phone</label>
+														<input
+															type="text"
+															className="form-control"
+															id="husbandPhone"
+															name="husbandPhone"
+															value={editSelectedmemberPhone}
+															onChange={e => setEditSelectedmemberPhone(e.target.value)}
+															placeholder="Enter phone number"
+															required
+														/>
+													</div>
+													<div className="mb-3">
+														<label htmlFor="husbandEmail" className="form-label fw-semibold">Email</label>
+														<input
+															type="email"
+															className="form-control"
+															id="husbandEmail"
+															name="husbandEmail"
+															value={editSelectedmemberEmail}
+															onChange={e => setEditSelectedmemberEmail(e.target.value)}
+															placeholder="Enter email"
+															required
+														/>
+													</div>
+													<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
+														onClick={() => handleEditMemberInfo(selectedMember.id)}
+													>
+														{!isWaitingFetchAction ?
+															<>Save changes <FloppyDisk size={18} className='ms-2' /></>
+															: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
+														}
 													</button>
 												</form>
 											</div>
@@ -1079,7 +1308,7 @@ const Admin = () => {
 												{/* The form */}
 												<form onSubmit={(e) => e.preventDefault()} className="px-sm-2 pb-5">
 													<div className="mb-3">
-														<p htmlFor="expenseType" className="small">
+														<p className="small">
 															<b>Saving type</b>: <span className="text-primaryColor text-capitalize">{savingRecordType}</span>
 														</p>
 														<ul className="list-unstyled d-flex">
@@ -1239,7 +1468,7 @@ const Admin = () => {
 										T
 									</td>
 									<td className='text-nowrap'>
-										{allMembers.length} <span className="fs-60">members</span>
+										{totalMembers} <span className="fs-60">members</span>
 									</td>
 									<td className='text-nowrap'>
 										<div className="d-grid">
@@ -1495,7 +1724,7 @@ const Admin = () => {
 					)}
 				</Form>
 
-				{loadingMembers && (<LoadingIndicator icon={<Users size={80} className="loading-skeleton" />} />)}
+				{loadingMembers && (<LoadingIndicator icon={<Blueprint size={80} className="loading-skeleton" />} />)}
 				{!loadingMembers && errorLoadingMembers && (
 					<FetchError
 						errorMessage={errorLoadingMembers}
@@ -1716,7 +1945,7 @@ const Admin = () => {
 																									</div>
 																								</div>
 																								<div className='col'>
-																									<label htmlFor="payTranchesAmount" className="form-label" required>Pay tranches ({payTranchesAmount !== '' ? Number(payTranchesAmount).toLocaleString() : ''} RWF )</label>
+																									<label htmlFor="payTranchesAmount" className="form-label" required>Pay tranches ( {payTranchesAmount} )</label>
 																									<input type="number" id="payTranchesAmount" name="payTranchesAmount" className="form-control rounded-0 border-secondary border-opacity-50 shadow-none" min="1" required placeholder="Enter amount"
 																										value={payTranchesAmount}
 																										onChange={e => setPayTranchesAmount(e.target.value)}
@@ -2194,7 +2423,7 @@ const Admin = () => {
 																								<>
 																									<h5 className='h6 border-bottom mb-3 pb-2'><Receipt size={25} weight='fill' className='opacity-50' /> Restore Credit Request</h5>
 																									<p>
-																										This credit of <CurrencyText amount={Number(credit.creditAmount)} /> will be restored and marked pending.
+																										A credit request of <CurrencyText amount={Number(credit.creditAmount)} /> submitted by {memberNames} will be restored and marked as pending for further actions.
 																									</p>
 																								</>
 																							),
@@ -2488,15 +2717,146 @@ const Admin = () => {
 					</div>
 
 					{/* Selected content */}
-					<div style={{ minHeight: '60vh' }}>
-						{/* Expenses table */}
-						{activeTransactionSection === 'withdrawals' && (
-							<>
+
+					{loadingMembers && (<LoadingIndicator icon={<Users size={80} className="loading-skeleton" />} />)}
+					{!loadingMembers && errorLoadingMembers && (
+						<FetchError
+							errorMessage={errorLoadingMembers}
+							refreshFunction={() => fetchMembers()}
+							className="mb-5 mt-4"
+						/>
+					)}
+					{!loadingMembers && !errorLoadingMembers && membersToShow.length === 0 && (
+						<NotFound
+							notFoundMessage="No member found"
+							icon={<Users size={80} className="text-center w-100 mb-3 opacity-50" />}
+							refreshFunction={fetchMembers}
+						/>
+					)}
+					{!loadingMembers && !errorLoadingMembers && membersToShow.length > 0 && (
+						<div style={{ minHeight: '60vh' }}>
+							{/* Expenses table */}
+							{activeTransactionSection === 'withdrawals' && (
+								<>
+									<div className='overflow-auto'>
+										<table className="table table-hover h-100 properties-table">
+											<thead className='table-warning position-sticky top-0 inx-1'>
+												<tr>
+													<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+													<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Type</th>
+													<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
+													<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
+													<th className='py-3 text-nowrap text-gray-700'>Date</th>
+												</tr>
+											</thead>
+											<tbody>
+												{recordsToShow
+													.filter(cr => cr.recordType === 'expense')
+													.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+													.map((record, index) => {
+														const associatedMember = allMembers.find(m => m.id === record.memberId);
+														const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+
+														return (
+															<tr
+																key={index}
+																className="small cursor-default clickDown expense-row"
+															>
+																<td className="ps-sm-3 border-bottom-3 border-end">
+																	{index + 1}
+																</td>
+																<td>
+																	{record.recordSecondaryType}
+																</td>
+																<td>
+																	<CurrencyText amount={Number(record.recordAmount)} />
+																</td>
+																<td className="text-nowrap">
+																	{record.comment}
+																</td>
+																<td style={{ maxWidth: '13rem' }}>
+																	<FormatedDate date={record.createdAt} />
+																</td>
+															</tr>
+														)
+													})
+												}
+											</tbody>
+										</table>
+									</div>
+
+									{showAddExpenseRecord &&
+										<>
+											<div className='position-fixed fixed-top inset-0 bg-black2 py-3 py-md-5 inx-high add-property-form'>
+												<div className="container col-md-6 col-lg-5 col-xl-4 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
+													<div className="h-100 px-3 bg-light text-gray-700">
+														<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
+															<div className='flex-align-center'>
+																<CashRegister weight='fill' className="me-1" />
+																<span style={{ lineHeight: 1 }}>Record an expense</span>
+															</div>
+															<div title="Cancel" onClick={() => { setShowAddExpenseRecord(false); setExpenseRecordAmount('') }}>
+																<X size={25} className='ptr' />
+															</div>
+														</h6>
+
+														{/* The form */}
+														<form onSubmit={(e) => handleAddExpense(e)} className="px-sm-2 pb-5">
+															<div className="mb-3">
+																<label htmlFor="expenseType" className="form-label fw-bold">Expense type</label>
+																<select id="expenseType" name="expenseType" className="form-select"
+																	value={expenseRecordType}
+																	onChange={(e) => setExpenseRecordType(e.target.value)}
+																	required>
+																	<option value="" disabled className='p-2 px-3 small text-gray-500'>Select type</option>
+																	{expensesTypes
+																		.map((val, index) => (
+																			<option key={index} value={val} className='p-2 px-3 small'>
+																				{val}
+																			</option>
+																		))
+																	}
+																</select>
+															</div>
+															<div className="mb-3">
+																<label htmlFor="expenseAmount" className="form-label fw-bold" required>Expense amount ({expenseRecordAmount !== '' ? Number(expenseRecordAmount).toLocaleString() : ''} RWF )</label>
+																<input type="number" id="expenseAmount" name="expenseAmount" className="form-control" min="1" required placeholder="Enter amount"
+																	value={expenseRecordAmount}
+																	onChange={e => setExpenseRecordAmount(e.target.value)}
+																/>
+															</div>
+															<div className="mb-3">
+																<label htmlFor="expenseComment" className="form-label fw-bold" required>Expense comment</label>
+																<textarea rows={3} id="expenseComment" name="expenseComment" className="form-control" placeholder="Enter comment"
+																	value={expenseComment}
+																	onChange={e => setExpenseComment(e.target.value)}
+																></textarea>
+															</div>
+
+															<button type="submit" className="btn btn-sm btn-dark flex-center w-100 mt-3 py-2 px-4 rounded-pill clickDown" id="addExpenseBtn"
+															>
+																{!isWaitingFetchAction ?
+																	<>Save Record <FloppyDisk size={18} className='ms-2' /></>
+																	: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
+																}
+															</button>
+														</form>
+													</div>
+												</div>
+											</div>
+										</>
+									}
+								</>
+							)}
+
+							{/* Deposits table */}
+							{activeTransactionSection === 'deposits' && (
 								<div className='overflow-auto'>
 									<table className="table table-hover h-100 properties-table">
-										<thead className='table-warning position-sticky top-0 inx-1'>
+										<thead className='table-success position-sticky top-0 inx-1'>
 											<tr>
 												<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+												<th className='py-3 text-nowrap text-gray-700'>Member</th>
 												<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Type</th>
 												<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
 												<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
@@ -2505,7 +2865,7 @@ const Admin = () => {
 										</thead>
 										<tbody>
 											{recordsToShow
-												.filter(cr => cr.recordType === 'expense')
+												.filter(cr => cr.recordType === 'deposit')
 												.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 												.map((record, index) => {
 													const associatedMember = allMembers.find(m => m.id === record.memberId);
@@ -2519,8 +2879,11 @@ const Admin = () => {
 															<td className="ps-sm-3 border-bottom-3 border-end">
 																{index + 1}
 															</td>
+															<td className="text-nowrap">
+																{memberNames}
+															</td>
 															<td>
-																{record.recordSecondaryType}
+																{record.recordType[0].toUpperCase() + record.recordType.slice(1)}
 															</td>
 															<td>
 																<CurrencyText amount={Number(record.recordAmount)} />
@@ -2529,230 +2892,114 @@ const Admin = () => {
 																{record.comment}
 															</td>
 															<td style={{ maxWidth: '13rem' }}>
-																<FormatedDate date={record.createdAt} />
+																<FormatedDate date={record.createdAt} monthFormat='2-digit' />
 															</td>
 														</tr>
 													)
-												})
+												}
+												)
 											}
 										</tbody>
 									</table>
 								</div>
+							)}
 
-								{showAddExpenseRecord &&
-									<>
-										<div className='position-fixed fixed-top inset-0 bg-black2 py-3 py-md-5 inx-high add-property-form'>
-											<div className="container col-md-6 col-lg-5 col-xl-4 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-												<div className="h-100 px-3 bg-light text-gray-700">
-													<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
-														<div className='flex-align-center'>
-															<CashRegister weight='fill' className="me-1" />
-															<span style={{ lineHeight: 1 }}>Record an expense</span>
-														</div>
-														<div title="Cancel" onClick={() => { setShowAddExpenseRecord(false); setExpenseRecordAmount('') }}>
-															<X size={25} className='ptr' />
-														</div>
-													</h6>
-
-													{/* The form */}
-													<form onSubmit={(e) => handleAddExpense(e)} className="px-sm-2 pb-5">
-														<div className="mb-3">
-															<label htmlFor="expenseType" className="form-label fw-bold">Expense type</label>
-															<select id="expenseType" name="expenseType" className="form-select"
-																value={expenseRecordType}
-																onChange={(e) => setExpenseRecordType(e.target.value)}
-																required>
-																<option value="" disabled className='p-2 px-3 small text-gray-500'>Select type</option>
-																{expensesTypes
-																	.map((val, index) => (
-																		<option key={index} value={val} className='p-2 px-3 small'>
-																			{val}
-																		</option>
-																	))
-																}
-															</select>
-														</div>
-														<div className="mb-3">
-															<label htmlFor="expenseAmount" className="form-label fw-bold" required>Expense amount ({expenseRecordAmount !== '' ? Number(expenseRecordAmount).toLocaleString() : ''} RWF )</label>
-															<input type="number" id="expenseAmount" name="expenseAmount" className="form-control" min="1" required placeholder="Enter amount"
-																value={expenseRecordAmount}
-																onChange={e => setExpenseRecordAmount(e.target.value)}
-															/>
-														</div>
-														<div className="mb-3">
-															<label htmlFor="expenseComment" className="form-label fw-bold" required>Expense comment</label>
-															<textarea rows={3} id="expenseComment" name="expenseComment" className="form-control" placeholder="Enter comment"
-																value={expenseComment}
-																onChange={e => setExpenseComment(e.target.value)}
-															></textarea>
-														</div>
-
-														<button type="submit" className="btn btn-sm btn-dark flex-center w-100 mt-3 py-2 px-4 rounded-pill clickDown" id="addExpenseBtn"
-														>
-															{!isWaitingFetchAction ?
-																<>Save Record <FloppyDisk size={18} className='ms-2' /></>
-																: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
-															}
-														</button>
-													</form>
-												</div>
-											</div>
-										</div>
-									</>
-								}
-							</>
-						)}
-
-						{/* Deposits table */}
-						{activeTransactionSection === 'deposits' && (
-							<div className='overflow-auto'>
-								<table className="table table-hover h-100 properties-table">
-									<thead className='table-success position-sticky top-0 inx-1'>
-										<tr>
-											<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
-											<th className='py-3 text-nowrap text-gray-700'>Member</th>
-											<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Type</th>
-											<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
-											<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
-											<th className='py-3 text-nowrap text-gray-700'>Date</th>
-										</tr>
-									</thead>
-									<tbody>
-										{recordsToShow
-											.filter(cr => cr.recordType === 'deposit')
-											.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-											.map((record, index) => {
-												const associatedMember = allMembers.find(m => m.id === record.memberId);
-												const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
-
-												return (
-													<tr
-														key={index}
-														className="small cursor-default clickDown expense-row"
-													>
-														<td className="ps-sm-3 border-bottom-3 border-end">
-															{index + 1}
-														</td>
-														<td className="text-nowrap">
-															{memberNames}
-														</td>
-														<td>
-															{record.recordType[0].toUpperCase() + record.recordType.slice(1)}
-														</td>
-														<td>
-															<CurrencyText amount={Number(record.recordAmount)} />
-														</td>
-														<td className="text-nowrap">
-															{record.comment}
-														</td>
-														<td style={{ maxWidth: '13rem' }}>
-															<FormatedDate date={record.createdAt} monthFormat='2-digit' />
-														</td>
-													</tr>
-												)
-											}
-											)
-										}
-									</tbody>
-								</table>
-							</div>
-						)}
-
-						{activeTransactionSection === 'fines' && (
-							<div className='overflow-auto'>
-								<table className="table table-hover h-100 properties-table">
-									<thead className='table-danger position-sticky top-0 inx-1'>
-										<tr>
-											<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
-											<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Member</th>
-											<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
-											<th className='py-3 text-nowrap text-gray-700'>Date & Interval</th>
-											<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
-											<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Rejection</th>
-											<th className='py-3 text-nowrap text-gray-700'>Action</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr
-											className={`small cursor-default clickDown fine-row`}
-										>
-											<td className={`ps-sm-3  border-bottom-3 border-end`}>
-												1
-											</td>
-											<td >
-												Alain Mugabe
-											</td>
-											<td className="d-flex flex-column gap-2 text-muted small" >
-												<div>
-													<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
-													<span>10,000,000</span>
-												</div>
-												<div>
-													<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
-													<span>50,000</span>
-												</div>
-											</td>
-											<td className='text-nowrap'>
-												<div className='d-flex flex-column gap-2 smaller'>
-													<span className='fw-bold'>13-11-2024 <CaretRight /> 13-03-2025</span>
-													<span>0 Years, 4 Months, 2 Days</span>
-												</div>
-											</td>
-											<td style={{ maxWidth: '13rem' }}>
-												Demande de credit
-											</td>
-											<td style={{ maxWidth: '13rem' }}>
-												Insufficient balance
-											</td>
-											<td className='text-nowrap fs-75'>
-												<button className='btn btn-sm btn-outline-secondary rounded-0'>
-													<ArrowArcLeft /> Restore
-												</button>
-											</td>
-										</tr>
-										<tr
-											className={`small cursor-default clickDown loan-row`}
-										>
-											<td className={`ps-sm-3  border-bottom-3 border-end`}>
-												2
-											</td>
-											<td >
-												Bonaventure Nzeyimana
-											</td>
-											<td className="d-flex flex-column gap-2 text-muted small" >
-												<div>
-													<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
-													<span>4,000,000</span>
-												</div>
-												<div>
-													<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
-													<span>200,000</span>
-												</div>
-											</td>
-											<td className='text-nowrap'>
-												<div className='d-flex flex-column gap-2 smaller'>
-													<span className='fw-bold'>13-11-2024 <CaretRight /> 13-03-2025</span>
-													<span>0 Years, 4 Months, 2 Days</span>
-													<span>6 tranches</span>
-												</div>
-											</td>
-											<td style={{ maxWidth: '13rem' }}>
-												Payment will be due on 15th each month
-											</td>
-											<td style={{ maxWidth: '13rem' }}>
-												Some reasons
-											</td>
-											<td className='text-nowrap fs-75'>
-												<button className='btn btn-sm btn-outline-secondary rounded-0'>
-													<ArrowArcLeft /> Restore
-												</button>
-											</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
-						)}
-					</div>
+							{activeTransactionSection === 'fines' && (
+								<div className='overflow-auto'>
+									<table className="table table-hover h-100 properties-table">
+										<thead className='table-danger position-sticky top-0 inx-1'>
+											<tr>
+												<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+												<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Member</th>
+												<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
+												<th className='py-3 text-nowrap text-gray-700'>Date & Interval</th>
+												<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
+												<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Rejection</th>
+												<th className='py-3 text-nowrap text-gray-700'>Action</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr
+												className={`small cursor-default clickDown fine-row`}
+											>
+												<td className={`ps-sm-3  border-bottom-3 border-end`}>
+													1
+												</td>
+												<td >
+													Alain Mugabe
+												</td>
+												<td className="d-flex flex-column gap-2 text-muted small" >
+													<div>
+														<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
+														<span>10,000,000</span>
+													</div>
+													<div>
+														<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
+														<span>50,000</span>
+													</div>
+												</td>
+												<td className='text-nowrap'>
+													<div className='d-flex flex-column gap-2 smaller'>
+														<span className='fw-bold'>13-11-2024 <CaretRight /> 13-03-2025</span>
+														<span>0 Years, 4 Months, 2 Days</span>
+													</div>
+												</td>
+												<td style={{ maxWidth: '13rem' }}>
+													Demande de credit
+												</td>
+												<td style={{ maxWidth: '13rem' }}>
+													Insufficient balance
+												</td>
+												<td className='text-nowrap fs-75'>
+													<button className='btn btn-sm btn-outline-secondary rounded-0'>
+														<ArrowArcLeft /> Restore
+													</button>
+												</td>
+											</tr>
+											<tr
+												className={`small cursor-default clickDown loan-row`}
+											>
+												<td className={`ps-sm-3  border-bottom-3 border-end`}>
+													2
+												</td>
+												<td >
+													Bonaventure Nzeyimana
+												</td>
+												<td className="d-flex flex-column gap-2 text-muted small" >
+													<div>
+														<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
+														<span>4,000,000</span>
+													</div>
+													<div>
+														<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
+														<span>200,000</span>
+													</div>
+												</td>
+												<td className='text-nowrap'>
+													<div className='d-flex flex-column gap-2 smaller'>
+														<span className='fw-bold'>13-11-2024 <CaretRight /> 13-03-2025</span>
+														<span>0 Years, 4 Months, 2 Days</span>
+														<span>6 tranches</span>
+													</div>
+												</td>
+												<td style={{ maxWidth: '13rem' }}>
+													Payment will be due on 15th each month
+												</td>
+												<td style={{ maxWidth: '13rem' }}>
+													Some reasons
+												</td>
+												<td className='text-nowrap fs-75'>
+													<button className='btn btn-sm btn-outline-secondary rounded-0'>
+														<ArrowArcLeft /> Restore
+													</button>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							)}
+						</div>
+					)}
 				</div>
 			</div>
 		)
@@ -2772,6 +3019,10 @@ const Admin = () => {
 				setExportFileName('Rapport général');
 			}
 		}, [activeReportSection]);
+
+		// Count report values
+		let totalCotisationsAndShares = 0;
+		let generalTotal = generalReport.balance;
 
 		// Handle exports
 		const reportViewRef = useRef();
@@ -2895,26 +3146,40 @@ const Admin = () => {
 													<td></td>
 													<td></td>
 												</tr>
-												{generalReport.report
-													.map((item, index) => (
-														<tr
-															key={index}
-															className="small cursor-default clickDown general-report-row"
-														>
-															<td className="ps-sm-3">
-																<b>{index + 1}</b>. {item.member}
-															</td>
-															<td className="text-nowrap">
-																Credit: <CurrencyText amount={item.credit} boldAmount smallCurrency className='text-gray-700' />
-															</td>
-															<td>
-																{item.member}
-															</td>
-															<td className='text-nowrap'>
-																Part: <CurrencyText amount={item.part} boldAmount smallCurrency className='text-gray-700' /> | Social: <CurrencyText amount={item.social} boldAmount smallCurrency className='text-gray-700' />
-															</td>
-														</tr>
-													))
+												{allMembers
+													.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
+													.map((item, index) => {
+														const memberNames = `${item.husbandFirstName} ${item.husbandLastName}`;
+														const memberCostisation = item.cotisation;
+														const memberSocial = item.social;
+														const memberBalance = memberCostisation + memberSocial;
+
+														const memberCredits = allLoans.find(loan => loan.memberId === item.id);
+														const pendingCredit = memberCredits.loanPending;
+
+														totalCotisationsAndShares += memberBalance;
+														generalTotal += pendingCredit;
+
+														return (
+															<tr
+																key={index}
+																className="small cursor-default clickDown general-report-row"
+															>
+																<td className="ps-sm-3">
+																	<b>{index + 1}</b>. {memberNames}
+																</td>
+																<td className="text-nowrap">
+																	Credit: <CurrencyText amount={pendingCredit} boldAmount smallCurrency className='text-gray-700' />
+																</td>
+																<td>
+																	{memberNames}
+																</td>
+																<td className='text-nowrap'>
+																	Part: <CurrencyText amount={memberCostisation} boldAmount smallCurrency className='text-gray-700' /> | Social: <CurrencyText amount={Number(memberSocial)} boldAmount smallCurrency className='text-gray-700' />
+																</td>
+															</tr>
+														)
+													})
 												}
 												<tr className="small cursor-default clickDown general-report-row fw-bold"
 													style={{ borderTopWidth: '2px' }} >
@@ -2942,11 +3207,11 @@ const Admin = () => {
 												>
 													<td className="ps-sm-3">General Total:</td>
 													<td>
-														<CurrencyText amount={generalReport.generalTotal} />
+														<CurrencyText amount={generalTotal} /> {/* Must be equal */}
 													</td>
 													<td>General Total:</td>
 													<td className="text-nowrap">
-														<CurrencyText amount={generalReport.generalTotal} />
+														<CurrencyText amount={totalCotisationsAndShares} /> {/* Must be equal */}
 													</td>
 												</tr>
 											</tbody>
