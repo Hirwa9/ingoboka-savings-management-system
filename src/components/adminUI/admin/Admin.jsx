@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Button, Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CaretUp, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, Files, FloppyDisk, Gear, GenderFemale, GenderMale, Info, List, Minus, Pen, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, Users, Warning, WarningCircle, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CaretUp, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, Info, List, Minus, Notebook, Pen, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, Users, Warning, WarningCircle, X } from '@phosphor-icons/react';
 import { dashboardData, expensesTypes, generalReport, incomeExpenses } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
@@ -1122,8 +1122,50 @@ const Admin = () => {
 		// Add saving
 		const [showAddSavingRecord, setShowAddSavingRecord] = useState(false);
 		const [savingRecordType, setSavingRecordType] = useState('cotisation');
-		const [savingRecordAmount, setSavingRecordAmount] = useState('');
 		const [selectedMember, setSelectedMember] = useState(allMembers[0]);
+		const [savingRecordAmount, setSavingRecordAmount] = useState('');
+		const [selectedMonths, setSelectedMonths] = useState([]);
+
+		// Month selection
+		const checkIfLate = (month) => {
+			const today = new Date();
+			const currentYear = today.getFullYear();
+			const monthIndex = new Date(`${month} 1, ${currentYear}`).getMonth();
+			const month10thDate = new Date(currentYear, monthIndex, 10);
+			return today > month10thDate;
+		};
+
+		const totalSelectedMonths = useMemo(() => (
+			selectedMonths.length
+		), [selectedMonths]);
+
+		const delayedMonths = useMemo(() => (
+			selectedMonths.filter(m => checkIfLate(m)).length
+		), [selectedMonths]);
+
+		const handleMonthClick = (month, isLate) => {
+			setSelectedMonths((prevSelectedMonths) => {
+				const isAlreadySelected = prevSelectedMonths.includes(month);
+
+				let updatedMonths;
+				if (isAlreadySelected) {
+					// Remove the month if it's already selected
+					updatedMonths = prevSelectedMonths.filter((m) => m !== month);
+				} else {
+					// Add the month if it's not already selected
+					updatedMonths = [...prevSelectedMonths, month];
+				}
+
+				// Update the saving amount based on the selected months
+				const totalAmount = updatedMonths.reduce((total, currentMonth) => {
+					const isCurrentLate = checkIfLate(currentMonth);
+					return total + (isCurrentLate ? 21000 : 20000);
+				}, 0);
+
+				setSavingRecordAmount(totalAmount);
+				return updatedMonths;
+			});
+		};
 
 		// Handle add savings
 		const handleAddSaving = async (id) => {
@@ -1354,13 +1396,71 @@ const Admin = () => {
 															</li>
 														</ul>
 													</div>
+													{savingRecordType === 'cotisation' && (
+														<div className="mb-3">
+															<ul className="list-unstyled d-flex gap-2 flex-wrap">
+																{['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map((month, index) => {
+																	const monthValue = JSON.parse(selectedMember.annualShares).find((m) => m.month === month);
+																	const isPaid = monthValue?.paid || false;
+																	const isLate = !isPaid && checkIfLate(month);
+																	const isSelected = selectedMonths.includes(month);
+
+																	return (
+																		<li
+																			key={index}
+																			onClick={() => {
+																				if (!isPaid) handleMonthClick(month, isLate);
+																			}}
+																			className={`border border-2 rounded-pill px-2 smaller user-select-none ${isPaid ? 'ptr-none bg-gray-700 text-light opacity-50' : 'ptr'} clickDown ${isSelected ? 'bg-primaryColor text-light' : ''
+																				} ${isLate && !isPaid ? 'text-danger' : ''}`}
+																		>
+																			{isPaid && <Check />} {month}
+																		</li>
+																	);
+																})}
+															</ul>
+														</div>
+													)}
 													<div className="mb-3">
-														<label htmlFor="savingAmount" className="form-label fw-bold" required>Saving amount ({savingRecordAmount !== '' ? Number(savingRecordAmount).toLocaleString() : ''} RWF )</label>
-														<input type="number" id="savingAmount" name="savingAmount" className="form-control" min="1" required placeholder="Enter amount"
+														<label htmlFor="savingAmount" className="form-label fw-bold" required>
+															Saving amount ({savingRecordAmount !== '' ? Number(savingRecordAmount).toLocaleString() : ''} RWF) = {
+																totalSelectedMonths
+															} Share{totalSelectedMonths > 1 ? 's' : ''}
+														</label>
+														<input
+															type="number"
+															id="savingAmount"
+															name="savingAmount"
+															className="form-control"
+															min="1"
+															required
+															placeholder="Enter amount"
+															readOnly={savingRecordType === 'cotisation'}
 															value={savingRecordAmount}
-															onChange={e => setSavingRecordAmount(e.target.value)}
+															onChange={(e) => setSavingRecordAmount(e.target.value)}
 														/>
 													</div>
+													{savingRecordType === 'cotisation' && delayedMonths > 0 && (
+														<div className="mb-3 p-2 form-text bg-black4 rounded">
+															<p>
+																This also applies a fine of <CurrencyText amount={1000} /> for each of the delayed months.
+															</p>
+															<ul className="list-unstyled d-flex gap-2 flex-wrap mb-0 mb-0">
+																{selectedMonths
+																	.filter(m => checkIfLate(m))
+																	.map((month, index) => (
+																		<li
+																			key={index}
+																			className={`border border-danger text-danger rounded-pill px-2 smaller user-select-none`}
+																		>
+																			<Gavel /> {month}
+																		</li>
+																	)
+																	)}
+															</ul>
+
+														</div>
+													)}
 													<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
 														onClick={() => handleAddSaving(selectedMember.id)}
 													>
@@ -1600,13 +1700,13 @@ const Admin = () => {
 								{keepAnnualInterest ? (
 									<>
 										<p className=''>
-											<Info size={22} weight='fill' className='me-1 opacity-50' /> The interest earned by each member will be added to their total cotisation amount, along with the corresponding share count. Only the maximum share multiples of the earned interest will be applied, while any remaining balance will be carried forward as the initial interest for the following year.
+											<Info size={22} weight='fill' className='me-1 opacity-50' /> The interest earned by each member will be added to their total cotisation amount, along with the corresponding share count. Only the maximum share multiples (<CurrencyText amount={20000} /> per share) of the earned interest will be applied, while any remaining balance will be carried forward as the initial interest for the following year.
 										</p>
 									</>
 								) : (
 									<>
 										<p className=''>
-											<Info size={22} weight='fill' className='me-1 opacity-50' /> The interest earned by each member will be calculated and withdrawn as requested. Only the maximum share multiples of the earned interest are eligible for withdrawal, while any remaining balance will be carried forward as the initial interest for the following year.
+											<Info size={22} weight='fill' className='me-1 opacity-50' /> The interest earned by each member will be calculated and withdrawn as requested. Only the maximum share multiples (<CurrencyText amount={20000} /> per share) of the earned interest are eligible for withdrawal, while any remaining balance will be carried forward as the initial interest for the following year.
 										</p>
 									</>
 								)}
@@ -3685,13 +3785,13 @@ const Admin = () => {
 
 								<hr />
 
-								{/* <li className={`nav-item mb-2 ${activeSection === 'auditLogs' ? 'active' : ''}`}
+								<li className={`nav-item mb-2 ${activeSection === 'auditLogs' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("auditLogs"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Notebook size={20} weight='fill' className="me-2" /> Audit Logs
 									</button>
-								</li> */}
+								</li>
 
 								<li className={`nav-item mb-2 ${activeSection === 'settings' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("settings"); hideSideNavbar() }}
