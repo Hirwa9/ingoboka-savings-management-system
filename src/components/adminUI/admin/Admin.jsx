@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Button, Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CaretUp, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, Files, FloppyDisk, Gear, GenderFemale, GenderMale, Info, List, Minus, Pen, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, Users, Warning, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CaretUp, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, Files, FloppyDisk, Gear, GenderFemale, GenderMale, Info, List, Minus, Pen, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, Users, Warning, WarningCircle, X } from '@phosphor-icons/react';
 import { dashboardData, expensesTypes, generalReport, incomeExpenses } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
@@ -23,7 +23,7 @@ import LineGraph from '../../chartJS/LineGraph';
 import BarGraph from '../../chartJS/BarGraph';
 import PieGraph from '../../chartJS/PieGraph';
 import CountUp from 'react-countup'
-
+import SystemSettings from '../../systemSettings/SystemSettings';
 
 const Admin = () => {
 
@@ -569,30 +569,49 @@ const Admin = () => {
 		// Handle edit member info
 		const handleEditMemberInfo = async (id, type) => {
 
-			return alert('Finish up.');
-			// const payload = {
-			// 	...formData,
-			// 	password: registrationPassword,
-			// 	autoGeneratePassword,
-			// };
+			const memberInfo = type === 'husband' ? {
+				husbandFirstName: editSelectedmemberFName,
+				husbandLastName: editSelectedmemberLName,
+				husbandPhone: editSelectedmemberPhone,
+				husbandEmail: editSelectedmemberEmail
+			} : type === 'wife' ? {
+				wifeFirstName: editSelectedmemberFName,
+				wifeLastName: editSelectedmemberLName,
+				wifePhone: editSelectedmemberPhone,
+				wifeEmail: editSelectedmemberEmail
+			} : null;
 
-			// try {
-			// 	setIsWaitingFetchAction(true);
-			// 	const response = await axios.post(`${BASE_URL}/user/${id}/edit-${type}-info`, payload);
-			// 	// Successfull fetch
-			// 	const data = response.data;
-			// 	toast({ message: data.message, type: "dark" });
-			// 	resetRegistrationForm();
-			// 	setErrorWithFetchAction(null);
-			// 	fetchLoans();
-			// 	fetchMembers();
-			// } catch (error) {
-			// 	setErrorWithFetchAction(error);
-			// 	cError('Registration error:', error.response?.data || error.message);
-			// 	toast({ message: `Error: ${error.response?.data.message || 'Registration failed'}`, type: 'warning' });
-			// } finally {
-			// 	setIsWaitingFetchAction(false);
-			// }
+			if (memberInfo === null) {
+				return toast({
+					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Please select a member to edit and continue</>,
+					type: 'gray-700'
+				});
+			}
+
+			// Prevent empty string value
+			if (Object.values(memberInfo).some(value => value === '')) {
+				return toast({
+					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Please fill out all information to continue</>,
+					type: 'gray-700'
+				});
+			}
+
+			try {
+				setIsWaitingFetchAction(true);
+				const response = await axios.post(`${BASE_URL}/user/${id}/edit-${type}-info`, memberInfo);
+				// Successfull fetch
+				const data = response.data;
+				toast({ message: data.message, type: "dark" });
+				setShowEditMemberForm(false);
+				setErrorWithFetchAction(null);
+				fetchMembers();
+			} catch (error) {
+				setErrorWithFetchAction(error);
+				cError('Error saving changes:', error.response?.data || error.message);
+				toast({ message: `Error: ${error.response?.data.message || 'Couldn\'t save changes. Tyr again'}`, type: 'warning' });
+			} finally {
+				setIsWaitingFetchAction(false);
+			}
 		};
 
 		return (
@@ -706,10 +725,10 @@ const Admin = () => {
 															<b>Names:</b> {`${member.husbandFirstName} ${member.husbandLastName}`}
 														</li>
 														<li className="py-1">
-															<b>Phone:</b> {member.husbandPhone}
+															<b>Phone:</b> <a href={`tel:+${member.husbandPhone}`} className='text-decoration-none text-inherit' title={`Call ${member.husbandFirstName}`}>{member.husbandPhone}</a>
 														</li>
 														<li className="py-1">
-															<b>Email:</b> {member.husbandEmail}
+															<b>Email:</b> <a href={`mailto:${member.husbandEmail}`} className='text-decoration-none text-inherit' title={`Send email to ${member.husbandFirstName}`}>{member.husbandEmail}</a>
 														</li>
 													</ul>
 												</div>
@@ -722,10 +741,15 @@ const Admin = () => {
 															<b>Names:</b> {member.wifeFirstName ? `${member.wifeFirstName} ${member.wifeLastName}` : 'Not provided'}
 														</li>
 														<li className="py-1">
-															<b>Phone:</b> {member.wifePhone ? member.wifePhone : 'Not provided'}
+															<b>Phone:</b> {member.wifePhone ? (
+																<a href={`tel:+${member.wifePhone}`} className='text-decoration-none text-inherit' title={`Call ${member.wifeFirstName}`}>{member.wifePhone}</a>
+															) : 'Not provided'}
 														</li>
 														<li className="py-1">
-															<b>Email:</b> {member.wifeEmail ? member.wifeEmail : 'Not provided'}
+															<b>Email:</b>  {member.wifeEmail ? (
+																<a href={`mailto:${member.wifeEmail}`} className='text-decoration-none text-inherit' title={`Send email to ${member.wifeFirstName}`}>{member.wifeEmail}</a>
+
+															) : 'Not provided'}
 														</li>
 													</ul>
 												</div>
@@ -972,12 +996,12 @@ const Admin = () => {
 												<form onSubmit={(e) => e.preventDefault()} className="px-sm-2 pb-5">
 													{/* Selected member info */}
 													<div className="mb-3">
-														<label htmlFor="husbandFirstName" className="form-label fw-semibold">First Name</label>
+														<label htmlFor="memberFirstName" className="form-label fw-semibold">First Name</label>
 														<input
 															type="text"
 															className="form-control"
-															id="husbandFirstName"
-															name="husbandFirstName"
+															id="memberFirstName"
+															name="memberFirstName"
 															value={editSelectedmemberFName}
 															onChange={e => setEditSelectedmemberFName(e.target.value)}
 															placeholder={`Eg: ${editHeadOfFamily ? 'Mugabe' : 'Ingabire'}`}
@@ -985,12 +1009,12 @@ const Admin = () => {
 														/>
 													</div>
 													<div className="mb-3">
-														<label htmlFor="husbandLastName" className="form-label fw-semibold">Last Name</label>
+														<label htmlFor="memberLastName" className="form-label fw-semibold">Last Name</label>
 														<input
 															type="text"
 															className="form-control"
-															id="husbandLastName"
-															name="husbandLastName"
+															id="memberLastName"
+															name="memberLastName"
 															value={editSelectedmemberLName}
 															onChange={e => setEditSelectedmemberLName(e.target.value)}
 															placeholder={`Eg: ${editHeadOfFamily ? 'Alain' : 'Laetitia'}`}
@@ -998,12 +1022,12 @@ const Admin = () => {
 														/>
 													</div>
 													<div className="mb-3">
-														<label htmlFor="husbandPhone" className="form-label fw-semibold">Phone</label>
+														<label htmlFor="memberPhone" className="form-label fw-semibold">Phone</label>
 														<input
 															type="text"
 															className="form-control"
-															id="husbandPhone"
-															name="husbandPhone"
+															id="memberPhone"
+															name="memberPhone"
 															value={editSelectedmemberPhone}
 															onChange={e => setEditSelectedmemberPhone(e.target.value)}
 															placeholder="Enter phone number"
@@ -1011,12 +1035,12 @@ const Admin = () => {
 														/>
 													</div>
 													<div className="mb-3">
-														<label htmlFor="husbandEmail" className="form-label fw-semibold">Email</label>
+														<label htmlFor="memberEmail" className="form-label fw-semibold">Email</label>
 														<input
 															type="email"
 															className="form-control"
-															id="husbandEmail"
-															name="husbandEmail"
+															id="memberEmail"
+															name="memberEmail"
 															value={editSelectedmemberEmail}
 															onChange={e => setEditSelectedmemberEmail(e.target.value)}
 															placeholder="Enter email"
@@ -1024,7 +1048,7 @@ const Admin = () => {
 														/>
 													</div>
 													<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
-														onClick={() => handleEditMemberInfo(selectedMember.id)}
+														onClick={() => handleEditMemberInfo(selectedMember.id, editHeadOfFamily ? 'husband' : 'wife')}
 													>
 														{!isWaitingFetchAction ?
 															<>Save changes <FloppyDisk size={18} className='ms-2' /></>
@@ -1104,7 +1128,10 @@ const Admin = () => {
 		// Handle add savings
 		const handleAddSaving = async (id) => {
 			if (!savingRecordAmount || Number(savingRecordAmount) <= 0) {
-				return toast({ message: 'Enter a valid saving amount', type: 'gray-700' });
+				return toast({
+					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter a valid saving amount</>,
+					type: 'gray-700'
+				});
 			}
 
 			try {
@@ -1146,9 +1173,12 @@ const Admin = () => {
 
 		// // Handle add shares
 		// const handleEditShares = async (id) => {
-		// 	if (!shares || Number(shares) <= 0) {
-		// 		return toast({ message: 'Enter a valid number of shares', type: 'gray-700' });
-		// 	}
+		// if (!shares || Number(shares) <= 0) {
+		// 	return toast({
+		// 		message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter a valid number of shares</>,
+		// 		type: 'gray-700'
+		// 	});
+		// }
 
 		// 	try {
 		// 		setIsWaitingFetchAction(true);
@@ -1368,6 +1398,16 @@ const Admin = () => {
 		let totalInterestReceivable = 0;
 		let totalInterestRemains = 0;
 
+		const [showShareAnnualInterest, setShowShareAnnualInterest] = useState(false);
+		const [keepAnnualInterest, setKeepAnnualInterest] = useState(false);
+
+		// Condition the dates for interest distribution
+		const currentDate = new Date();
+		const currentYear = currentDate.getFullYear();
+		const startCondition = new Date(`${currentYear}-12-26`); // 5 days before year end
+		const endCondition = new Date(`${currentYear + 1}-01-10`); // 10 days into next year
+		const isWithinCondition = currentDate >= startCondition && currentDate <= endCondition;
+
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="mb-3">
@@ -1517,8 +1557,6 @@ const Admin = () => {
 					</div>
 				</div>
 
-
-
 				{/* Export report tables */}
 				<ExportDomAsFile
 					show={showExportDataDialog}
@@ -1526,6 +1564,85 @@ const Admin = () => {
 					exportName={`Statut des intérêts annuels __ Année ${new Date().getFullYear()}`}
 					onClose={() => { setShowExportDataDialog(false) }}
 				/>
+
+				{/* Share interest */}
+				{/* {isWithinCondition && ( */}
+				<button
+					type="button"
+					className={`btn text-primaryColor border-primaryColor w-100 my-5 font-variant-small-caps border-start-0 border-end-0 rounded-0`}
+					onClick={() => setShowShareAnnualInterest(!showShareAnnualInterest)}
+				>
+					{showShareAnnualInterest ? <CaretUp /> : <CaretDown />} Share Annual Interest
+				</button>
+				{/* )} */}
+
+				{showShareAnnualInterest && (
+					<>
+						{/* Share interest */}
+						<div className="my-5">
+							<h3 className="grid-center mb-4 text-primaryColor text-uppercase">
+								<span className='d-block text-center'>Chose how to share the annual interest.</span>
+								<CaretDown size={45} className='p-2 fw-light' />
+							</h3>
+							<ul className="list-unstyled d-flex gap-2">
+								<li className={`col px-2 py-1 text-center small user-select-none ${!keepAnnualInterest ? 'bg-primaryColor text-gray-200' : 'border border-primaryColor text-primaryColor'} rounded-pill ptr clickDown`}
+									onClick={() => { setKeepAnnualInterest(false); }}
+								>
+									Withdraw interest
+								</li>
+								<li className={`col px-2 py-1 text-center small user-select-none ${keepAnnualInterest ? 'bg-primaryColor text-gray-200' : 'border border-primaryColor text-primaryColor'} rounded-pill ptr clickDown`}
+									onClick={() => { setKeepAnnualInterest(true); }}
+								>
+									Keep interest
+								</li>
+							</ul>
+							<div className="alert bg-primaryColor text-light small rounded-4">
+								{keepAnnualInterest ? (
+									<>
+										<p className=''>
+											<Info size={22} weight='fill' className='me-1 opacity-50' /> The interest earned by each member will be added to their total cotisation amount, along with the corresponding share count. Only the maximum share multiples of the earned interest will be applied, while any remaining balance will be carried forward as the initial interest for the following year.
+										</p>
+									</>
+								) : (
+									<>
+										<p className=''>
+											<Info size={22} weight='fill' className='me-1 opacity-50' /> The interest earned by each member will be calculated and withdrawn as requested. Only the maximum share multiples of the earned interest are eligible for withdrawal, while any remaining balance will be carried forward as the initial interest for the following year.
+										</p>
+									</>
+								)}
+
+								<div className="modal-footer mt-3">
+									<button
+										type="button"
+										className={`btn btn-sm me-3 text-gray-200 border-0 clickDown`}
+										disabled={isWaitingFetchAction}
+										onClick={() => setShowShareAnnualInterest(false)}
+									>
+										Cancel
+									</button>
+									<button
+										type="submit"
+										className={`btn bg-gray-200 text-primaryColor flex-align-center px-3 rounded-pill clickDown`}
+										disabled={isWaitingFetchAction}
+										onClick={() => alert('proceeding')}
+									>
+										{!isWaitingFetchAction ? (
+											<>
+												{keepAnnualInterest ? 'Keep interest' : 'Withdraw interest'} <CaretRight />
+											</>
+										) : (
+											<>
+												Working <div className="spinner-border spinner-border-sm ms-2"></div>
+											</>
+										)}
+									</button>
+								</div>
+							</div>
+						</div>
+					</>
+				)}
+
+
 			</div>
 		)
 	}
@@ -1684,7 +1801,10 @@ const Admin = () => {
 
 		const handeLoanPaymemnt = async (id) => {
 			if (payLoanAmount <= 0 || payTranchesAmount <= 0) {
-				return toast({ message: 'Enter valid payment values to continue', type: 'warning' });
+				return toast({
+					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter valid payment values to continue</>,
+					type: 'warning'
+				});
 			}
 
 			try {
@@ -2625,7 +2745,10 @@ const Admin = () => {
 		const handleAddExpense = async (e) => {
 			e.preventDefault();
 			if (!expenseRecordAmount || Number(expenseRecordAmount) <= 0) {
-				return toast({ message: 'Enter a valid expense amount', type: 'gray-700' });
+				return toast({
+					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter a valid expense amount</>,
+					type: 'gray-700'
+				});
 			}
 
 			try {
@@ -2685,7 +2808,7 @@ const Admin = () => {
 					<div className="d-lg-flex align-items-center">
 						<img src="images/transactions_visual.png" alt="" className='d-none d-lg-block col-md-5' />
 						<div className='alert mb-4 rounded-0 smaller fw-light'>
-							The transactions panel provides a detailed record of all financial activities, ensuring complete transparency and accountability. Here, you can track and review logs of deposits, withdrawals, and fines, offering a comprehensive view of each member's financial transactions for easy monitoring and management.
+							The transactions panel provides a detailed record of all financial activities, ensuring complete transparency and accountability. Here, you can track and review logs of deposits, withdrawals/expenses, and fines, offering a comprehensive view of each member's financial transactions for easy monitoring and management.
 						</div>
 					</div>
 				</div>
@@ -3277,11 +3400,7 @@ const Admin = () => {
 	// Settings
 	const Settings = () => {
 		return (
-			<section>
-				- Manage system-wide configurations (interest rates, fine rates, loan terms).
-				- Configure payment gateways.
-				- Adjust admin privileges and roles.
-			</section>
+			<SystemSettings />
 		)
 	}
 
