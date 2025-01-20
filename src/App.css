@@ -1087,7 +1087,6 @@ label {
   color: #212529 !important;
 }
 
-
 .text-white {
   color: var(--white) !important;
 }
@@ -1146,6 +1145,10 @@ label {
 .text-black4:is(button, a, span.btn):hover {
   transition: color .3s;
   color: var(--black) !important;
+}
+
+.text-inherit {
+  color: inherit !important;
 }
 
 .btn-primaryColor {
