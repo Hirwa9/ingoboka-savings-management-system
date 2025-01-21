@@ -230,6 +230,11 @@ const Admin = () => {
 		fetchLoans();
 	}, []);
 
+	const interestToReceive = allLoans.reduce((sum, m) => sum + m.interestPaid, 0);
+	const pendingInterest = useMemo(() => (
+		allLoans.reduce((sum, m) => sum + m.interestPending, 0)
+	), [allLoans]);
+
 	/**
 	 * Records
 	 */
@@ -261,6 +266,49 @@ const Admin = () => {
 		fetchRecords();
 	}, []);
 
+	// Apply loan penalties
+	const [applyCreditPenalty, setApplyCreditPenalty] = useState(false);
+	const [creditPenaltyAmount, setCreditPenaltyAmount] = useState('');
+	const [penaltyComment, setPenaltyComment] = useState('');
+
+	const handleApplyCreditPenalty = async (id) => {
+		if (!creditPenaltyAmount || Number(creditPenaltyAmount) <= 0) {
+			return toast({
+				message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter valid penalty amount to continue</>,
+				type: 'gray-700'
+			});
+		}
+
+		try {
+			setIsWaitingFetchAction(true);
+
+			const response = await axios.post(`${BASE_URL}/user/${id}/credit-penalty`, {
+				secondaryType: 'Credit penalty',
+				penaltyAmount: creditPenaltyAmount,
+				comment: penaltyComment
+			});
+
+			// Fetch error
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.message || 'Error applying penalies');
+			}
+
+			// Successful fetch
+			const data = await response.json();
+			toast({ message: data.message, type: "dark" });
+			setApplyCreditPenalty(false);
+			setErrorWithFetchAction(null);
+			fetchMembers();
+			fetchRecords();
+		} catch (error) {
+			setErrorWithFetchAction(error);
+			cError("Error applying penalies:", error);
+			toast({ message: error.message || "An unknown error occurred", type: "danger" });
+		} finally {
+			setIsWaitingFetchAction(false);
+		}
+	};
 	const [activeSection, setActiveSection] = useState("dashboard");
 	// const [activeSection, setActiveSection] = useState("messages");
 	// const [activeSection, setActiveSection] = useState("members");
@@ -290,15 +338,15 @@ const Admin = () => {
 		const loanDelivered = dashboardData
 			.filter((item) => item.label === "Loan Delivered")
 			.map((item) => item.value);
-		const interestToReceive = dashboardData
-			.filter((item) => item.label === "Interest Receivable")
-			.map((item) => item.value);
+		// const interestToReceive = dashboardData
+		// 	.filter((item) => item.label === "Interest Receivable")
+		// 	.map((item) => item.value);
 		const paidCapital = dashboardData
 			.filter((item) => item.label === "Paid Capital")
 			.map((item) => item.value);
-		const paidInterest = dashboardData
-			.filter((item) => item.label === "Paid Interest")
-			.map((item) => item.value);
+		// const pendingInterest = dashboardData
+		// 	.filter((item) => item.label === "Paid Interest")
+		// 	.map((item) => item.value);
 		const penalties = dashboardData
 			.filter((item) => item.label === "Penalties")
 			.map((item) => item.value);
@@ -337,9 +385,9 @@ const Admin = () => {
 											{item.label === 'Cotisation' && <CurrencyText amount={totalCotisation} />}
 											{item.label === 'Social' && <CurrencyText amount={totalSocial} />}
 											{item.label === 'Loan Delivered' && <CurrencyText amount={loanDelivered} />}
-											{item.label === 'Interest Receivable' && <CurrencyText amount={interestToReceive} />}
+											{item.label === 'Pending Interest' && <CurrencyText amount={pendingInterest} />}
 											{item.label === 'Paid Capital' && <CurrencyText amount={paidCapital} />}
-											{item.label === 'Paid Interest' && <CurrencyText amount={paidInterest} />}
+											{item.label === 'Paid Interest' && <CurrencyText amount={interestToReceive} />}
 											{item.label === 'Penalties' && <CurrencyText amount={penalties} />}
 											{item.label === 'Expenses' && <CurrencyText amount={expenses} />}
 											{item.label === 'Balance' && <CurrencyText amount={balance} />}
@@ -536,7 +584,7 @@ const Admin = () => {
 			const file = e.target.files[0];
 			if (file && !file.type.startsWith("image/")) {
 				toast({
-					message: "Please upload a valid image file.",
+					message: "Please upload valid image file.",
 					type: "danger",
 				});
 				return;
@@ -1125,6 +1173,7 @@ const Admin = () => {
 		const [selectedMember, setSelectedMember] = useState(allMembers[0]);
 		const [savingRecordAmount, setSavingRecordAmount] = useState('');
 		const [selectedMonths, setSelectedMonths] = useState([]);
+		const [applyDelayPenalties, setApplyDelayPenalties] = useState(false);
 
 		// Month selection
 		const checkIfLate = (month) => {
@@ -1158,8 +1207,12 @@ const Admin = () => {
 
 				// Update the saving amount based on the selected months
 				const totalAmount = updatedMonths.reduce((total, currentMonth) => {
-					const isCurrentLate = checkIfLate(currentMonth);
-					return total + (isCurrentLate ? 21000 : 20000);
+					if (applyDelayPenalties) {
+						const isCurrentLate = checkIfLate(currentMonth);
+						return total + (isCurrentLate ? 21000 : 20000);
+					} else {
+						return total + 20000;
+					}
 				}, 0);
 
 				setSavingRecordAmount(totalAmount);
@@ -1171,7 +1224,7 @@ const Admin = () => {
 		const handleAddSaving = async (id) => {
 			if (!savingRecordAmount || Number(savingRecordAmount) <= 0) {
 				return toast({
-					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter a valid saving amount</>,
+					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter valid saving amount to continue</>,
 					type: 'gray-700'
 				});
 			}
@@ -1179,13 +1232,19 @@ const Admin = () => {
 			try {
 				setIsWaitingFetchAction(true);
 
+				const requestBody = savingRecordType === 'cotisation' ? {
+					savings: selectedMonths,
+					applyDelayPenalties,
+					comment: savingRecordType[0].toUpperCase() + savingRecordType.slice(1)
+				} : savingRecordType === 'social' ? {
+					savingAmount: savingRecordAmount,
+					comment: savingRecordType[0].toUpperCase() + savingRecordType.slice(1)
+				} : null;
+
 				const response = await fetch(`${BASE_URL}/member/${id}/${savingRecordType}`, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						savingAmount: savingRecordAmount,
-						comment: savingRecordType[0].toUpperCase() + savingRecordType.slice(1)
-					}),
+					body: JSON.stringify(requestBody),
 				});
 
 				// Fetch error
@@ -1217,7 +1276,7 @@ const Admin = () => {
 		// const handleEditShares = async (id) => {
 		// if (!shares || Number(shares) <= 0) {
 		// 	return toast({
-		// 		message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter a valid number of shares</>,
+		// 		message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter valid number of shares to continue</>,
 		// 		type: 'gray-700'
 		// 	});
 		// }
@@ -1354,7 +1413,7 @@ const Admin = () => {
 
 							{showAddSavingRecord &&
 								<>
-									<div className='position-fixed fixed-top inset-0 flex-center py-5 bg-black2 inx-high add-property-form'>
+									<div className='position-fixed fixed-top inset-0 flex-center py-3 py-md-5 bg-black2 inx-high add-property-form'>
 										<div className="container col-md-6 col-lg-5 col-xl-4 my-auto peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 											<div className="px-3 bg-light text-gray-700">
 												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
@@ -1396,36 +1455,58 @@ const Admin = () => {
 															</li>
 														</ul>
 													</div>
-													{savingRecordType === 'cotisation' && (
-														<div className="mb-3">
-															<ul className="list-unstyled d-flex gap-2 flex-wrap">
-																{['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map((month, index) => {
-																	const monthValue = JSON.parse(selectedMember.annualShares).find((m) => m.month === month);
-																	const isPaid = monthValue?.paid || false;
-																	const isLate = !isPaid && checkIfLate(month);
-																	const isSelected = selectedMonths.includes(month);
 
-																	return (
-																		<li
-																			key={index}
-																			onClick={() => {
-																				if (!isPaid) handleMonthClick(month, isLate);
-																			}}
-																			className={`border border-2 rounded-pill px-2 smaller user-select-none ${isPaid ? 'ptr-none bg-gray-700 text-light opacity-50' : 'ptr'} clickDown ${isSelected ? 'bg-primaryColor text-light' : ''
-																				} ${isLate && !isPaid ? 'text-danger' : ''}`}
-																		>
-																			{isPaid && <Check />} {month}
-																		</li>
-																	);
-																})}
-															</ul>
-														</div>
+													{savingRecordType === 'cotisation' && (
+														<>
+															<div className="mb-3 form-check">
+																<input
+																	type="checkbox"
+																	className="form-check-input border-2 border-primary"
+																	id="autoGeneratePassword"
+																	checked={applyDelayPenalties}
+																	onChange={() => {
+																		setApplyDelayPenalties(!applyDelayPenalties);
+																		setSelectedMonths([]);
+																		setSavingRecordAmount('');
+																	}}
+																/>
+																<label htmlFor="autoGeneratePassword" className="form-check-label">
+																	Apply delay penalties
+																</label>
+															</div>
+															<div className="mb-3">
+																<ul className="list-unstyled d-flex gap-2 flex-wrap">
+																	{['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map((month, index) => {
+																		const monthValue = JSON.parse(selectedMember.annualShares).find((m) => m.month === month);
+																		const isPaid = monthValue?.paid || false;
+																		const isLate = !isPaid && checkIfLate(month);
+																		const isSelected = selectedMonths.includes(month);
+
+																		return (
+																			<li
+																				key={index}
+																				onClick={() => {
+																					if (!isPaid) handleMonthClick(month, isLate);
+																				}}
+																				className={`border border-2 rounded-pill px-2 smaller user-select-none ${isPaid ? 'ptr-none bg-gray-600 text-light' : 'ptr'} clickDown ${isSelected ? 'bg-primaryColor text-light' : ''
+																					} ${applyDelayPenalties && isLate && !isPaid ? 'text-danger' : ''}`}
+																			>
+																				{isPaid && <Check />} {month}
+																			</li>
+																		);
+																	})}
+																</ul>
+															</div>
+														</>
+
 													)}
 													<div className="mb-3">
 														<label htmlFor="savingAmount" className="form-label fw-bold" required>
-															Saving amount ({savingRecordAmount !== '' ? Number(savingRecordAmount).toLocaleString() : ''} RWF) = {
-																totalSelectedMonths
-															} Share{totalSelectedMonths > 1 ? 's' : ''}
+															Saving amount ({savingRecordAmount !== '' ? Number(savingRecordAmount).toLocaleString() : ''} RWF) {savingRecordType === 'cotisation' && savingRecordAmount !== '' && savingRecordAmount !== 0 && (
+																<>
+																	= {totalSelectedMonths} Share{totalSelectedMonths > 1 ? 's' : ''}
+																</>
+															)}
 														</label>
 														<input
 															type="number"
@@ -1440,9 +1521,9 @@ const Admin = () => {
 															onChange={(e) => setSavingRecordAmount(e.target.value)}
 														/>
 													</div>
-													{savingRecordType === 'cotisation' && delayedMonths > 0 && (
-														<div className="mb-3 p-2 form-text bg-black4 rounded">
-															<p>
+													{savingRecordType === 'cotisation' && applyDelayPenalties && delayedMonths > 0 && (
+														<div className="mb-3 p-2 form-text bg-danger-subtle rounded">
+															<p className='mb-2 small text-danger-emphasis'>
 																This also applies a fine of <CurrencyText amount={1000} /> for each of the delayed months.
 															</p>
 															<ul className="list-unstyled d-flex gap-2 flex-wrap mb-0 mb-0">
@@ -1451,7 +1532,7 @@ const Admin = () => {
 																	.map((month, index) => (
 																		<li
 																			key={index}
-																			className={`border border-danger text-danger rounded-pill px-2 smaller user-select-none`}
+																			className={`border border-2 border-light-subtle text-danger-emphasis rounded-pill px-2 smaller user-select-none`}
 																		>
 																			<Gavel /> {month}
 																		</li>
@@ -1461,14 +1542,19 @@ const Admin = () => {
 
 														</div>
 													)}
-													<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
-														onClick={() => handleAddSaving(selectedMember.id)}
-													>
-														{!isWaitingFetchAction ?
-															<>Save amount <FloppyDisk size={18} className='ms-2' /></>
-															: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
-														}
-													</button>
+													<div className="mb-3 p-2 form-text bg-dark-subtle rounded">
+														<p className='mb-2 small text-dark-emphasis'>
+															Please verify the details before saving. This action is final and cannot be reversed.
+														</p>
+														<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
+															onClick={() => handleAddSaving(selectedMember.id)}
+														>
+															{!isWaitingFetchAction ?
+																<>Save amount <FloppyDisk size={18} className='ms-2' /></>
+																: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
+															}
+														</button>
+													</div>
 												</form>
 											</div>
 										</div>
@@ -1490,23 +1576,113 @@ const Admin = () => {
 
 		const totalShares = 818;
 		const totalBoughtShares = allMembers.reduce((sum, item) => sum + item.shares, 0);
-		const interestToReceive = dashboardData
-			.filter((item) => item.label === "Interest Receivable")
-			.map((item) => item.value);
 		let totalSharesPercentage = 0;
 		let totalMonetaryInterest = 0;
 		let totalInterestReceivable = 0;
 		let totalInterestRemains = 0;
+		let totalAnnualShares = 0;
 
 		const [showShareAnnualInterest, setShowShareAnnualInterest] = useState(false);
 		const [keepAnnualInterest, setKeepAnnualInterest] = useState(false);
-
 		// Condition the dates for interest distribution
 		const currentDate = new Date();
 		const currentYear = currentDate.getFullYear();
 		const startCondition = new Date(`${currentYear}-12-26`); // 5 days before year end
 		const endCondition = new Date(`${currentYear + 1}-01-10`); // 10 days into next year
 		const isWithinCondition = currentDate >= startCondition && currentDate <= endCondition;
+
+		// Handle interest distribution
+		const distributeAnnualInterest = async (id) => {
+			if (window.confirm(`Are you sure to proceed with ${keepAnnualInterest ? 'keeping' : 'withdrawing'} the annual interest ?`)) {
+				try {
+					setIsWaitingFetchAction(true);
+					const response = await axios.post(`${BASE_URL}/api/${keepAnnualInterest ? 'distribute' : 'withdraw'}-interest`, {
+						annualReceivable: interestToReceive
+					});
+					// Successfull fetch
+					const data = response.data;
+					toast({ message: data.message, type: "dark" });
+					setShowShareAnnualInterest(false);
+					setErrorWithFetchAction(null);
+					fetchLoans();
+					fetchCredits();
+				} catch (error) {
+					setErrorWithFetchAction(error);
+					cError("Error distributing interest:", error);
+					toast({ message: error, type: "danger" });
+				} finally {
+					setIsWaitingFetchAction(false);
+				}
+			}
+
+			// customConfirmDialog({
+			// 	message: (
+			// 		<>
+			// 			<h5 className='h6 border-bottom mb-3 pb-2'><Receipt size={25} weight='fill' className='opacity-50' /> Annual interest distribution</h5>
+			// 			<p>
+			// 				Are you sure to proceed with {keepAnnualInterest ? 'keeping' : 'withdrawing'} the annual interest ?
+			// 			</p>
+			// 		</>
+			// 	),
+			// 	type: 'dark',
+			// 	action: async () => {
+			// 		try {
+			// 			setIsWaitingFetchAction(true);
+			// 			const response = await axios.post(`${BASE_URL}/api/${keepAnnualInterest ? 'distribute' : 'withdraw'}-interest`);
+			// 			// Successfull fetch
+			// 			const data = response.data;
+			// 			toast({ message: data.message, type: "dark" });
+			// 			setShowShareAnnualInterest(false);
+			// 			setErrorWithFetchAction(null);
+			// 			fetchLoans();
+			// 			fetchCredits();
+			// 		} catch (error) {
+			// 			setErrorWithFetchAction(error);
+			// 			cError("Error distributing interest:", error);
+			// 			toast({ message: error, type: "danger" });
+			// 		} finally {
+			// 			setIsWaitingFetchAction(false);
+			// 		}
+			// 	},
+			// 	actionText: 'Yes, Continue',
+			// });
+		}
+
+		// Annual interes records
+		const [allAnnualInterest, setAllAnnualInterest] = useState([]);
+		const [annualInterestToShow, setAnnualInterestToShow] = useState(allAnnualInterest);
+		const [loadingAnnualInterest, setLoadingAnnualInterest] = useState(false);
+		const [errorLoadingAnnualInterest, setErrorLoadingAnnualInterest] = useState(false);
+
+		const [selectedAnnualInterestRecord, setSelectedAnnualInterestRecord] = useState([]);
+		const [showAnnualInterestRecords, setShowAnnualInterestRecords] = useState(false);
+		const [showSelectedAnnualInterestRecord, setShowSelectedAnnualInterestRecord] = useState(false);
+
+		const interestRecentYears = useMemo((() => (
+			allAnnualInterest.length
+		)), []);
+
+		// Fetch annaul interest records
+		const fetchAnnualInterests = async () => {
+			try {
+				setLoadingAnnualInterest(true);
+				const response = await axios.get(`${BASE_URL}/api/annualInterests`);
+				const data = response.data;
+				setAllAnnualInterest(data);
+				setAnnualInterestToShow(data);
+				setErrorLoadingAnnualInterest(null);
+			} catch (error) {
+				setErrorLoadingAnnualInterest("Failed to load loans. Click the button to try again.");
+				toast({ message: errorLoadingAnnualInterest, type: "warning" });
+				console.error("Error fetching loans:", error);
+			} finally {
+				setLoadingAnnualInterest(false);
+			}
+		};
+
+		useEffect(() => {
+			fetchAnnualInterests();
+		}, []);
 
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
@@ -1543,12 +1719,11 @@ const Admin = () => {
 								<tr>
 									<th className='py-3 text-nowrap text-gray-700'>N°</th>
 									<th className='py-3 text-nowrap text-gray-700'>Member</th>
-									<th className='py-3 text-nowrap text-gray-700'>Shares</th>
+									<th className='py-3 text-nowrap text-gray-700'>Annual shares</th>
 									<th className='py-3 text-nowrap text-gray-700'>Share % to {totalBoughtShares}</th>
 									<th className='py-3 text-nowrap text-gray-700'>Interest <sub className='fs-60'>/RWF</sub></th>
 									<th className='py-3 text-nowrap text-gray-700'>Receivable<sub className='fs-60'>/RWF</sub></th>
 									<th className='py-3 text-nowrap text-gray-700'>Remains<sub className='fs-60'>/RWF</sub></th>
-									<th className='py-3 text-nowrap text-gray-700'>Status</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -1556,6 +1731,7 @@ const Admin = () => {
 									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
 									.map((item, index) => {
 										const memberNames = `${item.husbandFirstName} ${item.husbandLastName}`;
+										const annualShares = JSON.parse(item.annualShares).filter(share => share.paid).length;
 										const sharesProportion = (item.shares / totalBoughtShares);
 
 										const sharesPercentage = (sharesProportion * 100).toFixed(3);
@@ -1569,6 +1745,7 @@ const Admin = () => {
 										totalMonetaryInterest += Number(interest);
 										totalInterestReceivable += interestReceivable;
 										totalInterestRemains += interestRemains;
+										totalAnnualShares += annualShares;
 
 										return (
 											<tr
@@ -1582,7 +1759,7 @@ const Admin = () => {
 													{memberNames}
 												</td>
 												<td>
-													{item.shares}
+													{annualShares}
 												</td>
 												<td className="text-nowrap">
 													{sharesPercentage} %
@@ -1595,9 +1772,6 @@ const Admin = () => {
 												</td>
 												<td className="text-nowrap text-gray-700">
 													<CurrencyText amount={interestRemains} smallCurrency />
-												</td>
-												<td>
-													Pending
 												</td>
 											</tr>
 										)
@@ -1612,7 +1786,7 @@ const Admin = () => {
 									</td>
 									<td className='text-nowrap'>
 										<div className="d-grid">
-											{totalBoughtShares}
+											{totalAnnualShares}
 											{/* <span className="fs-60">of {totalShares} shares</span> */}
 										</div>
 									</td>
@@ -1630,11 +1804,6 @@ const Admin = () => {
 									</td>
 									<td className="text-nowrap">
 										<CurrencyText amount={totalInterestRemains} smallCurrency />
-									</td>
-									<td>
-										<div className='d-flex flex-column'></div>
-										{/* <div className='text-nowrap fs-65 text-success'>4 Delivered</div> */}
-										<div className='text-nowrap fs-65'>8 Pending</div>
 									</td>
 								</tr>
 							</tbody>
@@ -1669,7 +1838,7 @@ const Admin = () => {
 				{/* {isWithinCondition && ( */}
 				<button
 					type="button"
-					className={`btn text-primaryColor border-primaryColor w-100 my-5 font-variant-small-caps border-start-0 border-end-0 rounded-0`}
+					className={`btn text-primaryColor border-primaryColor w-100 my-3 font-variant-small-caps border-start-0 border-end-0 rounded-0`}
 					onClick={() => setShowShareAnnualInterest(!showShareAnnualInterest)}
 				>
 					{showShareAnnualInterest ? <CaretUp /> : <CaretDown />} Share Annual Interest
@@ -1724,7 +1893,7 @@ const Admin = () => {
 										type="submit"
 										className={`btn bg-gray-200 text-primaryColor flex-align-center px-3 rounded-pill clickDown`}
 										disabled={isWaitingFetchAction}
-										onClick={() => alert('proceeding')}
+										onClick={() => distributeAnnualInterest()}
 									>
 										{!isWaitingFetchAction ? (
 											<>
@@ -1739,6 +1908,154 @@ const Admin = () => {
 								</div>
 							</div>
 						</div>
+					</>
+				)}
+
+				{/* Recent records */}
+
+				{/* {isWithinCondition && ( */}
+				<button
+					type="button"
+					className={`btn text-primaryColor border-primaryColor w-100 my-3 font-variant-small-caps border-start-0 border-end-0 rounded-0`}
+					onClick={() => setShowAnnualInterestRecords(!showAnnualInterestRecords)}
+				>
+					{showAnnualInterestRecords ? <CaretUp /> : <CaretDown />} Interest Partition Recods
+				</button>
+				{/* )} */}
+
+				{showAnnualInterestRecords && (
+					<>
+						<div className="d-flex flex-wrap justify-content-center gap-2 gap-lg-3 rounded">
+							{allAnnualInterest
+								.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+								.map((record, index) => (
+									<div key={index} className='w-fit p-3 p-lg-4 border bg-primary-subtle ptr clickDown'
+										onClick={() => { setSelectedAnnualInterestRecord(record); setShowSelectedAnnualInterestRecord(true) }}
+									>
+										{record.year}
+									</div>
+								))
+							}
+						</div>
+
+						{showSelectedAnnualInterestRecord && (
+							<>
+								<div className='position-fixed fixed-top inset-0 bg-black2 py-3 py-md-5 inx-high add-property-form'>
+									<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
+
+										<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
+											<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
+												<div className='flex-align-center'>
+													<UserCirclePlus weight='fill' className="me-1" />
+													<span style={{ lineHeight: 1 }}> {selectedAnnualInterestRecord?.year} interest partition </span>
+												</div>
+												<div title="Cancel" onClick={() => { setShowSelectedAnnualInterestRecord(false); }}>
+													<X size={25} className='ptr' />
+												</div>
+											</h6>
+											<div className='overflow-auto mb-5'>
+												<table className="table table-hover h-100 properties-table">
+													<thead className='table-success position-sticky top-0 inx-1'>
+														<tr>
+															<th className='py-3 text-nowrap text-gray-700'>N°</th>
+															<th className='py-3 text-nowrap text-gray-700'>Member</th>
+															<th className='py-3 text-nowrap text-gray-700'>Annual shares</th>
+															<th className='py-3 text-nowrap text-gray-700'>Interest received<sub className='fs-60'>/RWF</sub></th>
+															<th className='py-3 text-nowrap text-gray-700'>Interest remains<sub className='fs-60'>/RWF</sub></th>
+														</tr>
+													</thead>
+													<tbody>
+														{allAnnualInterest
+															.filter((record) => record.year === selectedAnnualInterestRecord.year)
+															.map((record, index) => {
+																const memberStatus = JSON.parse(record.memberStatus);
+																return (
+																	<>
+																		<tr
+																			key={index}
+																			className="small cursor-default clickDown interest-row"
+																		>
+																			<td className="border-bottom-3 border-end bg-primaryColor text-light">
+																				{selectedAnnualInterestRecord.year}
+																			</td>
+																			<td className='text-nowrap'>
+																				Total shares :<CurrencyText amount={Number(record.totalShares)} />
+																			</td>
+																			<td>
+																			</td>
+																			<td></td>
+																			<td></td>
+																		</tr>
+
+																		{memberStatus
+																			.map((member, index) => {
+																				const associatedMember = allMembers.find(m => m.id === member.id);
+																				const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+																				return (
+																					<tr
+																						key={index}
+																						className="small cursor-default clickDown interest-row"
+																					>
+																						<td className="border-bottom-3 border-end">
+																							{index + 1}
+																						</td>
+																						<td className='text-nowrap'>
+																							{memberNames}
+																						</td>
+																						<td>
+																							{member.annualShares}
+																						</td>
+																						<td className="text-nowrap fw-bold text-success">
+																							<CurrencyText amount={member.interestReceived} smallCurrency />
+																						</td>
+																						<td className="text-nowrap text-gray-700">
+																							<CurrencyText amount={member.interestRemains} smallCurrency />
+																						</td>
+																					</tr>
+																				)
+																			})
+																		}
+
+																		<tr className="small cursor-default fs-5 table-success clickDown interest-row">
+																			<td className="border-bottom-3 border-end" title='Total'>
+																				T
+																			</td>
+																			<td className='text-nowrap'>
+																				{totalMembers} <span className="fs-60">members</span>
+																			</td>
+																			<td className='text-nowrap'>
+																				<div className="d-grid">
+																					<CurrencyText amount={
+																						JSON.parse(record.memberStatus).reduce((sum, item) => sum + item.annualShares, 0)
+																					} smallCurrency />
+																				</div>
+																			</td>
+																			<td className="text-nowrap">
+																				<div className="d-grid">
+																					<CurrencyText amount={
+																						JSON.parse(record.memberStatus).reduce((sum, item) => sum + item.interestReceived, 0)
+																					} smallCurrency />
+																				</div>
+																			</td>
+																			<td className="text-nowrap fw-bold">
+																				<CurrencyText amount={
+																					JSON.parse(record.memberStatus).reduce((sum, item) => sum + item.interestRemains, 0)
+																				} smallCurrency />
+																			</td>
+																		</tr>
+																	</>
+																)
+															})
+														}
+													</tbody>
+												</table>
+											</div>
+										</div>
+										{/* The table */}
+									</div>
+								</div>
+							</>
+						)}
 					</>
 				)}
 
@@ -2076,26 +2393,65 @@ const Admin = () => {
 																				</table>
 																			</div>
 																			{allCredits.filter(cr => cr.memberId === selectedMember.id).length > 0 && (
-																				<div className="d-flex">
-																					<div className='col p-2'>
-																						<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">First loan</span></div>
-																						<div className='text-center bg-gray-300'>
-																							<FormatedDate date={allCredits
-																								.sort((a, b) => new Date(a.requestDate) - new Date(b.requestDate))
-																								.filter(cr => cr.memberId === selectedMember.id)[0].requestDate
-																							} />
+																				<>
+																					<div className="d-flex">
+																						<div className='col p-2'>
+																							<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">First loan</span></div>
+																							<div className='text-center bg-gray-300'>
+																								<FormatedDate date={allCredits
+																									.sort((a, b) => new Date(a.requestDate) - new Date(b.requestDate))
+																									.filter(cr => cr.memberId === selectedMember.id)[0].requestDate
+																								} />
+																							</div>
+																						</div>
+																						<div className='col p-2'>
+																							<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Recent loan</span></div>
+																							<div className='text-center bg-gray-300'>
+																								<FormatedDate date={allCredits
+																									.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate))
+																									.filter(cr => cr.memberId === selectedMember.id)[0].requestDate
+																								} />
+																							</div>
 																						</div>
 																					</div>
-																					<div className='col p-2'>
-																						<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Recent loan</span></div>
-																						<div className='text-center bg-gray-300'>
-																							<FormatedDate date={allCredits
-																								.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate))
-																								.filter(cr => cr.memberId === selectedMember.id)[0].requestDate
-																							} />
-																						</div>
-																					</div>
-																				</div>
+
+																					{/* Credit penalties */}
+																					<span className={`btn btn-sm btn-outline-${applyCreditPenalty ? 'danger' : 'secondary'} border-start-0 border-end-0 mx-auto rounded-0`}
+																						onClick={() => setApplyCreditPenalty(!applyCreditPenalty)}
+																					>
+																						Apply penalties
+																					</span>
+
+																					{applyCreditPenalty && (
+																						<>
+																							<form onSubmit={e => e.preventDefault()} className="px-sm-2 pb-5">
+																								<div className="mb-3">
+																									<label htmlFor="penaltyAmount" className="form-label fw-bold" required>Expense amount ({creditPenaltyAmount !== '' ? Number(creditPenaltyAmount).toLocaleString() : ''} RWF )</label>
+																									<input type="number" id="penaltyAmount" name="penaltyAmount" className="form-control" min="1" required placeholder="Enter amount"
+																										value={creditPenaltyAmount}
+																										onChange={e => setCreditPenaltyAmount(e.target.value)}
+																									/>
+																								</div>
+																								<div className="mb-3">
+																									<label htmlFor="penaltyComment" className="form-label fw-bold" required>Expense comment</label>
+																									<textarea rows={3} id="penaltyComment" name="penaltyComment" className="form-control" placeholder="Enter comment"
+																										value={penaltyComment}
+																										onChange={e => setPenaltyComment(e.target.value)}
+																									></textarea>
+																								</div>
+
+																								<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="applyPenaltyBtn"
+																									onClick={() => handleApplyCreditPenalty(selectedMember.id)}
+																								>
+																									{!isWaitingFetchAction ?
+																										<>Apply penalty <FloppyDisk size={18} className='ms-2' /></>
+																										: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
+																									}
+																								</button>
+																							</form>
+																						</>
+																					)}
+																				</>
 																			)}
 																		</div>
 
@@ -2846,7 +3202,7 @@ const Admin = () => {
 			e.preventDefault();
 			if (!expenseRecordAmount || Number(expenseRecordAmount) <= 0) {
 				return toast({
-					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter a valid expense amount</>,
+					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter valid expense amount to continue</>,
 					type: 'gray-700'
 				});
 			}
@@ -2891,7 +3247,7 @@ const Admin = () => {
 				setActiveTransactionSectionColor('#f4e4b675');
 			} else if (activeTransactionSection === 'deposits') {
 				setActiveTransactionSectionColor('#a3d5bb75');
-			} else if (activeTransactionSection === 'fines') {
+			} else if (activeTransactionSection === 'penalties') {
 				setActiveTransactionSectionColor('#ebc1c575');
 			}
 		}, [activeTransactionSection]);
@@ -2908,7 +3264,7 @@ const Admin = () => {
 					<div className="d-lg-flex align-items-center">
 						<img src="images/transactions_visual.png" alt="" className='d-none d-lg-block col-md-5' />
 						<div className='alert mb-4 rounded-0 smaller fw-light'>
-							The transactions panel provides a detailed record of all financial activities, ensuring complete transparency and accountability. Here, you can track and review logs of deposits, withdrawals/expenses, and fines, offering a comprehensive view of each member's financial transactions for easy monitoring and management.
+							The transactions panel provides a detailed record of all financial activities, ensuring complete transparency and accountability. Here, you can track and review logs of deposits, withdrawals/expenses, and penalties, offering a comprehensive view of each member's financial transactions for easy monitoring and management.
 						</div>
 					</div>
 				</div>
@@ -2930,11 +3286,11 @@ const Admin = () => {
 							<h5 className='mb-0 small'>Deposits</h5>
 							<p className='mb-0 fs-75'>( {recordsToShow.filter(cr => cr.recordType === 'deposit').length} )</p>
 						</div>
-						<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-danger border-opacity-25 tab-selector ${activeTransactionSection === 'fines' ? 'active' : ''} user-select-none ptr clickDown`}
+						<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-danger border-opacity-25 tab-selector ${activeTransactionSection === 'penalties' ? 'active' : ''} user-select-none ptr clickDown`}
 							style={{ '--_activeColor': '#ebc1c5' }}
-							onClick={() => { setActiveTransactionSection('fines'); }}
+							onClick={() => { setActiveTransactionSection('penalties'); }}
 						>
-							<h5 className='mb-0 small'>Fines</h5>
+							<h5 className='mb-0 small'>Penalties</h5>
 							<p className='mb-0 fs-75'>( 2 )</p>
 						</div>
 					</div>
@@ -3127,7 +3483,7 @@ const Admin = () => {
 								</div>
 							)}
 
-							{activeTransactionSection === 'fines' && (
+							{activeTransactionSection === 'penalties' && (
 								<div className='overflow-auto'>
 									<table className="table table-hover h-100 properties-table">
 										<thead className='table-danger position-sticky top-0 inx-1'>
@@ -3412,7 +3768,7 @@ const Admin = () => {
 														Cotisation + Social
 													</td>
 													<td className="text-nowrap">
-														<CurrencyText amount={generalReport.cotisationAndSocial} />
+														<CurrencyText amount={totalCotisationsAndShares} />
 													</td>
 												</tr>
 												<tr className="small cursor-default clickDown general-report-row fw-bold"
@@ -3423,7 +3779,7 @@ const Admin = () => {
 														Verify
 													</td>
 													<td className="text-nowrap">
-														<CurrencyText amount={generalReport.verify} />
+														<CurrencyText amount={generalTotal - totalCotisationsAndShares} />
 													</td>
 												</tr>
 												<tr className="small cursor-default clickDown general-report-row fw-bold fs-5"
@@ -3434,7 +3790,7 @@ const Admin = () => {
 													</td>
 													<td>General Total:</td>
 													<td className="text-nowrap">
-														<CurrencyText amount={totalCotisationsAndShares} /> {/* Must be equal */}
+														<CurrencyText amount={generalTotal} /> {/* Must be equal */}
 													</td>
 												</tr>
 											</tbody>
@@ -3490,7 +3846,7 @@ const Admin = () => {
 		return (
 			<section>
 				**Messages & Notifications**
-				- Send updates to members about savings, fines, or loan approvals.
+				- Send updates to members about savings, penalties, or loan approvals.
 				- Handle inquiries from members.
 				- Manage email and SMS notifications.
 			</section>
@@ -3678,7 +4034,7 @@ const Admin = () => {
 														<div className="">
 															<div className="d-flex align-items-center justify-content-between mb-1 pb-1 border-bottom text-primaryColor small">
 																<span>Loan request</span>
-																<small className='text-gray-500'>
+																<small className='text-gray-600'>
 																	{formatDate(cr.updatedAt, { todayKeyword: true })}
 																</small>
 															</div>
