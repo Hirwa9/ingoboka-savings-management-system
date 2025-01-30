@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Button, Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CaretUp, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, Info, List, Minus, Notebook, Pen, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, Users, Warning, WarningCircle, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, EscalatorUp, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, Info, List, Minus, Notebook, Pen, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, UserMinus, Users, Warning, WarningCircle, X } from '@phosphor-icons/react';
 import { dashboardData, expensesTypes, generalReport, incomeExpenses } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
@@ -24,6 +24,11 @@ import BarGraph from '../../chartJS/BarGraph';
 import PieGraph from '../../chartJS/PieGraph';
 import CountUp from 'react-countup'
 import SystemSettings from '../../systemSettings/SystemSettings';
+
+import { Menu, MenuItem, MenuButton, MenuDivider } from '@szhsin/react-menu';
+import '@szhsin/react-menu/dist/index.css';
+import '@szhsin/react-menu/dist/transitions/zoom.css';
+import ContentToggler from '../../common/ContentToggler';
 
 const Admin = () => {
 
@@ -265,50 +270,6 @@ const Admin = () => {
 	useEffect(() => {
 		fetchRecords();
 	}, []);
-
-	// Apply loan penalties
-	const [applyCreditPenalty, setApplyCreditPenalty] = useState(false);
-	const [creditPenaltyAmount, setCreditPenaltyAmount] = useState('');
-	const [penaltyComment, setPenaltyComment] = useState('');
-
-	const handleApplyCreditPenalty = async (id) => {
-		if (!creditPenaltyAmount || Number(creditPenaltyAmount) <= 0) {
-			return toast({
-				message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter valid penalty amount to continue</>,
-				type: 'gray-700'
-			});
-		}
-
-		try {
-			setIsWaitingFetchAction(true);
-
-			const response = await axios.post(`${BASE_URL}/user/${id}/credit-penalty`, {
-				secondaryType: 'Credit penalty',
-				penaltyAmount: creditPenaltyAmount,
-				comment: penaltyComment
-			});
-
-			// Fetch error
-			if (!response.ok) {
-				const errorData = await response.json();
-				throw new Error(errorData.message || 'Error applying penalies');
-			}
-
-			// Successful fetch
-			const data = await response.json();
-			toast({ message: data.message, type: "dark" });
-			setApplyCreditPenalty(false);
-			setErrorWithFetchAction(null);
-			fetchMembers();
-			fetchRecords();
-		} catch (error) {
-			setErrorWithFetchAction(error);
-			cError("Error applying penalies:", error);
-			toast({ message: error.message || "An unknown error occurred", type: "danger" });
-		} finally {
-			setIsWaitingFetchAction(false);
-		}
-	};
 	const [activeSection, setActiveSection] = useState("dashboard");
 	// const [activeSection, setActiveSection] = useState("messages");
 	// const [activeSection, setActiveSection] = useState("members");
@@ -505,7 +466,7 @@ const Admin = () => {
 		};
 
 		const [showWifeDetails, setShowWifeDetails] = useState(false);
-		const [autoGeneratePassword, setAutoGeneratePassword] = useState(true);
+		const [autoGeneratePassword, setAutoGeneratePassword] = useState(false);
 		const [registrationPassword, setRegistrationPassword] = useState('');
 
 		useEffect(() => {
@@ -680,7 +641,7 @@ const Admin = () => {
 					<div className={`collapsible-grid-y ${showMemberStats ? 'working' : ''}`} style={{ animation: "zoomInBack .5s 1", }}>
 						<div className="row mb-3 collapsing-content statistics-wrapper">
 							<div className="col-12 col-lg-6">
-								<BarGraph data={membersChartData} title='Member statistics' />
+								<BarGraph data={membersChartData} title='Members statistics' />
 							</div>
 							<div className="col-12 col-lg-6 alert mb-4 rounded-0 smaller fw-light">
 								<p>
@@ -704,6 +665,7 @@ const Admin = () => {
 								</div>
 							</div>
 						</div>
+						<CaretDown size={45} className='p-2 fw-light d-block mx-auto mb-5 text-primaryColor' style={{ animation: "flyInTop 2s 1" }} />
 					</div>
 				)}
 
@@ -755,11 +717,20 @@ const Admin = () => {
 											/>
 										</div>
 
-										<button className="btn btn-sm btn-light border border-2 position-absolute top-0 start-0 ms-3 translate-middle-y"
-											onClick={() => { setSelectedMember(member); setShowEditMemberForm(true); }}
-										>
-											<Pen className="me-1" /> Edit
-										</button>
+										<div className="position-absolute top-0 start-0 ms-3 translate-middle-y flex-align-center gap-2">
+											<Menu menuButton={<MenuButton className="btn btn-sm bg-gray-300 text-700 flex-align-center"><CaretDown className="me-1" /> More</MenuButton>} transition>
+												<MenuItem>
+													<Coins weight='fill' className="me-2 opacity-50" /> Finances</MenuItem>
+												<MenuItem onClick={() => { setSelectedMember(member); setShowEditMemberForm(true); }}>
+													<Pen weight='fill' className="me-2 opacity-50" /> Edit
+												</MenuItem>
+												<MenuDivider />
+												<MenuItem className='text-danger'>
+													<UserMinus weight='fill' className="me-2 opacity-50" />Remove
+												</MenuItem>
+											</Menu>
+										</div>
+
 
 										<div className="px-lg-2">
 											<h5 className="mb-3 fs-4">{`${member.husbandFirstName} ${member.husbandLastName}`}</h5>
@@ -1387,7 +1358,9 @@ const Admin = () => {
 															<li className="py-1 w-100">
 																<span className="flex-align-center">
 																	<b className='fs-5'>{shares} Shares</b>
-																	<span className='ms-3 text-primaryColor flex-align-center ptr clickDown' title='Edit multiple shares'><Pen size={22} className='me-2' /> Umuhigo</span>
+																	<span className='ms-auto py-1 px-2 border border-top-0 border-bottom-0 text-primaryColor flex-align-center ptr clickDown' title='Edit multiple shares'>
+																		<EscalatorUp size={22} className='me-2' /> Umuhigo
+																	</span>
 																</span>
 															</li>
 															<li className="py-1 d-table-row">
@@ -1419,7 +1392,7 @@ const Admin = () => {
 												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
 													<div className='flex-align-center'>
 														<CashRegister weight='fill' className="me-1" />
-														<span style={{ lineHeight: 1 }}>Add savings</span>
+														<span style={{ lineHeight: 1 }}>Add monthly savings</span>
 													</div>
 													<div title="Cancel" onClick={() => { setShowAddSavingRecord(false); setSavingRecordAmount('') }}>
 														<X size={25} className='ptr' />
@@ -1836,13 +1809,12 @@ const Admin = () => {
 
 				{/* Share interest */}
 				{/* {isWithinCondition && ( */}
-				<button
-					type="button"
-					className={`btn text-primaryColor border-primaryColor w-100 my-3 font-variant-small-caps border-start-0 border-end-0 rounded-0`}
-					onClick={() => setShowShareAnnualInterest(!showShareAnnualInterest)}
-				>
-					{showShareAnnualInterest ? <CaretUp /> : <CaretDown />} Share Annual Interest
-				</button>
+				<ContentToggler
+					state={showShareAnnualInterest}
+					setState={setShowShareAnnualInterest}
+					text="Share Annual Interest"
+					className="ms-auto"
+				/>
 				{/* )} */}
 
 				{showShareAnnualInterest && (
@@ -1912,16 +1884,12 @@ const Admin = () => {
 				)}
 
 				{/* Recent records */}
-
-				{/* {isWithinCondition && ( */}
-				<button
-					type="button"
-					className={`btn text-primaryColor border-primaryColor w-100 my-3 font-variant-small-caps border-start-0 border-end-0 rounded-0`}
-					onClick={() => setShowAnnualInterestRecords(!showAnnualInterestRecords)}
-				>
-					{showAnnualInterestRecords ? <CaretUp /> : <CaretDown />} Interest Partition Recods
-				</button>
-				{/* )} */}
+				<ContentToggler
+					state={showAnnualInterestRecords}
+					setState={setShowAnnualInterestRecords}
+					text="Interest Partition Records"
+					className="ms-auto"
+				/>
 
 				{showAnnualInterestRecords && (
 					<>
@@ -1940,13 +1908,13 @@ const Admin = () => {
 
 						{showSelectedAnnualInterestRecord && (
 							<>
-								<div className='position-fixed fixed-top inset-0 bg-black2 py-3 py-md-5 inx-high add-property-form'>
+								<div className='position-fixed fixed-top inset-0 bg-black2 inx-high add-property-form'>
 									<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 
 										<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
 											<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
 												<div className='flex-align-center'>
-													<UserCirclePlus weight='fill' className="me-1" />
+													<Coins weight='fill' className="me-1" />
 													<span style={{ lineHeight: 1 }}> {selectedAnnualInterestRecord?.year} interest partition </span>
 												</div>
 												<div title="Cancel" onClick={() => { setShowSelectedAnnualInterestRecord(false); }}>
@@ -1970,16 +1938,15 @@ const Admin = () => {
 															.map((record, index) => {
 																const memberStatus = JSON.parse(record.memberStatus);
 																return (
-																	<>
+																	<Fragment key={index}>
 																		<tr
-																			key={index}
 																			className="small cursor-default clickDown interest-row"
 																		>
 																			<td className="border-bottom-3 border-end bg-primaryColor text-light">
 																				{selectedAnnualInterestRecord.year}
 																			</td>
 																			<td className='text-nowrap'>
-																				Total shares :<CurrencyText amount={Number(record.totalShares)} />
+																				Total shares : {record.totalShares}
 																			</td>
 																			<td>
 																			</td>
@@ -2043,7 +2010,7 @@ const Admin = () => {
 																				} smallCurrency />
 																			</td>
 																		</tr>
-																	</>
+																	</Fragment>
 																)
 															})
 														}
@@ -2247,6 +2214,51 @@ const Admin = () => {
 			}
 		}
 
+		/**
+		 * Apply loan penalties
+		 */
+
+		const [applyCreditPenalty, setApplyCreditPenalty] = useState(false);
+		const [creditPenaltyAmount, setCreditPenaltyAmount] = useState('');
+		const [penaltyComment, setPenaltyComment] = useState('');
+
+		const handleApplyCreditPenalty = async (id) => {
+			if (!creditPenaltyAmount || Number(creditPenaltyAmount) <= 0) {
+				return toast({
+					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter valid penalty amount to continue</>,
+					type: 'gray-700'
+				});
+			}
+
+			try {
+				setIsWaitingFetchAction(true);
+			
+				const response = await axios.post(`${BASE_URL}/user/${id}/credit-penalty`, {
+					secondaryType: 'Credit penalty',
+					penaltyAmount: creditPenaltyAmount,
+					comment: penaltyComment
+				});
+			
+				// Successful fetch
+				const data = response.data; // Axios stores the response data in `data`
+				toast({ message: data.message, type: "dark" });
+				setApplyCreditPenalty(false);
+				setErrorWithFetchAction(null);
+				fetchMembers();
+				fetchRecords();
+			} catch (error) {
+				console.error('Caught Error:', error);
+			
+				// Handle axios error
+				const errorMessage = error.response?.data?.message || error.message || "An unknown error occurred";
+				setErrorWithFetchAction(errorMessage);
+				cError("Error applying penalties:", error);
+				toast({ message: errorMessage, type: "danger" });
+			} finally {
+				setIsWaitingFetchAction(false);
+			}
+		};
+
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<h2 className='text-appColor'><Blueprint weight='fill' className="me-1 opacity-50" /> Credit panel</h2>
@@ -2392,6 +2404,7 @@ const Admin = () => {
 																					</tbody>
 																				</table>
 																			</div>
+
 																			{allCredits.filter(cr => cr.memberId === selectedMember.id).length > 0 && (
 																				<>
 																					<div className="d-flex">
@@ -2414,43 +2427,6 @@ const Admin = () => {
 																							</div>
 																						</div>
 																					</div>
-
-																					{/* Credit penalties */}
-																					<span className={`btn btn-sm btn-outline-${applyCreditPenalty ? 'danger' : 'secondary'} border-start-0 border-end-0 mx-auto rounded-0`}
-																						onClick={() => setApplyCreditPenalty(!applyCreditPenalty)}
-																					>
-																						Apply penalties
-																					</span>
-
-																					{applyCreditPenalty && (
-																						<>
-																							<form onSubmit={e => e.preventDefault()} className="px-sm-2 pb-5">
-																								<div className="mb-3">
-																									<label htmlFor="penaltyAmount" className="form-label fw-bold" required>Expense amount ({creditPenaltyAmount !== '' ? Number(creditPenaltyAmount).toLocaleString() : ''} RWF )</label>
-																									<input type="number" id="penaltyAmount" name="penaltyAmount" className="form-control" min="1" required placeholder="Enter amount"
-																										value={creditPenaltyAmount}
-																										onChange={e => setCreditPenaltyAmount(e.target.value)}
-																									/>
-																								</div>
-																								<div className="mb-3">
-																									<label htmlFor="penaltyComment" className="form-label fw-bold" required>Expense comment</label>
-																									<textarea rows={3} id="penaltyComment" name="penaltyComment" className="form-control" placeholder="Enter comment"
-																										value={penaltyComment}
-																										onChange={e => setPenaltyComment(e.target.value)}
-																									></textarea>
-																								</div>
-
-																								<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="applyPenaltyBtn"
-																									onClick={() => handleApplyCreditPenalty(selectedMember.id)}
-																								>
-																									{!isWaitingFetchAction ?
-																										<>Apply penalty <FloppyDisk size={18} className='ms-2' /></>
-																										: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
-																									}
-																								</button>
-																							</form>
-																						</>
-																					)}
 																				</>
 																			)}
 																		</div>
@@ -2569,19 +2545,55 @@ const Admin = () => {
 																		</div>
 																	</div>
 
-																	{/* Toggle Credit Records */}
-																	<div className="my-5 d-flex">
-																		<button
-																			type="button"
-																			className={`btn btn-sm btn-outline-${showSelectedMemberCreditRecords ? 'danger' : 'secondary'} border-start-0 border-end-0 mx-auto rounded-0`}
-																			onClick={() => setShowSelectedMemberCreditRecords(!showSelectedMemberCreditRecords)}
-																		>
-																			{showSelectedMemberCreditRecords ?
-																				<CaretUp />
-																				: <CaretDown />
-																			} Credit records for {selectedMember.husbandFirstName}
-																		</button>
+																	<hr className='mt-0 mb-4' />
+																	{/* Credit penalties */}
+																	<div className="mb-3">
+																		<ContentToggler
+																			state={applyCreditPenalty}
+																			setState={setApplyCreditPenalty}
+																			text="Apply penalties"
+																			className="ms-auto"
+																		/>
+
+																		{applyCreditPenalty && (
+																			<>
+																				<form onSubmit={e => e.preventDefault()} className="px-sm-2 pb-5">
+																					<div className="mb-3">
+																						<label htmlFor="penaltyAmount" className="form-label fw-bold" required>Penalty amount ({creditPenaltyAmount !== '' ? Number(creditPenaltyAmount).toLocaleString() : ''} RWF )</label>
+																						<input type="number" id="penaltyAmount" name="penaltyAmount" className="form-control" min="1" required placeholder="Enter amount"
+																							value={creditPenaltyAmount}
+																							onChange={e => setCreditPenaltyAmount(e.target.value)}
+																						/>
+																					</div>
+																					<div className="mb-3">
+																						<label htmlFor="penaltyComment" className="form-label fw-bold" required>Penalty comment</label>
+																						<textarea rows={3} id="penaltyComment" name="penaltyComment" className="form-control" placeholder="Enter comment"
+																							value={penaltyComment}
+																							onChange={e => setPenaltyComment(e.target.value)}
+																						></textarea>
+																					</div>
+
+																					<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="applyPenaltyBtn"
+																						onClick={() => handleApplyCreditPenalty(selectedMember.id)}
+																					>
+																						{!isWaitingFetchAction ?
+																							<>Apply penalty <Gavel size={18} className='ms-2' /></>
+																							: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
+																						}
+																					</button>
+																				</form>
+																			</>
+																		)}
 																	</div>
+
+																	{/* Toggle Credit Records */}
+
+																	<ContentToggler
+																		state={showSelectedMemberCreditRecords}
+																		setState={setShowSelectedMemberCreditRecords}
+																		text={<>Credit records for {selectedMember.husbandFirstName}</>}
+																		className="ms-auto"
+																	/>
 
 																	{showSelectedMemberCreditRecords && (
 																		<>
