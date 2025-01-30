@@ -29,6 +29,7 @@ import { Menu, MenuItem, MenuButton, MenuDivider } from '@szhsin/react-menu';
 import '@szhsin/react-menu/dist/index.css';
 import '@szhsin/react-menu/dist/transitions/zoom.css';
 import ContentToggler from '../../common/ContentToggler';
+import DividerText from '../../common/DividerText';
 
 const Admin = () => {
 
@@ -1240,6 +1241,53 @@ const Admin = () => {
 			}
 		};
 
+		// Add multiple shares (umuhigo)
+		const [showAddMultipleShares, setShowAddMultipleShares] = useState(false);
+		const [multipleSharesAmount, setMultipleSharesAmount] = useState('');
+
+
+		// Handle add savings
+		const handleAddMultipleShares = async (id) => {
+			if (!multipleSharesAmount || Number(multipleSharesAmount) <= 0) {
+				return toast({
+					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter valid number of shares to continue</>,
+					type: 'gray-700'
+				});
+			}
+
+			try {
+				setIsWaitingFetchAction(true);
+
+				const response = await fetch(`${BASE_URL}/member/${id}/multiple-shares`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						shares: multipleSharesAmount,
+						comment: `Adding ${multipleSharesAmount} shares (Umuhigo)`,
+					}),
+				});
+
+				// Fetch error
+				if (!response.ok) {
+					const errorData = await response.json();
+					throw new Error(errorData.message || 'Error adding multiple shares');
+				}
+
+				// Successful fetch
+				const data = await response.json();
+				toast({ message: data.message, type: "dark" });
+				setShowAddMultipleShares(false);
+				setErrorWithFetchAction(null);
+				fetchMembers();
+			} catch (error) {
+				setErrorWithFetchAction(error);
+				cError("Error adding multiple shares:", error);
+				toast({ message: error.message || "An unknown error occurred", type: "danger" });
+			} finally {
+				setIsWaitingFetchAction(false);
+			}
+		};
+
 		// const [shares, setShares] = useState(false);
 		// const [showEditSharesRecord, setShowEditSharesRecord] = useState(false);
 
@@ -1358,7 +1406,8 @@ const Admin = () => {
 															<li className="py-1 w-100">
 																<span className="flex-align-center">
 																	<b className='fs-5'>{shares} Shares</b>
-																	<span className='ms-auto py-1 px-2 border border-top-0 border-bottom-0 text-primaryColor flex-align-center ptr clickDown' title='Edit multiple shares'>
+																	<span className='ms-auto py-1 px-2 border border-top-0 border-bottom-0 text-primaryColor flex-align-center ptr clickDown' title='Edit multiple shares'
+																		onClick={() => { setSelectedMember(member); setShowAddMultipleShares(true) }}>
 																		<EscalatorUp size={22} className='me-2' /> Umuhigo
 																	</span>
 																</span>
@@ -1524,6 +1573,89 @@ const Admin = () => {
 														>
 															{!isWaitingFetchAction ?
 																<>Save amount <FloppyDisk size={18} className='ms-2' /></>
+																: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
+															}
+														</button>
+													</div>
+												</form>
+											</div>
+										</div>
+									</div>
+								</>
+							}
+
+							{showAddMultipleShares &&
+								<>
+									<div className='position-fixed fixed-top inset-0 flex-center py-3 py-md-5 bg-black2 inx-high add-property-form'>
+										<div className="container col-md-6 col-lg-5 col-xl-4 my-auto peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
+											<div className="px-3 bg-light text-gray-700">
+												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
+													<div className='flex-align-center'>
+														<CashRegister weight='fill' className="me-1" />
+														<span style={{ lineHeight: 1 }}>Add multiple shares</span>
+													</div>
+													<div title="Cancel" onClick={() => { setShowAddMultipleShares(false); setMultipleSharesAmount('') }}>
+														<X size={25} className='ptr' />
+													</div>
+												</h6>
+												<div className="flex-align-center gap-3 mb-3">
+													<img src={selectedMember.husbandAvatar ? selectedMember.husbandAvatar : '/images/man_avatar_image.jpg'}
+														alt={`${selectedMember.husbandFirstName.slice(0, 1)}.${selectedMember.husbandLastName}`}
+														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
+													/>
+													<div className='smaller'>
+														Save multiple shares to {selectedMember.husbandFirstName} {selectedMember.husbandLastName}
+													</div>
+												</div>
+												<ul className="list-unstyled text-gray-700 px-2 opacity-75 smaller fst-italic">
+													<li className="py-1 w-100">
+														<span className="flex-align-center">
+															<b className='fs-5'>{selectedMember.shares} Shares</b>
+														</span>
+													</li>
+													<li className="py-1 d-table-row">
+														<span className='d-table-cell border-start border-secondary ps-2'>Cotisation:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember.cotisation} /></span>
+													</li>
+													<li className="py-1 d-table-row">
+														<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember.social} /></span>
+													</li>
+													<li className="py-1 fs-5 d-table-row">
+														<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember.cotisation + selectedMember.social} /></span>
+													</li>
+												</ul>
+												<DividerText text="New shares" />
+												{/* The form */}
+												<form onSubmit={(e) => e.preventDefault()} className="px-sm-2 pb-5">
+													<div className="mb-3">
+														<label htmlFor="savingAmount" className="form-label fw-bold" required>
+															Number of shares ({multipleSharesAmount !== '' ? `${multipleSharesAmount} Share${multipleSharesAmount > 1 ? 's' : ''}` : ''}) {multipleSharesAmount !== '' && multipleSharesAmount !== 0 && (
+																<>
+																	= <CurrencyText amount={Number(multipleSharesAmount) * 20000} />
+																</>
+															)}
+														</label>
+														<input
+															type="number"
+															id="savingAmount"
+															name="savingAmount"
+															className="form-control"
+															min="1"
+															required
+															placeholder="Enter shares"
+															value={multipleSharesAmount}
+															onChange={(e) => setMultipleSharesAmount(e.target.value)}
+														/>
+														<div className="form-text text-info-emphasis fw-bold">Unit share value is <CurrencyText amount={20000} /> </div>
+													</div>
+													<div className="mb-3 p-2 form-text bg-dark-subtle rounded">
+														<p className='mb-2 small text-dark-emphasis'>
+															Please verify the details before saving. This action is final and cannot be reversed.
+														</p>
+														<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
+															onClick={() => handleAddMultipleShares(selectedMember.id)}
+														>
+															{!isWaitingFetchAction ?
+																<>Add shares <FloppyDisk size={18} className='ms-2' /></>
 																: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
 															}
 														</button>
@@ -2232,13 +2364,13 @@ const Admin = () => {
 
 			try {
 				setIsWaitingFetchAction(true);
-			
+
 				const response = await axios.post(`${BASE_URL}/user/${id}/credit-penalty`, {
 					secondaryType: 'Credit penalty',
 					penaltyAmount: creditPenaltyAmount,
 					comment: penaltyComment
 				});
-			
+
 				// Successful fetch
 				const data = response.data; // Axios stores the response data in `data`
 				toast({ message: data.message, type: "dark" });
@@ -2248,7 +2380,7 @@ const Admin = () => {
 				fetchRecords();
 			} catch (error) {
 				console.error('Caught Error:', error);
-			
+
 				// Handle axios error
 				const errorMessage = error.response?.data?.message || error.message || "An unknown error occurred";
 				setErrorWithFetchAction(errorMessage);
