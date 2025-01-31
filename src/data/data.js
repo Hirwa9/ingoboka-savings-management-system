@@ -3,12 +3,13 @@ export const dashboardData = [
     { label: "Cotisation", value: 14660080 },
     { label: "Social", value: 571224 },
     { label: "Loan Delivered", value: 108680000 },
-    { label: "Interest Receivable", value: 5694000 },
-    { label: "Paid Capital", value: 90010000 },
     { label: "Paid Interest", value: 5134000 },
+    { label: "Pending Interest", value: 5694000 },
+    { label: "Paid Capital", value: 90010000 },
     { label: "Penalties", value: 187955 },
     { label: "Expenses", value: 660942 },
-    { label: "Balance", value: 1222317 },
+    // { label: "Balance", value: 1222317 },
+    { label: "Balance", value: 6236077 },
 ];
 
 // Members
@@ -199,44 +200,6 @@ export const dashboardData = [
 //     },
 // ];
 
-// Credits
-export const credits = [
-    {
-        id: 0, // The default column's incrementing id
-        memberId: 5, // As defined
-        creditAmount: 3000000, // As defined
-        requestDate: "04-01-2025", // Default is the current timestamp
-        dueDate: "04-04-2025", // As defined
-        tranches: 3, // Tranches number as defined
-        comment: "Requesting a loan", // Loan requesting comment
-        status: "pending", // Enum of "pending", "approved", "rejected", with pending as the default
-        rejectionMessage: "Insufficient balance", // Default is null.
-        creditPayment: [ // Will have all tranches details according to tranches number defined
-            {
-                tranchNumber: 1,
-                tranchDueDate: '04-02-2025',
-                paid: false, // Default is false
-                slipUrl: 'url of the uploaded file', // Default is null
-                finesCount: 0, // Default is 0
-            },
-            {
-                tranchNumber: 2,
-                tranchDueDate: '04-03-2025',
-                paid: false, // Default is false
-                slipUrl: 'url of the uploaded file', // Default is null
-                finesCount: 0, // Default is 0
-            },
-            {
-                tranchNumber: 3,
-                tranchDueDate: '04-04-2025',
-                paid: false, // Default is false
-                slipUrl: 'url of the uploaded file', // Default is null
-                finesCount: 0, // Default is 0
-            },
-        ],
-        fullyPaid: false, // Default is false
-    }
-];
 
 // Expenses
 export const expenses = [
@@ -443,6 +406,10 @@ export const expenses = [
         comment: 'Withdrawal fee',
         date: '2023-12-15 16:25:32',
     },
+];
+
+export const memberRoles = [
+    'member', 'accountant', 'president', 'umuhwituzi',
 ];
 
 export const expensesTypes = [
@@ -741,7 +708,7 @@ export const incomeExpenses = [
 
 // General
 export const generalReport = {
-    balance: 3061477,
+    balance: 6236077,
     report: [
         { member: 'Bizumuremyi Jean Damascène', credit: 1545000, part: 1700060, social: 74653, },
         { member: 'Dusabimana Leonidas', credit: 5900000, part: 1700020, social: 72653, },
