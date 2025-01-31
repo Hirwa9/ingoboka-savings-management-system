@@ -13,7 +13,7 @@
 
 .sidebar.floated {
     display: block;
-    animation: zoomInFront var(--trans) 1;
+    animation: flyInTop .1s 1;
 }
 
 .sidebar.floated::after {
