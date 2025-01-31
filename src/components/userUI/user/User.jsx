@@ -724,7 +724,7 @@ const UserUI = () => {
 						<Calendar size={25} className='me-2' /> Année {new Date().getFullYear()}
 					</div>
 					<div className='overflow-auto mb-5'>
-						<table className="table table-hover h-100 properties-table">
+						<table className="table table-hover h-100">
 							<thead className='table-success position-sticky top-0 inx-1'>
 								<tr>
 									<th className='py-3 text-nowrap text-gray-700'>N°</th>
@@ -1065,7 +1065,7 @@ const UserUI = () => {
 											</h6>
 											<div className="flex-align-center gap-3 mb-3">
 												<div className='overflow-auto'>
-													<table className="table table-hover h-100 properties-table">
+													<table className="table table-hover h-100">
 														<thead className='table-warning position-sticky top-0 inx-1'>
 															<tr>
 																{/* <th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th> */}
@@ -1203,7 +1203,7 @@ const UserUI = () => {
 									<>
 										{creditsToShow.filter(cr => cr.status === 'pending').length > 0 && (
 											<div className='overflow-auto'>
-												<table className="table table-hover h-100 properties-table">
+												<table className="table table-hover h-100">
 													<thead className='table-warning position-sticky top-0 inx-1'>
 														<tr>
 															<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
@@ -1317,7 +1317,7 @@ const UserUI = () => {
 									<>
 										{creditsToShow.filter(cr => cr.status === 'approved').length > 0 && (
 											<div className='overflow-auto'>
-												<table className="table table-hover h-100 properties-table">
+												<table className="table table-hover h-100">
 													<thead className='table-success position-sticky top-0 inx-1'>
 														<tr>
 															<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
@@ -1401,7 +1401,7 @@ const UserUI = () => {
 									<>
 										{creditsToShow.filter(cr => cr.status === 'rejected').length > 0 && (
 											<div className='overflow-auto'>
-												<table className="table table-hover h-100 properties-table">
+												<table className="table table-hover h-100">
 													<thead className='table-danger position-sticky top-0 inx-1'>
 														<tr>
 															<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
@@ -1559,7 +1559,7 @@ const UserUI = () => {
 
 														{/* The plan */}
 														<div className='overflow-auto'>
-															<table className="table table-hover h-100 properties-table">
+															<table className="table table-hover h-100">
 																<thead className='table-primary position-sticky top-0 inx-1'>
 																	<tr>
 																		<th className='ps-sm-3 py-3 text-nowrap text-gray-700 fw-normal'>Tranche</th>
@@ -1727,7 +1727,7 @@ const UserUI = () => {
 						{activeTransactionSection === 'withdrawals' && (
 							<>
 								<div className='overflow-auto'>
-									<table className="table table-hover h-100 properties-table">
+									<table className="table table-hover h-100">
 										<thead className='table-warning position-sticky top-0 inx-1'>
 											<tr>
 												<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
@@ -1833,7 +1833,7 @@ const UserUI = () => {
 
 						{activeTransactionSection === 'deposits' && (
 							<div className='overflow-auto'>
-								<table className="table table-hover h-100 properties-table">
+								<table className="table table-hover h-100">
 									<thead className='table-success position-sticky top-0 inx-1'>
 										<tr>
 											<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
@@ -1884,7 +1884,7 @@ const UserUI = () => {
 
 						{activeTransactionSection === 'fines' && (
 							<div className='overflow-auto'>
-								<table className="table table-hover h-100 properties-table">
+								<table className="table table-hover h-100">
 									<thead className='table-danger position-sticky top-0 inx-1'>
 										<tr>
 											<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
@@ -2060,7 +2060,7 @@ const UserUI = () => {
 							{activeReportSection === 'incomeExpenses' && (
 								<>
 									<div className='overflow-auto'>
-										<table className="table table-hover h-100 properties-table">
+										<table className="table table-hover h-100">
 											<thead className='table-success position-sticky top-0 inx-1'>
 												<tr>
 													<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
@@ -2104,7 +2104,7 @@ const UserUI = () => {
 							{activeReportSection === 'general' && (
 								<>
 									<div className='overflow-auto'>
-										<table className="table table-hover h-100 properties-table">
+										<table className="table table-hover h-100">
 											<thead className='table-success position-sticky top-0 inx-1'>
 												<tr>
 													<th className='py-3 text-nowrap text-gray-700'>Actif</th>
