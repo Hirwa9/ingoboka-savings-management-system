@@ -3,8 +3,8 @@ import axios from 'axios';
 import { Button, Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, EscalatorUp, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, Info, List, Minus, Notebook, Pen, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, UserMinus, Users, Warning, WarningCircle, X } from '@phosphor-icons/react';
-import { dashboardData, expensesTypes, generalReport, incomeExpenses } from '../../../data/data';
+import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, EscalatorUp, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, GreaterThan, Info, LessThan, List, Minus, Notebook, Pen, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, UserFocus, UserMinus, Users, Warning, WarningCircle, X } from '@phosphor-icons/react';
+import { dashboardData, expensesTypes, generalReport, incomeExpenses, memberRoles } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
@@ -77,10 +77,10 @@ const Admin = () => {
 	// Hide navbar
 	const hideSideNavbar = useCallback(() => {
 		if (sideNavbarIsFloated) {
-			sideNavbarRef.current.classList.add('fadeOutF');
+			sideNavbarRef.current.classList.add('flyOutT');
 			setTimeout(() => {
 				setSideNavbarIsFloated(false); // Close navbar
-				sideNavbarRef.current.classList.remove('fadeOutF');
+				sideNavbarRef.current.classList.remove('flyOutT');
 			}, 400);
 		}
 	}, [sideNavbarIsFloated]);
@@ -347,9 +347,9 @@ const Admin = () => {
 											{item.label === 'Cotisation' && <CurrencyText amount={totalCotisation} />}
 											{item.label === 'Social' && <CurrencyText amount={totalSocial} />}
 											{item.label === 'Loan Delivered' && <CurrencyText amount={loanDelivered} />}
+											{item.label === 'Paid Interest' && <CurrencyText amount={interestToReceive} />}
 											{item.label === 'Pending Interest' && <CurrencyText amount={pendingInterest} />}
 											{item.label === 'Paid Capital' && <CurrencyText amount={paidCapital} />}
-											{item.label === 'Paid Interest' && <CurrencyText amount={interestToReceive} />}
 											{item.label === 'Penalties' && <CurrencyText amount={penalties} />}
 											{item.label === 'Expenses' && <CurrencyText amount={expenses} />}
 											{item.label === 'Balance' && <CurrencyText amount={balance} />}
@@ -442,6 +442,7 @@ const Admin = () => {
 		const [showAddMemberForm, setShowAddMemberForm] = useState(false);
 
 		const [formData, setFormData] = useState({
+			role: '',
 			husbandFirstName: '',
 			husbandLastName: '',
 			husbandPhone: '',
@@ -454,6 +455,7 @@ const Admin = () => {
 
 		const resetRegistrationForm = () => {
 			setFormData({
+				role: '',
 				husbandFirstName: '',
 				husbandLastName: '',
 				husbandPhone: '',
@@ -518,12 +520,21 @@ const Admin = () => {
 		const [selectedMember, setSelectedMember] = useState(allMembers[0]);
 		const [editHeadOfFamily, setEditHeadOfFamily] = useState(true);
 
+		const [editSelectedmemberRole, setEditSelectedmemberRole] = useState('');
 		const [editSelectedmemberFName, setEditSelectedmemberFName] = useState('');
 		const [editSelectedmemberLName, setEditSelectedmemberLName] = useState('');
 		const [editSelectedmemberPhone, setEditSelectedmemberPhone] = useState('');
 		const [editSelectedmemberEmail, setEditSelectedmemberEmail] = useState('');
 
 		// Togger member editor
+		useEffect(() => {
+			if (showEditMemberForm) {
+				setEditSelectedmemberRole(selectedMember.role);
+			} else {
+				setEditSelectedmemberRole(selectedMember.role || '');
+			}
+		}, [showEditMemberForm, selectedMember]);
+
 		useEffect(() => {
 			if (editHeadOfFamily) {
 				setEditSelectedmemberFName(selectedMember.husbandFirstName);
@@ -580,11 +591,13 @@ const Admin = () => {
 		const handleEditMemberInfo = async (id, type) => {
 
 			const memberInfo = type === 'husband' ? {
+				role: editSelectedmemberRole,
 				husbandFirstName: editSelectedmemberFName,
 				husbandLastName: editSelectedmemberLName,
 				husbandPhone: editSelectedmemberPhone,
 				husbandEmail: editSelectedmemberEmail
 			} : type === 'wife' ? {
+				role: editSelectedmemberRole,
 				wifeFirstName: editSelectedmemberFName,
 				wifeLastName: editSelectedmemberLName,
 				wifePhone: editSelectedmemberPhone,
@@ -623,6 +636,16 @@ const Admin = () => {
 				setIsWaitingFetchAction(false);
 			}
 		};
+
+		// Member financila overview and member removal 
+		const [showMemberFinances, setShowMemberFinances] = useState(false);
+		const [showMemberRemoval, setShowMemberRemoval] = useState(false);
+		const hideMemberFinances = () => {
+			setShowMemberFinances(false);
+			setShowMemberRemoval(false);
+		}
+
+		const [canRemoveMember, setCanRemoveMember] = useState(false);
 
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
@@ -720,13 +743,13 @@ const Admin = () => {
 
 										<div className="position-absolute top-0 start-0 ms-3 translate-middle-y flex-align-center gap-2">
 											<Menu menuButton={<MenuButton className="btn btn-sm bg-gray-300 text-700 flex-align-center"><CaretDown className="me-1" /> More</MenuButton>} transition>
-												<MenuItem>
+												<MenuItem onClick={() => { setSelectedMember(member); setShowMemberFinances(true); }}>
 													<Coins weight='fill' className="me-2 opacity-50" /> Finances</MenuItem>
 												<MenuItem onClick={() => { setSelectedMember(member); setShowEditMemberForm(true); }}>
 													<Pen weight='fill' className="me-2 opacity-50" /> Edit
 												</MenuItem>
 												<MenuDivider />
-												<MenuItem className='text-danger'>
+												<MenuItem onClick={() => { setSelectedMember(member); setShowMemberFinances(true); setShowMemberRemoval(true); }} className='text-danger'>
 													<UserMinus weight='fill' className="me-2 opacity-50" />Remove
 												</MenuItem>
 											</Menu>
@@ -801,6 +824,22 @@ const Admin = () => {
 												{/* The form */}
 												<form onSubmit={handleRegisterNewMember} className="px-sm-2 pb-5">
 													{/* Husband Details */}
+													<div className="mb-3">
+														<label htmlFor="role" className="form-label fw-semibold">Role</label>
+														<select id="role" name="role" className="form-select"
+															value={formData.role}
+															onChange={handleChange}
+															required>
+															<option value="" disabled className='p-2 px-3 small text-gray-500'>Select role</option>
+															{memberRoles
+																.map((val, index) => (
+																	<option key={index} value={val} className='p-2 px-3 small text-capitalize'>
+																		{val}
+																	</option>
+																))
+															}
+														</select>
+													</div>
 													<div className="mb-3">
 														<label htmlFor="husbandFirstName" className="form-label fw-semibold">First Name</label>
 														<input
@@ -956,6 +995,7 @@ const Admin = () => {
 								</>
 							}
 
+							{/* Edit member */}
 							{showEditMemberForm &&
 								<>
 									<div className='position-fixed fixed-top inset-0 bg-black2 py-3 py-md-5 inx-high add-property-form'>
@@ -1015,6 +1055,22 @@ const Admin = () => {
 												{/* The form */}
 												<form onSubmit={(e) => e.preventDefault()} className="px-sm-2 pb-5">
 													{/* Selected member info */}
+													<div className="mb-3">
+														<label htmlFor="role" className="form-label fw-semibold">Role</label>
+														<select id="role" name="role" className="form-select"
+															value={editSelectedmemberRole}
+															onChange={e => setEditSelectedmemberRole(e.target.value)}
+															required>
+															<option value="" disabled className='p-2 px-3 small text-gray-500'>Select role</option>
+															{memberRoles
+																.map((val, index) => (
+																	<option key={index} value={val} className='p-2 px-3 small text-capitalize'>
+																		{val}
+																	</option>
+																))
+															}
+														</select>
+													</div>
 													<div className="mb-3">
 														<label htmlFor="memberFirstName" className="form-label fw-semibold">First Name</label>
 														<input
@@ -1076,6 +1132,323 @@ const Admin = () => {
 														}
 													</button>
 												</form>
+											</div>
+										</div>
+									</div>
+								</>
+							}
+
+							{/* Member Credits */}
+							{showMemberFinances &&
+								<>
+									<div className='position-fixed fixed-top inset-0 bg-black2 inx-high add-property-form'>
+										<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
+											<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
+												<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom">
+													<div className='flex-align-center'>
+														<img src={selectedMember.husbandAvatar ? selectedMember.husbandAvatar : '/images/man_avatar_image.jpg'}
+															alt={`${selectedMember.husbandFirstName.slice(0, 1)}.${selectedMember.husbandLastName}`}
+															className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
+														/>
+														<span className='ms-2' style={{ lineHeight: 1 }}>
+															{!showMemberRemoval ? 'Finances of' : 'Remove'} {`${selectedMember.husbandFirstName} ${selectedMember.husbandLastName}`}
+														</span>
+													</div>
+													<div onClick={() => hideMemberFinances()}>
+														<X size={25} className='ptr' />
+													</div>
+												</h6>
+
+												<div className="d-sm-flex mb-3">
+													<div className="position-relative flex-shrink-0 flex-center w-fit h-7rem px-4 fw-bold border border-3 border-secondary border-opacity-25 text-primaryColor rounded-pill" style={{ minWidth: '7rem' }}>
+														<span className="display-3 fw-bold"><CountUp end={selectedMember.shares} duration={0.6} /> </span> <small className='position-absolute start-50 bottom-0 border border-2 px-2 rounded-pill bg-light'>shares</small>
+													</div>
+													<div className='px-sm-3 py-3 smaller text-gray-700 fw-light'>
+														Below is the financial status of {`${selectedMember.husbandFirstName} ${selectedMember.husbandLastName}`}, as recorded in the IKIMINA INGOBOKA saving management system. This status includes the total personal capital, comprising cotisation and social contributions, along with their credit status.
+													</div>
+												</div>
+
+												{showMemberRemoval && (
+													<div className="mb-4 p-3 border rounded-4 small shadow-sm">
+														<div className='mb-2 text-danger-emphasis'>
+															<p className='text-center'>
+																Members are removed or deactivated according to their financial status. <span className='text-primary fw-semibold text-nowrap ptr clickDown' data-bs-toggle="collapse" data-bs-target="#readMore-member-removal-info">Read more</span>
+															</p>
+															<p className="p-3 bg-info-subtle rounded text-gray-700 collapse" id='readMore-member-removal-info'>
+																If the cotisation exceeds the credit, the credit is cleared, and the remaining balance is retained. If the credit exceeds the cotisation, the cotisation is deducted, and the member remains in the credits records.
+															</p>
+														</div>
+														<CaretDown size={35} weight='light' className='p-2 d-block mx-auto' />
+													</div>
+												)}
+
+												<div className="d-xl-flex gap-3 mb-lg-4">
+													{/* Cotisation and social */}
+													<div className='col col-xl-5 mb-5'>
+														<div className="fs-6 fw-semibold text-primaryColor text-center text-uppercase">Cotisation and social</div>
+														<hr />
+														<div className='overflow-auto'>
+															<table className="table table-hover h-100">
+																<thead className='table-primary position-sticky top-0 inx-1'>
+																	<tr>
+																		<th className='py-3 text-nowrap text-gray-700'>Title</th>
+																		<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
+																		{/* <th className='py-3 text-nowrap text-gray-700'>Pending  <sub className='fs-60'>/RWF</sub></th> */}
+																	</tr>
+																</thead>
+																<tbody>
+																	<tr className={`small credit-row`}
+																	>
+																		<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
+																			Cotisation
+																		</td>
+																		<td className='text-primary-emphasis'>
+																			<CurrencyText amount={selectedMember.cotisation} />
+																		</td>
+																	</tr>
+																	<tr className={`small credit-row`}
+																	>
+																		<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
+																			Social
+																		</td>
+																		<td className='text-primary-emphasis'>
+																			<CurrencyText amount={selectedMember.social} />
+																		</td>
+																	</tr>
+																	<tr className={`small credit-row`}
+																	>
+																		<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
+																			Total
+																		</td>
+																		<td className='text-primary-emphasis fw-bold'>
+																			<CurrencyText amount={selectedMember.cotisation + selectedMember.social} />
+																		</td>
+																	</tr>
+																</tbody>
+															</table>
+														</div>
+
+														{/* <ul className="list-unstyled text-gray-700 px-2">
+															<li className="py-1 w-100">
+																<span className="flex-align-center">
+																	<b className='fs-5'>{selectedMember.shares} Shares</b>
+																</span>
+															</li>
+															<li className="py-1 d-table-row">
+																<span className='d-table-cell border-start border-secondary ps-2'>Cotisation:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember.cotisation} /></span>
+															</li>
+															<li className="py-1 d-table-row">
+																<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember.social} /></span>
+															</li>
+															<li className="py-1 fs-5 d-table-row">
+																<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember.cotisation + selectedMember.social} /></span>
+															</li>
+														</ul> */}
+													</div>
+													{/* Loan status */}
+													<div className="col mb-5 mb-xl-0">
+														<div className="fs-6 fw-semibold text-primaryColor text-center text-uppercase">Loan status</div>
+														<hr />
+														{allLoans.filter(loan => (loan.memberId === selectedMember.id && loan.loanTaken > 0)).length > 0 ? (
+															<>
+																{allLoans.filter(loan => (loan.memberId === selectedMember.id && loan.loanTaken > 0))
+																	.map((item, index) => {
+																		const selectedLoan = item;
+																		return (
+																			<Fragment key={index} >
+																				<div className='overflow-auto'>
+																					<table className="table table-hover h-100 mb-0">
+																						<thead className='table-warning position-sticky top-0 inx-1'>
+																							<tr>
+																								<th className='py-3 text-nowrap text-gray-700'>Title</th>
+																								<th className='py-3 text-nowrap text-gray-700'>Taken  <sub className='fs-60'>/RWF</sub></th>
+																								<th className='py-3 text-nowrap text-gray-700'>Paid  <sub className='fs-60'>/RWF</sub></th>
+																								<th className='py-3 text-nowrap text-gray-700'>Pending  <sub className='fs-60'>/RWF</sub></th>
+																							</tr>
+																						</thead>
+																						<tbody>
+																							<tr className={`small credit-row`}
+																							>
+																								<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
+																									Loan
+																								</td>
+																								<td>
+																									<CurrencyText amount={selectedLoan.loanTaken} />
+																								</td>
+																								<td className='text-primary-emphasis'>
+																									<CurrencyText amount={selectedLoan.loanPaid} />
+																								</td>
+																								<td className='text-warning-emphasis'>
+																									<CurrencyText amount={selectedLoan.loanPending} />
+																								</td>
+																							</tr>
+																							<tr className={`small credit-row`}
+																							>
+																								<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
+																									Interest
+																								</td>
+																								<td>
+																									<CurrencyText amount={selectedLoan.interestTaken} />
+																								</td>
+																								<td className='text-primary-emphasis'>
+																									<CurrencyText amount={selectedLoan.interestPaid} />
+																								</td>
+																								<td className='text-warning-emphasis'>
+																									<CurrencyText amount={selectedLoan.interestPending} />
+																								</td>
+																							</tr>
+																							<tr className={`small credit-row`}
+																							>
+																								<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
+																									Tranches
+																								</td>
+																								<td>
+																									{selectedLoan.tranchesTaken}
+																								</td>
+																								<td className='text-primary-emphasis'>
+																									{selectedLoan.tranchesPaid}
+																								</td>
+																								<td className='text-warning-emphasis'>
+																									{selectedLoan.tranchesPending}
+																								</td>
+																							</tr>
+																						</tbody>
+																					</table>
+																				</div>
+
+																				{allCredits.filter(cr => cr.memberId === selectedMember.id).length > 0 && (
+																					<>
+																						<div className="d-flex">
+																							<div className='col p-2'>
+																								<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">First loan</span></div>
+																								<div className='text-center bg-gray-300'>
+																									<FormatedDate date={allCredits
+																										.sort((a, b) => new Date(a.requestDate) - new Date(b.requestDate))
+																										.filter(cr => cr.memberId === selectedMember.id)[0].requestDate
+																									} />
+																								</div>
+																							</div>
+																							<div className='col p-2'>
+																								<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Recent loan</span></div>
+																								<div className='text-center bg-gray-300'>
+																									<FormatedDate date={allCredits
+																										.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate))
+																										.filter(cr => cr.memberId === selectedMember.id)[0].requestDate
+																									} />
+																								</div>
+																							</div>
+																						</div>
+																					</>
+																				)}
+																			</Fragment>
+																		)
+																	})
+																}
+															</>
+														) : (
+															<>
+																<EmptyBox
+																	notFoundMessage={`No credit records found for this member.`}
+																/>
+															</>
+														)}
+													</div>
+												</div>
+												{/* Remove action */}
+												{showMemberRemoval && (
+													<>
+														<DividerText text={<><UserMinus size={22} weight='fill' className='me-1 opacity-50' /> Remove this member</>} type='danger' noBorder className="mb-4" />
+														<div className="mb-3">
+															<div className="mb-3 pt-2 form-text bg-danger-subtle rounded">
+																<p className='mb-2 px-2 text-danger-emphasis text-center smaller'>
+																	This member will be removed or deactivated according to their financial status.
+																</p>
+
+																{allLoans.filter(loan => (loan.memberId === selectedMember.id && loan.loanTaken > 0)).length > 0 ? (
+																	<>
+																		{allLoans.filter(loan => (loan.memberId === selectedMember.id && loan.loanTaken > 0))
+																			.map((item, index) => {
+																				const selectedLoan = item;
+																				const removeCompletely = selectedMember.cotisation > selectedLoan.loanPending;
+																				return (
+																					<Fragment key={index} >
+																						<div className='overflow-auto'>
+																							<table className="table table-hover h-100">
+																								<thead className='table-warning position-sticky top-0 inx-1'>
+																									<tr>
+																										<th className='py-3 text-nowrap text-gray-700'>Cotisation</th>
+																										<th className='py-3 text-nowrap text-gray-700'>
+																											<div className="text-center">Comparison</div>
+																										</th>
+																										<th className='py-3 text-nowrap text-gray-700'>Pending Loan</th>
+																									</tr>
+																								</thead>
+																								<tbody>
+																									<tr>
+																										<td className={`ps-sm-3 text-primary-emphasis`}>
+																											<CurrencyText amount={selectedMember.cotisation} />
+																										</td>
+																										<td>
+																											<div className="text-center">
+																												{removeCompletely ? (
+																													<GreaterThan size={35} />
+																												) : (
+																													<LessThan size={35} />
+																												)}
+																											</div>
+																										</td>
+																										<td className='text-warning-emphasis'>
+																											<CurrencyText amount={selectedLoan.loanPending} />
+																										</td>
+																									</tr>
+																									<tr className="fs-5">
+																										<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
+																											Decision
+																										</td>
+																										<td className='text-primary-emphasis small'>
+																											{removeCompletely ? (
+																												<span className="flex-align-center"><UserMinus size={22} weight='fill' className='me-1 opacity-50' /> Removed completely</span>
+																											) : (
+																												<span className="flex-align-center"><UserFocus size={22} weight='fill' className='me-1 opacity-50' /> Stays under credit records</span>
+																											)}
+																										</td>
+																										<td></td>
+																									</tr>
+																								</tbody>
+																							</table>
+																						</div>
+																					</Fragment>
+																				)
+																			})
+																		}
+																	</>
+																) : (
+																	<div className="alert">
+																		<p>
+																			<b>Decision: <UserMinus size={22} weight='fill' className='me-1 opacity-50' /> Removed completely</b>. A member with no credit records can withdraw their cotisation and will be removed from the active member system.
+																		</p>
+																		<div className="d-flex">
+																			<button className="col btn btn-sm text-dark w-100 flex-center py-2 border-dark rounded-0 clickDown"
+																				onClick={() => hideMemberFinances()}
+																			>
+																				Cancel
+																			</button>
+																			<button className="col btn btn-sm btn-dark w-100 flex-center py-2 border-dark rounded-0 clickDown"
+																				disabled={(isWaitingFetchAction)}
+																				onClick={() => { alert('Finish up'); }}
+																			>
+																				{!isWaitingFetchAction ?
+																					<>Remove <UserMinus size={18} className='ms-2' /></>
+																					: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
+																				}
+																			</button>
+																		</div>
+																	</div>
+																)}
+															</div>
+														</div>
+													</>
+												)}
 											</div>
 										</div>
 									</div>
@@ -1433,6 +1806,7 @@ const Admin = () => {
 								}
 							</div>
 
+							{/* Record savings */}
 							{showAddSavingRecord &&
 								<>
 									<div className='position-fixed fixed-top inset-0 flex-center py-3 py-md-5 bg-black2 inx-high add-property-form'>
@@ -1558,10 +1932,8 @@ const Admin = () => {
 																		>
 																			<Gavel /> {month}
 																		</li>
-																	)
-																	)}
+																	))}
 															</ul>
-
 														</div>
 													)}
 													<div className="mb-3 p-2 form-text bg-dark-subtle rounded">
@@ -1584,6 +1956,7 @@ const Admin = () => {
 								</>
 							}
 
+							{/* Record multiple shares */}
 							{showAddMultipleShares &&
 								<>
 									<div className='position-fixed fixed-top inset-0 flex-center py-3 py-md-5 bg-black2 inx-high add-property-form'>
@@ -1623,7 +1996,7 @@ const Admin = () => {
 														<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember.cotisation + selectedMember.social} /></span>
 													</li>
 												</ul>
-												<DividerText text="New shares" />
+												<DividerText text="Add new shares" type='gray-300' className="mb-4" />
 												{/* The form */}
 												<form onSubmit={(e) => e.preventDefault()} className="px-sm-2 pb-5">
 													<div className="mb-3">
@@ -1819,7 +2192,7 @@ const Admin = () => {
 						<Calendar size={25} className='me-2' /> Année {new Date().getFullYear()}
 					</div>
 					<div className='overflow-auto mb-5'>
-						<table className="table table-hover h-100 properties-table">
+						<table className="table table-hover h-100">
 							<thead className='table-success position-sticky top-0 inx-1'>
 								<tr>
 									<th className='py-3 text-nowrap text-gray-700'>N°</th>
@@ -2042,7 +2415,6 @@ const Admin = () => {
 							<>
 								<div className='position-fixed fixed-top inset-0 bg-black2 inx-high add-property-form'>
 									<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-
 										<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
 											<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
 												<div className='flex-align-center'>
@@ -2054,7 +2426,7 @@ const Admin = () => {
 												</div>
 											</h6>
 											<div className='overflow-auto mb-5'>
-												<table className="table table-hover h-100 properties-table">
+												<table className="table table-hover h-100">
 													<thead className='table-success position-sticky top-0 inx-1'>
 														<tr>
 															<th className='py-3 text-nowrap text-gray-700'>N°</th>
@@ -2446,6 +2818,7 @@ const Admin = () => {
 							</div>
 						</div>
 
+						{/* Member Credits */}
 						{showSelectedMemberCredits &&
 							<>
 								<div className='position-fixed fixed-top inset-0 bg-black2 inx-high add-property-form'>
@@ -2475,10 +2848,10 @@ const Admin = () => {
 																	<div className="d-xl-flex gap-3 pb-5">
 																		{/* Loan status */}
 																		<div className="col member-loan-status mb-4 mb-xl-0">
-																			<div className="fs-6 fw-semibold text-primaryColor text-center">Loan status</div>
+																			<div className="fs-6 fw-semibold text-primaryColor text-center text-uppercase">Loan status</div>
 																			<hr />
 																			<div className='overflow-auto'>
-																				<table className="table table-hover h-100 properties-table">
+																				<table className="table table-hover h-100">
 																					<thead className='table-warning position-sticky top-0 inx-1'>
 																						<tr>
 																							<th className='py-3 text-nowrap text-gray-700'>Title</th>
@@ -2490,7 +2863,7 @@ const Admin = () => {
 																					<tbody>
 																						<tr className={`small credit-row`}
 																						>
-																							<td className={`ps-sm-3  border-bottom-3 border-end fw-bold`}>
+																							<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
 																								Loan
 																							</td>
 																							<td>
@@ -2505,7 +2878,7 @@ const Admin = () => {
 																						</tr>
 																						<tr className={`small credit-row`}
 																						>
-																							<td className={`ps-sm-3  border-bottom-3 border-end fw-bold`}>
+																							<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
 																								Interest
 																							</td>
 																							<td>
@@ -2520,7 +2893,7 @@ const Admin = () => {
 																						</tr>
 																						<tr className={`small credit-row`}
 																						>
-																							<td className={`ps-sm-3  border-bottom-3 border-end fw-bold`}>
+																							<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
 																								Tranches
 																							</td>
 																							<td>
@@ -2567,7 +2940,7 @@ const Admin = () => {
 																		<div className='col col-xl-5 member-loan-payment'>
 																			{selectedLoan.loanPending > 0 ? (
 																				<>
-																					<div className="fs-6 fw-semibold text-primaryColor text-center">Payment</div>
+																					<div className="fs-6 fw-semibold text-primaryColor text-center text-uppercase">Payment</div>
 																					<hr />
 																					<div>
 																						<div className='mb-3'>
@@ -2730,7 +3103,7 @@ const Admin = () => {
 																	{showSelectedMemberCreditRecords && (
 																		<>
 																			<div className='overflow-auto'>
-																				<table className="table table-hover h-100 properties-table">
+																				<table className="table table-hover h-100">
 																					<thead className='table-success position-sticky top-0 inx-1'>
 																						<tr>
 																							<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
@@ -2755,7 +3128,7 @@ const Admin = () => {
 																										key={index}
 																										className={`small loan-row`}
 																									>
-																										<td className={`ps-sm-3  border-bottom-3 border-end`}>
+																										<td className={`ps-sm-3 border-bottom-3 border-end`}>
 																											{index + 1}
 																										</td>
 																										<td >
@@ -2814,13 +3187,11 @@ const Admin = () => {
 													/>
 												</>
 											)}
-
 										</div>
 									</div>
 								</div>
 							</>
 						}
-
 					</>
 				)}
 
@@ -2878,7 +3249,7 @@ const Admin = () => {
 									<>
 										{creditsToShow.filter(cr => cr.status === 'pending').length > 0 && (
 											<div className='overflow-auto'>
-												<table className="table table-hover h-100 properties-table">
+												<table className="table table-hover h-100">
 													<thead className='table-warning position-sticky top-0 inx-1'>
 														<tr>
 															<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
@@ -2903,7 +3274,7 @@ const Admin = () => {
 																		key={index}
 																		className={`small loan-row`}
 																	>
-																		<td className={`ps-sm-3  border-bottom-3 border-end`}>
+																		<td className={`ps-sm-3 border-bottom-3 border-end`}>
 																			{index + 1}
 																		</td>
 																		<td >
@@ -2991,7 +3362,7 @@ const Admin = () => {
 									<>
 										{creditsToShow.filter(cr => cr.status === 'approved').length > 0 && (
 											<div className='overflow-auto'>
-												<table className="table table-hover h-100 properties-table">
+												<table className="table table-hover h-100">
 													<thead className='table-success position-sticky top-0 inx-1'>
 														<tr>
 															<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
@@ -3016,7 +3387,7 @@ const Admin = () => {
 																		key={index}
 																		className={`small loan-row`}
 																	>
-																		<td className={`ps-sm-3  border-bottom-3 border-end`}>
+																		<td className={`ps-sm-3 border-bottom-3 border-end`}>
 																			{index + 1}
 																		</td>
 																		<td >
@@ -3074,7 +3445,7 @@ const Admin = () => {
 									<>
 										{creditsToShow.filter(cr => cr.status === 'rejected').length > 0 && (
 											<div className='overflow-auto'>
-												<table className="table table-hover h-100 properties-table">
+												<table className="table table-hover h-100">
 													<thead className='table-danger position-sticky top-0 inx-1'>
 														<tr>
 															<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
@@ -3100,7 +3471,7 @@ const Admin = () => {
 																		key={index}
 																		className={`small cursor-default clickDown loan-row`}
 																	>
-																		<td className={`ps-sm-3  border-bottom-3 border-end`}>
+																		<td className={`ps-sm-3 border-bottom-3 border-end`}>
 																			{index + 1}
 																		</td>
 																		<td >
@@ -3249,7 +3620,7 @@ const Admin = () => {
 
 														{/* The plan */}
 														<div className='overflow-auto'>
-															<table className="table table-hover h-100 properties-table">
+															<table className="table table-hover h-100">
 																<thead className='table-primary position-sticky top-0 inx-1'>
 																	<tr>
 																		<th className='ps-sm-3 py-3 text-nowrap text-gray-700 fw-normal'>Tranche</th>
@@ -3462,7 +3833,7 @@ const Admin = () => {
 							{activeTransactionSection === 'withdrawals' && (
 								<>
 									<div className='overflow-auto'>
-										<table className="table table-hover h-100 properties-table">
+										<table className="table table-hover h-100">
 											<thead className='table-warning position-sticky top-0 inx-1'>
 												<tr>
 													<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
@@ -3575,7 +3946,7 @@ const Admin = () => {
 							{/* Deposits table */}
 							{activeTransactionSection === 'deposits' && (
 								<div className='overflow-auto'>
-									<table className="table table-hover h-100 properties-table">
+									<table className="table table-hover h-100">
 										<thead className='table-success position-sticky top-0 inx-1'>
 											<tr>
 												<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
@@ -3629,7 +4000,7 @@ const Admin = () => {
 
 							{activeTransactionSection === 'penalties' && (
 								<div className='overflow-auto'>
-									<table className="table table-hover h-100 properties-table">
+									<table className="table table-hover h-100">
 										<thead className='table-danger position-sticky top-0 inx-1'>
 											<tr>
 												<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
@@ -3645,7 +4016,7 @@ const Admin = () => {
 											<tr
 												className={`small cursor-default clickDown fine-row`}
 											>
-												<td className={`ps-sm-3  border-bottom-3 border-end`}>
+												<td className={`ps-sm-3 border-bottom-3 border-end`}>
 													1
 												</td>
 												<td >
@@ -3682,7 +4053,7 @@ const Admin = () => {
 											<tr
 												className={`small cursor-default clickDown loan-row`}
 											>
-												<td className={`ps-sm-3  border-bottom-3 border-end`}>
+												<td className={`ps-sm-3 border-bottom-3 border-end`}>
 													2
 												</td>
 												<td >
@@ -3804,7 +4175,7 @@ const Admin = () => {
 							{activeReportSection === 'incomeExpenses' && (
 								<>
 									<div className='overflow-auto'>
-										<table className="table table-hover h-100 properties-table">
+										<table className="table table-hover h-100">
 											<thead className='table-success position-sticky top-0 inx-1'>
 												<tr>
 													<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
@@ -3848,7 +4219,7 @@ const Admin = () => {
 							{activeReportSection === 'general' && (
 								<>
 									<div className='overflow-auto'>
-										<table className="table table-hover h-100 properties-table">
+										<table className="table table-hover h-100">
 											<thead className='table-success position-sticky top-0 inx-1'>
 												<tr>
 													<th className='py-3 text-nowrap text-gray-700'>Actif</th>
@@ -4202,9 +4573,8 @@ const Admin = () => {
 
 				<div className="row">
 					{/* Sidebar Navigation */}
-					<nav className={`col-12 col-md-3 col-xl-2 d-md-block border-end overflow-y-auto sidebar ${sideNavbarIsFloated ? 'floated bg-black3' : ''}`} id="sidebarMenu">
-						<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit pt-2 pt-md-3 pb-3 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded-bottom-3' : ''}`}>
-
+					<nav className={`col-12 col-md-3 col-xl-2 px-2 px-sm-5 px-md-0 d-md-block border-end overflow-y-auto sidebar ${sideNavbarIsFloated ? 'floated' : ''}`} id="sidebarMenu">
+						<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit my-2 my-md-0 py-3 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded-4' : ''}`}>
 							<div className="d-flex align-items-center d-md-none mb-3 px-3 pb-2 border-light border-opacity-25">
 								<div className='ms-auto d-grid pb-1'>
 									<span className='ms-auto smaller'>Mugabe Alain</span>
@@ -4214,35 +4584,35 @@ const Admin = () => {
 							</div>
 
 							<ul className="nav flex-column">
-								<li className={`nav-item mb-2 ${activeSection === 'dashboard' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'dashboard' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("dashboard"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<ChartPieSlice size={20} weight='fill' className="me-2" /> Dashboard
 									</button>
 								</li>
-								<li className={`nav-item mb-2 ${activeSection === 'members' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'members' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("members"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Users size={20} weight='fill' className="me-2" /> Members
 									</button>
 								</li>
-								<li className={`nav-item mb-2 ${activeSection === 'savings' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'savings' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("savings"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Coin size={20} weight='fill' className="me-2" /> Savings
 									</button>
 								</li>
-								<li className={`nav-item mb-2 ${activeSection === 'interest' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'interest' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("interest"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Coins size={20} weight='fill' className="me-2" /> Interest
 									</button>
 								</li>
-								<li className={`nav-item mb-2 ${activeSection === 'credits' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'credits' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("credits"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
@@ -4256,21 +4626,21 @@ const Admin = () => {
 										</span>
 									)}
 								</li>
-								<li className={`nav-item mb-2 ${activeSection === 'transactions' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'transactions' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("transactions"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<CashRegister size={20} weight='fill' className="me-2" /> Transactions
 									</button>
 								</li>
-								<li className={`nav-item ${activeSection === 'reports' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 ${activeSection === 'reports' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("reports"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Files size={20} weight='fill' className="me-2" /> Reports
 									</button>
 								</li>
-								{/* <li className={`nav-item mb-2 ${activeSection === 'messages' ? 'active' : ''}`}
+								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'messages' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("messages"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
@@ -4285,7 +4655,7 @@ const Admin = () => {
 
 								<hr />
 
-								<li className={`nav-item mb-2 ${activeSection === 'auditLogs' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'auditLogs' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("auditLogs"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
@@ -4293,7 +4663,7 @@ const Admin = () => {
 									</button>
 								</li>
 
-								<li className={`nav-item mb-2 ${activeSection === 'settings' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'settings' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("settings"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
@@ -4301,7 +4671,7 @@ const Admin = () => {
 									</button>
 								</li>
 
-								<li className={`nav-item mb-3 d-md-none`}>
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-3 d-md-none`}>
 									<button className="nav-link w-100">
 										<SignOut size={20} weight='fill' className="me-2" /> Sign out
 									</button>
