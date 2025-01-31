@@ -1,7 +1,6 @@
 import React from 'react';
 
-const EmptyBox = ({ notFoundMessage, refreshKeyword, refreshFunction, className, fluid }) => {
-    refreshKeyword = refreshKeyword || "Refresh";
+const EmptyBox = ({ notFoundMessage, refreshKeyword = 'Refresh', refreshFunction, className, fluid }) => {
 
     return (
         <div className={`position-relative isolate mx-auto p-3 ${className !== undefined ? className : ''} peak-borders-t info-message`}>
