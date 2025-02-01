@@ -3,19 +3,22 @@ import { useState, useRef } from "react";
 const useCustomDialogs = () => {
     // Toast
     const [showToast, setShowToast] = useState(false);
-    const [toastMessage, setToastMessage] = useState('');
+    const [toastMessage, setToastMessage] = useState('This is a toast message');
     const [toastType, setToastType] = useState('gray-300');
+    const [toastSelfClose, setToastSelfClose] = useState(true);
 
-    const toast = ({ message, type }) => {
+    const toast = ({ message, type, selfClose }) => {
         setShowToast(true);
         setToastMessage(message);
         setToastType(type || 'gray-300');
+        setToastSelfClose(selfClose !== undefined ? selfClose : true);
     };
 
     const resetToast = () => {
         setShowToast(false);
         setToastMessage('');
         setToastType('gray-300');
+        setToastSelfClose(true);
     };
 
     // Confirm Dialog
@@ -88,6 +91,7 @@ const useCustomDialogs = () => {
         setShowToast,
         toastMessage,
         toastType,
+        toastSelfClose,
         toast,
         resetToast,
 
