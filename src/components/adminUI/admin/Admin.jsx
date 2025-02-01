@@ -40,7 +40,9 @@ const Admin = () => {
 		setShowToast,
 		toastMessage,
 		toastType,
+		toastSelfClose,
 		toast,
+		resetToast,
 
 		// Confirm Dialog
 		showConfirmDialog,
@@ -145,9 +147,22 @@ const Admin = () => {
 		fetchMembers();
 	}, []);
 
+	const activeMembers = useMemo(() => (
+		allMembers.filter(m => (m.status !== 'removed' && m.status !== 'inactive'))
+	), [allMembers]);
+
+	const activeAndInactiveMembers = useMemo(() => (
+		allMembers.filter(m => m.status !== 'removed')
+	), [allMembers]);
+
 	const totalMembers = useMemo(() => {
 		return allMembers.length;
 	}, [allMembers]);
+
+	const totalActiveMembers = useMemo(() => {
+		return activeMembers.length;
+	}, [activeMembers]);
+
 
 	// Members statistics
 	const [menCount, setMenCount] = useState(0);
@@ -173,6 +188,35 @@ const Admin = () => {
 			};
 		}
 	}, [allMembers, totalMembers, menCount, womenCount]);
+
+	/**
+	 * Figures
+	 */
+
+	const [allFigures, setAllFigures] = useState({});
+	const [loadingFigures, setLoadingFigures] = useState(false);
+	const [errorLoadingFigures, setErrorLoadingFigures] = useState(false);
+
+	// Fetch figures
+	const fetchFigures = async () => {
+		try {
+			setLoadingFigures(true);
+			const response = await axios.get(`${BASE_URL}/figures`);
+			const data = response.data;
+			setAllFigures(data);
+			setErrorLoadingFigures(null);
+		} catch (error) {
+			setErrorLoadingFigures("Failed to load figures. Click the button to try again.");
+			toast({ message: errorLoadingFigures, type: "warning" });
+			console.error("Error fetching figures:", error);
+		} finally {
+			setLoadingFigures(false);
+		}
+	};
+
+	useEffect(() => {
+		fetchFigures();
+	}, []);
 
 	/**
 	 * Credits
@@ -271,6 +315,13 @@ const Admin = () => {
 	useEffect(() => {
 		fetchRecords();
 	}, []);
+
+	const totalExpenses = useMemo(() => (
+		allRecords
+			.filter(r => r.recordType === 'expense')
+			.reduce((sum, r) => sum + Number(r.recordAmount), 0)
+	), [allRecords]);
+
 	const [activeSection, setActiveSection] = useState("dashboard");
 	// const [activeSection, setActiveSection] = useState("messages");
 	// const [activeSection, setActiveSection] = useState("members");
@@ -295,29 +346,22 @@ const Admin = () => {
 		const [showExportDataDialog, setShowExportDataDialog] = useState(false);
 		const accountingDashboardRef = useRef();
 
-		// const totalCotisation = allMembers.reduce((sum, item) => sum + item.cotisation, 0);
-		// const totalSocial = allMembers.reduce((sum, item) => sum + item.social, 0);
-		const loanDelivered = dashboardData
-			.filter((item) => item.label === "Loan Delivered")
-			.map((item) => item.value);
-		// const interestToReceive = dashboardData
-		// 	.filter((item) => item.label === "Interest Receivable")
-		// 	.map((item) => item.value);
-		const paidCapital = dashboardData
-			.filter((item) => item.label === "Paid Capital")
-			.map((item) => item.value);
-		// const pendingInterest = dashboardData
-		// 	.filter((item) => item.label === "Paid Interest")
-		// 	.map((item) => item.value);
-		const penalties = dashboardData
-			.filter((item) => item.label === "Penalties")
-			.map((item) => item.value);
-		const expenses = dashboardData
-			.filter((item) => item.label === "Expenses")
-			.map((item) => item.value);
-		const balance = dashboardData
-			.filter((item) => item.label === "Balance")
-			.map((item) => item.value);
+		const totalLoanDisbursed = allFigures?.loanDisbursed
+		const totalPaidCapital = allFigures?.paidCapital
+		const totalPenalties = allFigures?.penalties
+		const totalBalance = allFigures?.balance
+
+		const dashboardDT = [
+			{ label: 'Cotisation', value: totalCotisation, },
+			{ label: 'Social', value: totalSocial, },
+			{ label: 'Loan Delivered', value: totalLoanDisbursed, },
+			{ label: 'Paid Interest', value: interestToReceive, },
+			{ label: 'Pending Interest', value: pendingInterest, },
+			{ label: 'Paid Capital', value: totalPaidCapital, },
+			{ label: 'Penalties', value: totalPenalties, },
+			{ label: 'Expenses', value: totalExpenses, },
+			{ label: 'Balance', value: totalBalance, },
+		]
 
 		return (
 			<>
@@ -335,30 +379,45 @@ const Admin = () => {
 							This numerical report provides a financial status overview for IKIMINA INGOBOKA saving management system. It highlights key metrics, including contributions, social funds, loans disbursed, interest receivables, paid capital, and other financial indicators. The report reflects the financial management system's performance, tracking transactions from stakeholder contributions, savings, investments, and other financial activities, all aligned with the system's saving balance and agreements established among its members.
 						</div>
 					</div> */}
-					<div className="row gx-3 gy-4 gy-lg-3 pb-3 rounded-4">
-						{dashboardData.map((item, index) => (
-							<div className="col-md-6 col-lg-4" key={index}>
-								<div className="card py-3 border-0 rounded-0 h-100 border-end border-4 border-primaryColor">
-									<div className="card-body">
-										<h6 className="card-title mb-4 fs-5 text-uppercase fw-bold text-gray-700">
-											{item.label}
-										</h6>
-										<p className="card-text text-primaryColor">
-											{item.label === 'Cotisation' && <CurrencyText amount={totalCotisation} />}
-											{item.label === 'Social' && <CurrencyText amount={totalSocial} />}
-											{item.label === 'Loan Delivered' && <CurrencyText amount={loanDelivered} />}
-											{item.label === 'Paid Interest' && <CurrencyText amount={interestToReceive} />}
-											{item.label === 'Pending Interest' && <CurrencyText amount={pendingInterest} />}
-											{item.label === 'Paid Capital' && <CurrencyText amount={paidCapital} />}
-											{item.label === 'Penalties' && <CurrencyText amount={penalties} />}
-											{item.label === 'Expenses' && <CurrencyText amount={expenses} />}
-											{item.label === 'Balance' && <CurrencyText amount={balance} />}
-										</p>
+					{loadingFigures && (
+						<div className="row gx-3 gy-4 gy-lg-3 pb-3 rounded-4 loading-skeleton">
+							{Array.from({ length: 9 }).map((_, index) => (
+								<div className="col-md-6 col-lg-4" key={index}>
+									<div className="card bg-gray-400 py-3 border-0 rounded-0 h-100">
+										<div className="card-body">
+											<div className="h6 mb-4 p-3 fs-5 bg-gray-200"></div>
+											<p className="p-2 bg-gray-200"></p>
+										</div>
 									</div>
 								</div>
-							</div>
-						))}
-					</div>
+							))}
+						</div>
+					)}
+					{!loadingFigures && errorLoadingFigures && (
+						<FetchError
+							errorMessage={errorLoadingFigures}
+							refreshFunction={() => fetchFigures()}
+							className="mb-5 mt-4"
+						/>
+					)}
+					{!loadingFigures && !errorLoadingFigures && (
+						<div className="row gx-3 gy-4 gy-lg-3 pb-3 rounded-4">
+							{dashboardDT.map((item, index) => (
+								<div className="col-md-6 col-lg-4" key={index}>
+									<div className="card py-3 border-0 rounded-0 h-100 border-end border-4 border-primaryColor">
+										<div className="card-body">
+											<h6 className="card-title mb-4 fs-5 text-uppercase fw-bold text-gray-700">
+												{item.label}
+											</h6>
+											<p className="card-text text-primaryColor">
+												<CurrencyText amount={Number(item.value)} />
+											</p>
+										</div>
+									</div>
+								</div>
+							))}
+						</div>
+					)}
 					<hr />
 					<div>
 						<p className='text'>
@@ -387,7 +446,7 @@ const Admin = () => {
 
 	// Member
 	const Members = () => {
-		const [membersToShow, setMembersToShow] = useState(allMembers);
+		const [membersToShow, setMembersToShow] = useState(activeMembers);
 		const [memberSearchValue, setMemberSearchValue] = useState('');
 		const [showMemberStats, setShowMemberStats] = useState(false);
 
@@ -398,7 +457,7 @@ const Admin = () => {
 			const searchString = normalizedLowercaseString(memberSearchValue).trim();
 
 			if (searchString) {
-				const filteredMembers = allMembers.filter((val) => {
+				const filteredMembers = activeMembers.filter((val) => {
 					return (
 						(val.husbandFirstName &&
 							normalizedLowercaseString(val.husbandFirstName)
@@ -428,7 +487,7 @@ const Admin = () => {
 		}, [memberSearchValue]);
 
 		const resetMembers = () => {
-			setMembersToShow(allMembers);
+			setMembersToShow(activeMembers);
 		}
 
 		// Reset members
@@ -443,6 +502,7 @@ const Admin = () => {
 
 		const [formData, setFormData] = useState({
 			role: '',
+			username: '',
 			husbandFirstName: '',
 			husbandLastName: '',
 			husbandPhone: '',
@@ -456,6 +516,7 @@ const Admin = () => {
 		const resetRegistrationForm = () => {
 			setFormData({
 				role: '',
+				username: '',
 				husbandFirstName: '',
 				husbandLastName: '',
 				husbandPhone: '',
@@ -472,12 +533,6 @@ const Admin = () => {
 		const [autoGeneratePassword, setAutoGeneratePassword] = useState(false);
 		const [registrationPassword, setRegistrationPassword] = useState('');
 
-		useEffect(() => {
-			if (autoGeneratePassword) {
-				setRegistrationPassword('');
-			}
-		}, [autoGeneratePassword]);
-
 		const handleChange = (e) => {
 			const { name, value } = e.target;
 			setFormData((prevData) => ({
@@ -485,6 +540,49 @@ const Admin = () => {
 				[name]: value,
 			}));
 		};
+
+		useEffect(() => {
+			if (autoGeneratePassword) {
+				setRegistrationPassword('');
+			}
+		}, [autoGeneratePassword]);
+
+		// Validate registration
+		const [emailTaken, setEmailTaken] = useState(false);
+		const [usernameTaken, setUsernameTaken] = useState(false);
+		const [phoneNumberTaken, setPhoneNumberTaken] = useState(false);
+		const [canRegisterNewMember, setCanRegisterNewMember] = useState(false);
+
+		// Check for unique data
+		useEffect(() => {
+			const emailExists = allMembers.some(m =>
+				m.husbandEmail === formData.husbandEmail ||
+				m.husbandEmail === formData.wifeEmail ||
+				m.wifeEmail === formData.wifeEmail ||
+				m.wifeEmail === formData.husbandEmail
+			);
+
+			const usernameExists = allMembers.some(m =>
+				normalizedLowercaseString(m.username) === normalizedLowercaseString(formData.username)
+			);
+
+			const phoneNumberExists = allMembers.some(m =>
+				m.husbandPhone === formData.husbandPhone ||
+				m.husbandPhone === formData.wifePhone ||
+				m.wifePhone === formData.wifePhone ||
+				m.wifePhone === formData.husbandPhone
+			);
+
+			// Only update states if values change (prevents redundant re-renders)
+			setEmailTaken(prev => (prev !== emailExists ? emailExists : prev));
+			setUsernameTaken(prev => (prev !== usernameExists ? usernameExists : prev));
+			setPhoneNumberTaken(prev => (prev !== phoneNumberExists ? phoneNumberExists : prev));
+		}, [formData, allMembers]);
+
+		// Allow or block registration
+		useEffect(() => {
+			setCanRegisterNewMember(!(emailTaken || usernameTaken || phoneNumberTaken));
+		}, [emailTaken, usernameTaken, phoneNumberTaken]);
 
 		// Handle registration
 		const handleRegisterNewMember = async (e) => {
@@ -509,7 +607,10 @@ const Admin = () => {
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError('Registration error:', error.response?.data || error.message);
-				toast({ message: `Error: ${error.response?.data.message || 'Registration failed'}`, type: 'warning' });
+				toast({
+					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> {error.response?.data.message || 'Registration failed'}</>,
+					type: 'warning'
+				});
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -517,10 +618,11 @@ const Admin = () => {
 
 		// Edit member data
 		const [showEditMemberForm, setShowEditMemberForm] = useState(false);
-		const [selectedMember, setSelectedMember] = useState(allMembers[0]);
+		const [selectedMember, setSelectedMember] = useState(activeMembers[0]);
 		const [editHeadOfFamily, setEditHeadOfFamily] = useState(true);
 
 		const [editSelectedmemberRole, setEditSelectedmemberRole] = useState('');
+		const [editSelectedmemberUsername, setEditSelectedmemberUsername] = useState('');
 		const [editSelectedmemberFName, setEditSelectedmemberFName] = useState('');
 		const [editSelectedmemberLName, setEditSelectedmemberLName] = useState('');
 		const [editSelectedmemberPhone, setEditSelectedmemberPhone] = useState('');
@@ -528,24 +630,27 @@ const Admin = () => {
 
 		// Togger member editor
 		useEffect(() => {
-			if (showEditMemberForm) {
-				setEditSelectedmemberRole(selectedMember.role);
+			if (showEditMemberForm && selectedMember) {
+				setEditSelectedmemberRole(selectedMember?.role);
 			} else {
-				setEditSelectedmemberRole(selectedMember.role || '');
+				setEditSelectedmemberRole(selectedMember?.role || '');
 			}
 		}, [showEditMemberForm, selectedMember]);
 
 		useEffect(() => {
+			if (selectedMember) {
+				setEditSelectedmemberUsername(selectedMember?.username);
+			}
 			if (editHeadOfFamily) {
-				setEditSelectedmemberFName(selectedMember.husbandFirstName);
-				setEditSelectedmemberLName(selectedMember.husbandLastName);
-				setEditSelectedmemberPhone(selectedMember.husbandPhone);
-				setEditSelectedmemberEmail(selectedMember.husbandEmail);
+				setEditSelectedmemberFName(selectedMember?.husbandFirstName);
+				setEditSelectedmemberLName(selectedMember?.husbandLastName);
+				setEditSelectedmemberPhone(selectedMember?.husbandPhone);
+				setEditSelectedmemberEmail(selectedMember?.husbandEmail);
 			} else {
-				setEditSelectedmemberFName(selectedMember.wifeFirstName || '');
-				setEditSelectedmemberLName(selectedMember.wifeLastName || '');
-				setEditSelectedmemberPhone(selectedMember.wifePhone || '');
-				setEditSelectedmemberEmail(selectedMember.wifeEmail || '');
+				setEditSelectedmemberFName(selectedMember?.wifeFirstName || '');
+				setEditSelectedmemberLName(selectedMember?.wifeLastName || '');
+				setEditSelectedmemberPhone(selectedMember?.wifePhone || '');
+				setEditSelectedmemberEmail(selectedMember?.wifeEmail || '');
 			}
 		}, [selectedMember, editHeadOfFamily]);
 
@@ -592,12 +697,14 @@ const Admin = () => {
 
 			const memberInfo = type === 'husband' ? {
 				role: editSelectedmemberRole,
+				username: editSelectedmemberUsername,
 				husbandFirstName: editSelectedmemberFName,
 				husbandLastName: editSelectedmemberLName,
 				husbandPhone: editSelectedmemberPhone,
 				husbandEmail: editSelectedmemberEmail
 			} : type === 'wife' ? {
 				role: editSelectedmemberRole,
+				username: editSelectedmemberUsername,
 				wifeFirstName: editSelectedmemberFName,
 				wifeLastName: editSelectedmemberLName,
 				wifePhone: editSelectedmemberPhone,
@@ -631,13 +738,16 @@ const Admin = () => {
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError('Error saving changes:', error.response?.data || error.message);
-				toast({ message: `Error: ${error.response?.data.message || 'Couldn\'t save changes. Tyr again'}`, type: 'warning' });
+				toast({
+					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> {error.response?.data.message || 'Couldn\'t save changes. Tyr again'}</>,
+					type: 'warning'
+				});
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
 		};
 
-		// Member financila overview and member removal 
+		// Member financial overview and member removal 
 		const [showMemberFinances, setShowMemberFinances] = useState(false);
 		const [showMemberRemoval, setShowMemberRemoval] = useState(false);
 		const hideMemberFinances = () => {
@@ -646,6 +756,30 @@ const Admin = () => {
 		}
 
 		const [canRemoveMember, setCanRemoveMember] = useState(false);
+
+		const handleRemoveMember = async (email) => {
+			try {
+				setIsWaitingFetchAction(true);
+				const response = await axios.post(`${BASE_URL}/user/remove`, { email });
+
+				// Successfull fetch
+				const data = response.data;
+				toast({ message: data.message, type: "dark", selfClose: false });
+				hideMemberFinances();
+				setErrorWithFetchAction(null);
+				fetchMembers();
+				fetchLoans();
+			} catch (error) {
+				setErrorWithFetchAction(error);
+				cError('Error removing member:', error.response?.data || error.message);
+				toast({
+					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> {error.response?.data.message || 'Couldn\'t remove this member'}</>,
+					type: 'warning',
+				});
+			} finally {
+				setIsWaitingFetchAction(false);
+			}
+		};
 
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
@@ -673,7 +807,7 @@ const Admin = () => {
 								</p>
 								<div className="d-flex align-items-end gap-4 text-gray-600">
 									<div className="position-relative flex-shrink-0 flex-center h-7rem px-3 fw-bold border border-3 border-secondary border-opacity-25 text-primaryColor rounded-pill" style={{ minWidth: '7rem' }}>
-										<span className="display-1 fw-bold"><CountUp end={totalMembers} /> </span> <small className='position-absolute start-50 bottom-0 border border-2 px-2 rounded-pill bg-light'>accounts</small>
+										<span className="display-1 fw-bold"><CountUp end={totalActiveMembers} /> </span> <small className='position-absolute start-50 bottom-0 border border-2 px-2 rounded-pill bg-light'>accounts</small>
 									</div>
 									<ul className="list-unstyled d-flex flex-wrap row-gap-1 column-gap-3 fs-6">
 										<li className='border-start border-dark border-opacity-50 ps-2'>
@@ -867,6 +1001,22 @@ const Admin = () => {
 														/>
 													</div>
 													<div className="mb-3">
+														<label htmlFor="username" className="form-label fw-semibold">Username</label>
+														<input
+															type="text"
+															className="form-control"
+															id="username"
+															name="username"
+															value={formData.username}
+															onChange={handleChange}
+															placeholder="Enter username"
+															required
+														/>
+														{usernameTaken && (
+															<div class="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller"><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Userame already taken</div>
+														)}
+													</div>
+													<div className="mb-3">
 														<label htmlFor="husbandPhone" className="form-label fw-semibold">Phone</label>
 														<input
 															type="text"
@@ -878,6 +1028,9 @@ const Admin = () => {
 															placeholder="Enter phone number"
 															required
 														/>
+														{phoneNumberTaken && (
+															<div class="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller"><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Phone already used</div>
+														)}
 													</div>
 													<div className="mb-3">
 														<label htmlFor="husbandEmail" className="form-label fw-semibold">Email</label>
@@ -891,6 +1044,9 @@ const Admin = () => {
 															placeholder="Enter email"
 															required
 														/>
+														{emailTaken && (
+															<div class="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller"><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Email already used</div>
+														)}
 													</div>
 
 													{/* Password Fields */}
@@ -965,6 +1121,9 @@ const Admin = () => {
 																	onChange={handleChange}
 																	placeholder="Enter phone number"
 																/>
+																{phoneNumberTaken && (
+																	<div class="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller"><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Phone already used</div>
+																)}
 															</div>
 															<div className="mb-3">
 																<label htmlFor="wifeEmail" className="form-label fw-semibold">Wife's Email</label>
@@ -985,6 +1144,7 @@ const Admin = () => {
 													<button
 														type="submit"
 														className="btn btn-sm btn-dark flex-center w-100 mt-3 py-2 px-4 rounded-pill"
+														disabled={!canRegisterNewMember}
 													>
 														Register
 													</button>
@@ -1096,6 +1256,27 @@ const Admin = () => {
 															placeholder={`Eg: ${editHeadOfFamily ? 'Alain' : 'Laetitia'}`}
 															required
 														/>
+													</div>
+													<div className="mb-3">
+														<label htmlFor="memberUsername" className="form-label fw-semibold">Username</label>
+														<input
+															type="text"
+															className="form-control"
+															id="memberUsername"
+															name="memberUsername"
+															value={editSelectedmemberUsername}
+															onChange={e => setEditSelectedmemberUsername(e.target.value)}
+															placeholder="Enter username"
+															required
+														/>
+														{allMembers
+															.find(m => (
+																m.id !== selectedMember.id &&
+																normalizedLowercaseString(m.username) === normalizedLowercaseString(editSelectedmemberUsername)
+															)) && (
+																<div class="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller"><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Userame already taken</div>
+															)
+														}
 													</div>
 													<div className="mb-3">
 														<label htmlFor="memberPhone" className="form-label fw-semibold">Phone</label>
@@ -1373,7 +1554,7 @@ const Admin = () => {
 																				return (
 																					<Fragment key={index} >
 																						<div className='overflow-auto'>
-																							<table className="table table-hover h-100">
+																							<table className="table table-hover h-100 mb-0">
 																								<thead className='table-warning position-sticky top-0 inx-1'>
 																									<tr>
 																										<th className='py-3 text-nowrap text-gray-700'>Cotisation</th>
@@ -1401,7 +1582,7 @@ const Admin = () => {
 																											<CurrencyText amount={selectedLoan.loanPending} />
 																										</td>
 																									</tr>
-																									<tr className="fs-5">
+																									<tr className="bg-transparent">
 																										<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
 																											Decision
 																										</td>
@@ -1416,6 +1597,22 @@ const Admin = () => {
 																									</tr>
 																								</tbody>
 																							</table>
+																							<div className="d-flex">
+																								<button className="col btn btn-sm text-dark w-100 flex-center py-2 border-dark rounded-0 clickDown"
+																									onClick={() => hideMemberFinances()}
+																								>
+																									Cancel
+																								</button>
+																								<button className="col btn btn-sm btn-dark w-100 flex-center py-2 border-dark rounded-0 clickDown"
+																									disabled={(isWaitingFetchAction)}
+																									onClick={() => { handleRemoveMember(selectedMember.husbandEmail); }}
+																								>
+																									{!isWaitingFetchAction ?
+																										<>Remove <UserMinus size={18} className='ms-2' /></>
+																										: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
+																									}
+																								</button>
+																							</div>
 																						</div>
 																					</Fragment>
 																				)
@@ -1425,7 +1622,7 @@ const Admin = () => {
 																) : (
 																	<div className="alert">
 																		<p>
-																			<b>Decision: <UserMinus size={22} weight='fill' className='me-1 opacity-50' /> Removed completely</b>. A member with no credit records can withdraw their cotisation and will be removed from the active member system.
+																			<b>Decision: <UserMinus size={22} weight='fill' className='me-1 opacity-50' /> Removed completely</b>. A member with no credit records can withdraw their cotisation (if any) and will be removed from the active system members.
 																		</p>
 																		<div className="d-flex">
 																			<button className="col btn btn-sm text-dark w-100 flex-center py-2 border-dark rounded-0 clickDown"
@@ -1435,7 +1632,7 @@ const Admin = () => {
 																			</button>
 																			<button className="col btn btn-sm btn-dark w-100 flex-center py-2 border-dark rounded-0 clickDown"
 																				disabled={(isWaitingFetchAction)}
-																				onClick={() => { alert('Finish up'); }}
+																				onClick={() => { handleRemoveMember(selectedMember.husbandEmail); }}
 																			>
 																				{!isWaitingFetchAction ?
 																					<>Remove <UserMinus size={18} className='ms-2' /></>
@@ -1463,7 +1660,7 @@ const Admin = () => {
 
 	// Savings
 	const Savings = () => {
-		const [savingsToShow, setSavingsToShow] = useState(allMembers);
+		const [savingsToShow, setSavingsToShow] = useState(activeMembers);
 		const [savingSearchValue, setSavingSearchValue] = useState('');
 
 		// Search savings
@@ -1473,7 +1670,7 @@ const Admin = () => {
 			const searchString = savingSearchValue.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 			if (searchString !== null && searchString !== undefined && searchString !== '') {
 				// showAllProperties(true);
-				const filteredsavings = allMembers.filter((val) => {
+				const filteredsavings = activeMembers.filter((val) => {
 					return (
 						(val.husbandFirstName &&
 							normalizedLowercaseString(val.husbandFirstName)
@@ -1502,7 +1699,7 @@ const Admin = () => {
 		}, [savingSearchValue]);
 
 		const resetSavings = () => {
-			setSavingsToShow(allMembers);
+			setSavingsToShow(activeMembers);
 		}
 
 		// Reset savings
@@ -1515,7 +1712,7 @@ const Admin = () => {
 		// Add saving
 		const [showAddSavingRecord, setShowAddSavingRecord] = useState(false);
 		const [savingRecordType, setSavingRecordType] = useState('cotisation');
-		const [selectedMember, setSelectedMember] = useState(allMembers[0]);
+		const [selectedMember, setSelectedMember] = useState(activeMembers[0]);
 		const [savingRecordAmount, setSavingRecordAmount] = useState('');
 		const [selectedMonths, setSelectedMonths] = useState([]);
 		const [applyDelayPenalties, setApplyDelayPenalties] = useState(false);
@@ -2053,7 +2250,7 @@ const Admin = () => {
 		const interestPartitionViewRef = useRef();
 
 		const totalShares = 818;
-		const totalBoughtShares = allMembers.reduce((sum, item) => sum + item.shares, 0);
+		const totalBoughtShares = activeMembers.reduce((sum, item) => sum + item.shares, 0);
 		let totalSharesPercentage = 0;
 		let totalMonetaryInterest = 0;
 		let totalInterestReceivable = 0;
@@ -2205,7 +2402,7 @@ const Admin = () => {
 								</tr>
 							</thead>
 							<tbody>
-								{allMembers
+								{activeMembers
 									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
 									.map((item, index) => {
 										const memberNames = `${item.husbandFirstName} ${item.husbandLastName}`;
@@ -2460,7 +2657,7 @@ const Admin = () => {
 
 																		{memberStatus
 																			.map((member, index) => {
-																				const associatedMember = allMembers.find(m => m.id === member.id);
+																				const associatedMember = activeMembers.find(m => m.id === member.id);
 																				const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
 																				return (
 																					<tr
@@ -2555,7 +2752,7 @@ const Admin = () => {
 			const searchString = normalizedLowercaseString(memberSearchValue).trim();
 
 			if (searchString) {
-				const filteredMembers = allMembers.filter((val) => {
+				const filteredMembers = activeAndInactiveMembers.filter((val) => {
 					return (
 						(val.husbandFirstName &&
 							normalizedLowercaseString(val.husbandFirstName)
@@ -2585,7 +2782,7 @@ const Admin = () => {
 		}, [memberSearchValue]);
 
 		const resetMembers = () => {
-			setMembersToShow(allMembers);
+			setMembersToShow(activeAndInactiveMembers);
 		}
 
 		// Reset members
@@ -2757,7 +2954,10 @@ const Admin = () => {
 				const errorMessage = error.response?.data?.message || error.message || "An unknown error occurred";
 				setErrorWithFetchAction(errorMessage);
 				cError("Error applying penalties:", error);
-				toast({ message: errorMessage, type: "danger" });
+				toast({
+					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> {errorMessage}</>,
+					type: 'warning'
+				});
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -3763,7 +3963,7 @@ const Admin = () => {
 			} else if (activeTransactionSection === 'deposits') {
 				setActiveTransactionSectionColor('#a3d5bb75');
 			} else if (activeTransactionSection === 'penalties') {
-				setActiveTransactionSectionColor('#ebc1c575');
+				setActiveTransactionSectionColor('#c1c9eb75');
 			}
 		}, [activeTransactionSection]);
 
@@ -3801,12 +4001,12 @@ const Admin = () => {
 							<h5 className='mb-0 small'>Deposits</h5>
 							<p className='mb-0 fs-75'>( {recordsToShow.filter(cr => cr.recordType === 'deposit').length} )</p>
 						</div>
-						<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-danger border-opacity-25 tab-selector ${activeTransactionSection === 'penalties' ? 'active' : ''} user-select-none ptr clickDown`}
-							style={{ '--_activeColor': '#ebc1c5' }}
+						<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-primary border-opacity-25 tab-selector ${activeTransactionSection === 'penalties' ? 'active' : ''} user-select-none ptr clickDown`}
+							style={{ '--_activeColor': '#c1c9eb' }}
 							onClick={() => { setActiveTransactionSection('penalties'); }}
 						>
 							<h5 className='mb-0 small'>Penalties</h5>
-							<p className='mb-0 fs-75'>( 2 )</p>
+							<p className='mb-0 fs-75'>( {recordsToShow.filter(cr => cr.recordType === 'penalty').length} )</p>
 						</div>
 					</div>
 
@@ -3951,7 +4151,6 @@ const Admin = () => {
 											<tr>
 												<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
 												<th className='py-3 text-nowrap text-gray-700'>Member</th>
-												<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Type</th>
 												<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
 												<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
 												<th className='py-3 text-nowrap text-gray-700'>Date</th>
@@ -3977,7 +4176,53 @@ const Admin = () => {
 																{memberNames}
 															</td>
 															<td>
-																{record.recordType[0].toUpperCase() + record.recordType.slice(1)}
+																<CurrencyText amount={Number(record.recordAmount)} />
+															</td>
+															<td className="text-nowrap">
+																{record.comment}
+															</td>
+															<td style={{ maxWidth: '13rem' }}>
+																<FormatedDate date={record.createdAt} monthFormat='2-digit' />
+															</td>
+														</tr>
+													)
+												})
+											}
+										</tbody>
+									</table>
+								</div>
+							)}
+
+							{activeTransactionSection === 'penalties' && (
+								<div className='overflow-auto'>
+									<table className="table table-hover h-100">
+										<thead className='table-primary position-sticky top-0 inx-1'>
+											<tr>
+												<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+												<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Member</th>
+												<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
+												<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
+												<th className='py-3 text-nowrap text-gray-700'>Date</th>
+											</tr>
+										</thead>
+										<tbody>
+											{recordsToShow
+												.filter(cr => cr.recordType === 'penalty')
+												.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+												.map((record, index) => {
+													const associatedMember = allMembers.find(m => m.id === record.memberId);
+													const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+
+													return (
+														<tr
+															key={index}
+															className="small cursor-default clickDown expense-row"
+														>
+															<td className="ps-sm-3 border-bottom-3 border-end">
+																{index + 1}
+															</td>
+															<td className="text-nowrap">
+																{memberNames}
 															</td>
 															<td>
 																<CurrencyText amount={Number(record.recordAmount)} />
@@ -3990,104 +4235,8 @@ const Admin = () => {
 															</td>
 														</tr>
 													)
-												}
-												)
+												})
 											}
-										</tbody>
-									</table>
-								</div>
-							)}
-
-							{activeTransactionSection === 'penalties' && (
-								<div className='overflow-auto'>
-									<table className="table table-hover h-100">
-										<thead className='table-danger position-sticky top-0 inx-1'>
-											<tr>
-												<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
-												<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Member</th>
-												<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
-												<th className='py-3 text-nowrap text-gray-700'>Date & Interval</th>
-												<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
-												<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Rejection</th>
-												<th className='py-3 text-nowrap text-gray-700'>Action</th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr
-												className={`small cursor-default clickDown fine-row`}
-											>
-												<td className={`ps-sm-3 border-bottom-3 border-end`}>
-													1
-												</td>
-												<td >
-													Alain Mugabe
-												</td>
-												<td className="d-flex flex-column gap-2 text-muted small" >
-													<div>
-														<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
-														<span>10,000,000</span>
-													</div>
-													<div>
-														<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
-														<span>50,000</span>
-													</div>
-												</td>
-												<td className='text-nowrap'>
-													<div className='d-flex flex-column gap-2 smaller'>
-														<span className='fw-bold'>13-11-2024 <CaretRight /> 13-03-2025</span>
-														<span>0 Years, 4 Months, 2 Days</span>
-													</div>
-												</td>
-												<td style={{ maxWidth: '13rem' }}>
-													Demande de credit
-												</td>
-												<td style={{ maxWidth: '13rem' }}>
-													Insufficient balance
-												</td>
-												<td className='text-nowrap fs-75'>
-													<button className='btn btn-sm btn-outline-secondary rounded-0'>
-														<ArrowArcLeft /> Restore
-													</button>
-												</td>
-											</tr>
-											<tr
-												className={`small cursor-default clickDown loan-row`}
-											>
-												<td className={`ps-sm-3 border-bottom-3 border-end`}>
-													2
-												</td>
-												<td >
-													Bonaventure Nzeyimana
-												</td>
-												<td className="d-flex flex-column gap-2 text-muted small" >
-													<div>
-														<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
-														<span>4,000,000</span>
-													</div>
-													<div>
-														<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
-														<span>200,000</span>
-													</div>
-												</td>
-												<td className='text-nowrap'>
-													<div className='d-flex flex-column gap-2 smaller'>
-														<span className='fw-bold'>13-11-2024 <CaretRight /> 13-03-2025</span>
-														<span>0 Years, 4 Months, 2 Days</span>
-														<span>6 tranches</span>
-													</div>
-												</td>
-												<td style={{ maxWidth: '13rem' }}>
-													Payment will be due on 15th each month
-												</td>
-												<td style={{ maxWidth: '13rem' }}>
-													Some reasons
-												</td>
-												<td className='text-nowrap fs-75'>
-													<button className='btn btn-sm btn-outline-secondary rounded-0'>
-														<ArrowArcLeft /> Restore
-													</button>
-												</td>
-											</tr>
 										</tbody>
 									</table>
 								</div>
@@ -4240,7 +4389,7 @@ const Admin = () => {
 													<td></td>
 													<td></td>
 												</tr>
-												{allMembers
+												{activeMembers
 													.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
 													.map((item, index) => {
 														const memberNames = `${item.husbandFirstName} ${item.husbandLastName}`;
@@ -4430,10 +4579,10 @@ const Admin = () => {
 		}
 	}, [allCredits]);
 
-
 	return (
 		<>
-			<MyToast show={showToast} message={toastMessage} type={toastType} selfClose onClose={() => setShowToast(false)} />
+			{/* Toast message */}
+			<MyToast show={showToast} message={toastMessage} type={toastType} selfClose={toastSelfClose} onClose={() => resetToast()} />
 
 			{/* Prompt actions */}
 			<ActionPrompt
