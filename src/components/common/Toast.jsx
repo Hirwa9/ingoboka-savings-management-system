@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
 import { Toast, Button } from 'react-bootstrap';
 
-const MyToast = ({ show, message, type, selfClose, onClose }) => {
-    type = type || 'light';
+const MyToast = ({ show, message, type = 'light', selfClose, onClose }) => {
     let textColor;
 
     // Adjust toast color
@@ -56,9 +55,10 @@ const MyToast = ({ show, message, type, selfClose, onClose }) => {
                 {!selfClose && (
                     <Button
                         variant="close"
+                        style={{border: `1px solid var(--bs-${textColor}) !important`}}
                         size="sm"
                         onClick={onClose}
-                        className="ms-auto ps-2"
+                        className="ms-auto p-2"
                     />
                 )}
             </Toast.Body>
