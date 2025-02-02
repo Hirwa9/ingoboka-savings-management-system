@@ -30,6 +30,7 @@ import '@szhsin/react-menu/dist/index.css';
 import '@szhsin/react-menu/dist/transitions/zoom.css';
 import ContentToggler from '../../common/ContentToggler';
 import DividerText from '../../common/DividerText';
+import { BASE_URL } from '../../../api/axios';
 
 const Admin = () => {
 
@@ -110,8 +111,6 @@ const Admin = () => {
 	/**
 	 * Data
 	*/
-
-	const BASE_URL = 'http://localhost:5000';
 
 	/**
 	 * Members
@@ -1207,20 +1206,20 @@ const Admin = () => {
 												<div className="flex-align-center gap-3 mb-3">
 													<img src={
 														editHeadOfFamily ? (
-															selectedMember.husbandAvatar ? selectedMember.husbandAvatar : '/images/man_avatar_image.jpg'
+															selectedMember?.husbandAvatar ? selectedMember?.husbandAvatar : '/images/man_avatar_image.jpg'
 														) : (
-															selectedMember.wifeAvatar ? selectedMember.wifeAvatar : '/images/woman_avatar_image.jpg'
+															selectedMember?.wifeAvatar ? selectedMember?.wifeAvatar : '/images/woman_avatar_image.jpg'
 														)
 													}
-														alt={`${selectedMember.husbandFirstName.slice(0, 1)}.${selectedMember.husbandLastName}`}
+														alt={`${selectedMember?.husbandFirstName.slice(0, 1)}.${selectedMember?.husbandLastName}`}
 														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
 													/>
 													<div className='fw-semibold smaller'>
 														Edit {
 															editHeadOfFamily ? (
-																selectedMember.husbandFirstName ? `${selectedMember.husbandFirstName} ${selectedMember.husbandLastName}` : 'Not provided'
+																selectedMember?.husbandFirstName ? `${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName}` : 'Not provided'
 															) : (
-																selectedMember.wifeFirstName ? `${selectedMember.wifeFirstName} ${selectedMember.wifeLastName}` : 'wife information'
+																selectedMember?.wifeFirstName ? `${selectedMember?.wifeFirstName} ${selectedMember?.wifeLastName}` : 'wife information'
 															)
 														}
 
@@ -1287,7 +1286,7 @@ const Admin = () => {
 														/>
 														{allMembers
 															.find(m => (
-																m.id !== selectedMember.id &&
+																m.id !== selectedMember?.id &&
 																normalizedLowercaseString(m.username) === normalizedLowercaseString(editSelectedmemberUsername)
 															)) && (
 																<div className="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller"><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Userame already taken</div>
@@ -1321,7 +1320,7 @@ const Admin = () => {
 														/>
 													</div>
 													<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
-														onClick={() => handleEditMemberInfo(selectedMember.id, editHeadOfFamily ? 'husband' : 'wife')}
+														onClick={() => handleEditMemberInfo(selectedMember?.id, editHeadOfFamily ? 'husband' : 'wife')}
 													>
 														{!isWaitingFetchAction ?
 															<>Save changes <FloppyDisk size={18} className='ms-2' /></>
@@ -1343,12 +1342,12 @@ const Admin = () => {
 											<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
 												<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom">
 													<div className='flex-align-center'>
-														<img src={selectedMember.husbandAvatar ? selectedMember.husbandAvatar : '/images/man_avatar_image.jpg'}
-															alt={`${selectedMember.husbandFirstName.slice(0, 1)}.${selectedMember.husbandLastName}`}
+														<img src={selectedMember?.husbandAvatar ? selectedMember?.husbandAvatar : '/images/man_avatar_image.jpg'}
+															alt={`${selectedMember?.husbandFirstName.slice(0, 1)}.${selectedMember?.husbandLastName}`}
 															className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
 														/>
 														<span className='ms-2' style={{ lineHeight: 1 }}>
-															{!showMemberRemoval ? 'Finances of' : 'Remove'} {`${selectedMember.husbandFirstName} ${selectedMember.husbandLastName}`}
+															{!showMemberRemoval ? 'Finances of' : 'Remove'} {`${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName}`}
 														</span>
 													</div>
 													<div onClick={() => hideMemberFinances()}>
@@ -1358,10 +1357,10 @@ const Admin = () => {
 
 												<div className="d-sm-flex mb-3">
 													<div className="position-relative flex-shrink-0 flex-center w-fit h-7rem px-4 fw-bold border border-3 border-secondary border-opacity-25 text-primaryColor rounded-pill" style={{ minWidth: '7rem' }}>
-														<span className="display-3 fw-bold"><CountUp end={selectedMember.shares} duration={0.6} /> </span> <small className='position-absolute start-50 bottom-0 border border-2 px-2 rounded-pill bg-light'>shares</small>
+														<span className="display-3 fw-bold"><CountUp end={selectedMember?.shares} duration={0.6} /> </span> <small className='position-absolute start-50 bottom-0 border border-2 px-2 rounded-pill bg-light'>shares</small>
 													</div>
 													<div className='px-sm-3 py-3 smaller text-gray-700 fw-light'>
-														Below is the financial status of {`${selectedMember.husbandFirstName} ${selectedMember.husbandLastName}`}, as recorded in the IKIMINA INGOBOKA saving management system. This status includes the total personal capital, comprising cotisation and social contributions, along with their credit status.
+														Below is the financial status of {`${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName}`}, as recorded in the IKIMINA INGOBOKA saving management system. This status includes the total personal capital, comprising cotisation and social contributions, along with their credit status.
 													</div>
 												</div>
 
@@ -1400,7 +1399,7 @@ const Admin = () => {
 																			Cotisation
 																		</td>
 																		<td className='text-primary-emphasis'>
-																			<CurrencyText amount={selectedMember.cotisation} />
+																			<CurrencyText amount={selectedMember?.cotisation} />
 																		</td>
 																	</tr>
 																	<tr className={`small credit-row`}
@@ -1409,7 +1408,7 @@ const Admin = () => {
 																			Social
 																		</td>
 																		<td className='text-primary-emphasis'>
-																			<CurrencyText amount={selectedMember.social} />
+																			<CurrencyText amount={selectedMember?.social} />
 																		</td>
 																	</tr>
 																	<tr className={`small credit-row`}
@@ -1418,7 +1417,7 @@ const Admin = () => {
 																			Total
 																		</td>
 																		<td className='text-primary-emphasis fw-bold'>
-																			<CurrencyText amount={selectedMember.cotisation + selectedMember.social} />
+																			<CurrencyText amount={selectedMember?.cotisation + selectedMember?.social} />
 																		</td>
 																	</tr>
 																</tbody>
@@ -1428,17 +1427,17 @@ const Admin = () => {
 														{/* <ul className="list-unstyled text-gray-700 px-2">
 															<li className="py-1 w-100">
 																<span className="flex-align-center">
-																	<b className='fs-5'>{selectedMember.shares} Shares</b>
+																	<b className='fs-5'>{selectedMember?.shares} Shares</b>
 																</span>
 															</li>
 															<li className="py-1 d-table-row">
-																<span className='d-table-cell border-start border-secondary ps-2'>Cotisation:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember.cotisation} /></span>
+																<span className='d-table-cell border-start border-secondary ps-2'>Cotisation:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.cotisation} /></span>
 															</li>
 															<li className="py-1 d-table-row">
-																<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember.social} /></span>
+																<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.social} /></span>
 															</li>
 															<li className="py-1 fs-5 d-table-row">
-																<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember.cotisation + selectedMember.social} /></span>
+																<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.cotisation + selectedMember?.social} /></span>
 															</li>
 														</ul> */}
 													</div>
@@ -1446,9 +1445,9 @@ const Admin = () => {
 													<div className="col mb-5 mb-xl-0">
 														<div className="fs-6 fw-semibold text-primaryColor text-center text-uppercase">Loan status</div>
 														<hr />
-														{allLoans.filter(loan => (loan.memberId === selectedMember.id && loan.loanTaken > 0)).length > 0 ? (
+														{allLoans.filter(loan => (loan.memberId === selectedMember?.id && loan.loanTaken > 0)).length > 0 ? (
 															<>
-																{allLoans.filter(loan => (loan.memberId === selectedMember.id && loan.loanTaken > 0))
+																{allLoans.filter(loan => (loan.memberId === selectedMember?.id && loan.loanTaken > 0))
 																	.map((item, index) => {
 																		const selectedLoan = item;
 																		return (
@@ -1470,13 +1469,13 @@ const Admin = () => {
 																									Loan
 																								</td>
 																								<td>
-																									<CurrencyText amount={selectedLoan.loanTaken} />
+																									<CurrencyText amount={selectedLoan?.loanTaken} />
 																								</td>
 																								<td className='text-primary-emphasis'>
-																									<CurrencyText amount={selectedLoan.loanPaid} />
+																									<CurrencyText amount={selectedLoan?.loanPaid} />
 																								</td>
 																								<td className='text-warning-emphasis'>
-																									<CurrencyText amount={selectedLoan.loanPending} />
+																									<CurrencyText amount={selectedLoan?.loanPending} />
 																								</td>
 																							</tr>
 																							<tr className={`small credit-row`}
@@ -1485,13 +1484,13 @@ const Admin = () => {
 																									Interest
 																								</td>
 																								<td>
-																									<CurrencyText amount={selectedLoan.interestTaken} />
+																									<CurrencyText amount={selectedLoan?.interestTaken} />
 																								</td>
 																								<td className='text-primary-emphasis'>
-																									<CurrencyText amount={selectedLoan.interestPaid} />
+																									<CurrencyText amount={selectedLoan?.interestPaid} />
 																								</td>
 																								<td className='text-warning-emphasis'>
-																									<CurrencyText amount={selectedLoan.interestPending} />
+																									<CurrencyText amount={selectedLoan?.interestPending} />
 																								</td>
 																							</tr>
 																							<tr className={`small credit-row`}
@@ -1500,20 +1499,20 @@ const Admin = () => {
 																									Tranches
 																								</td>
 																								<td>
-																									{selectedLoan.tranchesTaken}
+																									{selectedLoan?.tranchesTaken}
 																								</td>
 																								<td className='text-primary-emphasis'>
-																									{selectedLoan.tranchesPaid}
+																									{selectedLoan?.tranchesPaid}
 																								</td>
 																								<td className='text-warning-emphasis'>
-																									{selectedLoan.tranchesPending}
+																									{selectedLoan?.tranchesPending}
 																								</td>
 																							</tr>
 																						</tbody>
 																					</table>
 																				</div>
 
-																				{allCredits.filter(cr => cr.memberId === selectedMember.id).length > 0 && (
+																				{allCredits.filter(cr => cr.memberId === selectedMember?.id).length > 0 && (
 																					<>
 																						<div className="d-flex">
 																							<div className='col p-2'>
@@ -1521,7 +1520,7 @@ const Admin = () => {
 																								<div className='text-center bg-gray-300'>
 																									<FormatedDate date={allCredits
 																										.sort((a, b) => new Date(a.requestDate) - new Date(b.requestDate))
-																										.filter(cr => cr.memberId === selectedMember.id)[0].requestDate
+																										.filter(cr => cr.memberId === selectedMember?.id)[0].requestDate
 																									} />
 																								</div>
 																							</div>
@@ -1530,7 +1529,7 @@ const Admin = () => {
 																								<div className='text-center bg-gray-300'>
 																									<FormatedDate date={allCredits
 																										.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate))
-																										.filter(cr => cr.memberId === selectedMember.id)[0].requestDate
+																										.filter(cr => cr.memberId === selectedMember?.id)[0].requestDate
 																									} />
 																								</div>
 																							</div>
@@ -1561,12 +1560,12 @@ const Admin = () => {
 																	This member will be removed or deactivated according to their financial status.
 																</p>
 
-																{allLoans.filter(loan => (loan.memberId === selectedMember.id && loan.loanTaken > 0)).length > 0 ? (
+																{allLoans.filter(loan => (loan.memberId === selectedMember?.id && loan.loanTaken > 0)).length > 0 ? (
 																	<>
-																		{allLoans.filter(loan => (loan.memberId === selectedMember.id && loan.loanTaken > 0))
+																		{allLoans.filter(loan => (loan.memberId === selectedMember?.id && loan.loanTaken > 0))
 																			.map((item, index) => {
 																				const selectedLoan = item;
-																				const removeCompletely = (selectedMember.cotisation + selectedMember.social) > selectedLoan.loanPending;
+																				const removeCompletely = (selectedMember?.cotisation + selectedMember?.social) > selectedLoan?.loanPending;
 																				return (
 																					<Fragment key={index} >
 																						<div className='overflow-auto'>
@@ -1583,7 +1582,7 @@ const Admin = () => {
 																								<tbody>
 																									<tr>
 																										<td className={`ps-sm-3 text-primary-emphasis`}>
-																											<CurrencyText amount={selectedMember.cotisation + selectedMember.social} />
+																											<CurrencyText amount={selectedMember?.cotisation + selectedMember?.social} />
 																										</td>
 																										<td>
 																											<div className="text-center">
@@ -1595,7 +1594,7 @@ const Admin = () => {
 																											</div>
 																										</td>
 																										<td className='text-warning-emphasis'>
-																											<CurrencyText amount={selectedLoan.loanPending} />
+																											<CurrencyText amount={selectedLoan?.loanPending} />
 																										</td>
 																									</tr>
 																									<tr className="bg-transparent">
@@ -1630,12 +1629,12 @@ const Admin = () => {
 																													<>
 																														<h5 className='h6 border-bottom mb-3 pb-2'><UserMinus size={25} weight='fill' className='opacity-50' /> Removing this member</h5>
 																														<p className='fw-semibold'>
-																															Are you sure to remove {`${selectedMember.husbandFirstName} ${selectedMember.husbandLastName}`} from the system ?
+																															Are you sure to remove {`${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName}`} from the system ?
 																														</p>
 																													</>
 																												),
 																												type: 'warning',
-																												action: () => handleRemoveMember(selectedMember.husbandEmail),
+																												action: () => handleRemoveMember(selectedMember?.husbandEmail),
 																											});
 																										}
 																									}
@@ -1665,7 +1664,7 @@ const Admin = () => {
 																			</button>
 																			<button className="col btn btn-sm btn-dark w-100 flex-center py-2 border-dark rounded-0 clickDown"
 																				disabled={(isWaitingFetchAction)}
-																				onClick={() => { handleRemoveMember(selectedMember.husbandEmail); }}
+																				onClick={() => { handleRemoveMember(selectedMember?.husbandEmail); }}
 																			>
 																				{!isWaitingFetchAction ?
 																					<>Remove <UserMinus size={18} className='ms-2' /></>
@@ -2052,12 +2051,12 @@ const Admin = () => {
 													</div>
 												</h6>
 												<div className="flex-align-center gap-3 mb-3">
-													<img src={selectedMember.husbandAvatar ? selectedMember.husbandAvatar : '/images/man_avatar_image.jpg'}
-														alt={`${selectedMember.husbandFirstName.slice(0, 1)}.${selectedMember.husbandLastName}`}
+													<img src={selectedMember?.husbandAvatar ? selectedMember?.husbandAvatar : '/images/man_avatar_image.jpg'}
+														alt={`${selectedMember?.husbandFirstName.slice(0, 1)}.${selectedMember?.husbandLastName}`}
 														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
 													/>
 													<div className='smaller'>
-														Add savings for {selectedMember.husbandFirstName} {selectedMember.husbandLastName}
+														Add savings for {selectedMember?.husbandFirstName} {selectedMember?.husbandLastName}
 													</div>
 												</div>
 												<hr />
@@ -2103,7 +2102,7 @@ const Admin = () => {
 															<div className="mb-3">
 																<ul className="list-unstyled d-flex gap-2 flex-wrap">
 																	{['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map((month, index) => {
-																		const monthValue = JSON.parse(selectedMember.annualShares).find((m) => m.month === month);
+																		const monthValue = JSON.parse(selectedMember?.annualShares).find((m) => m.month === month);
 																		const isPaid = monthValue?.paid || false;
 																		const isLate = !isPaid && checkIfLate(month);
 																		const isSelected = selectedMonths.includes(month);
@@ -2171,7 +2170,7 @@ const Admin = () => {
 															Please verify the details before saving. This action is final and cannot be reversed.
 														</p>
 														<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
-															onClick={() => handleAddSaving(selectedMember.id)}
+															onClick={() => handleAddSaving(selectedMember?.id)}
 														>
 															{!isWaitingFetchAction ?
 																<>Save amount <FloppyDisk size={18} className='ms-2' /></>
@@ -2202,28 +2201,28 @@ const Admin = () => {
 													</div>
 												</h6>
 												<div className="flex-align-center gap-3 mb-3">
-													<img src={selectedMember.husbandAvatar ? selectedMember.husbandAvatar : '/images/man_avatar_image.jpg'}
-														alt={`${selectedMember.husbandFirstName.slice(0, 1)}.${selectedMember.husbandLastName}`}
+													<img src={selectedMember?.husbandAvatar ? selectedMember?.husbandAvatar : '/images/man_avatar_image.jpg'}
+														alt={`${selectedMember?.husbandFirstName.slice(0, 1)}.${selectedMember?.husbandLastName}`}
 														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
 													/>
 													<div className='smaller'>
-														Save multiple shares to {selectedMember.husbandFirstName} {selectedMember.husbandLastName}
+														Save multiple shares to {selectedMember?.husbandFirstName} {selectedMember?.husbandLastName}
 													</div>
 												</div>
 												<ul className="list-unstyled text-gray-700 px-2 opacity-75 smaller fst-italic">
 													<li className="py-1 w-100">
 														<span className="flex-align-center">
-															<b className='fs-5'>{selectedMember.shares} Shares</b>
+															<b className='fs-5'>{selectedMember?.shares} Shares</b>
 														</span>
 													</li>
 													<li className="py-1 d-table-row">
-														<span className='d-table-cell border-start border-secondary ps-2'>Cotisation:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember.cotisation} /></span>
+														<span className='d-table-cell border-start border-secondary ps-2'>Cotisation:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.cotisation} /></span>
 													</li>
 													<li className="py-1 d-table-row">
-														<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember.social} /></span>
+														<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.social} /></span>
 													</li>
 													<li className="py-1 fs-5 d-table-row">
-														<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember.cotisation + selectedMember.social} /></span>
+														<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.cotisation + selectedMember?.social} /></span>
 													</li>
 												</ul>
 												<DividerText text="Add new shares" type='gray-300' className="mb-4" />
@@ -2255,7 +2254,7 @@ const Admin = () => {
 															Please verify the details before saving. This action is final and cannot be reversed.
 														</p>
 														<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
-															onClick={() => handleAddMultipleShares(selectedMember.id)}
+															onClick={() => handleAddMultipleShares(selectedMember?.id)}
 														>
 															{!isWaitingFetchAction ?
 																<>Add shares <FloppyDisk size={18} className='ms-2' /></>
@@ -3090,21 +3089,21 @@ const Admin = () => {
 										<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
 											<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom">
 												<div className='flex-align-center'>
-													<img src={selectedMember.husbandAvatar ? selectedMember.husbandAvatar : '/images/man_avatar_image.jpg'}
-														alt={`${selectedMember.husbandFirstName.slice(0, 1)}.${selectedMember.husbandLastName}`}
+													<img src={selectedMember?.husbandAvatar ? selectedMember?.husbandAvatar : '/images/man_avatar_image.jpg'}
+														alt={`${selectedMember?.husbandFirstName.slice(0, 1)}.${selectedMember?.husbandLastName}`}
 														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
 													/>
 													<span className='ms-2' style={{ lineHeight: 1 }}>
-														Credits of {`${selectedMember.husbandFirstName} ${selectedMember.husbandLastName}`}
+														Credits of {`${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName}`}
 													</span>
 												</div>
 												<div onClick={() => { setShowSelectedMemberCredits(false); setShowSelectedMemberCreditRecords(false) }}>
 													<X size={25} className='ptr' />
 												</div>
 											</h6>
-											{allLoans.filter(loan => (loan.memberId === selectedMember.id && loan.loanTaken > 0)).length > 0 ? (
+											{allLoans.filter(loan => (loan.memberId === selectedMember?.id && loan.loanTaken > 0)).length > 0 ? (
 												<>
-													{allLoans.filter(loan => (loan.memberId === selectedMember.id && loan.loanTaken > 0))
+													{allLoans.filter(loan => (loan.memberId === selectedMember?.id && loan.loanTaken > 0))
 														.map((item, index) => {
 															const selectedLoan = item;
 															return (
@@ -3131,13 +3130,13 @@ const Admin = () => {
 																								Loan
 																							</td>
 																							<td>
-																								<CurrencyText amount={selectedLoan.loanTaken} />
+																								<CurrencyText amount={selectedLoan?.loanTaken} />
 																							</td>
 																							<td className='text-primary-emphasis'>
-																								<CurrencyText amount={selectedLoan.loanPaid} />
+																								<CurrencyText amount={selectedLoan?.loanPaid} />
 																							</td>
 																							<td className='text-warning-emphasis'>
-																								<CurrencyText amount={selectedLoan.loanPending} />
+																								<CurrencyText amount={selectedLoan?.loanPending} />
 																							</td>
 																						</tr>
 																						<tr className={`small credit-row`}
@@ -3146,13 +3145,13 @@ const Admin = () => {
 																								Interest
 																							</td>
 																							<td>
-																								<CurrencyText amount={selectedLoan.interestTaken} />
+																								<CurrencyText amount={selectedLoan?.interestTaken} />
 																							</td>
 																							<td className='text-primary-emphasis'>
-																								<CurrencyText amount={selectedLoan.interestPaid} />
+																								<CurrencyText amount={selectedLoan?.interestPaid} />
 																							</td>
 																							<td className='text-warning-emphasis'>
-																								<CurrencyText amount={selectedLoan.interestPending} />
+																								<CurrencyText amount={selectedLoan?.interestPending} />
 																							</td>
 																						</tr>
 																						<tr className={`small credit-row`}
@@ -3161,20 +3160,20 @@ const Admin = () => {
 																								Tranches
 																							</td>
 																							<td>
-																								{selectedLoan.tranchesTaken}
+																								{selectedLoan?.tranchesTaken}
 																							</td>
 																							<td className='text-primary-emphasis'>
-																								{selectedLoan.tranchesPaid}
+																								{selectedLoan?.tranchesPaid}
 																							</td>
 																							<td className='text-warning-emphasis'>
-																								{selectedLoan.tranchesPending}
+																								{selectedLoan?.tranchesPending}
 																							</td>
 																						</tr>
 																					</tbody>
 																				</table>
 																			</div>
 
-																			{allCredits.filter(cr => cr.memberId === selectedMember.id).length > 0 && (
+																			{allCredits.filter(cr => cr.memberId === selectedMember?.id).length > 0 && (
 																				<>
 																					<div className="d-flex">
 																						<div className='col p-2'>
@@ -3182,7 +3181,7 @@ const Admin = () => {
 																							<div className='text-center bg-gray-300'>
 																								<FormatedDate date={allCredits
 																									.sort((a, b) => new Date(a.requestDate) - new Date(b.requestDate))
-																									.filter(cr => cr.memberId === selectedMember.id)[0].requestDate
+																									.filter(cr => cr.memberId === selectedMember?.id)[0].requestDate
 																								} />
 																							</div>
 																						</div>
@@ -3191,7 +3190,7 @@ const Admin = () => {
 																							<div className='text-center bg-gray-300'>
 																								<FormatedDate date={allCredits
 																									.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate))
-																									.filter(cr => cr.memberId === selectedMember.id)[0].requestDate
+																									.filter(cr => cr.memberId === selectedMember?.id)[0].requestDate
 																								} />
 																							</div>
 																						</div>
@@ -3202,7 +3201,7 @@ const Admin = () => {
 
 																		{/* Loan payment form */}
 																		<div className='col col-xl-5 member-loan-payment'>
-																			{selectedLoan.loanPending > 0 ? (
+																			{selectedLoan?.loanPending > 0 ? (
 																				<>
 																					<div className="fs-6 fw-semibold text-primaryColor text-center text-uppercase">Payment</div>
 																					<hr />
@@ -3212,7 +3211,7 @@ const Admin = () => {
 																								<div className="col mb-2 ps-2 mb-sm-0 border-start border-secondary border-opacity-50">
 																									<div className='small mb-sm-3'>Remaining Loan</div>
 																									<div className="px-2 text-danger-emphasis">
-																										<CurrencyText amount={selectedLoan.loanPending} />
+																										<CurrencyText amount={selectedLoan?.loanPending} />
 																									</div>
 																								</div>
 																								<div className='col'>
@@ -3223,7 +3222,7 @@ const Admin = () => {
 																									/>
 																								</div>
 																							</div>
-																							{payLoanAmount > Number(selectedLoan.loanPending) && (
+																							{payLoanAmount > Number(selectedLoan?.loanPending) && (
 																								<div className='form-text d-flex gap-2 bg-danger-subtle mt-2 p-2 rounded-bottom-4'>
 																									<Warning />
 																									<span className='fs-75'>Amount to pay cannot be grater than the remaining amount</span>
@@ -3231,13 +3230,13 @@ const Admin = () => {
 																							)}
 																						</div>
 
-																						{selectedLoan.interestPending > 0 && (
+																						{selectedLoan?.interestPending > 0 && (
 																							<div className='mb-3'>
 																								<div className="d-sm-flex px-1">
 																									<div className="col mb-2 ps-2 mb-sm-0 border-start border-secondary border-opacity-50">
 																										<div className='small mb-sm-3'>Remaining Interest</div>
 																										<div className="px-2 text-danger-emphasis">
-																											<CurrencyText amount={selectedLoan.interestPending} />
+																											<CurrencyText amount={selectedLoan?.interestPending} />
 																										</div>
 																									</div>
 																									<div className='col'>
@@ -3248,7 +3247,7 @@ const Admin = () => {
 																										/>
 																									</div>
 																								</div>
-																								{payInterestAmount > Number(selectedLoan.interestPending) && (
+																								{payInterestAmount > Number(selectedLoan?.interestPending) && (
 																									<div className='form-text d-flex gap-2 bg-danger-subtle mt-2 p-2 rounded-bottom-4'>
 																										<Warning />
 																										<span className='fs-75'>Amount to pay cannot be grater than the remaining amount</span>
@@ -3262,7 +3261,7 @@ const Admin = () => {
 																								<div className="col mb-2 ps-2 mb-sm-0 border-start border-secondary border-opacity-50">
 																									<div className='small mb-sm-3'>Remaining Traches</div>
 																									<div className="px-2 text-danger-emphasis">
-																										{selectedLoan.tranchesPending}
+																										{selectedLoan?.tranchesPending}
 																									</div>
 																								</div>
 																								<div className='col'>
@@ -3273,7 +3272,7 @@ const Admin = () => {
 																									/>
 																								</div>
 																							</div>
-																							{payTranchesAmount > Number(selectedLoan.tranchesPending) && (
+																							{payTranchesAmount > Number(selectedLoan?.tranchesPending) && (
 																								<div className='form-text d-flex gap-2 bg-danger-subtle mt-2 p-2 rounded-bottom-4'>
 																									<Warning />
 																									<span className='fs-75'>Amount to pay cannot be grater than the remaining amount</span>
@@ -3290,12 +3289,12 @@ const Admin = () => {
 																						</button>
 																						<button className="col btn btn-sm btn-dark w-100 flex-center py-2 border-dark rounded-0 clickDown"
 																							disabled={(
-																								payLoanAmount > Number(selectedLoan.loanPending)
-																								|| payInterestAmount > Number(selectedLoan.interestPending)
-																								|| payTranchesAmount > Number(selectedLoan.tranchesPending)
+																								payLoanAmount > Number(selectedLoan?.loanPending)
+																								|| payInterestAmount > Number(selectedLoan?.interestPending)
+																								|| payTranchesAmount > Number(selectedLoan?.tranchesPending)
 																								|| isWaitingFetchAction
 																							)}
-																							onClick={() => { handeLoanPaymemnt(selectedLoan.id); }}
+																							onClick={() => { handeLoanPaymemnt(selectedLoan?.id); }}
 																						>
 																							{!isWaitingFetchAction ?
 																								<>Save payment <FloppyDisk size={18} className='ms-2' /></>
@@ -3343,7 +3342,7 @@ const Admin = () => {
 																					</div>
 
 																					<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="applyPenaltyBtn"
-																						onClick={() => handleApplyCreditPenalty(selectedMember.id)}
+																						onClick={() => handleApplyCreditPenalty(selectedMember?.id)}
 																					>
 																						{!isWaitingFetchAction ?
 																							<>Apply penalty <Gavel size={18} className='ms-2' /></>
@@ -3360,7 +3359,7 @@ const Admin = () => {
 																	<ContentToggler
 																		state={showSelectedMemberCreditRecords}
 																		setState={setShowSelectedMemberCreditRecords}
-																		text={<>Credit records for {selectedMember.husbandFirstName}</>}
+																		text={<>Credit records for {selectedMember?.husbandFirstName}</>}
 																		className="ms-auto"
 																	/>
 
@@ -3380,7 +3379,7 @@ const Admin = () => {
 																					</thead>
 																					<tbody>
 
-																						{allCredits.filter(cr => (cr.memberId === selectedMember.id && cr.status === 'approved'))
+																						{allCredits.filter(cr => (cr.memberId === selectedMember?.id && cr.status === 'approved'))
 																							.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 																							.map((credit, index) => {
 																								const associatedMember = allMembers.find(m => m.id === credit.memberId);

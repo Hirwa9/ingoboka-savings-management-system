@@ -25,6 +25,7 @@ import BarGraph from '../../chartJS/BarGraph';
 import EmptyBox from '../../common/EmptyBox';
 import ContentToggler from '../../common/ContentToggler';
 import DividerText from '../../common/DividerText';
+import { BASE_URL } from '../../../api/axios';
 
 const UserUI = () => {
 
@@ -111,8 +112,6 @@ const UserUI = () => {
 	/**
 	 * Data
 	*/
-
-	const BASE_URL = 'http://localhost:5000';
 
 	/**
 	 * Members
@@ -244,7 +243,7 @@ const UserUI = () => {
 			const response = await axios.get(`${BASE_URL}/credits`);
 			const data = response.data;
 			setAllCredits(data);
-			setCreditsToShow(data.filter(cr => cr.memberId === signedUser.id));
+			setCreditsToShow(data.filter(cr => cr?.memberId === signedUser?.id));
 			setErrorLoadingCredits(null);
 		} catch (error) {
 			setErrorLoadingCredits("Failed to load credits. Click the button to try again.");
@@ -1273,12 +1272,12 @@ const UserUI = () => {
 													</div>
 												</h6>
 												<div className="flex-align-center gap-3 mb-3">
-													<img src={selectedMember.husbandAvatar ? selectedMember.husbandAvatar : '/images/man_avatar_image.jpg'}
-														alt={`${selectedMember.husbandFirstName.slice(0, 1)}.${selectedMember.husbandLastName}`}
+													<img src={selectedMember?.husbandAvatar ? selectedMember?.husbandAvatar : '/images/man_avatar_image.jpg'}
+														alt={`${selectedMember?.husbandFirstName.slice(0, 1)}.${selectedMember?.husbandLastName}`}
 														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
 													/>
 													<div className='smaller'>
-														Add savings for {selectedMember.husbandFirstName} {selectedMember.husbandLastName}
+														Add savings for {selectedMember?.husbandFirstName} {selectedMember?.husbandLastName}
 													</div>
 												</div>
 												<hr />
@@ -1324,7 +1323,7 @@ const UserUI = () => {
 															<div className="mb-3">
 																<ul className="list-unstyled d-flex gap-2 flex-wrap">
 																	{['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map((month, index) => {
-																		const monthValue = JSON.parse(selectedMember.annualShares).find((m) => m.month === month);
+																		const monthValue = JSON.parse(selectedMember?.annualShares).find((m) => m.month === month);
 																		const isPaid = monthValue?.paid || false;
 																		const isLate = !isPaid && checkIfLate(month);
 																		const isSelected = selectedMonths.includes(month);
@@ -1392,7 +1391,7 @@ const UserUI = () => {
 															Please verify the details before saving. This action is final and cannot be reversed.
 														</p>
 														<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
-															onClick={() => handleAddSaving(selectedMember.id)}
+															onClick={() => handleAddSaving(selectedMember?.id)}
 														>
 															{!isWaitingFetchAction ?
 																<>Save amount <FloppyDisk size={18} className='ms-2' /></>
@@ -1423,28 +1422,28 @@ const UserUI = () => {
 													</div>
 												</h6>
 												<div className="flex-align-center gap-3 mb-3">
-													<img src={selectedMember.husbandAvatar ? selectedMember.husbandAvatar : '/images/man_avatar_image.jpg'}
-														alt={`${selectedMember.husbandFirstName.slice(0, 1)}.${selectedMember.husbandLastName}`}
+													<img src={selectedMember?.husbandAvatar ? selectedMember?.husbandAvatar : '/images/man_avatar_image.jpg'}
+														alt={`${selectedMember?.husbandFirstName.slice(0, 1)}.${selectedMember?.husbandLastName}`}
 														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
 													/>
 													<div className='smaller'>
-														Save multiple shares to {selectedMember.husbandFirstName} {selectedMember.husbandLastName}
+														Save multiple shares to {selectedMember?.husbandFirstName} {selectedMember?.husbandLastName}
 													</div>
 												</div>
 												<ul className="list-unstyled text-gray-700 px-2 opacity-75 smaller fst-italic">
 													<li className="py-1 w-100">
 														<span className="flex-align-center">
-															<b className='fs-5'>{selectedMember.shares} Shares</b>
+															<b className='fs-5'>{selectedMember?.shares} Shares</b>
 														</span>
 													</li>
 													<li className="py-1 d-table-row">
-														<span className='d-table-cell border-start border-secondary ps-2'>Cotisation:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember.cotisation} /></span>
+														<span className='d-table-cell border-start border-secondary ps-2'>Cotisation:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.cotisation} /></span>
 													</li>
 													<li className="py-1 d-table-row">
-														<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember.social} /></span>
+														<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.social} /></span>
 													</li>
 													<li className="py-1 fs-5 d-table-row">
-														<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember.cotisation + selectedMember.social} /></span>
+														<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.cotisation + selectedMember?.social} /></span>
 													</li>
 												</ul>
 												<DividerText text="Add new shares" type='gray-300' className="mb-4" />
@@ -1476,7 +1475,7 @@ const UserUI = () => {
 															Please verify the details before saving. This action is final and cannot be reversed.
 														</p>
 														<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
-															onClick={() => handleAddMultipleShares(selectedMember.id)}
+															onClick={() => handleAddMultipleShares(selectedMember?.id)}
 														>
 															{!isWaitingFetchAction ?
 																<>Add shares <FloppyDisk size={18} className='ms-2' /></>
@@ -1746,7 +1745,7 @@ const UserUI = () => {
 	// Credit
 	const Credit = () => {
 		const [activeLoanSection, setActiveLoanSection] = useState(
-			allCredits.filter(cr => (cr.memberId === signedUser.id && cr.status === 'pending')).length > 0
+			allCredits.filter(cr => (cr?.memberId === signedUser?.id && cr.status === 'pending')).length > 0
 				? 'pending'
 				: 'approved'
 		);
@@ -1816,7 +1815,7 @@ const UserUI = () => {
 
 		useEffect(() => {
 			if (selectedCredit.length !== 0) {
-				const id = selectedCredit.memberId;
+				const id = selectedCredit?.memberId;
 				setAssociatedMember(allMembers.filter(m => m.id === id));
 			}
 		}, [selectedCredit,]);
@@ -1979,7 +1978,7 @@ const UserUI = () => {
 			try {
 				const creditPayment = constructCreditPayment();
 				const payload = {
-					memberId: signedUser.id, // Make sure this is retrieved correctly
+					memberId: signedUser?.id, // Make sure this is retrieved correctly
 					creditAmount,
 					requestDate: new Date().toISOString().split('T')[0], // Today’s date
 					dueDate,
@@ -2043,7 +2042,7 @@ const UserUI = () => {
 						<div className="mb-3">
 							<div className="d-flex justify-content-lg-between gap-2 mt-3 overflow-auto">
 								{membersToShow
-									.filter(m => m.id === signedUser.id)
+									.filter(m => m.id === signedUser?.id)
 									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
 									.map((member, index) => (
 										<div key={index} className='w-4rem ptr clickDown'
@@ -2073,21 +2072,21 @@ const UserUI = () => {
 										<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
 											<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom">
 												<div className='flex-align-center'>
-													<img src={selectedMember.husbandAvatar ? selectedMember.husbandAvatar : '/images/man_avatar_image.jpg'}
-														alt={`${selectedMember.husbandFirstName.slice(0, 1)}.${selectedMember.husbandLastName}`}
+													<img src={selectedMember?.husbandAvatar ? selectedMember?.husbandAvatar : '/images/man_avatar_image.jpg'}
+														alt={`${selectedMember?.husbandFirstName.slice(0, 1)}.${selectedMember?.husbandLastName}`}
 														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
 													/>
 													<span className='ms-2' style={{ lineHeight: 1 }}>
-														Credits of {`${selectedMember.husbandFirstName} ${selectedMember.husbandLastName}`}
+														Credits of {`${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName}`}
 													</span>
 												</div>
 												<div onClick={() => { setShowSelectedMemberCredits(false); setShowSelectedMemberCreditRecords(false) }}>
 													<X size={25} className='ptr' />
 												</div>
 											</h6>
-											{allLoans.filter(loan => (loan.memberId === selectedMember.id && loan.loanTaken > 0)).length > 0 ? (
+											{allLoans.filter(loan => (loan?.memberId === selectedMember?.id && loan?.loanTaken > 0)).length > 0 ? (
 												<>
-													{allLoans.filter(loan => (loan.memberId === selectedMember.id && loan.loanTaken > 0))
+													{allLoans.filter(loan => (loan?.memberId === selectedMember?.id && loan?.loanTaken > 0))
 														.map((item, index) => {
 															const selectedLoan = item;
 															return (
@@ -2114,13 +2113,13 @@ const UserUI = () => {
 																								Loan
 																							</td>
 																							<td>
-																								<CurrencyText amount={selectedLoan.loanTaken} />
+																								<CurrencyText amount={selectedLoan?.loanTaken} />
 																							</td>
 																							<td className='text-primary-emphasis'>
-																								<CurrencyText amount={selectedLoan.loanPaid} />
+																								<CurrencyText amount={selectedLoan?.loanPaid} />
 																							</td>
 																							<td className='text-warning-emphasis'>
-																								<CurrencyText amount={selectedLoan.loanPending} />
+																								<CurrencyText amount={selectedLoan?.loanPending} />
 																							</td>
 																						</tr>
 																						<tr className={`small credit-row`}
@@ -2129,13 +2128,13 @@ const UserUI = () => {
 																								Interest
 																							</td>
 																							<td>
-																								<CurrencyText amount={selectedLoan.interestTaken} />
+																								<CurrencyText amount={selectedLoan?.interestTaken} />
 																							</td>
 																							<td className='text-primary-emphasis'>
-																								<CurrencyText amount={selectedLoan.interestPaid} />
+																								<CurrencyText amount={selectedLoan?.interestPaid} />
 																							</td>
 																							<td className='text-warning-emphasis'>
-																								<CurrencyText amount={selectedLoan.interestPending} />
+																								<CurrencyText amount={selectedLoan?.interestPending} />
 																							</td>
 																						</tr>
 																						<tr className={`small credit-row`}
@@ -2144,20 +2143,20 @@ const UserUI = () => {
 																								Tranches
 																							</td>
 																							<td>
-																								{selectedLoan.tranchesTaken}
+																								{selectedLoan?.tranchesTaken}
 																							</td>
 																							<td className='text-primary-emphasis'>
-																								{selectedLoan.tranchesPaid}
+																								{selectedLoan?.tranchesPaid}
 																							</td>
 																							<td className='text-warning-emphasis'>
-																								{selectedLoan.tranchesPending}
+																								{selectedLoan?.tranchesPending}
 																							</td>
 																						</tr>
 																					</tbody>
 																				</table>
 																			</div>
 
-																			{allCredits.filter(cr => cr.memberId === selectedMember.id).length > 0 && (
+																			{allCredits.filter(cr => cr?.memberId === selectedMember?.id).length > 0 && (
 																				<>
 																					<div className="d-flex">
 																						<div className='col p-2'>
@@ -2165,7 +2164,7 @@ const UserUI = () => {
 																							<div className='text-center bg-gray-300'>
 																								<FormatedDate date={allCredits
 																									.sort((a, b) => new Date(a.requestDate) - new Date(b.requestDate))
-																									.filter(cr => cr.memberId === selectedMember.id)[0].requestDate
+																									.filter(cr => cr?.memberId === selectedMember?.id)[0].requestDate
 																								} />
 																							</div>
 																						</div>
@@ -2174,7 +2173,7 @@ const UserUI = () => {
 																							<div className='text-center bg-gray-300'>
 																								<FormatedDate date={allCredits
 																									.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate))
-																									.filter(cr => cr.memberId === selectedMember.id)[0].requestDate
+																									.filter(cr => cr?.memberId === selectedMember?.id)[0].requestDate
 																								} />
 																							</div>
 																						</div>
@@ -2210,7 +2209,7 @@ const UserUI = () => {
 																						</tr>
 																					</thead>
 																					<tbody>
-																						{allCredits.filter(cr => (cr.memberId === selectedMember.id && cr.status === 'approved'))
+																						{allCredits.filter(cr => (cr?.memberId === selectedMember?.id && cr.status === 'approved'))
 																							.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 																							.map((credit, index) => {
 																								const associatedMember = allMembers.find(m => m.id === credit.memberId);
@@ -2419,7 +2418,7 @@ const UserUI = () => {
 
 								{activeLoanSection === 'approved' && (
 									<>
-										{creditsToShow.filter(cr => cr.status === 'approved').length > 0 && (
+										{creditsToShow.filter(cr => cr.status === 'approved').length > 0 ? (
 											<div className='overflow-auto'>
 												<table className="table table-hover h-100">
 													<thead className='table-success position-sticky top-0 inx-1'>
@@ -2487,9 +2486,7 @@ const UserUI = () => {
 													</tbody>
 												</table>
 											</div>
-										)}
-										{/* Zero content - no credits */}
-										{creditsToShow.filter(cr => cr.status === 'approved').length === 0 && (
+										) : (
 											<NotFound
 												notFoundMessage="No credit found"
 												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
@@ -2644,7 +2641,7 @@ const UserUI = () => {
 																				<b className='fw-semibold me-1'>Credit N°:</b> {
 																					creditsToShow
 																						.sort((a, b) => new Date(a.requestDate) - new Date(b.requestDate))
-																						.filter(cr => cr.memberId === associatedMember[0].id)
+																						.filter(cr => cr?.memberId === associatedMember[0].id)
 																						.findIndex(cr => cr.id === selectedCredit.id) + 1
 																				}
 																			</li>
@@ -3262,7 +3259,7 @@ const UserUI = () => {
 														const memberSocial = item.social;
 														const memberBalance = memberCostisation + memberSocial;
 
-														const memberCredits = allLoans.find(loan => loan.memberId === item.id);
+														const memberCredits = allLoans.find(loan => loan?.memberId === item.id);
 														const pendingCredit = memberCredits.loanPending;
 
 														totalCotisationsAndShares += memberBalance;
@@ -3425,8 +3422,8 @@ const UserUI = () => {
 				</Card>
 			</Container>
 		);
-	} else if (signedUser.id) {
-		if (restrictedStatus.includes(signedUser.status)) {
+	} else if (signedUser?.id) {
+		if (restrictedStatus.includes(signedUser?.status)) {
 			return (
 				<Container className="d-flex justify-content-center align-items-center vh-100">
 					<Card className="text-center p-4 shadow-lg" style={{ maxWidth: "400px" }}>
@@ -3516,12 +3513,12 @@ const UserUI = () => {
 					</div>
 					<div className="d-flex align-items-center me-3 border-light border-opacity-25">
 						<div className='ms-auto d-grid pb-1'>
-							<span className='ms-auto smaller'>{signedUser.husbandFirstName}</span>
-							<span className='ms-auto fs-70 opacity-75 text-capitalize' style={{ lineHeight: 1 }}>{signedUser.role}</span>
+							<span className='ms-auto smaller'>{signedUser?.husbandFirstName}</span>
+							<span className='ms-auto fs-70 opacity-75 text-capitalize' style={{ lineHeight: 1 }}>{signedUser?.role}</span>
 						</div>
 						<Menu menuButton={
 							<MenuButton className="border-0 p-0">
-								<img src={signedUser.husbandAvatar} alt="" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 d-none d-md-block border border-3 border-light bg-light rounded-circle ptr' />
+								<img src={signedUser?.husbandAvatar} alt="" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 d-none d-md-block border border-3 border-light bg-light rounded-circle ptr' />
 							</MenuButton>
 						} transition>
 							<MenuItem onClick={() => { setActiveSection('settings') }}>
@@ -3539,67 +3536,66 @@ const UserUI = () => {
 				<div className="row">
 					{/* Sidebar Navigation */}
 					<nav className={`col-12 col-md-3 col-xl-2 px-2 px-sm-5 px-md-0 d-md-block border-end overflow-y-auto sidebar ${sideNavbarIsFloated ? 'floated' : ''}`} id="sidebarMenu">
-						<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit pt-2 pt-md-3 pb-3 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'peak-borders-b' : ''}`}>
-
+						<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit my-2 my-md-0 py-3 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded-4' : ''}`}>
 							<div className="d-flex align-items-center d-md-none mb-3 px-3 pb-2 border-bottom border-light border-opacity-25">
 								<div className='ms-auto d-grid pb-1'>
-									<span className='ms-auto smaller'>{`${signedUser.husbandFirstName} ${signedUser.husbandLastName}`}</span>
-									<span className='ms-auto fs-70 opacity-75' style={{ lineHeight: 1 }}>{signedUser.role}</span>
+									<span className='ms-auto smaller'>{`${signedUser?.husbandFirstName} ${signedUser?.husbandLastName}`}</span>
+									<span className='ms-auto fs-70 opacity-75' style={{ lineHeight: 1 }}>{signedUser?.role}</span>
 								</div>
-								<img src={signedUser.husbandAvatar} alt="User" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 border border-3 border-secondary bg-gray-600 rounded-circle' />
+								<img src={signedUser?.husbandAvatar} alt="User" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 border border-3 border-secondary bg-gray-600 rounded-circle' />
 							</div>
 
 							<ul className="nav flex-column">
-								<li className={`nav-item mb-2 ${activeSection === 'dashboard' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'dashboard' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("dashboard"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<ChartPieSlice size={20} weight='fill' className="me-2" /> Dashboard
 									</button>
 								</li>
-								<li className={`nav-item mb-2 ${activeSection === 'members' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'members' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("members"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Users size={20} weight='fill' className="me-2" /> Members
 									</button>
 								</li>
-								<li className={`nav-item mb-2 ${activeSection === 'savings' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'savings' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("savings"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Coin size={20} weight='fill' className="me-2" /> Savings
 									</button>
 								</li>
-								<li className={`nav-item mb-2 ${activeSection === 'interest' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'interest' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("interest"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Coins size={20} weight='fill' className="me-2" /> Interest
 									</button>
 								</li>
-								<li className={`nav-item mb-2 ${activeSection === 'credits' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'credits' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("credits"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Blueprint size={20} weight='fill' className="me-2" /> Credits
 									</button>
 								</li>
-								<li className={`nav-item mb-2 ${activeSection === 'transactions' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'transactions' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("transactions"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<CashRegister size={20} weight='fill' className="me-2" /> Expenses
 									</button>
 								</li>
-								<li className={`nav-item ${activeSection === 'reports' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 ${activeSection === 'reports' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("reports"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Files size={20} weight='fill' className="me-2" /> Reports
 									</button>
 								</li>
-								{/* <li className={`nav-item mb-2 ${activeSection === 'messages' ? 'active' : ''}`}
+								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'messages' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("messages"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
@@ -3614,7 +3610,7 @@ const UserUI = () => {
 
 								<hr />
 
-								<li className={`nav-item mb-2 ${activeSection === 'auditLogs' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'auditLogs' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("auditLogs"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
@@ -3622,7 +3618,7 @@ const UserUI = () => {
 									</button>
 								</li>
 
-								<li className={`nav-item mb-2 ${activeSection === 'settings' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'settings' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("settings"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
@@ -3630,7 +3626,7 @@ const UserUI = () => {
 									</button>
 								</li>
 
-								<li className={`nav-item mb-3 d-md-none`}>
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-3 d-md-none`}>
 									<button className="nav-link w-100">
 										<SignOut size={20} weight='fill' className="me-2" /> Sign out
 									</button>
