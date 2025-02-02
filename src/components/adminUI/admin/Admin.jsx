@@ -3,13 +3,13 @@ import axios from 'axios';
 import { Button, Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, EscalatorUp, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, GreaterThan, Info, LessThan, List, Minus, Notebook, Pen, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, UserFocus, UserMinus, Users, Warning, WarningCircle, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, EscalatorUp, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, GreaterThan, HandCoins, Info, LessThan, List, Minus, Notebook, Pen, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, UserFocus, UserMinus, Users, Warning, WarningCircle, X } from '@phosphor-icons/react';
 import { dashboardData, expensesTypes, generalReport, incomeExpenses, memberRoles } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
 import LoadingIndicator from '../../LoadingIndicator';
-import { cError, cLog, formatDate, normalizedLowercaseString, printDatesInterval } from '../../../scripts/myScripts';
+import { cError, cLog, fncPlaceholder, formatDate, normalizedLowercaseString, printDatesInterval } from '../../../scripts/myScripts';
 import FormatedDate from '../../common/FormatedDate';
 import FetchError from '../../common/FetchError';
 import useCustomDialogs from '../../common/hooks/useCustomDialogs';
@@ -124,6 +124,16 @@ const Admin = () => {
 
 	const totalCotisation = allMembers.reduce((sum, m) => (sum + (m.shares * 20000)), 0);
 	const totalSocial = allMembers.reduce((sum, m) => sum + m.social, 0);
+
+	const accountantNames = useMemo(() => {
+		const member = allMembers.find(m => (m.role === 'accountant'));
+		return `${member?.husbandLastName} ${member?.husbandFirstName}`;
+	}, [allMembers]);
+
+	const accountantAvatar = useMemo(() => {
+		const member = allMembers.find(m => (m.role === 'accountant'));
+		return member?.husbandAvatar;
+	}, [allMembers]);
 
 	// Fetch members
 	const fetchMembers = async () => {
@@ -374,7 +384,7 @@ const Admin = () => {
 						<hr className='flex-grow-1 my-0' />
 					</div>
 					{/* <div className="d-lg-flex align-items-center">
-						<img src="images/dashboard_visual.png" alt="" className='col-md-5' />
+						<img src="/images/dashboard_visual.png" alt="" className='col-md-5' />
 						<div className='alert mb-4 rounded-0 smaller fw-light'>
 							This numerical report provides a financial status overview for IKIMINA INGOBOKA saving management system. It highlights key metrics, including contributions, social funds, loans disbursed, interest receivables, paid capital, and other financial indicators. The report reflects the financial management system's performance, tracking transactions from stakeholder contributions, savings, investments, and other financial activities, all aligned with the system's saving balance and agreements established among its members.
 						</div>
@@ -421,7 +431,7 @@ const Admin = () => {
 					<hr />
 					<div>
 						<p className='text'>
-							Done on <FormatedDate date={new Date()} locale='en-CA' monthFormat='long' hour12Format={true} className="fw-semibold" /> by IKIMINA INGOBOKA Accountant, Alain Mugabe.
+							Done on <FormatedDate date={new Date()} locale='en-CA' monthFormat='long' hour12Format={true} className="fw-semibold" /> by IKIMINA INGOBOKA Accountant, {accountantNames}.
 						</p>
 					</div>
 				</div>
@@ -640,19 +650,19 @@ const Admin = () => {
 		useEffect(() => {
 			if (selectedMember) {
 				setEditSelectedmemberUsername(selectedMember?.username);
+				if (editHeadOfFamily) {
+					setEditSelectedmemberFName(selectedMember?.husbandFirstName);
+					setEditSelectedmemberLName(selectedMember?.husbandLastName);
+					setEditSelectedmemberPhone(selectedMember?.husbandPhone);
+					setEditSelectedmemberEmail(selectedMember?.husbandEmail);
+				} else {
+					setEditSelectedmemberFName(selectedMember?.wifeFirstName || '');
+					setEditSelectedmemberLName(selectedMember?.wifeLastName || '');
+					setEditSelectedmemberPhone(selectedMember?.wifePhone || '');
+					setEditSelectedmemberEmail(selectedMember?.wifeEmail || '');
+				}
 			}
-			if (editHeadOfFamily) {
-				setEditSelectedmemberFName(selectedMember?.husbandFirstName);
-				setEditSelectedmemberLName(selectedMember?.husbandLastName);
-				setEditSelectedmemberPhone(selectedMember?.husbandPhone);
-				setEditSelectedmemberEmail(selectedMember?.husbandEmail);
-			} else {
-				setEditSelectedmemberFName(selectedMember?.wifeFirstName || '');
-				setEditSelectedmemberLName(selectedMember?.wifeLastName || '');
-				setEditSelectedmemberPhone(selectedMember?.wifePhone || '');
-				setEditSelectedmemberEmail(selectedMember?.wifeEmail || '');
-			}
-		}, [selectedMember, editHeadOfFamily]);
+		}, [selectedMember, editHeadOfFamily, showEditMemberForm]);
 
 		const [showAddImageForm, setShowAddImageForm] = useState(false);
 		const [imageFile, setImageFile] = useState(null);
@@ -876,19 +886,23 @@ const Admin = () => {
 										</div>
 
 										<div className="position-absolute top-0 start-0 ms-3 translate-middle-y flex-align-center gap-2">
-											<Menu menuButton={<MenuButton className="btn btn-sm bg-gray-300 text-700 flex-align-center"><CaretDown className="me-1" /> More</MenuButton>} transition>
+											<Menu menuButton={
+												<MenuButton className="btn btn-sm bg-gray-300 text-700 flex-align-center">
+													<CaretDown className="me-1" /> More
+												</MenuButton>
+											} transition>
 												<MenuItem onClick={() => { setSelectedMember(member); setShowMemberFinances(true); }}>
-													<Coins weight='fill' className="me-2 opacity-50" /> Finances</MenuItem>
+													<Coins weight='fill' className="me-2 opacity-50" /> Finances
+												</MenuItem>
 												<MenuItem onClick={() => { setSelectedMember(member); setShowEditMemberForm(true); }}>
 													<Pen weight='fill' className="me-2 opacity-50" /> Edit
 												</MenuItem>
 												<MenuDivider />
 												<MenuItem onClick={() => { setSelectedMember(member); setShowMemberFinances(true); setShowMemberRemoval(true); }} className='text-danger'>
-													<UserMinus weight='fill' className="me-2 opacity-50" />Remove
+													<UserMinus weight='fill' className="me-2 opacity-50" />Leaving
 												</MenuItem>
 											</Menu>
 										</div>
-
 
 										<div className="px-lg-2">
 											<h5 className="mb-3 fs-4">{`${member.husbandFirstName} ${member.husbandLastName}`}</h5>
@@ -951,8 +965,9 @@ const Admin = () => {
 														<X size={25} className='ptr' />
 													</div>
 												</h6>
-												<div className='alert alert-primary rounded-0 smaller'>
-													Enter primary details for the new member. You can update their financial details later.
+												<div className='alert alert-primary grid-center mb-4 rounded-0 smaller'>
+													<p className='mb-0'>Enter primary details for the new member. You can update their financial details later.</p>
+													<CaretDown size={35} weight='light' className='p-2' />
 												</div>
 
 												{/* The form */}
@@ -1013,7 +1028,7 @@ const Admin = () => {
 															required
 														/>
 														{usernameTaken && (
-															<div class="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller"><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Userame already taken</div>
+															<div className="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller"><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Userame already taken</div>
 														)}
 													</div>
 													<div className="mb-3">
@@ -1029,7 +1044,7 @@ const Admin = () => {
 															required
 														/>
 														{phoneNumberTaken && (
-															<div class="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller"><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Phone already used</div>
+															<div className="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller"><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Phone already used</div>
 														)}
 													</div>
 													<div className="mb-3">
@@ -1045,7 +1060,7 @@ const Admin = () => {
 															required
 														/>
 														{emailTaken && (
-															<div class="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller"><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Email already used</div>
+															<div className="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller"><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Email already used</div>
 														)}
 													</div>
 
@@ -1122,7 +1137,7 @@ const Admin = () => {
 																	placeholder="Enter phone number"
 																/>
 																{phoneNumberTaken && (
-																	<div class="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller"><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Phone already used</div>
+																	<div className="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller"><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Phone already used</div>
 																)}
 															</div>
 															<div className="mb-3">
@@ -1170,10 +1185,11 @@ const Admin = () => {
 														<X size={25} className='ptr' />
 													</div>
 												</h6>
-												<div className="mb-3">
-													<p className="small text-center">
-														Select whose information to edit.
-													</p>
+												<div className="mb-4">
+													<div className='alert alert-primary grid-center mb-4 rounded-0 smaller'>
+														<p className='mb-0'>Select whose information to edit and continue.</p>
+														<CaretDown size={35} weight='light' className='p-2' />
+													</div>
 													<ul className="list-unstyled d-flex">
 														<li className={`col-6 px-2 py-1 text-center small border-2 ${editHeadOfFamily ? 'border-bottom border-primaryColor text-primaryColor' : ''} ptr clickDown`}
 															onClick={() => { setEditHeadOfFamily(true); }}
@@ -1199,7 +1215,7 @@ const Admin = () => {
 														alt={`${selectedMember.husbandFirstName.slice(0, 1)}.${selectedMember.husbandLastName}`}
 														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
 													/>
-													<div className='smaller'>
+													<div className='fw-semibold smaller'>
 														Edit {
 															editHeadOfFamily ? (
 																selectedMember.husbandFirstName ? `${selectedMember.husbandFirstName} ${selectedMember.husbandLastName}` : 'Not provided'
@@ -1274,7 +1290,7 @@ const Admin = () => {
 																m.id !== selectedMember.id &&
 																normalizedLowercaseString(m.username) === normalizedLowercaseString(editSelectedmemberUsername)
 															)) && (
-																<div class="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller"><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Userame already taken</div>
+																<div className="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller"><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Userame already taken</div>
 															)
 														}
 													</div>
@@ -1550,7 +1566,7 @@ const Admin = () => {
 																		{allLoans.filter(loan => (loan.memberId === selectedMember.id && loan.loanTaken > 0))
 																			.map((item, index) => {
 																				const selectedLoan = item;
-																				const removeCompletely = selectedMember.cotisation > selectedLoan.loanPending;
+																				const removeCompletely = (selectedMember.cotisation + selectedMember.social) > selectedLoan.loanPending;
 																				return (
 																					<Fragment key={index} >
 																						<div className='overflow-auto'>
@@ -1567,14 +1583,14 @@ const Admin = () => {
 																								<tbody>
 																									<tr>
 																										<td className={`ps-sm-3 text-primary-emphasis`}>
-																											<CurrencyText amount={selectedMember.cotisation} />
+																											<CurrencyText amount={selectedMember.cotisation + selectedMember.social} />
 																										</td>
 																										<td>
 																											<div className="text-center">
 																												{removeCompletely ? (
-																													<GreaterThan size={35} />
+																													<GreaterThan size={25} />
 																												) : (
-																													<LessThan size={35} />
+																													<LessThan size={25} />
 																												)}
 																											</div>
 																										</td>
@@ -1587,11 +1603,13 @@ const Admin = () => {
 																											Decision
 																										</td>
 																										<td className='text-primary-emphasis small'>
-																											{removeCompletely ? (
-																												<span className="flex-align-center"><UserMinus size={22} weight='fill' className='me-1 opacity-50' /> Removed completely</span>
-																											) : (
-																												<span className="flex-align-center"><UserFocus size={22} weight='fill' className='me-1 opacity-50' /> Stays under credit records</span>
-																											)}
+																											<div className="flex-center gap-2">
+																												{removeCompletely ? (
+																													<span className="flex-align-center"><UserMinus size={22} weight='fill' className='me-1 opacity-50' /> Member is removed completely</span>
+																												) : (
+																													<span className="flex-align-center"><UserFocus size={22} weight='fill' className='me-1 opacity-50' /> Member stays under credit records</span>
+																												)}
+																											</div>
 																										</td>
 																										<td></td>
 																									</tr>
@@ -1605,7 +1623,22 @@ const Admin = () => {
 																								</button>
 																								<button className="col btn btn-sm btn-dark w-100 flex-center py-2 border-dark rounded-0 clickDown"
 																									disabled={(isWaitingFetchAction)}
-																									onClick={() => { handleRemoveMember(selectedMember.husbandEmail); }}
+																									onClick={
+																										() => {
+																											customConfirmDialog({
+																												message: (
+																													<>
+																														<h5 className='h6 border-bottom mb-3 pb-2'><UserMinus size={25} weight='fill' className='opacity-50' /> Removing this member</h5>
+																														<p className='fw-semibold'>
+																															Are you sure to remove {`${selectedMember.husbandFirstName} ${selectedMember.husbandLastName}`} from the system ?
+																														</p>
+																													</>
+																												),
+																												type: 'warning',
+																												action: () => handleRemoveMember(selectedMember.husbandEmail),
+																											});
+																										}
+																									}
 																								>
 																									{!isWaitingFetchAction ?
 																										<>Remove <UserMinus size={18} className='ms-2' /></>
@@ -1909,7 +1942,7 @@ const Admin = () => {
 				<div className="mb-3">
 					<h2 className='text-appColor'><Coin weight='fill' className="me-1 opacity-50" /> Savings panel</h2>
 					<div className="d-lg-flex align-items-center">
-						<img src="images/savings_visual.png" alt="" className='col-md-5' />
+						<img src="/images/savings_visual.png" alt="" className='col-md-5' />
 						<div className='alert mb-4 rounded-0 smaller fw-light'>
 							Below is a comprehensive overview of each member's or family's savings balance, accompanied by the total number of shares they hold. This information provides a clear and organized view of individual contributions and associated ownership stakes, ensuring transparency and easy tracking of savings progress.
 						</div>
@@ -2117,7 +2150,7 @@ const Admin = () => {
 													{savingRecordType === 'cotisation' && applyDelayPenalties && delayedMonths > 0 && (
 														<div className="mb-3 p-2 form-text bg-danger-subtle rounded">
 															<p className='mb-2 small text-danger-emphasis'>
-																This also applies a fine of <CurrencyText amount={1000} /> for each of the delayed months.
+																This applies a fine of <CurrencyText amount={1000} /> for each of the delayed months.
 															</p>
 															<ul className="list-unstyled d-flex gap-2 flex-wrap mb-0 mb-0">
 																{selectedMonths
@@ -2364,7 +2397,7 @@ const Admin = () => {
 				<div className="mb-3">
 					<h2 className='text-appColor'><Coins weight='fill' className="me-1 opacity-50" /> Interest panel</h2>
 					<div className="d-lg-flex align-items-center">
-						<img src="images/interests_visual.png" alt="" className='d-none d-lg-block col-md-5' />
+						<img src="/images/interests_visual.png" alt="" className='d-none d-lg-block col-md-5' />
 						<div className='alert mb-4 rounded-0 smaller fw-light'>
 							This panel provides an organized summary of interest earnings distributed to each member or family, based on their ownership shares. It ensures transparency by displaying individual share percentages, monetary interest amounts, and overall totals, offering members a clear understanding of their returns and fostering accountability.
 						</div>
@@ -2809,6 +2842,37 @@ const Admin = () => {
 				setAssociatedMember(allMembers.filter(m => m.id === id));
 			}
 		}, [selectedCredit,]);
+
+		// handle approving a credit
+		const approveCreditRequest = async (id) => {
+			try {
+				setIsWaitingFetchAction(true);
+				const response = await fetch(`${BASE_URL}/credit/${id}/approve`, {
+					method: 'PATCH',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ status: 'approved' }),
+				});
+
+				// Fetch error
+				if (!response.ok) {
+					const errorData = await response.json();
+					throw new Error(errorData.message || 'Error approving credit request');
+				}
+
+				// Successful fetch
+				const data = await response.json();
+				toast({ message: data.message, type: "success" });
+				resetConfirmDialog();
+				setErrorWithFetchAction(null);
+				fetchCredits();
+			} catch (error) {
+				setErrorWithFetchAction(error);
+				cError("Error approving credit:", error);
+				toast({ message: error.message, type: "danger" });
+			} finally {
+				setIsWaitingFetchAction(false);
+			}
+		};
 
 		// handle rejecting a credit
 		const rejectCreditRequest = async (id) => {
@@ -3509,7 +3573,32 @@ const Admin = () => {
 																			<div className="dim-100 d-flex">
 																				<button className='btn btn-sm text-primary-emphasis border-primary border-opacity-25 mb-auto rounded-0'
 																					onClick={
-																						() => { alert('Aprove credit') }
+																						() => {
+																							if (Number(allFigures?.balance) < Number(credit.creditAmount)) {
+																								toast({
+																									message:
+																										<>
+																											<WarningCircle size={22} weight='fill' className='me-1 opacity-50' />
+																											<span className="ms-1">Insufficient balance. <CurrencyText amount={Number(allFigures?.balance)} smallCurrency className="fw-semibold ms-1" />. Credit can not be approved.</span>
+																										</>,
+																									type: "warning",
+																									selfClose: false,
+																								});
+																							} else {
+																								customConfirmDialog({
+																									message: (
+																										<>
+																											<h5 className='h6 border-bottom mb-3 pb-2 text-uppercase'><HandCoins size={25} weight='fill' className='opacity-50' /> Approve credit request</h5>
+																											<p className='text-warning'>
+																												This will approve a credit of <CurrencyText amount={Number(credit.creditAmount)} /> requested by {memberNames}.<br /><br />Are you sure to continue?
+																											</p>
+																										</>
+																									),
+																									type: 'gray-800',
+																									action: () => approveCreditRequest(credit.id),
+																								});
+																							}
+																						}
 																					}
 																				>
 																					<Check /> Approve
@@ -3521,12 +3610,13 @@ const Admin = () => {
 																								{
 																									message: (
 																										<>
-																											<h5 className='h6 border-bottom mb-3 pb-2'><ReceiptX size={25} weight='fill' className='opacity-50' /> Reject Credit Request</h5>
+																											<h5 className='h6 border-bottom mb-3 pb-2 text-uppercase'><ReceiptX size={25} weight='fill' className='opacity-50' /> Reject credit request</h5>
 																											<p>
 																												Provide a reason for rejecting this request and any helpful feedback.
 																											</p>
 																										</>
 																									),
+																									type: 'gray-800',
 																									inputType: 'textarea',
 																									action: () => rejectCreditRequest(credit.id),
 																									placeholder: 'Rejection message',
@@ -3977,7 +4067,7 @@ const Admin = () => {
 						</div>
 					</div>
 					<div className="d-lg-flex align-items-center">
-						<img src="images/transactions_visual.png" alt="" className='d-none d-lg-block col-md-5' />
+						<img src="/images/transactions_visual.png" alt="" className='d-none d-lg-block col-md-5' />
 						<div className='alert mb-4 rounded-0 smaller fw-light'>
 							The transactions panel provides a detailed record of all financial activities, ensuring complete transparency and accountability. Here, you can track and review logs of deposits, withdrawals/expenses, and penalties, offering a comprehensive view of each member's financial transactions for easy monitoring and management.
 						</div>
@@ -4275,7 +4365,7 @@ const Admin = () => {
 				<div className="mb-3">
 					<h2 className='text-appColor'><Files weight='fill' className="me-1 opacity-50" /> Report panel</h2>
 					<div className="d-lg-flex align-items-center">
-						<img src="images/reports_visual.png" alt="" className='d-none d-lg-block col-md-5' />
+						<img src="/images/reports_visual.png" alt="" className='d-none d-lg-block col-md-5' />
 						<div className='alert mb-4 rounded-0 smaller fw-light'>
 							The reports panel provides detailed insights into financial activities, including breakdowns of income and expenses and an overview of members' financial status. It also offers export options for further analysis and use.
 						</div>
@@ -4466,7 +4556,7 @@ const Admin = () => {
 								<CashRegister size={30} weight='duotone' className='me-2 opacity-50' />
 								<div className='border-start border-secondary border-opacity-25 ps-2'>
 									<p className='mb-0'>Created using IKIMINA INGOBOKA system</p>
-									<p>Done by <b>Accountant Alain Mugabe</b></p>
+									<p>Done by <b>Accountant {accountantNames}</b></p>
 								</div>
 							</div>
 						</div>
@@ -4622,7 +4712,7 @@ const Admin = () => {
 			<header className="navbar navbar-light sticky-top flex-md-nowrap py-0 admin-header">
 				<div className='nav-item navbar-brand col-12 col-md-3 col-xl-2 d-flex align-items-center me-0 px-2'>
 					<div className="me-2 logo">
-						<img src="logo.png" alt="logo" className="rounded-circle logo"></img>
+						<img src="/logo.png" alt="logo" className="rounded-circle logo"></img>
 					</div>
 					<small className='fs-70 text-gray-400'>
 						INGOBOKA
@@ -4650,17 +4740,26 @@ const Admin = () => {
 									style={{ animation: adminHasNewNotifications ? 'shakeX 10s infinite' : 'unset' }}
 								/>
 							</button>
-							<button className="nav-link px-2 text-gray-600 rounded-pill clickDown" title='Sign out' >
-								<SignOut size={20} />
-							</button>
 						</div>
 					</div>
 					<div className="d-flex align-items-center me-3 border-light border-opacity-25">
 						<div className='ms-auto d-grid pb-1'>
-							<span className='ms-auto smaller'>Mugabe Alain</span>
+							<span className='ms-auto smaller'>{accountantNames}</span>
 							<span className='ms-auto fs-70 opacity-75' style={{ lineHeight: 1 }}>Accountant</span>
 						</div>
-						<img src="images/members/m_alain.jpg" alt="User" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 d-none d-md-block border border-3 border-light bg-light rounded-circle' />
+						<Menu menuButton={
+							<MenuButton className="border-0 p-0">
+								<img src={accountantAvatar} alt="" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 d-none d-md-block border border-3 border-light bg-light rounded-circle ptr' />
+							</MenuButton>
+						} transition>
+							<MenuItem onClick={() => { setActiveSection('settings') }}>
+								<Gear weight='fill' className="me-2 opacity-50" /> Settings
+							</MenuItem>
+							<MenuDivider />
+							<MenuItem onClick={() => { fncPlaceholder() }}>
+								<SignOut weight='fill' className="me-2 opacity-50" /> Sign out
+							</MenuItem>
+						</Menu>
 					</div>
 				</div>
 			</header>
@@ -4726,10 +4825,10 @@ const Admin = () => {
 						<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit my-2 my-md-0 py-3 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded-4' : ''}`}>
 							<div className="d-flex align-items-center d-md-none mb-3 px-3 pb-2 border-light border-opacity-25">
 								<div className='ms-auto d-grid pb-1'>
-									<span className='ms-auto smaller'>Mugabe Alain</span>
+									<span className='ms-auto smaller'>{accountantNames}</span>
 									<span className='ms-auto fs-70 opacity-75' style={{ lineHeight: 1 }}>Accountant</span>
 								</div>
-								<img src="images/members/m_alain.jpg" alt="User" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 border border-3 border-secondary bg-gray-600 rounded-circle' />
+								<img src={accountantAvatar} alt="User" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 border border-3 border-secondary bg-gray-600 rounded-circle' />
 							</div>
 
 							<ul className="nav flex-column">
@@ -4833,7 +4932,6 @@ const Admin = () => {
 					<div className="col-md-9 col-xl-10 ms-sm-auto px-md-4 py-2">
 						{renderContent()}
 					</div>
-
 				</div>
 
 				{/* Fixed components */}
