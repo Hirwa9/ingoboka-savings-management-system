@@ -9,6 +9,7 @@ import $ from 'jquery';
 import { SignIn, UserCircleDashed, Wallet } from '@phosphor-icons/react';
 import useCustomDialogs from '../common/hooks/useCustomDialogs';
 
+const BASE_URL = 'http://localhost:5000';
 
 const Login = () => {
 
@@ -30,21 +31,22 @@ const Login = () => {
      * Login
     */
 
-    const [email, setEmail] = useState();
+    const [emailOrUsername, setEmailOrUsername] = useState();
     const [password, setPassword] = useState();
 
     // Handle sign in
 
     const handleSignIn = async (e) => {
         e.preventDefault();
-        if (!isValidEmail(email)) {
-            return alert('Enter a valid email address.');
+        if (!emailOrUsername || !password) {
+            return toast({ message: 'Please fill in all fields.', type: 'warning' });
         }
+
         try {
-            const response = await fetch(`http://localhost:5000/login`, {
-                method: 'PUT',
+            const response = await fetch(`${BASE_URL}/login`, {
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ emailOrUsername, password }) // Send both email and username field
             });
 
             if (!response.ok) {
@@ -52,33 +54,27 @@ const Login = () => {
             }
 
             const data = await response.json();
-            toast({ message: data.message, type: 'success' });
+            toast({ message: data.message || "Login successful", type: 'success' });
 
-            // Authentication code
-            if (data.success) {
-                const { type } = data.user; // Assuming the server sends back user type
+            // Authentication handling
+            if (data.accessToken) {
+                const { id, type } = data.user;
 
                 if (type === "admin") {
                     navigate("/admin");
                 } else if (type === "member") {
-                    navigate("/user");
+                    navigate(`/user/${id}`);
                 } else {
-                    toast({ message: "Unknown user type. Please contact support.", type: "error" });
+                    toast({ message: "Unknown user type. Please contact support.", type: "warning" });
                 }
             } else {
                 toast({ message: "Invalid credentials. Please try again.", type: "warning" });
             }
         } catch (error) {
-            if (error.response) {
-                console.error(error.response.data.message);
-                toast({ message: error.response.data.message, type: 'warning' });
-            } else {
-                console.error(error.message);
-                toast({ message: "An error occurred. Please try again.", type: "error" });
-            }
+            console.error(error.message);
+            toast({ message: "An error occurred. Please try again.", type: "warning" });
         }
     };
-
 
     // Handle input's UI
     // Handle input changes
@@ -106,7 +102,7 @@ const Login = () => {
                                 Your savings management system ...
                             </p>
                             <div className='d-none d-lg-block'>
-                                <img src="images/saving_illustration.png" alt="" className='mt-5 col-7' />
+                                <img src="/images/saving_illustration.png" alt="" className='mt-5 col-7' />
 
                             </div>
                         </div>
@@ -124,15 +120,14 @@ const Login = () => {
                                 <form onSubmit={handleSignIn}>
                                     <div className={`form-input-element`}>
                                         <input
-                                            type="email"
-                                            id={signInId + "Email"}
-                                            // id="signInEmail"
+                                            type="text" // Changed from email to text to allow both email and username
+                                            id={signInId + "EmailOrUsername"}
                                             className="form-control form-control-lg"
-                                            value={email}
+                                            value={emailOrUsername}
                                             required
-                                            onChange={e => { handleChange(e); setEmail(e.target.value) }}
+                                            onChange={e => { handleChange(e); setEmailOrUsername(e.target.value) }}
                                         />
-                                        <label htmlFor={signInId + "Email"} className="form-label">Email</label>
+                                        <label htmlFor={signInId + "EmailOrUsername"} className="form-label">Email or Username</label>
                                     </div>
                                     <div className={`form-input-element`}>
                                         <input
