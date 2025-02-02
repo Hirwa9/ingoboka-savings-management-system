@@ -40,10 +40,13 @@ const Pages = () => {
                     <Admin />
                 } />
                 {/* User */}
-                <Route path="/user/:userId" element={
+                {/* <Route path="/user/:userId" element={
                     <ProtectedRoute>
                         <User />
                     </ProtectedRoute>
+                } /> */}
+                <Route path="/user/:userId" element={
+                    <User />
                 } />
             </Routes>
             {/* Conditionally render the Footer */}
