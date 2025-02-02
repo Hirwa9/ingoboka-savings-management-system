@@ -220,3 +220,8 @@ export const cLog = (data) => {
 export const cError = (data) => {
     return console.error(data);
 };
+
+// Console error
+export const fncPlaceholder = () => {
+    return alert('Finish up');
+};
