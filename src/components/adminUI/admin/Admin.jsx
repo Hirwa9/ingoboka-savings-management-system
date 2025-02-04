@@ -3,8 +3,8 @@ import axios from 'axios';
 import { Button, Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, EscalatorUp, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, GreaterThan, HandCoins, Info, LessThan, List, Minus, Notebook, Pen, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, UserFocus, UserMinus, Users, Warning, WarningCircle, X } from '@phosphor-icons/react';
-import { dashboardData, expensesTypes, generalReport, incomeExpenses, memberRoles } from '../../../data/data';
+import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, ChatTeardropText, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, EscalatorUp, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, GreaterThan, HandCoins, Info, LessThan, List, Minus, Notebook, Pen, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, UserFocus, UserMinus, Users, Warning, WarningCircle, X } from '@phosphor-icons/react';
+import { expensesTypes, generalReport, incomeExpenses, memberRoles } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
@@ -30,7 +30,7 @@ import '@szhsin/react-menu/dist/index.css';
 import '@szhsin/react-menu/dist/transitions/zoom.css';
 import ContentToggler from '../../common/ContentToggler';
 import DividerText from '../../common/DividerText';
-import { BASE_URL } from '../../../api/axios';
+import { BASE_URL, Axios } from '../../../api/api';
 
 const Admin = () => {
 
@@ -38,11 +38,13 @@ const Admin = () => {
 	const {
 		// Toast
 		showToast,
-		setShowToast,
 		toastMessage,
 		toastType,
 		toastSelfClose,
 		toast,
+		successToast,
+		warningToast,
+		messageToast,
 		resetToast,
 
 		// Confirm Dialog
@@ -138,14 +140,14 @@ const Admin = () => {
 	const fetchMembers = async () => {
 		try {
 			setLoadingMembers(true);
-			const response = await axios.get(`${BASE_URL}/users`);
+			const response = await Axios.get(`/users`);
 			const data = response.data;
 			setAllMembers(data);
 			setMembersToShow(data);
 			setErrorLoadingMembers(null);
 		} catch (error) {
 			setErrorLoadingMembers("Failed to load members. Click the button to try again.");
-			toast({ message: errorLoadingMembers, type: "danger" });
+			warningToast({ message: errorLoadingMembers, type: "danger" });
 			console.error("Error fetching members:", error);
 		} finally {
 			setLoadingMembers(false);
@@ -210,13 +212,13 @@ const Admin = () => {
 	const fetchFigures = async () => {
 		try {
 			setLoadingFigures(true);
-			const response = await axios.get(`${BASE_URL}/figures`);
+			const response = await Axios.get(`/figures`);
 			const data = response.data;
 			setAllFigures(data);
 			setErrorLoadingFigures(null);
 		} catch (error) {
 			setErrorLoadingFigures("Failed to load figures. Click the button to try again.");
-			toast({ message: errorLoadingFigures, type: "warning" });
+			warningToast({ message: errorLoadingFigures });
 			console.error("Error fetching figures:", error);
 		} finally {
 			setLoadingFigures(false);
@@ -240,14 +242,14 @@ const Admin = () => {
 	const fetchCredits = async () => {
 		try {
 			setLoadingCredits(true);
-			const response = await axios.get(`${BASE_URL}/credits`);
+			const response = await Axios.get(`/credits`);
 			const data = response.data;
 			setAllCredits(data);
 			setCreditsToShow(data);
 			setErrorLoadingCredits(null);
 		} catch (error) {
 			setErrorLoadingCredits("Failed to load credits. Click the button to try again.");
-			toast({ message: errorLoadingCredits, type: "warning" });
+			warningToast({ message: errorLoadingCredits });
 			console.error("Error fetching credits:", error);
 		} finally {
 			setLoadingCredits(false);
@@ -271,14 +273,14 @@ const Admin = () => {
 	const fetchLoans = async () => {
 		try {
 			setLoadingLoans(true);
-			const response = await axios.get(`${BASE_URL}/loans`);
+			const response = await Axios.get(`/loans`);
 			const data = response.data;
 			setAllLoans(data);
 			setLoansToShow(data);
 			setErrorLoadingLoans(null);
 		} catch (error) {
 			setErrorLoadingLoans("Failed to load loans. Click the button to try again.");
-			toast({ message: errorLoadingLoans, type: "warning" });
+			warningToast({ message: errorLoadingLoans });
 			console.error("Error fetching loans:", error);
 		} finally {
 			setLoadingLoans(false);
@@ -307,14 +309,14 @@ const Admin = () => {
 	const fetchRecords = async () => {
 		try {
 			setLoadingRecords(true);
-			const response = await axios.get(`${BASE_URL}/records`);
+			const response = await Axios.get(`/records`);
 			const data = response.data;
 			setAllRecords(data);
 			setRecordsToShow(data);
 			setErrorLoadingRecords(null);
 		} catch (error) {
 			setErrorLoadingRecords("Failed to load records. Click the button to try again.");
-			toast({ message: errorLoadingRecords, type: "warning" });
+			warningToast({ message: errorLoadingRecords });
 			console.error("Error fetching records:", error);
 		} finally {
 			setLoadingRecords(false);
@@ -605,10 +607,10 @@ const Admin = () => {
 
 			try {
 				setIsWaitingFetchAction(true);
-				const response = await axios.post(`${BASE_URL}/users/register`, payload);
+				const response = await Axios.post(`/users/register`, payload);
 				// Successfull fetch
 				const data = response.data;
-				toast({ message: `Success: ${data.message}`, type: "dark" });
+				successToast({ message: `Success: ${data.message}` });
 				resetRegistrationForm();
 				setErrorWithFetchAction(null);
 				fetchMembers();
@@ -616,10 +618,7 @@ const Admin = () => {
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError('Registration error:', error.response?.data || error.message);
-				toast({
-					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> {error.response?.data.message || 'Registration failed'}</>,
-					type: 'warning'
-				});
+				warningToast({ message: error.response?.data.message || 'Registration failed' });
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -684,10 +683,10 @@ const Admin = () => {
 		// const handleEditMemberAvatar = async (id, type) => {
 		// 	try {
 		// 		setIsWaitingFetchAction(true);
-		// 		const response = await axios.post(`${BASE_URL}/user/${id}/edit-${type}-info`, payload);
+		// 		const response = await Axios.post(`/user/${id}/edit-${type}-info`, payload);
 		// 		// Successfull fetch
 		// 		const data = response.data;
-		// 		toast({ message: data.message, type: "dark" });
+		// 		successToast({ message: data.message });
 		// 		resetRegistrationForm();
 		// 		setErrorWithFetchAction(null);
 		// 		fetchLoans();
@@ -695,7 +694,7 @@ const Admin = () => {
 		// 	} catch (error) {
 		// 		setErrorWithFetchAction(error);
 		// 		cError('Registration error:', error.response?.data || error.message);
-		// 		toast({ message: `Error: ${error.response?.data.message || 'Registration failed'}`, type: 'warning' });
+		// 		warningToast({ message: `Error: ${error.response?.data.message || 'Registration failed'}` });
 		// 	} finally {
 		// 		setIsWaitingFetchAction(false);
 		// 	}
@@ -721,36 +720,27 @@ const Admin = () => {
 			} : null;
 
 			if (memberInfo === null) {
-				return toast({
-					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Please select a member to edit and continue</>,
-					type: 'gray-700'
-				});
+				return warningToast({ message: 'Please select a member to edit and continue', type: 'gray-700' })
 			}
 
 			// Prevent empty string value
 			if (Object.values(memberInfo).some(value => value === '')) {
-				return toast({
-					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Please fill out all information to continue</>,
-					type: 'gray-700'
-				});
+				return warningToast({ message: 'Please fill out all information to continue', type: 'gray-700' })
 			}
 
 			try {
 				setIsWaitingFetchAction(true);
-				const response = await axios.post(`${BASE_URL}/user/${id}/edit-${type}-info`, memberInfo);
+				const response = await Axios.post(`/user/${id}/edit-${type}-info`, memberInfo);
 				// Successfull fetch
 				const data = response.data;
-				toast({ message: data.message, type: "dark" });
+				successToast({ message: data.message });
 				setShowEditMemberForm(false);
 				setErrorWithFetchAction(null);
 				fetchMembers();
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError('Error saving changes:', error.response?.data || error.message);
-				toast({
-					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> {error.response?.data.message || 'Couldn\'t save changes. Tyr again'}</>,
-					type: 'warning'
-				});
+				warningToast({ message: error.response?.data.message || 'Couldn\'t save changes. Tyr again' })
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -769,22 +759,20 @@ const Admin = () => {
 		const handleRemoveMember = async (email) => {
 			try {
 				setIsWaitingFetchAction(true);
-				const response = await axios.post(`${BASE_URL}/user/remove`, { email });
+				const response = await Axios.post(`/user/remove`, { email });
 
 				// Successfull fetch
 				const data = response.data;
-				toast({ message: data.message, type: "dark", selfClose: false });
+				successToast({ message: data.message, selfClose: false });
 				hideMemberFinances();
+				resetConfirmDialog();
 				setErrorWithFetchAction(null);
 				fetchMembers();
 				fetchLoans();
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError('Error removing member:', error.response?.data || error.message);
-				toast({
-					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> {error.response?.data.message || 'Couldn\'t remove this member'}</>,
-					type: 'warning',
-				});
+				warningToast({ message: error.response?.data.message || 'Couldn\'t remove this member' });
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -795,12 +783,14 @@ const Admin = () => {
 				<div className="d-flex flex-wrap justify-content-between align-items-center mb-3">
 					<h2 className='text-appColor'><Users weight='fill' className="me-1 opacity-50" /> Members</h2>
 					<div className="ms-auto d-flex gap-1">
-						<Button className='btn-sm btn-primaryColor rounded-0 border-0 clickDown'
-							onClick={() => setShowMemberStats(!showMemberStats)}
-						><ChartBar /> <span className='d-none d-sm-inline'> Statistics</span></Button>
-						<Button className='btn-sm btn-primaryColor rounded-0 border-0 clickDown'
-							onClick={() => setShowAddMemberForm(true)}
-						><Plus /> New member</Button>
+						<button className='btn btn-sm flex-center gap-1 text-primaryColor fw-semibold border-secondary border border-opacity-25 clickDown'
+							onClick={() => setShowMemberStats(!showMemberStats)}>
+							<ChartBar /> <span className='d-none d-sm-inline'> Statistics</span>
+						</button>
+						<button className='btn btn-sm flex-center gap-1 text-primaryColor fw-semibold border-secondary border border-opacity-25 clickDown'
+							onClick={() => setShowAddMemberForm(true)}>
+							<Plus /> New member
+						</button>
 					</div>
 				</div>
 
@@ -874,8 +864,7 @@ const Admin = () => {
 										<div className="position-absolute top-0 me-3 d-flex gap-3"
 											style={{ right: 0, translate: "0 -50%" }}
 										>
-											<img src={member.husbandAvatar ? member.husbandAvatar : '/images/man_avatar_image.jpg'}
-												alt={`${member.husbandFirstName.slice(0, 1)}.${member.husbandLastName}`}
+											<img src={member.husbandAvatar ? member.husbandAvatar : '/images/man_avatar_image.jpg'} alt=""
 												className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
 											/>
 											<img src={member.wifeAvatar ? member.wifeAvatar : '/images/woman_avatar_image.jpg'}
@@ -1393,8 +1382,7 @@ const Admin = () => {
 																	</tr>
 																</thead>
 																<tbody>
-																	<tr className={`small credit-row`}
-																	>
+																	<tr className={`small credit-row`}>
 																		<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
 																			Cotisation
 																		</td>
@@ -1402,8 +1390,7 @@ const Admin = () => {
 																			<CurrencyText amount={selectedMember?.cotisation} />
 																		</td>
 																	</tr>
-																	<tr className={`small credit-row`}
-																	>
+																	<tr className={`small credit-row`}>
 																		<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
 																			Social
 																		</td>
@@ -1411,8 +1398,7 @@ const Admin = () => {
 																			<CurrencyText amount={selectedMember?.social} />
 																		</td>
 																	</tr>
-																	<tr className={`small credit-row`}
-																	>
+																	<tr className={`small credit-row`}>
 																		<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
 																			Total
 																		</td>
@@ -1463,8 +1449,7 @@ const Admin = () => {
 																							</tr>
 																						</thead>
 																						<tbody>
-																							<tr className={`small credit-row`}
-																							>
+																							<tr className={`small credit-row`}>
 																								<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
 																									Loan
 																								</td>
@@ -1478,8 +1463,7 @@ const Admin = () => {
 																									<CurrencyText amount={selectedLoan?.loanPending} />
 																								</td>
 																							</tr>
-																							<tr className={`small credit-row`}
-																							>
+																							<tr className={`small credit-row`}>
 																								<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
 																									Interest
 																								</td>
@@ -1493,8 +1477,7 @@ const Admin = () => {
 																									<CurrencyText amount={selectedLoan?.interestPending} />
 																								</td>
 																							</tr>
-																							<tr className={`small credit-row`}
-																							>
+																							<tr className={`small credit-row`}>
 																								<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
 																									Tranches
 																								</td>
@@ -1511,31 +1494,6 @@ const Admin = () => {
 																						</tbody>
 																					</table>
 																				</div>
-
-																				{allCredits.filter(cr => cr.memberId === selectedMember?.id).length > 0 && (
-																					<>
-																						<div className="d-flex">
-																							<div className='col p-2'>
-																								<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">First loan</span></div>
-																								<div className='text-center bg-gray-300'>
-																									<FormatedDate date={allCredits
-																										.sort((a, b) => new Date(a.requestDate) - new Date(b.requestDate))
-																										.filter(cr => cr.memberId === selectedMember?.id)[0].requestDate
-																									} />
-																								</div>
-																							</div>
-																							<div className='col p-2'>
-																								<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Recent loan</span></div>
-																								<div className='text-center bg-gray-300'>
-																									<FormatedDate date={allCredits
-																										.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate))
-																										.filter(cr => cr.memberId === selectedMember?.id)[0].requestDate
-																									} />
-																								</div>
-																							</div>
-																						</div>
-																					</>
-																				)}
 																			</Fragment>
 																		)
 																	})
@@ -1598,7 +1556,7 @@ const Admin = () => {
 																										</td>
 																									</tr>
 																									<tr className="bg-transparent">
-																										<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
+																										<td className={`ps-sm-3 border-bottom-3 border-end`}>
 																											Decision
 																										</td>
 																										<td className='text-primary-emphasis small'>
@@ -1627,7 +1585,7 @@ const Admin = () => {
 																											customConfirmDialog({
 																												message: (
 																													<>
-																														<h5 className='h6 border-bottom mb-3 pb-2'><UserMinus size={25} weight='fill' className='opacity-50' /> Removing this member</h5>
+																														<h5 className='h6 border-bottom mb-3 pb-2'><UserMinus size={25} weight='fill' className='opacity-50' /> Removing a group member</h5>
 																														<p className='fw-semibold'>
 																															Are you sure to remove {`${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName}`} from the system ?
 																														</p>
@@ -1664,7 +1622,22 @@ const Admin = () => {
 																			</button>
 																			<button className="col btn btn-sm btn-dark w-100 flex-center py-2 border-dark rounded-0 clickDown"
 																				disabled={(isWaitingFetchAction)}
-																				onClick={() => { handleRemoveMember(selectedMember?.husbandEmail); }}
+																				onClick={
+																					() => {
+																						customConfirmDialog({
+																							message: (
+																								<>
+																									<h5 className='h6 border-bottom mb-3 pb-2'><UserMinus size={25} weight='fill' className='opacity-50' /> Removing a group member</h5>
+																									<p className='fw-semibold'>
+																										Are you sure to remove {`${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName}`} from the system ?
+																									</p>
+																								</>
+																							),
+																							type: 'warning',
+																							action: () => handleRemoveMember(selectedMember?.husbandEmail),
+																						});
+																					}
+																				}
 																			>
 																				{!isWaitingFetchAction ?
 																					<>Remove <UserMinus size={18} className='ms-2' /></>
@@ -1797,10 +1770,7 @@ const Admin = () => {
 		// Handle add savings
 		const handleAddSaving = async (id) => {
 			if (!savingRecordAmount || Number(savingRecordAmount) <= 0) {
-				return toast({
-					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter valid saving amount to continue</>,
-					type: 'gray-700'
-				});
+				return warningToast({ message: "Enter valid saving amount to continue" });
 			}
 
 			try {
@@ -1829,7 +1799,7 @@ const Admin = () => {
 
 				// Successful fetch
 				const data = await response.json();
-				toast({ message: data.message, type: "dark" });
+				successToast({ message: data.message });
 				setShowAddSavingRecord(false);
 				setErrorWithFetchAction(null);
 				fetchMembers();
@@ -1837,7 +1807,7 @@ const Admin = () => {
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError("Error adding savings:", error);
-				toast({ message: error.message || "An unknown error occurred", type: "danger" });
+				warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -1851,10 +1821,7 @@ const Admin = () => {
 		// Handle add savings
 		const handleAddMultipleShares = async (id) => {
 			if (!multipleSharesAmount || Number(multipleSharesAmount) <= 0) {
-				return toast({
-					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter valid number of shares to continue</>,
-					type: 'gray-700'
-				});
+				return warningToast({ message: "Enter valid number of shares to continue" });
 			}
 
 			try {
@@ -1877,14 +1844,14 @@ const Admin = () => {
 
 				// Successful fetch
 				const data = await response.json();
-				toast({ message: data.message, type: "dark" });
+				successToast({ message: data.message });
 				setShowAddMultipleShares(false);
 				setErrorWithFetchAction(null);
 				fetchMembers();
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError("Error adding multiple shares:", error);
-				toast({ message: error.message || "An unknown error occurred", type: "danger" });
+				warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -1895,12 +1862,9 @@ const Admin = () => {
 
 		// // Handle add shares
 		// const handleEditShares = async (id) => {
-		// if (!shares || Number(shares) <= 0) {
-		// 	return toast({
-		// 		message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter valid number of shares to continue</>,
-		// 		type: 'gray-700'
-		// 	});
-		// }
+		// 	if (!shares || Number(shares) <= 0) {
+		// 		return warningToast({ message: "Enter valid number of shares to continue", type: 'gray-700' });
+		// 	}
 
 		// 	try {
 		// 		setIsWaitingFetchAction(true);
@@ -1922,7 +1886,7 @@ const Admin = () => {
 
 		// 		// Successful fetch
 		// 		const data = await response.json();
-		// 		toast({ message: data.message, type: "dark" });
+		// 		successToast({ message: data.message });
 		// 		setShowEditSharesRecord(false); // Adjust based on your UI logic
 		// 		setErrorWithFetchAction(null);
 		// 		fetchMembers(); // Ensure the member data is updated
@@ -1930,7 +1894,7 @@ const Admin = () => {
 		// 	} catch (error) {
 		// 		setErrorWithFetchAction(error);
 		// 		cError("Error updating shares:", error);
-		// 		toast({ message: error.message || "An unknown error occurred", type: "danger" });
+		// 		warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
 		// 	} finally {
 		// 		setIsWaitingFetchAction(false);
 		// 	}
@@ -1983,7 +1947,7 @@ const Admin = () => {
 							</Form>
 							{/* Content */}
 
-							<div className="d-lg-flex flex-wrap">
+							<div className="d-lg-flex flex-wrap pb-5">
 								{savingsToShow
 									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
 									.map((member, index) => {
@@ -2303,12 +2267,12 @@ const Admin = () => {
 			if (window.confirm(`Are you sure to proceed with ${keepAnnualInterest ? 'keeping' : 'withdrawing'} the annual interest ?`)) {
 				try {
 					setIsWaitingFetchAction(true);
-					const response = await axios.post(`${BASE_URL}/api/${keepAnnualInterest ? 'distribute' : 'withdraw'}-interest`, {
+					const response = await Axios.post(`/api/${keepAnnualInterest ? 'distribute' : 'withdraw'}-interest`, {
 						annualReceivable: interestToReceive
 					});
 					// Successfull fetch
 					const data = response.data;
-					toast({ message: data.message, type: "dark" });
+					successToast({ message: data.message });
 					setShowShareAnnualInterest(false);
 					setErrorWithFetchAction(null);
 					fetchLoans();
@@ -2316,7 +2280,7 @@ const Admin = () => {
 				} catch (error) {
 					setErrorWithFetchAction(error);
 					cError("Error distributing interest:", error);
-					toast({ message: error, type: "danger" });
+					warningToast({ message: error, type: "danger" });
 				} finally {
 					setIsWaitingFetchAction(false);
 				}
@@ -2335,10 +2299,10 @@ const Admin = () => {
 			// 	action: async () => {
 			// 		try {
 			// 			setIsWaitingFetchAction(true);
-			// 			const response = await axios.post(`${BASE_URL}/api/${keepAnnualInterest ? 'distribute' : 'withdraw'}-interest`);
+			// 			const response = await Axios.post(`/api/${keepAnnualInterest ? 'distribute' : 'withdraw'}-interest`);
 			// 			// Successfull fetch
 			// 			const data = response.data;
-			// 			toast({ message: data.message, type: "dark" });
+			// 			successToast({ message: data.message });
 			// 			setShowShareAnnualInterest(false);
 			// 			setErrorWithFetchAction(null);
 			// 			fetchLoans();
@@ -2346,7 +2310,7 @@ const Admin = () => {
 			// 		} catch (error) {
 			// 			setErrorWithFetchAction(error);
 			// 			cError("Error distributing interest:", error);
-			// 			toast({ message: error, type: "danger" });
+			// 			warningToast({ message: error, type: "danger" });
 			// 		} finally {
 			// 			setIsWaitingFetchAction(false);
 			// 		}
@@ -2373,14 +2337,14 @@ const Admin = () => {
 		const fetchAnnualInterests = async () => {
 			try {
 				setLoadingAnnualInterest(true);
-				const response = await axios.get(`${BASE_URL}/api/annualInterests`);
+				const response = await Axios.get(`/api/annualInterests`);
 				const data = response.data;
 				setAllAnnualInterest(data);
 				setAnnualInterestToShow(data);
 				setErrorLoadingAnnualInterest(null);
 			} catch (error) {
 				setErrorLoadingAnnualInterest("Failed to load loans. Click the button to try again.");
-				toast({ message: errorLoadingAnnualInterest, type: "warning" });
+				warningToast({ message: errorLoadingAnnualInterest });
 				console.error("Error fetching loans:", error);
 			} finally {
 				setLoadingAnnualInterest(false);
@@ -2455,10 +2419,7 @@ const Admin = () => {
 										totalAnnualShares += annualShares;
 
 										return (
-											<tr
-												key={index}
-												className="small cursor-default clickDown interest-row"
-											>
+											<tr key={index} className="small cursor-default clickDown interest-row">
 												<td className="border-bottom-3 border-end">
 													{index + 1}
 												</td>
@@ -2672,9 +2633,7 @@ const Admin = () => {
 																const memberStatus = JSON.parse(record.memberStatus);
 																return (
 																	<Fragment key={index}>
-																		<tr
-																			className="small cursor-default clickDown interest-row"
-																		>
+																		<tr className="small cursor-default clickDown interest-row">
 																			<td className="border-bottom-3 border-end bg-primaryColor text-light">
 																				{selectedAnnualInterestRecord.year}
 																			</td>
@@ -2692,10 +2651,7 @@ const Admin = () => {
 																				const associatedMember = activeMembers.find(m => m.id === member.id);
 																				const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
 																				return (
-																					<tr
-																						key={index}
-																						className="small cursor-default clickDown interest-row"
-																					>
+																					<tr key={index} className="small cursor-default clickDown interest-row">
 																						<td className="border-bottom-3 border-end">
 																							{index + 1}
 																						</td>
@@ -2860,14 +2816,16 @@ const Admin = () => {
 
 				// Successful fetch
 				const data = await response.json();
-				toast({ message: data.message, type: "success" });
+				successToast({ message: data.message });
 				resetConfirmDialog();
 				setErrorWithFetchAction(null);
 				fetchCredits();
+				fetchLoans();
+				fetchFigures();
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError("Error approving credit:", error);
-				toast({ message: error.message, type: "danger" });
+				warningToast({ message: error.message, type: "danger" });
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -2890,14 +2848,14 @@ const Admin = () => {
 				}
 				// Successfull fetch
 				const data = await response.json();
-				toast({ message: data.message, type: "dark" });
+				successToast({ message: data.message });
 				resetPrompt();
 				setErrorWithFetchAction(null);
 				fetchCredits();
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError("Error fetching members:", error);
-				toast({ message: error, type: "danger" });
+				warningToast({ message: error, type: "danger" });
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -2920,14 +2878,14 @@ const Admin = () => {
 				}
 				// Successfull fetch
 				const data = await response.json();
-				toast({ message: data.message, type: "dark" });
+				successToast({ message: data.message });
 				resetConfirmDialog();
 				setErrorWithFetchAction(null);
 				fetchCredits();
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError("Error fetching members:", error);
-				toast({ message: error, type: "danger" });
+				warningToast({ message: error, type: "danger" });
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -2949,22 +2907,19 @@ const Admin = () => {
 
 		const handeLoanPaymemnt = async (id) => {
 			if (payLoanAmount <= 0 || payTranchesAmount <= 0) {
-				return toast({
-					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter valid payment values to continue</>,
-					type: 'warning'
-				});
+				return warningToast({ message: 'Enter payment amount to continue' })
 			}
 
 			try {
 				setIsWaitingFetchAction(true);
-				const response = await axios.put(`${BASE_URL}/loan/${id}/pay`, {
+				const response = await Axios.put(`/loan/${id}/pay`, {
 					loanToPay: payLoanAmount,
 					interestToPay: payInterestAmount,
 					tranchesToPay: payTranchesAmount,
 				});
 				// Successfull fetch
 				const data = response.data;
-				toast({ message: data.message, type: "dark" });
+				successToast({ message: data.message });
 				resetPaymentinputs();
 				setErrorWithFetchAction(null);
 				fetchLoans();
@@ -2972,7 +2927,7 @@ const Admin = () => {
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError("Error fetching members:", error);
-				toast({ message: error, type: "danger" });
+				warningToast({ message: error, type: "danger" });
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -2988,16 +2943,13 @@ const Admin = () => {
 
 		const handleApplyCreditPenalty = async (id) => {
 			if (!creditPenaltyAmount || Number(creditPenaltyAmount) <= 0) {
-				return toast({
-					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter valid penalty amount to continue</>,
-					type: 'gray-700'
-				});
+				return warningToast({ message: 'Enter valid penalty amount to continue', type: 'gray-700' })
 			}
 
 			try {
 				setIsWaitingFetchAction(true);
 
-				const response = await axios.post(`${BASE_URL}/user/${id}/credit-penalty`, {
+				const response = await Axios.post(`/user/${id}/credit-penalty`, {
 					secondaryType: 'Credit penalty',
 					penaltyAmount: creditPenaltyAmount,
 					comment: penaltyComment
@@ -3005,7 +2957,7 @@ const Admin = () => {
 
 				// Successful fetch
 				const data = response.data; // Axios stores the response data in `data`
-				toast({ message: data.message, type: "dark" });
+				successToast({ message: data.message });
 				setApplyCreditPenalty(false);
 				setErrorWithFetchAction(null);
 				fetchMembers();
@@ -3017,10 +2969,7 @@ const Admin = () => {
 				const errorMessage = error.response?.data?.message || error.message || "An unknown error occurred";
 				setErrorWithFetchAction(errorMessage);
 				cError("Error applying penalties:", error);
-				toast({
-					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> {errorMessage}</>,
-					type: 'warning'
-				});
+				warningToast({ message: errorMessage, })
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -3124,8 +3073,7 @@ const Admin = () => {
 																						</tr>
 																					</thead>
 																					<tbody>
-																						<tr className={`small credit-row`}
-																						>
+																						<tr className={`small credit-row`}>
 																							<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
 																								Loan
 																							</td>
@@ -3139,8 +3087,7 @@ const Admin = () => {
 																								<CurrencyText amount={selectedLoan?.loanPending} />
 																							</td>
 																						</tr>
-																						<tr className={`small credit-row`}
-																						>
+																						<tr className={`small credit-row`}>
 																							<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
 																								Interest
 																							</td>
@@ -3154,8 +3101,7 @@ const Admin = () => {
 																								<CurrencyText amount={selectedLoan?.interestPending} />
 																							</td>
 																						</tr>
-																						<tr className={`small credit-row`}
-																						>
+																						<tr className={`small credit-row`}>
 																							<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
 																								Tranches
 																							</td>
@@ -3387,10 +3333,7 @@ const Admin = () => {
 																								const creditInterest = Number(credit.creditAmount) * (5 / 100);
 
 																								return (
-																									<tr
-																										key={index}
-																										className={`small loan-row`}
-																									>
+																									<tr key={index} className={`small loan-row`}>
 																										<td className={`ps-sm-3 border-bottom-3 border-end`}>
 																											{index + 1}
 																										</td>
@@ -3533,10 +3476,7 @@ const Admin = () => {
 																const creditInterest = Number(credit.creditAmount) * (5 / 100);
 
 																return (
-																	<tr
-																		key={index}
-																		className={`small loan-row`}
-																	>
+																	<tr key={index} className={`small loan-row`}>
 																		<td className={`ps-sm-3 border-bottom-3 border-end`}>
 																			{index + 1}
 																		</td>
@@ -3672,10 +3612,7 @@ const Admin = () => {
 																const creditInterest = Number(credit.creditAmount) * (5 / 100);
 
 																return (
-																	<tr
-																		key={index}
-																		className={`small loan-row`}
-																	>
+																	<tr key={index} className={`small loan-row`}>
 																		<td className={`ps-sm-3 border-bottom-3 border-end`}>
 																			{index + 1}
 																		</td>
@@ -3756,10 +3693,7 @@ const Admin = () => {
 																const creditInterest = Number(credit.creditAmount) * (5 / 100);
 
 																return (
-																	<tr
-																		key={index}
-																		className={`small cursor-default clickDown loan-row`}
-																	>
+																	<tr key={index} className={`small cursor-default clickDown loan-row`}>
 																		<td className={`ps-sm-3 border-bottom-3 border-end`}>
 																			{index + 1}
 																		</td>
@@ -3924,10 +3858,7 @@ const Admin = () => {
 																			const amountToPay = Number(selectedCredit.creditAmount) + (Number(selectedCredit.creditAmount) * (5 / 100));
 																			const backFillAmount = amountToPay / selectedCredit.tranches;
 																			return (
-																				<tr
-																					key={index}
-																					className="small expense-row"
-																				>
+																				<tr key={index} className="small expense-row">
 																					<td className="ps-sm-3 border-bottom-3 border-end">
 																						{item.tranchNumber}
 																					</td>
@@ -3970,7 +3901,34 @@ const Admin = () => {
 																>
 																	<X /> Reject credit</button>
 																<button className='btn btn-sm flex-align-center text-primary-emphasis border-primary border-opacity-25 mb-auto rounded-0'
-																	onClick={() => { alert('Aprove credit') }}
+																	onClick={
+																		() => {
+																			if (Number(allFigures?.balance) < Number(selectedCredit.creditAmount)) {
+																				toast({
+																					message:
+																						<>
+																							<WarningCircle size={22} weight='fill' className='me-1 opacity-50' />
+																							<span className="ms-1">Insufficient balance. <CurrencyText amount={Number(allFigures?.balance)} smallCurrency className="fw-semibold ms-1" />. Credit can not be approved.</span>
+																						</>,
+																					type: "warning",
+																					selfClose: false,
+																				});
+																			} else {
+																				customConfirmDialog({
+																					message: (
+																						<>
+																							<h5 className='h6 border-bottom mb-3 pb-2 text-uppercase'><HandCoins size={25} weight='fill' className='opacity-50' /> Approve credit request</h5>
+																							<p className='text-warning'>
+																								This will approve a credit of <CurrencyText amount={Number(selectedCredit.creditAmount)} /> requested by {`${associatedMember[0].husbandFirstName} ${associatedMember[0].husbandLastName}`}.<br /><br />Are you sure to continue?
+																							</p>
+																						</>
+																					),
+																					type: 'gray-800',
+																					action: () => approveCreditRequest(selectedCredit.id),
+																				});
+																			}
+																		}
+																	}
 																>
 																	<Check /> Approve credit
 																</button>
@@ -4005,10 +3963,7 @@ const Admin = () => {
 		const handleAddExpense = async (e) => {
 			e.preventDefault();
 			if (!expenseRecordAmount || Number(expenseRecordAmount) <= 0) {
-				return toast({
-					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter valid expense amount to continue</>,
-					type: 'gray-700'
-				});
+				return warningToast({ message: 'Enter valid expense amount to continue', type: 'gray-700' })
 			}
 
 			try {
@@ -4032,7 +3987,7 @@ const Admin = () => {
 
 				// Successful fetch
 				const data = await response.json();
-				toast({ message: data.message, type: "dark" });
+				successToast({ message: data.message });
 				setShowAddExpenseRecord(false);
 				setErrorWithFetchAction(null);
 				fetchMembers();
@@ -4040,7 +3995,7 @@ const Admin = () => {
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError("Error adding savings:", error);
-				toast({ message: error.message || "An unknown error occurred", type: "danger" });
+				warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -4062,7 +4017,10 @@ const Admin = () => {
 					<div className="d-flex flex-wrap justify-content-between align-items-center">
 						<h2 className='text-appColor'><CashRegister weight='fill' className="me-1 opacity-50" /> Transactions panel</h2>
 						<div className="ms-auto d-flex gap-1">
-							<Button onClick={() => { setActiveTransactionSection('withdrawals'); setShowAddExpenseRecord(true) }} className='btn-sm btn-primaryColor rounded-0 border-0 clickDown'><Plus /> Record expenses</Button>
+							<button className='btn btn-sm flex-center gap-1 text-primaryColor fw-semibold border-secondary border border-opacity-25 clickDown'
+								onClick={() => { setActiveTransactionSection('withdrawals'); setShowAddExpenseRecord(true) }}>
+								<Plus /> Record expenses
+							</button>
 						</div>
 					</div>
 					<div className="d-lg-flex align-items-center">
@@ -4141,10 +4099,7 @@ const Admin = () => {
 														const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
 
 														return (
-															<tr
-																key={index}
-																className="small cursor-default clickDown expense-row"
-															>
+															<tr key={index} className="small cursor-default clickDown expense-row">
 																<td className="ps-sm-3 border-bottom-3 border-end">
 																	{index + 1}
 																</td>
@@ -4154,10 +4109,10 @@ const Admin = () => {
 																<td>
 																	<CurrencyText amount={Number(record.recordAmount)} />
 																</td>
-																<td className="text-nowrap">
+																<td>
 																	{record.comment}
 																</td>
-																<td style={{ maxWidth: '13rem' }}>
+																<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
 																	<FormatedDate date={record.createdAt} />
 																</td>
 															</tr>
@@ -4254,10 +4209,7 @@ const Admin = () => {
 													const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
 
 													return (
-														<tr
-															key={index}
-															className="small cursor-default clickDown expense-row"
-														>
+														<tr key={index} className="small cursor-default clickDown expense-row">
 															<td className="ps-sm-3 border-bottom-3 border-end">
 																{index + 1}
 															</td>
@@ -4267,11 +4219,11 @@ const Admin = () => {
 															<td>
 																<CurrencyText amount={Number(record.recordAmount)} />
 															</td>
-															<td className="text-nowrap">
+															<td>
 																{record.comment}
 															</td>
-															<td style={{ maxWidth: '13rem' }}>
-																<FormatedDate date={record.createdAt} monthFormat='2-digit' />
+															<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
+																<FormatedDate date={record.createdAt} />
 															</td>
 														</tr>
 													)
@@ -4303,10 +4255,7 @@ const Admin = () => {
 													const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
 
 													return (
-														<tr
-															key={index}
-															className="small cursor-default clickDown expense-row"
-														>
+														<tr key={index} className="small cursor-default clickDown expense-row">
 															<td className="ps-sm-3 border-bottom-3 border-end">
 																{index + 1}
 															</td>
@@ -4316,11 +4265,11 @@ const Admin = () => {
 															<td>
 																<CurrencyText amount={Number(record.recordAmount)} />
 															</td>
-															<td className="text-nowrap">
+															<td>
 																{record.comment}
 															</td>
-															<td style={{ maxWidth: '13rem' }}>
-																<FormatedDate date={record.createdAt} monthFormat='2-digit' />
+															<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
+																<FormatedDate date={record.createdAt} />
 															</td>
 														</tr>
 													)
@@ -4432,10 +4381,7 @@ const Admin = () => {
 															.sort((a, b) => a.amount - b.amount)
 													)
 													.map((item, index) => (
-														<tr
-															key={index}
-															className="small cursor-default clickDown expense-row"
-														>
+														<tr key={index} className="small cursor-default clickDown expense-row">
 															<td className={`ps-sm-3 border-end ${item.type === 'income' ? 'text-success' : 'text-warning-emphasis'}`}>
 																{index + 1}
 															</td>
@@ -4467,8 +4413,7 @@ const Admin = () => {
 												</tr>
 											</thead>
 											<tbody>
-												<tr className="small cursor-default clickDown general-report-row"
-												>
+												<tr className="small cursor-default clickDown general-report-row">
 													<td className="ps-sm-3 border-bottom-3 border-end fw-bold">
 														Balance
 													</td>
@@ -4493,10 +4438,7 @@ const Admin = () => {
 														generalTotal += pendingCredit;
 
 														return (
-															<tr
-																key={index}
-																className="small cursor-default clickDown general-report-row"
-															>
+															<tr key={index} className="small cursor-default clickDown general-report-row">
 																<td className="ps-sm-3">
 																	<b>{index + 1}</b>. {memberNames}
 																</td>
@@ -4513,8 +4455,7 @@ const Admin = () => {
 														)
 													})
 												}
-												<tr className="small cursor-default clickDown general-report-row fw-bold"
-													style={{ borderTopWidth: '2px' }} >
+												<tr className="small cursor-default clickDown general-report-row fw-bold" style={{ borderTopWidth: '2px' }} >
 													<td></td>
 													<td></td>
 													<td>
@@ -4524,8 +4465,7 @@ const Admin = () => {
 														<CurrencyText amount={totalCotisationsAndShares} />
 													</td>
 												</tr>
-												<tr className="small cursor-default clickDown general-report-row fw-bold"
-												>
+												<tr className="small cursor-default clickDown general-report-row fw-bold">
 													<td></td>
 													<td></td>
 													<td>
@@ -4535,8 +4475,7 @@ const Admin = () => {
 														<CurrencyText amount={generalTotal - totalCotisationsAndShares} />
 													</td>
 												</tr>
-												<tr className="small cursor-default clickDown general-report-row fw-bold fs-5"
-												>
+												<tr className="small cursor-default clickDown general-report-row fw-bold fs-5">
 													<td className="ps-sm-3">General Total:</td>
 													<td>
 														<CurrencyText amount={generalTotal} /> {/* Must be equal */}
@@ -4658,15 +4597,21 @@ const Admin = () => {
 	// Set notifications
 
 	const [showNotifications, setShowNotifications] = useState(false);
-	const [adminHasNewNotifications, setAdminHasNewNotifications] = useState(false);
+	const [hasNewNotifications, setHasNewNotifications] = useState(false);
 
 	useEffect(() => {
 		if (allCredits.filter(cr => cr.status === 'pending').length > 0) {
-			setAdminHasNewNotifications(true);
+			setHasNewNotifications(true);
 		} else {
-			setAdminHasNewNotifications(false);
+			setHasNewNotifications(false);
 		}
 	}, [allCredits]);
+
+	useEffect(() => {
+		if (hasNewNotifications) {
+			messageToast({ message: 'You have new notifications', type: 'primaryColor' });
+		}
+	}, [hasNewNotifications]);
 
 	return (
 		<>
@@ -4717,11 +4662,11 @@ const Admin = () => {
 						INGOBOKA
 					</small>
 					<div className="d-flex gap-2 d-md-none ms-auto me-2 text-light" style={{ '--_activeColor': 'var(--bs-gray-500)' }}>
-						<button className={`nav-link px-2 ${adminHasNewNotifications ? 'active-with-dot' : ''} text-gray-400 rounded-0 clickDown`} title='Notifications'
+						<button className={`nav-link px-2 ${hasNewNotifications ? 'active-with-dot' : ''} text-gray-400 rounded-0 clickDown`} title='Notifications'
 							onClick={() => setShowNotifications(true)}
 						>
-							<BellSimple weight={adminHasNewNotifications ? 'fill' : undefined} size={20}
-								style={{ animation: adminHasNewNotifications ? 'shakeX 10s infinite' : 'unset' }}
+							<BellSimple weight={hasNewNotifications ? 'fill' : undefined} size={20}
+								style={{ animation: hasNewNotifications ? 'shakeX 10s infinite' : 'unset' }}
 							/>
 						</button>
 						<button ref={sideNavbarTogglerRef} className="text-gray-400 rounded-0 shadow-none bounceClick navbar-toggler" type="button" aria-controls="sidebarMenu" aria-label="Toggle navigation" onClick={() => setSideNavbarIsFloated(!sideNavbarIsFloated)}>
@@ -4732,11 +4677,11 @@ const Admin = () => {
 				<div className='d-none d-md-flex flex-grow-1 border-bottom py-1'>
 					<div className="me-3 ms-auto navbar-nav">
 						<div className="nav-item d-flex gap-2 text-nowrap small" style={{ '--_activeColor': 'var(--primaryColor)' }}>
-							<button className={`nav-link px-2 ${adminHasNewNotifications ? 'bg-gray-300 text-primaryColor active-with-dot' : 'text-gray-600'} rounded-pill clickDown`} title='Notifications'
+							<button className={`nav-link px-2 ${hasNewNotifications ? 'bg-gray-300 text-primaryColor active-with-dot' : 'text-gray-600'} rounded-pill clickDown`} title='Notifications'
 								onClick={() => setShowNotifications(true)}
 							>
-								<BellSimple weight={adminHasNewNotifications ? 'fill' : undefined} size={20}
-									style={{ animation: adminHasNewNotifications ? 'shakeX 10s infinite' : 'unset' }}
+								<BellSimple weight={hasNewNotifications ? 'fill' : undefined} size={20}
+									style={{ animation: hasNewNotifications ? 'shakeX 10s infinite' : 'unset' }}
 								/>
 							</button>
 						</div>
@@ -4865,7 +4810,7 @@ const Admin = () => {
 									<button className="nav-link w-100">
 										<Blueprint size={20} weight='fill' className="me-2" /> Credits
 									</button>
-									{adminHasNewNotifications && (
+									{hasNewNotifications && (
 										<span
 											className='r-middle-m h-1rem flex-center me-3 px-2 bg-gray-300 text-gray-900 fs-60 fw-medium rounded-pill'
 											style={{ lineHeight: 1 }}>
