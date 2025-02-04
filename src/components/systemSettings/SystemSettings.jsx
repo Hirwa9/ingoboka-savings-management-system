@@ -3,10 +3,9 @@ import axios from 'axios';
 import { Gear } from '@phosphor-icons/react';
 import useCustomDialogs from '../common/hooks/useCustomDialogs';
 import MyToast from '../common/Toast';
+import { BASE_URL } from '../../api/api';
 
 const SystemSettings = () => {
-
-    const BASE_URL = 'http://localhost:5000';
 
     // Custom hooks
     const {
@@ -229,7 +228,7 @@ const SystemSettings = () => {
                 <div className="mb-3">
                     <h2 className='text-appColor'><Gear weight='fill' className="me-1 opacity-50" /> Settings</h2>
                     <div className="d-lg-flex align-items-center">
-                        <img src="images/interests_visual.png" alt="" className='d-none d-lg-block col-md-5' />
+                        <img src="/images/interests_visual.png" alt="" className='d-none d-lg-block col-md-5' />
                         <div className='alert mb-4 rounded-0 smaller fw-light'>
                             This panel provides an organized summary of interest earnings distributed to each member or family, based on their ownership shares. It ensures transparency by displaying individual share percentages, monetary interest amounts, and overall totals, offering members a clear understanding of their returns and fostering accountability.
                         </div>
