@@ -3,8 +3,8 @@ import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } fr
 import { Button, Card, Container, Form } from "react-bootstrap";
 import './user.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, EscalatorUp, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, GreaterThan, Info, LessThan, List, Minus, Notebook, Pen, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, UserFocus, UserMinus, Users, Warning, WarningCircle, X } from '@phosphor-icons/react';
-import { dashboardData, expensesTypes, generalReport, incomeExpenses, memberRoles } from '../../../data/data';
+import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, EscalatorUp, Eye, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, GreaterThan, Info, LessThan, List, Minus, Notebook, Pen, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, UserFocus, UserMinus, Users, Warning, WarningCircle, X } from '@phosphor-icons/react';
+import { expensesTypes, generalReport, incomeExpenses, memberRoles } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
@@ -19,13 +19,12 @@ import NotFound from '../../common/NotFound';
 import JsonJsFormatter from '../../common/JsonJsFormatter';
 import { useParams } from 'react-router';
 import { Menu, MenuButton, MenuDivider, MenuItem } from '@szhsin/react-menu';
-import axios from 'axios';
 import CountUp from 'react-countup';
 import BarGraph from '../../chartJS/BarGraph';
 import EmptyBox from '../../common/EmptyBox';
 import ContentToggler from '../../common/ContentToggler';
 import DividerText from '../../common/DividerText';
-import { BASE_URL } from '../../../api/axios';
+import { BASE_URL, Axios } from '../../../api/api';
 
 const UserUI = () => {
 
@@ -41,10 +40,10 @@ const UserUI = () => {
 	const {
 		// Toast
 		showToast,
-		setShowToast,
 		toastMessage,
 		toastType,
 		toast,
+		resetToast,
 
 		// Confirm Dialog
 		showConfirmDialog,
@@ -210,7 +209,7 @@ const UserUI = () => {
 	const fetchFigures = async () => {
 		try {
 			setLoadingFigures(true);
-			const response = await axios.get(`${BASE_URL}/figures`);
+			const response = await Axios.get(`/figures`);
 			const data = response.data;
 			setAllFigures(data);
 			setErrorLoadingFigures(null);
@@ -239,11 +238,12 @@ const UserUI = () => {
 	// Fetch credits
 	const fetchCredits = async () => {
 		try {
+			toast({ message: signedUser?.id, type: "pulple" });
 			setLoadingCredits(true);
-			const response = await axios.get(`${BASE_URL}/credits`);
+			const response = await Axios.get(`/credits`);
 			const data = response.data;
 			setAllCredits(data);
-			setCreditsToShow(data.filter(cr => cr?.memberId === signedUser?.id));
+			setCreditsToShow(data.filter(cr => cr.memberId === signedUser?.id));
 			setErrorLoadingCredits(null);
 		} catch (error) {
 			setErrorLoadingCredits("Failed to load credits. Click the button to try again.");
@@ -253,6 +253,7 @@ const UserUI = () => {
 			setLoadingCredits(false);
 		}
 	};
+
 
 	useEffect(() => {
 		fetchCredits();
@@ -271,7 +272,7 @@ const UserUI = () => {
 	const fetchLoans = async () => {
 		try {
 			setLoadingLoans(true);
-			const response = await axios.get(`${BASE_URL}/loans`);
+			const response = await Axios.get(`/loans`);
 			const data = response.data;
 			setAllLoans(data);
 			setLoansToShow(data);
@@ -307,7 +308,7 @@ const UserUI = () => {
 	const fetchRecords = async () => {
 		try {
 			setLoadingRecords(true);
-			const response = await axios.get(`${BASE_URL}/records`);
+			const response = await Axios.get(`/records`);
 			const data = response.data;
 			setAllRecords(data);
 			setRecordsToShow(data);
@@ -590,7 +591,7 @@ const UserUI = () => {
 
 			try {
 				setIsWaitingFetchAction(true);
-				const response = await axios.post(`${BASE_URL}/users/register`, payload);
+				const response = await Axios.post(`/users/register`, payload);
 				// Successfull fetch
 				const data = response.data;
 				toast({ message: `Success: ${data.message}`, type: "dark" });
@@ -669,7 +670,7 @@ const UserUI = () => {
 		// const handleEditMemberAvatar = async (id, type) => {
 		// 	try {
 		// 		setIsWaitingFetchAction(true);
-		// 		const response = await axios.post(`${BASE_URL}/user/${id}/edit-${type}-info`, payload);
+		// 		const response = await Axios.post(`/user/${id}/edit-${type}-info`, payload);
 		// 		// Successfull fetch
 		// 		const data = response.data;
 		// 		toast({ message: data.message, type: "dark" });
@@ -722,7 +723,7 @@ const UserUI = () => {
 
 			try {
 				setIsWaitingFetchAction(true);
-				const response = await axios.post(`${BASE_URL}/user/${id}/edit-${type}-info`, memberInfo);
+				const response = await Axios.post(`/user/${id}/edit-${type}-info`, memberInfo);
 				// Successfull fetch
 				const data = response.data;
 				toast({ message: data.message, type: "dark" });
@@ -754,7 +755,7 @@ const UserUI = () => {
 		const handleRemoveMember = async (email) => {
 			try {
 				setIsWaitingFetchAction(true);
-				const response = await axios.post(`${BASE_URL}/user/remove`, { email });
+				const response = await Axios.post(`/user/remove`, { email });
 
 				// Successfull fetch
 				const data = response.data;
@@ -780,9 +781,10 @@ const UserUI = () => {
 				<div className="d-flex flex-wrap justify-content-between align-items-center mb-3">
 					<h2 className='text-appColor'><Users weight='fill' className="me-1 opacity-50" /> Members</h2>
 					<div className="ms-auto d-flex gap-1">
-						<Button className='btn-sm btn-primaryColor rounded-0 border-0 clickDown'
-							onClick={() => setShowMemberStats(!showMemberStats)}
-						><ChartBar /> <span className='d-none d-sm-inline'> Statistics</span></Button>
+						<button className='btn btn-sm flex-center gap-1 text-primaryColor fw-semibold border-secondary border border-opacity-25 clickDown'
+							onClick={() => setShowMemberStats(!showMemberStats)}>
+							<ChartBar /> Statistics
+						</button>
 					</div>
 				</div>
 
@@ -1211,7 +1213,7 @@ const UserUI = () => {
 							</Form>
 							{/* Content */}
 
-							<div className="d-lg-flex flex-wrap">
+							<div className="d-lg-flex flex-wrap pb-5">
 								{savingsToShow
 									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
 									.map((member, index) => {
@@ -1524,7 +1526,7 @@ const UserUI = () => {
 			if (window.confirm(`Are you sure to proceed with ${keepAnnualInterest ? 'keeping' : 'withdrawing'} the annual interest ?`)) {
 				try {
 					setIsWaitingFetchAction(true);
-					const response = await axios.post(`${BASE_URL}/api/${keepAnnualInterest ? 'distribute' : 'withdraw'}-interest`, {
+					const response = await Axios.post(`/api/${keepAnnualInterest ? 'distribute' : 'withdraw'}-interest`, {
 						annualReceivable: interestToReceive
 					});
 					// Successfull fetch
@@ -1556,7 +1558,7 @@ const UserUI = () => {
 			// 	action: async () => {
 			// 		try {
 			// 			setIsWaitingFetchAction(true);
-			// 			const response = await axios.post(`${BASE_URL}/api/${keepAnnualInterest ? 'distribute' : 'withdraw'}-interest`);
+			// 			const response = await Axios.post(`/api/${keepAnnualInterest ? 'distribute' : 'withdraw'}-interest`);
 			// 			// Successfull fetch
 			// 			const data = response.data;
 			// 			toast({ message: data.message, type: "dark" });
@@ -1594,7 +1596,7 @@ const UserUI = () => {
 		const fetchAnnualInterests = async () => {
 			try {
 				setLoadingAnnualInterest(true);
-				const response = await axios.get(`${BASE_URL}/api/annualInterests`);
+				const response = await Axios.get(`/api/annualInterests`);
 				const data = response.data;
 				setAllAnnualInterest(data);
 				setAnnualInterestToShow(data);
@@ -1676,10 +1678,7 @@ const UserUI = () => {
 										totalAnnualShares += annualShares;
 
 										return (
-											<tr
-												key={index}
-												className="small cursor-default clickDown interest-row"
-											>
+											<tr key={index} className="small cursor-default clickDown interest-row">
 												<td className="border-bottom-3 border-end">
 													{index + 1}
 												</td>
@@ -1904,7 +1903,7 @@ const UserUI = () => {
 
 			try {
 				setIsWaitingFetchAction(true);
-				const response = await axios.put(`${BASE_URL}/loan/${id}/pay`, {
+				const response = await Axios.put(`/loan/${id}/pay`, {
 					loanToPay: payLoanAmount,
 					interestToPay: payInterestAmount,
 					tranchesToPay: payTranchesAmount,
@@ -1949,7 +1948,9 @@ const UserUI = () => {
 		const renderTrancheInputs = () => {
 			return Array.from({ length: tranches }).map((_, index) => (
 				<div key={index} className="mb-3">
-					<label className="form-label">Tranche {index + 1} Due Date (<FormatedDate date={trancheDates[index]} className="fw-normal" />)</label>
+					<label className="form-label">
+						Tranche {index + 1} Due Date {!['', 0, undefined].includes(trancheDates[index]) && (<FormatedDate date={trancheDates[index]} className="ms-1 fw-semibold fst-italic" />)}
+					</label>
 					<input
 						type="date"
 						className="form-control"
@@ -1988,7 +1989,7 @@ const UserUI = () => {
 				};
 
 				setIsWaitingFetchAction(true);
-				const response = await axios.post(`${BASE_URL}/credit/create`, payload);
+				const response = await Axios.post(`/credit/create`, payload);
 				const data = response.data;
 				toast({ message: `Success: ${data.message}`, type: "dark" });
 				setShowRequestCreditForm(false);
@@ -2006,21 +2007,12 @@ const UserUI = () => {
 				<div className="d-flex flex-wrap justify-content-between align-items-center mb-3">
 					<h2 className='text-appColor'><Blueprint weight='fill' className="me-1 opacity-50" /> Credit panel</h2>
 					<div className="ms-auto d-flex gap-1">
-						<Button className='btn-sm btn-primaryColor rounded-0 border-0 clickDown'
-							onClick={() => setShowRequestCreditForm(true)}
-						><Plus /> Request credit</Button>
+						<button className='btn btn-sm flex-center gap-1 text-primaryColor fw-semibold border-secondary border border-opacity-25 clickDown'
+							onClick={() => setShowRequestCreditForm(true)}>
+							<Plus /> Request credit
+						</button>
 					</div>
 				</div>
-
-				{/* <Form onSubmit={e => e.preventDefault()} className='sticky-top col-lg-6 col-xxl-4 members-search-box'>
-					<Form.Control ref={memberSearcherRef} type="text" placeholder="🔍 Search members..." id='memberSearcher' className="h-2_5rem border border-2 bg-gray-200 rounded-0"
-						value={memberSearchValue} onChange={(e) => setMemberSearchValue(e.target.value)}
-						onKeyUp={e => { (e.key === "Enter") && filterMembersBySearch() }}
-					/>
-					{memberSearchValue !== '' && (
-						<X className='ptr r-middle-m me-1' onClick={() => setMemberSearchValue('')} />
-					)}
-				</Form> */}
 
 				{loadingMembers && (<LoadingIndicator icon={<Blueprint size={80} className="loading-skeleton" />} />)}
 				{!loadingMembers && errorLoadingMembers && (
@@ -2043,24 +2035,19 @@ const UserUI = () => {
 							<div className="d-flex justify-content-lg-between gap-2 mt-3 overflow-auto">
 								{membersToShow
 									.filter(m => m.id === signedUser?.id)
-									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
 									.map((member, index) => (
-										<div key={index} className='w-4rem ptr clickDown'
+										<div key={index} className='w-4rem ms-3 mx-xl-4 ptr clickDown'
 											title={`${member.husbandFirstName} ${member.husbandLastName}`}
 											onClick={() => { setSelectedMember(member); setShowSelectedMemberCredits(true) }}
 										>
-											<img src={member.husbandAvatar ? member.husbandAvatar : '/images/man_avatar_image.jpg'}
-												alt={`${member.husbandFirstName} ${member.husbandLastName}`}
+											<img src={member.husbandAvatar ? member.husbandAvatar : '/images/man_avatar_image.jpg'} alt=""
 												className="w-100 ratio-1-1 object-fit-cover p-1 bg-light rounded-circle"
 											/>
-											<div className="text-truncate fs-70 text-center mt-1">
-												{`${member.husbandFirstName} ${member.husbandLastName}`}
+											<div className="mt-1 fs-70 text-center text-primaryColor fw-semibold">
+												Summary
 											</div>
 										</div>
 									))}
-							</div>
-							<div className="d-flex d-lg-none">
-								<DotsThreeOutline size={30} weight='fill' className='ms-auto me-2 text-gray-500' />
 							</div>
 						</div>
 
@@ -2107,8 +2094,7 @@ const UserUI = () => {
 																						</tr>
 																					</thead>
 																					<tbody>
-																						<tr className={`small credit-row`}
-																						>
+																						<tr className={`small credit-row`}>
 																							<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
 																								Loan
 																							</td>
@@ -2122,8 +2108,7 @@ const UserUI = () => {
 																								<CurrencyText amount={selectedLoan?.loanPending} />
 																							</td>
 																						</tr>
-																						<tr className={`small credit-row`}
-																						>
+																						<tr className={`small credit-row`}>
 																							<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
 																								Interest
 																							</td>
@@ -2137,8 +2122,7 @@ const UserUI = () => {
 																								<CurrencyText amount={selectedLoan?.interestPending} />
 																							</td>
 																						</tr>
-																						<tr className={`small credit-row`}
-																						>
+																						<tr className={`small credit-row`}>
 																							<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
 																								Tranches
 																							</td>
@@ -2217,10 +2201,7 @@ const UserUI = () => {
 																								const creditInterest = Number(credit.creditAmount) * (5 / 100);
 
 																								return (
-																									<tr
-																										key={index}
-																										className={`small loan-row`}
-																									>
+																									<tr key={index} className={`small loan-row`}>
 																										<td className={`ps-sm-3 border-bottom-3 border-end`}>
 																											{index + 1}
 																										</td>
@@ -2362,10 +2343,7 @@ const UserUI = () => {
 																const creditInterest = Number(credit.creditAmount) * (5 / 100);
 
 																return (
-																	<tr
-																		key={index}
-																		className={`small loan-row`}
-																	>
+																	<tr key={index} className={`small loan-row`}>
 																		<td className={`ps-sm-3 border-bottom-3 border-end`}>
 																			{index + 1}
 																		</td>
@@ -2441,10 +2419,7 @@ const UserUI = () => {
 																const creditInterest = Number(credit.creditAmount) * (5 / 100);
 
 																return (
-																	<tr
-																		key={index}
-																		className={`small loan-row`}
-																	>
+																	<tr key={index} className={`small loan-row`}>
 																		<td className={`ps-sm-3 border-bottom-3 border-end`}>
 																			{index + 1}
 																		</td>
@@ -2523,10 +2498,7 @@ const UserUI = () => {
 																const creditInterest = Number(credit.creditAmount) * (5 / 100);
 
 																return (
-																	<tr
-																		key={index}
-																		className={`small cursor-default clickDown loan-row`}
-																	>
+																	<tr key={index} className={`small cursor-default clickDown loan-row`}>
 																		<td className={`ps-sm-3 border-bottom-3 border-end`}>
 																			{index + 1}
 																		</td>
@@ -2692,10 +2664,7 @@ const UserUI = () => {
 																			const amountToPay = Number(selectedCredit.creditAmount) + (Number(selectedCredit.creditAmount) * (5 / 100));
 																			const backFillAmount = amountToPay / selectedCredit.tranches;
 																			return (
-																				<tr
-																					key={index}
-																					className="small expense-row"
-																				>
+																				<tr key={index} className="small expense-row">
 																					<td className="ps-sm-3 border-bottom-3 border-end">
 																						{item.tranchNumber}
 																					</td>
@@ -2746,7 +2715,11 @@ const UserUI = () => {
 								<form onSubmit={handleRequestCredit} className="px-sm-2 pb-5">
 									{/* Credit Amount */}
 									<div className="mb-3">
-										<label className="form-label fw-semibold">Credit Amount ( <CurrencyText amount={Number(creditAmount)} /> )</label>
+										<label className="form-label fw-semibold">
+											Credit Amount {!['', 0].includes(creditAmount) && (
+												<><span>( <CurrencyText amount={Number(creditAmount)} className="ms-1" /> )</span></>
+											)}
+										</label>
 										<input
 											type="number"
 											className="form-control"
@@ -2760,7 +2733,9 @@ const UserUI = () => {
 
 									{/* Request Date */}
 									<div className="mb-3">
-										<label className="form-label fw-semibold">Request Date (<FormatedDate date={requestDate} className="fw-normal" />)</label>
+										<label className="form-label fw-semibold">
+											Request Date {!['', 0].includes(requestDate) && (<FormatedDate date={requestDate} className="ms-1 fw-normal fst-italic" />)}
+										</label>
 										<input
 											type="date"
 											className="form-control"
@@ -2772,7 +2747,9 @@ const UserUI = () => {
 
 									{/* Due Date */}
 									<div className="mb-3">
-										<label className="form-label fw-semibold">Due Date (<FormatedDate date={dueDate} className="fw-normal" />)</label>
+										<label className="form-label fw-semibold">
+											Due Date {!['', 0].includes(dueDate) && (<FormatedDate date={dueDate} className="ms-1 fw-normal fst-italic" />)}
+										</label>
 										<input
 											type="date"
 											className="form-control"
@@ -3013,10 +2990,7 @@ const UserUI = () => {
 														const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
 
 														return (
-															<tr
-																key={index}
-																className="small cursor-default clickDown expense-row"
-															>
+															<tr key={index} className="small cursor-default clickDown expense-row">
 																<td className="ps-sm-3 border-bottom-3 border-end">
 																	{index + 1}
 																</td>
@@ -3026,10 +3000,10 @@ const UserUI = () => {
 																<td>
 																	<CurrencyText amount={Number(record.recordAmount)} />
 																</td>
-																<td className="text-nowrap">
+																<td>
 																	{record.comment}
 																</td>
-																<td style={{ maxWidth: '13rem' }}>
+																<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
 																	<FormatedDate date={record.createdAt} />
 																</td>
 															</tr>
@@ -3205,10 +3179,7 @@ const UserUI = () => {
 															.sort((a, b) => a.amount - b.amount)
 													)
 													.map((item, index) => (
-														<tr
-															key={index}
-															className="small cursor-default clickDown expense-row"
-														>
+														<tr key={index} className="small cursor-default clickDown expense-row">
 															<td className={`ps-sm-3 border-end ${item.type === 'income' ? 'text-success' : 'text-warning-emphasis'}`}>
 																{index + 1}
 															</td>
@@ -3240,8 +3211,7 @@ const UserUI = () => {
 												</tr>
 											</thead>
 											<tbody>
-												<tr className="small cursor-default clickDown general-report-row"
-												>
+												<tr className="small cursor-default clickDown general-report-row">
 													<td className="ps-sm-3 border-bottom-3 border-end fw-bold">
 														Balance
 													</td>
@@ -3266,10 +3236,7 @@ const UserUI = () => {
 														generalTotal += pendingCredit;
 
 														return (
-															<tr
-																key={index}
-																className="small cursor-default clickDown general-report-row"
-															>
+															<tr key={index} className="small cursor-default clickDown general-report-row">
 																<td className="ps-sm-3">
 																	<b>{index + 1}</b>. {memberNames}
 																</td>
@@ -3297,8 +3264,7 @@ const UserUI = () => {
 														<CurrencyText amount={totalCotisationsAndShares} />
 													</td>
 												</tr>
-												<tr className="small cursor-default clickDown general-report-row fw-bold"
-												>
+												<tr className="small cursor-default clickDown general-report-row fw-bold">
 													<td></td>
 													<td></td>
 													<td>
@@ -3308,8 +3274,7 @@ const UserUI = () => {
 														<CurrencyText amount={generalTotal - totalCotisationsAndShares} />
 													</td>
 												</tr>
-												<tr className="small cursor-default clickDown general-report-row fw-bold fs-5"
-												>
+												<tr className="small cursor-default clickDown general-report-row fw-bold fs-5">
 													<td className="ps-sm-3">General Total:</td>
 													<td>
 														<CurrencyText amount={generalTotal} /> {/* Must be equal */}
@@ -3416,7 +3381,6 @@ const UserUI = () => {
 					<Card.Body>
 						<Card.Title className="text-danger">Unknown user account</Card.Title>
 						<Card.Text>If you believe this is an error, please reach out for support.</Card.Text>
-
 						<Button variant="primary" href="/login"><CaretRight /> Sign in</Button>
 					</Card.Body>
 				</Card>
@@ -3445,7 +3409,7 @@ const UserUI = () => {
 
 	return (
 		<>
-			<MyToast show={showToast} message={toastMessage} type={toastType} selfClose onClose={() => setShowToast(false)} />
+			<MyToast show={showToast} message={toastMessage} type={toastType} selfClose onClose={() => resetToast(false)} />
 
 			{/* Prompt actions */}
 			<ActionPrompt
@@ -3537,7 +3501,7 @@ const UserUI = () => {
 					{/* Sidebar Navigation */}
 					<nav className={`col-12 col-md-3 col-xl-2 px-2 px-sm-5 px-md-0 d-md-block border-end overflow-y-auto sidebar ${sideNavbarIsFloated ? 'floated' : ''}`} id="sidebarMenu">
 						<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit my-2 my-md-0 py-3 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded-4' : ''}`}>
-							<div className="d-flex align-items-center d-md-none mb-3 px-3 pb-2 border-bottom border-light border-opacity-25">
+							<div className="d-flex align-items-center d-md-none mb-3 px-3 pb-2 border-light border-opacity-25">
 								<div className='ms-auto d-grid pb-1'>
 									<span className='ms-auto smaller'>{`${signedUser?.husbandFirstName} ${signedUser?.husbandLastName}`}</span>
 									<span className='ms-auto fs-70 opacity-75' style={{ lineHeight: 1 }}>{signedUser?.role}</span>
