@@ -8,8 +8,7 @@ import { useNavigate } from "react-router-dom";
 import $ from 'jquery';
 import { SignIn, UserCircleDashed, Wallet } from '@phosphor-icons/react';
 import useCustomDialogs from '../common/hooks/useCustomDialogs';
-
-const BASE_URL = 'http://localhost:5000';
+import { BASE_URL } from '../../api/api';
 
 const Login = () => {
 
