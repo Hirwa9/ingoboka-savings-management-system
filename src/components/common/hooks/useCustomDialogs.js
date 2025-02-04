@@ -1,3 +1,4 @@
+import { ChatTeardropText, Check, WarningCircle } from "@phosphor-icons/react";
 import { useState, useRef } from "react";
 
 const useCustomDialogs = () => {
@@ -7,11 +8,11 @@ const useCustomDialogs = () => {
     const [toastType, setToastType] = useState('gray-300');
     const [toastSelfClose, setToastSelfClose] = useState(true);
 
-    const toast = ({ message, type, selfClose }) => {
+    const toast = ({ message, type = 'gray-300', selfClose = true }) => {
         setShowToast(true);
         setToastMessage(message);
-        setToastType(type || 'gray-300');
-        setToastSelfClose(selfClose !== undefined ? selfClose : true);
+        setToastType(type);
+        setToastSelfClose(selfClose);
     };
 
     const resetToast = () => {
@@ -20,6 +21,30 @@ const useCustomDialogs = () => {
         setToastType('gray-300');
         setToastSelfClose(true);
     };
+
+    const successToast = ({ message, type = 'dark', selfClose = true }) => {
+        return toast({
+            message: <><Check size={22} className='me-2 flex-shrink-0 opacity-50' /> {message}</>,
+            type,
+            selfClose
+        });
+    }
+
+    const warningToast = ({ message, type = 'warning', selfClose = true }) => {
+        return toast({
+            message: <><WarningCircle size={22} weight='fill' className='me-1 flex-shrink-0 opacity-50' /> {message}</>,
+            type,
+            selfClose
+        });
+    }
+
+    const messageToast = ({ message, type = 'gray-700', selfClose = true, }) => {
+        return toast({
+            message: <><ChatTeardropText size={22} weight='fill' className='me-2 flex-shrink-0 opacity-50' /> {message}</>,
+            type,
+            selfClose
+        });
+    }
 
     // Confirm Dialog
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -93,6 +118,9 @@ const useCustomDialogs = () => {
         toastType,
         toastSelfClose,
         toast,
+        successToast,
+        warningToast,
+        messageToast,
         resetToast,
 
         // Confirm Dialog
