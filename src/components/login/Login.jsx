@@ -2,7 +2,6 @@ import React, { useId, useState } from 'react';
 import './login.css';
 import '../common/formInput/formInput.css';
 import MyToast from '../common/Toast';
-import { isValidEmail } from '../../scripts/myScripts';
 import { useLocation } from 'react-router';
 import { useNavigate } from "react-router-dom";
 import $ from 'jquery';
@@ -30,8 +29,8 @@ const Login = () => {
      * Login
     */
 
-    const [emailOrUsername, setEmailOrUsername] = useState();
-    const [password, setPassword] = useState();
+    const [emailOrUsername, setEmailOrUsername] = useState('');
+    const [password, setPassword] = useState('');
 
     // Handle sign in
 
@@ -76,7 +75,6 @@ const Login = () => {
     };
 
     // Handle input's UI
-    // Handle input changes
     const handleChange = (e) => {
         const target = e.target;
         if (target.value !== undefined && target.value !== '') {
@@ -123,8 +121,8 @@ const Login = () => {
                                             id={signInId + "EmailOrUsername"}
                                             className="form-control form-control-lg"
                                             value={emailOrUsername}
-                                            required
                                             onChange={e => { handleChange(e); setEmailOrUsername(e.target.value) }}
+                                            required
                                         />
                                         <label htmlFor={signInId + "EmailOrUsername"} className="form-label">Email or Username</label>
                                     </div>
@@ -134,8 +132,8 @@ const Login = () => {
                                             id={signInId + "Password"}
                                             className="form-control form-control-lg no-css-validation"
                                             value={password}
-                                            required
                                             onChange={e => { handleChange(e); setPassword(e.target.value) }}
+                                            required
                                         />
                                         <label htmlFor={signInId + "Password"} className="form-label">Password</label>
                                     </div>

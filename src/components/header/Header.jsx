@@ -4,7 +4,7 @@ import { List, SignOut } from '@phosphor-icons/react';
 
 const Header = () => {
     const sideNavbarTogglerRef = useRef();
-    const [sideNavbarIsFloated, setSideNavbarIsFloated] = useState();
+    const [sideNavbarIsFloated, setSideNavbarIsFloated] = useState(false);
     return (
         <>
             {/* <header className={headerVisible === true ? "" : "dom-scrolling-down"}> */}
