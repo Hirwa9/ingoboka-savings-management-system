@@ -1645,15 +1645,15 @@ const UserUI = () => {
 					</div>
 					<div className='overflow-auto mb-5'>
 						<table className="table table-hover h-100">
-							<thead className='table-success position-sticky top-0 inx-1'>
+							<thead className='table-success position-sticky top-0 inx-1 text-uppercase small'>
 								<tr>
-									<th className='py-3 text-nowrap text-gray-700'>N°</th>
-									<th className='py-3 text-nowrap text-gray-700'>Member</th>
-									<th className='py-3 text-nowrap text-gray-700'>Annual shares</th>
-									<th className='py-3 text-nowrap text-gray-700'>Share % to {totalBoughtShares}</th>
-									<th className='py-3 text-nowrap text-gray-700'>Interest <sub className='fs-60'>/RWF</sub></th>
-									<th className='py-3 text-nowrap text-gray-700'>Receivable<sub className='fs-60'>/RWF</sub></th>
-									<th className='py-3 text-nowrap text-gray-700'>Remains<sub className='fs-60'>/RWF</sub></th>
+									<th className='py-3 text-nowrap text-gray-700 fw-normal'>N°</th>
+									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Member</th>
+									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Annual shares</th>
+									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Share % to {totalBoughtShares}</th>
+									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Interest <sub className='fs-60'>/RWF</sub></th>
+									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Receivable<sub className='fs-60'>/RWF</sub></th>
+									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Remains<sub className='fs-60'>/RWF</sub></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -1691,10 +1691,10 @@ const UserUI = () => {
 												<td className="text-nowrap">
 													{sharesPercentage} %
 												</td>
-												<td className="text-nowrap fw-bold text-gray-700">
+												<td className="text-nowrap text-gray-700">
 													<CurrencyText amount={interest} smallCurrency />
 												</td>
-												<td className="text-nowrap fw-bold text-success">
+												<td className="text-nowrap text-success">
 													<CurrencyText amount={interestReceivable} smallCurrency />
 												</td>
 												<td className="text-nowrap text-gray-700">
@@ -2085,12 +2085,12 @@ const UserUI = () => {
 																			<hr />
 																			<div className='overflow-auto'>
 																				<table className="table table-hover h-100">
-																					<thead className='table-warning position-sticky top-0 inx-1'>
+																					<thead className='table-secondary position-sticky top-0 inx-1 text-uppercase small'>
 																						<tr>
-																							<th className='py-3 text-nowrap text-gray-700'>Title</th>
-																							<th className='py-3 text-nowrap text-gray-700'>Taken  <sub className='fs-60'>/RWF</sub></th>
-																							<th className='py-3 text-nowrap text-gray-700'>Paid  <sub className='fs-60'>/RWF</sub></th>
-																							<th className='py-3 text-nowrap text-gray-700'>Pending  <sub className='fs-60'>/RWF</sub></th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Title</th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Taken  <sub className='fs-60'>/RWF</sub></th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Paid  <sub className='fs-60'>/RWF</sub></th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Pending  <sub className='fs-60'>/RWF</sub></th>
 																						</tr>
 																					</thead>
 																					<tbody>
@@ -2182,14 +2182,14 @@ const UserUI = () => {
 																		<>
 																			<div className='overflow-auto'>
 																				<table className="table table-hover h-100">
-																					<thead className='table-success position-sticky top-0 inx-1'>
+																					<thead className='table-success position-sticky top-0 inx-1 text-uppercase small'>
 																						<tr>
 																							<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
-																							<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Member</th>
-																							<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
-																							<th className='py-3 text-nowrap text-gray-700'>Date & Interval</th>
-																							<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
-																							<th className='py-3 text-nowrap text-gray-700'>Credit Status</th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date & Interval</th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Credit Status</th>
 																						</tr>
 																					</thead>
 																					<tbody>
@@ -2324,13 +2324,13 @@ const UserUI = () => {
 										{creditsToShow.filter(cr => cr.status === 'pending').length > 0 && (
 											<div className='overflow-auto'>
 												<table className="table table-hover h-100">
-													<thead className='table-warning position-sticky top-0 inx-1'>
+													<thead className='table-warning position-sticky top-0 inx-1 text-uppercase small'>
 														<tr>
 															<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
-															<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Member</th>
-															<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
-															<th className='py-3 text-nowrap text-gray-700'>Date & Interval</th>
-															<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date & Interval</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
 														</tr>
 													</thead>
 													<tbody>
@@ -2399,14 +2399,14 @@ const UserUI = () => {
 										{creditsToShow.filter(cr => cr.status === 'approved').length > 0 ? (
 											<div className='overflow-auto'>
 												<table className="table table-hover h-100">
-													<thead className='table-success position-sticky top-0 inx-1'>
+													<thead className='table-success position-sticky top-0 inx-1 text-uppercase small'>
 														<tr>
 															<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
-															<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Member</th>
-															<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
-															<th className='py-3 text-nowrap text-gray-700'>Date & Interval</th>
-															<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
-															<th className='py-3 text-nowrap text-gray-700'>Credit Status</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date & Interval</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Credit Status</th>
 														</tr>
 													</thead>
 													<tbody>
@@ -2477,15 +2477,15 @@ const UserUI = () => {
 										{creditsToShow.filter(cr => cr.status === 'rejected').length > 0 && (
 											<div className='overflow-auto'>
 												<table className="table table-hover h-100">
-													<thead className='table-danger position-sticky top-0 inx-1'>
+													<thead className='table-danger position-sticky top-0 inx-1 text-uppercase small'>
 														<tr>
 															<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
-															<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Member</th>
-															<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
-															<th className='py-3 text-nowrap text-gray-700'>Date & Interval</th>
-															<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
-															<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Rejection</th>
-															<th className='py-3 text-nowrap text-gray-700'>Action</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date & Interval</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Rejection</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Action</th>
 														</tr>
 													</thead>
 													<tbody>
@@ -2650,11 +2650,11 @@ const UserUI = () => {
 														{/* The plan */}
 														<div className='overflow-auto'>
 															<table className="table table-hover h-100">
-																<thead className='table-primary position-sticky top-0 inx-1'>
+																<thead className='table-primary position-sticky top-0 inx-1 text-uppercase small'>
 																	<tr>
 																		<th className='ps-sm-3 py-3 text-nowrap text-gray-700 fw-normal'>Tranche</th>
-																		<th className='py-3 text-nowrap text-gray-700 fw-normal'>Backfill amount</th>
-																		<th className='py-3 text-nowrap text-gray-700 fw-normal'>Backfill date</th>
+																		<th className='py-3 text-nowrap text-gray-700 fw-normal fw-normal'>Backfill amount</th>
+																		<th className='py-3 text-nowrap text-gray-700 fw-normal fw-normal'>Backfill date</th>
 																	</tr>
 																</thead>
 																<tbody>
@@ -2972,13 +2972,13 @@ const UserUI = () => {
 								<>
 									<div className='overflow-auto'>
 										<table className="table table-hover h-100">
-											<thead className='table-warning position-sticky top-0 inx-1'>
+											<thead className='table-warning position-sticky top-0 inx-1 text-uppercase small'>
 												<tr>
 													<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
-													<th className='py-3 text-nowrap text-gray-700' style={{ minWidth: '10rem' }}>Type</th>
-													<th className='py-3 text-nowrap text-gray-700'>Amount  <sub className='fs-60'>/RWF</sub></th>
-													<th className='py-3 text-nowrap text-gray-700' style={{ maxWidth: '13rem' }} >Comment</th>
-													<th className='py-3 text-nowrap text-gray-700'>Date</th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Type</th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date</th>
 												</tr>
 											</thead>
 											<tbody>
@@ -3161,11 +3161,11 @@ const UserUI = () => {
 								<>
 									<div className='overflow-auto'>
 										<table className="table table-hover h-100">
-											<thead className='table-success position-sticky top-0 inx-1'>
+											<thead className='table-success position-sticky top-0 inx-1 text-uppercase small'>
 												<tr>
 													<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
-													<th className='py-3 text-nowrap text-gray-700'>Libelle</th>
-													<th className='py-3 text-nowrap text-gray-700'>Montant <sub className='fs-60'>/RWF</sub></th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Libelle</th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Montant <sub className='fs-60'>/RWF</sub></th>
 												</tr>
 											</thead>
 											<tbody>
@@ -3202,12 +3202,12 @@ const UserUI = () => {
 								<>
 									<div className='overflow-auto'>
 										<table className="table table-hover h-100">
-											<thead className='table-success position-sticky top-0 inx-1'>
+											<thead className='table-success position-sticky top-0 inx-1 text-uppercase small'>
 												<tr>
-													<th className='py-3 text-nowrap text-gray-700'>Actif</th>
-													<th className='py-3 text-nowrap text-gray-700'>Montant <sub className='fs-60'>/RWF</sub></th>
-													<th className='py-3 text-nowrap text-gray-700'>Passif</th>
-													<th className='py-3 text-nowrap text-gray-700'>Montant <sub className='fs-60'>/RWF</sub></th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Actif</th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Montant <sub className='fs-60'>/RWF</sub></th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Passif</th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Montant <sub className='fs-60'>/RWF</sub></th>
 												</tr>
 											</thead>
 											<tbody>
