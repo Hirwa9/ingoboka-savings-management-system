@@ -11,19 +11,22 @@ import { BASE_URL } from '../../api/api';
 
 const Login = () => {
 
-    const navigate = useNavigate();
-    const location = useLocation();
-    const signInId = useId();
-
     // Custom hooks
     const {
         // Toast
         showToast,
-        setShowToast,
         toastMessage,
         toastType,
-        toast,
+        toastSelfClose,
+        successToast,
+        warningToast,
+        messageToast,
+        resetToast,
     } = useCustomDialogs();
+
+    const navigate = useNavigate();
+    const location = useLocation();
+    const signInId = useId();
 
     /**
      * Login
@@ -37,22 +40,23 @@ const Login = () => {
     const handleSignIn = async (e) => {
         e.preventDefault();
         if (!emailOrUsername || !password) {
-            return toast({ message: 'Please fill in all fields.', type: 'warning' });
+            return warningToast({ message: 'Enter all credentials to continue.' });
         }
 
         try {
             const response = await fetch(`${BASE_URL}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ emailOrUsername, password }) // Send both email and username field
+                body: JSON.stringify({ emailOrUsername, password })
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error logging you in. Please try again.');
             }
 
             const data = await response.json();
-            toast({ message: data.message || "Login successful", type: 'success' });
+            successToast({ message: data.message || "Login successful" });
 
             // Authentication handling
             if (data.accessToken) {
@@ -63,14 +67,13 @@ const Login = () => {
                 } else if (type === "member") {
                     navigate(`/user/${id}`);
                 } else {
-                    toast({ message: "Unknown user type. Please contact support.", type: "warning" });
+                    warningToast({ message: 'Unable to login. Please contact support.' });
                 }
             } else {
-                toast({ message: "Invalid credentials. Please try again.", type: "warning" });
+                warningToast({ message: 'Invalid credentials. Please try again.' });
             }
         } catch (error) {
-            console.error(error.message);
-            toast({ message: "An error occurred. Please try again.", type: "warning" });
+            warningToast({ message: error.message || 'An unknown error occurred. Please try again.' });
         }
     };
 
@@ -87,7 +90,8 @@ const Login = () => {
 
     return (
         <>
-            <MyToast show={showToast} message={toastMessage} type={toastType} selfClose onClose={() => setShowToast(false)} />
+            {/* Toast message */}
+            <MyToast show={showToast} message={toastMessage} type={toastType} selfClose={toastSelfClose} onClose={() => resetToast()} />
             <main className='w-100vw h-100vh'>
                 <div className="dim-100 bg-lightColor">
                     <div className='h-100 d-flex flex-column flex-lg-row mx-0'>
