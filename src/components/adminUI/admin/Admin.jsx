@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
 import { Button, Form } from "react-bootstrap";
 import './admin.css';
@@ -31,6 +31,7 @@ import '@szhsin/react-menu/dist/transitions/zoom.css';
 import ContentToggler from '../../common/ContentToggler';
 import DividerText from '../../common/DividerText';
 import { BASE_URL, Axios } from '../../../api/api';
+import { AuthContext, useAuth } from '../../AuthProvider';
 
 const Admin = () => {
 
@@ -74,6 +75,8 @@ const Admin = () => {
 		customPrompt,
 		resetPrompt,
 	} = useCustomDialogs();
+
+    const { logout } = useContext(AuthContext);
 
 	const sideNavbarRef = useRef();
 	const sideNavbarTogglerRef = useRef();
@@ -291,7 +294,7 @@ const Admin = () => {
 		fetchLoans();
 	}, []);
 
-	const interestToReceive = allLoans.reduce((sum, m) => sum + m.interestPaid, 0);
+	const interestToReceive = allLoans.reduce((sum, m) => sum + m.interestPaid, 0) - allFigures?.distributedInterest;
 	const pendingInterest = useMemo(() => (
 		allLoans.reduce((sum, m) => sum + m.interestPending, 0)
 	), [allLoans]);
@@ -1815,6 +1818,17 @@ const Admin = () => {
 		// Add multiple shares (umuhigo)
 		const [showAddMultipleShares, setShowAddMultipleShares] = useState(false);
 		const [multipleSharesAmount, setMultipleSharesAmount] = useState('');
+		const [newMemberSocial, setNewMemberSocial] = useState('');
+		const [newMemberInterest, setNewMemberInterest] = useState('');
+		const [updateNewMember, setUpdateNewMember] = useState(false);
+
+		useEffect(() => {
+			if (!updateNewMember) {
+				setNewMemberSocial('');
+				setNewMemberInterest('');
+			}
+		}, [updateNewMember]);
+
 
 
 		// Handle add savings
@@ -1823,16 +1837,26 @@ const Admin = () => {
 				return warningToast({ message: "Enter valid number of shares to continue" });
 			}
 
+			const payload = updateNewMember ? {
+				newMember: updateNewMember,
+				progressiveShares: multipleSharesAmount,
+				newMemberSocial,
+				newMemberInterest,
+				comment: `Adding ${multipleSharesAmount} shares (Umuhigo)`,
+
+			} : {
+				newMember: updateNewMember,
+				progressiveShares: multipleSharesAmount,
+				comment: `Adding ${multipleSharesAmount} shares (Umuhigo)`,
+			}
+
 			try {
 				setIsWaitingFetchAction(true);
 
 				const response = await fetch(`${BASE_URL}/member/${id}/multiple-shares`, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						shares: multipleSharesAmount,
-						comment: `Adding ${multipleSharesAmount} shares (Umuhigo)`,
-					}),
+					body: JSON.stringify(payload),
 				});
 
 				// Fetch error
@@ -2212,6 +2236,40 @@ const Admin = () => {
 														/>
 														<div className="form-text text-info-emphasis fw-bold">Unit share value is <CurrencyText amount={20000} /> </div>
 													</div>
+
+													{/* Register new member */}
+													<div className="mb-3 form-check">
+														<input
+															type="checkbox"
+															className="form-check-input border-2 border-primary"
+															id="autoGeneratePassword"
+															checked={updateNewMember}
+															onChange={() => setUpdateNewMember(!updateNewMember)}
+														/>
+														<label htmlFor="autoGeneratePassword" className="form-check-label">
+															Updating new member
+														</label>
+													</div>
+													{updateNewMember && (
+														<>
+															<div className="mb-3">
+																<label htmlFor="password" className="form-label fw-semibold">Social</label>
+																<input type="password" className="form-control" id="password"
+																	placeholder="Enter social amount"
+																	value={newMemberSocial}
+																	onChange={e => setNewMemberSocial(e.target.value)}
+																/>
+															</div>
+															<div className="mb-3">
+																<label htmlFor="password" className="form-label fw-semibold">Interest</label>
+																<input type="password" className="form-control" id="password"
+																	placeholder="Enter interest"
+																	value={newMemberInterest}
+																	onChange={e => setNewMemberInterest(e.target.value)}
+																/>
+															</div>
+														</>
+													)}
 													<div className="mb-3 p-2 form-text bg-dark-subtle rounded">
 														<p className='mb-2 small text-dark-emphasis'>
 															Please verify the details before saving. This action is final and cannot be reversed.
@@ -2244,7 +2302,12 @@ const Admin = () => {
 		const [showExportDataDialog, setShowExportDataDialog] = useState(false);
 		const interestPartitionViewRef = useRef();
 
-		const totalShares = 818;
+		const totalProgressiveShares = activeMembers.reduce((sum, item) => sum + item.progressiveShares, 0);
+		const totalActiveShares = activeMembers.reduce((sum, item) => {
+			const paidAnnualShares = JSON.parse(item.annualShares).filter(share => share.paid).length;
+			return sum + item.progressiveShares + paidAnnualShares;
+		}, 0);
+
 		const totalBoughtShares = activeMembers.reduce((sum, item) => sum + item.shares, 0);
 		let totalSharesPercentage = 0;
 		let totalMonetaryInterest = 0;
@@ -2374,7 +2437,7 @@ const Admin = () => {
 						<div className="d-flex flex-wrap gap-2 ms-lg-auto mb-2">
 							<div className='col'>
 								<div className='flex-align-center text-muted border-bottom'><ChartPie className='me-1 opacity-50' /> <span className="text-nowrap">All shares</span></div>
-								<div className='text-center bg-bodi fs-6'>{totalShares}</div>
+								<div className='text-center bg-bodi fs-6'>{totalActiveShares}</div>
 							</div>
 							<div className='col'>
 								<div className='flex-align-center text-muted border-bottom'><Coins className='me-1 opacity-50' /> <span className="text-nowrap">Interest receivable</span></div>
@@ -2389,7 +2452,7 @@ const Admin = () => {
 								<tr>
 									<th className='py-3 text-nowrap text-gray-700 fw-normal'>N°</th>
 									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Member</th>
-									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Annual shares</th>
+									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Active shares</th>
 									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Share % to {totalBoughtShares}</th>
 									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Interest <sub className='fs-60'>/RWF</sub></th>
 									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Receivable<sub className='fs-60'>/RWF</sub></th>
@@ -2397,72 +2460,43 @@ const Admin = () => {
 								</tr>
 							</thead>
 							<tbody>
-								{activeMembers
-									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
-									.map((item, index) => {
-										const memberNames = `${item.husbandFirstName} ${item.husbandLastName}`;
-										const annualShares = JSON.parse(item.annualShares).filter(share => share.paid).length;
-										const sharesProportion = (item.shares / totalBoughtShares);
+								{activeMembers.map((item, index) => {
+									const memberNames = `${item.husbandFirstName} ${item.husbandLastName}`;
+									const activeShares = item.progressiveShares + JSON.parse(item.annualShares).filter(share => share.paid).length;
+									const sharesProportion = activeShares / totalActiveShares;
+									const sharesPercentage = (sharesProportion * 100).toFixed(3);
+									const interest = sharesProportion * (Number(interestToReceive) + Number(item.initialInterest));
+									const interestReceivable = Math.floor(interest / 20000) * 20000;
+									const interestRemains = interest - interestReceivable;
 
-										const sharesPercentage = (sharesProportion * 100).toFixed(3);
-										// Actual interest = (Shares percentage  * Total interest receivable)
-										const interest = sharesProportion * Number(interestToReceive);
-										// Interest to receive => 20,000 multiples of Actual interest
-										const interestReceivable = Math.floor((interest) / 20000) * 20000;
-										const interestRemains = interest - interestReceivable;
+									totalSharesPercentage += Number(sharesPercentage);
+									totalMonetaryInterest += Number(interest);
+									totalInterestReceivable += interestReceivable + Number(item.initialInterest);
+									totalInterestRemains += interestRemains;
 
-										totalSharesPercentage += Number(sharesPercentage);
-										totalMonetaryInterest += Number(interest);
-										totalInterestReceivable += interestReceivable;
-										totalInterestRemains += interestRemains;
-										totalAnnualShares += annualShares;
-
-										return (
-											<tr key={index} className="small cursor-default clickDown interest-row">
-												<td className="border-bottom-3 border-end">
-													{index + 1}
-												</td>
-												<td className='text-nowrap'>
-													{memberNames}
-												</td>
-												<td>
-													{annualShares}
-												</td>
-												<td className="text-nowrap">
-													{sharesPercentage} %
-												</td>
-												<td className="text-nowrap text-gray-700">
-													<CurrencyText amount={interest} smallCurrency />
-												</td>
-												<td className="text-nowrap text-success">
-													<CurrencyText amount={interestReceivable} smallCurrency />
-												</td>
-												<td className="text-nowrap text-gray-700">
-													<CurrencyText amount={interestRemains} smallCurrency />
-												</td>
-											</tr>
-										)
-									})
-								}
+									return (
+										<tr key={index} className="small cursor-default clickDown interest-row">
+											<td className="border-bottom-3 border-end">{index + 1}</td>
+											<td className='text-nowrap'>{memberNames}</td>
+											<td>{activeShares}</td>
+											<td className="text-nowrap">{sharesPercentage} %</td>
+											<td className="text-nowrap text-gray-700">
+												<CurrencyText amount={interest} smallCurrency />
+											</td>
+											<td className="text-nowrap text-success">
+												<CurrencyText amount={interestReceivable} smallCurrency />
+											</td>
+											<td className="text-nowrap text-gray-700">
+												<CurrencyText amount={interestRemains} smallCurrency />
+											</td>
+										</tr>
+									);
+								})}
 								<tr className="small cursor-default fs-5 table-success clickDown interest-row">
-									<td className="border-bottom-3 border-end" title='Total'>
-										T
-									</td>
-									<td className='text-nowrap'>
-										{totalMembers} <span className="fs-60">members</span>
-									</td>
-									<td className='text-nowrap'>
-										<div className="d-grid">
-											{totalAnnualShares}
-											{/* <span className="fs-60">of {totalShares} shares</span> */}
-										</div>
-									</td>
-									<td className="text-nowrap">
-										<div className="d-grid">
-											<span>{totalSharesPercentage.toFixed(3)} <span className="fs-60">%</span></span>
-											{/* <span className="fs-60">of {totalShares} shares</span> */}
-										</div>
-									</td>
+									<td className="border-bottom-3 border-end" title='Total'>T</td>
+									<td className='text-nowrap'>{totalMembers} <span className="fs-60">members</span></td>
+									<td className='text-nowrap'>{totalActiveShares}</td>
+									<td className="text-nowrap">{totalSharesPercentage.toFixed(3)} %</td>
 									<td className="text-nowrap fw-bold">
 										<CurrencyText amount={totalMonetaryInterest} smallCurrency />
 									</td>
@@ -2578,12 +2612,12 @@ const Admin = () => {
 				)}
 
 				{/* Recent records */}
-				<ContentToggler
+				{/* <ContentToggler
 					state={showAnnualInterestRecords}
 					setState={setShowAnnualInterestRecords}
 					text="Interest Partition Records"
 					className="ms-auto"
-				/>
+				/> */}
 
 				{showAnnualInterestRecords && (
 					<>
@@ -4471,7 +4505,7 @@ const Admin = () => {
 														Verify
 													</td>
 													<td className="text-nowrap">
-														<CurrencyText amount={generalTotal - totalCotisationsAndShares} />
+														<CurrencyText amount={totalCotisationsAndShares - generalTotal} />
 													</td>
 												</tr>
 												<tr className="small cursor-default clickDown general-report-row fw-bold fs-5">
@@ -4708,7 +4742,7 @@ const Admin = () => {
 								<Gear weight='fill' className="me-2 opacity-50" /> Settings
 							</MenuItem>
 							<MenuDivider />
-							<MenuItem onClick={() => { fncPlaceholder() }}>
+							<MenuItem onClick={() => { logout() }}>
 								<SignOut weight='fill' className="me-2 opacity-50" /> Sign out
 							</MenuItem>
 						</Menu>
@@ -4855,23 +4889,23 @@ const Admin = () => {
 
 								<hr />
 
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'auditLogs' ? 'active' : ''}`}
+								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'auditLogs' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("auditLogs"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Notebook size={20} weight='fill' className="me-2" /> Audit Logs
 									</button>
-								</li>
+								</li> */}
 
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'settings' ? 'active' : ''}`}
+								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'settings' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("settings"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Gear size={20} weight='fill' className="me-2" /> Settings
 									</button>
-								</li>
+								</li> */}
 
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-3 d-md-none`}>
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-3 d-md-none`} onClick={() => { logout() }}>
 									<button className="nav-link w-100">
 										<SignOut size={20} weight='fill' className="me-2" /> Sign out
 									</button>

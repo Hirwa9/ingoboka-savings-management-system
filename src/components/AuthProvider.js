@@ -1,9 +1,11 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import LoadingIndicator from "./LoadingIndicator";
 import { Bank, CaretDown } from "@phosphor-icons/react";
+import { Axios } from "../api/api";
+import { Navigate } from "react-router";
 
 // Create the AuthContext
-const AuthContext = createContext();
+export const AuthContext = createContext();
 
 // Create a custom hook for using the AuthContext
 export const useAuth = () => {
@@ -22,9 +24,19 @@ export const AuthProvider = ({ children }) => {
     };
 
     // Mock a logout function
-    const logout = () => {
-        setUser(null);
-        localStorage.removeItem("user"); // Clear user from localStorage
+    const logout = async () => {
+        try {
+            // Make a POST request to the logout endpoint
+            await Axios.post('/logout', {}, {
+                withCredentials: true // Ensure cookies (including refreshToken) are sent
+            });
+    
+            // Clear user state and redirect to login
+            setUser(null);
+            <Navigate to="/login" replace />;
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
     };
 
     // Check authentication status when the component mounts

@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Button, Card, Container, Form } from "react-bootstrap";
 import './user.css';
@@ -25,6 +25,7 @@ import EmptyBox from '../../common/EmptyBox';
 import ContentToggler from '../../common/ContentToggler';
 import DividerText from '../../common/DividerText';
 import { BASE_URL, Axios } from '../../../api/api';
+import { AuthContext } from '../../AuthProvider';
 
 const UserUI = () => {
 
@@ -72,6 +73,8 @@ const UserUI = () => {
 		customPrompt,
 		resetPrompt,
 	} = useCustomDialogs();
+
+	const { logout } = useContext(AuthContext);
 
 	const sideNavbarRef = useRef();
 	const sideNavbarTogglerRef = useRef();
@@ -332,11 +335,11 @@ const UserUI = () => {
 			.reduce((sum, r) => sum + Number(r.recordAmount), 0)
 	), [allRecords]);
 
-	// const [activeSection, setActiveSection] = useState("dashboard");
+	const [activeSection, setActiveSection] = useState("dashboard");
 	// const [activeSection, setActiveSection] = useState("messages");
 	// const [activeSection, setActiveSection] = useState("members");
 	// const [activeSection, setActiveSection] = useState("savings");
-	const [activeSection, setActiveSection] = useState("credits");
+	// const [activeSection, setActiveSection] = useState("credits");
 	// const [activeSection, setActiveSection] = useState("interest");
 	// const [activeSection, setActiveSection] = useState("transactions");
 	// const [activeSection, setActiveSection] = useState("reports");
@@ -353,7 +356,6 @@ const UserUI = () => {
 	// Dashboard
 	const Dashboard = () => {
 
-		const [showExportDataDialog, setShowExportDataDialog] = useState(false);
 		const accountingDashboardRef = useRef();
 
 		const totalLoanDisbursed = allFigures?.loanDisbursed
@@ -1500,11 +1502,11 @@ const UserUI = () => {
 
 	// Interest
 	const Interest = () => {
+		const totalActiveShares = activeMembers.reduce((sum, item) => {
+			const paidAnnualShares = JSON.parse(item.annualShares).filter(share => share.paid).length;
+			return sum + item.progressiveShares + paidAnnualShares;
+		}, 0);
 
-		const [showExportDataDialog, setShowExportDataDialog] = useState(false);
-		const interestPartitionViewRef = useRef();
-
-		const totalShares = 818;
 		const totalBoughtShares = activeMembers.reduce((sum, item) => sum + item.shares, 0);
 		let totalSharesPercentage = 0;
 		let totalMonetaryInterest = 0;
@@ -1626,116 +1628,69 @@ const UserUI = () => {
 					</div>
 				</div>
 				<hr className='mb-4 d-lg-none' />
-				<div ref={interestPartitionViewRef}  >
-					<div className="alert alert-info smaller">
-						<p className='display-6'>
-							Statut des intérêts annuels
-						</p>
-						<div className="d-flex flex-wrap gap-2 ms-lg-auto mb-2">
-							<div className='col'>
-								<div className='flex-align-center text-muted border-bottom'><ChartPie className='me-1 opacity-50' /> <span className="text-nowrap">All shares</span></div>
-								<div className='text-center bg-bodi fs-6'>{totalShares}</div>
-							</div>
-							<div className='col'>
-								<div className='flex-align-center text-muted border-bottom'><Coins className='me-1 opacity-50' /> <span className="text-nowrap">Interest receivable</span></div>
-								<div className='text-center bg-bodi fs-6'><CurrencyText amount={interestToReceive} /></div>
-							</div>
-						</div>
-						<Calendar size={25} className='me-2' /> Année {new Date().getFullYear()}
-					</div>
-					<div className='overflow-auto mb-5'>
-						<table className="table table-hover h-100">
-							<thead className='table-success position-sticky top-0 inx-1 text-uppercase small'>
-								<tr>
-									<th className='py-3 text-nowrap text-gray-700 fw-normal'>N°</th>
-									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Member</th>
-									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Annual shares</th>
-									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Share % to {totalBoughtShares}</th>
-									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Interest <sub className='fs-60'>/RWF</sub></th>
-									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Receivable<sub className='fs-60'>/RWF</sub></th>
-									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Remains<sub className='fs-60'>/RWF</sub></th>
-								</tr>
-							</thead>
-							<tbody>
-								{activeMembers
-									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
-									.map((item, index) => {
-										const memberNames = `${item.husbandFirstName} ${item.husbandLastName}`;
-										const annualShares = JSON.parse(item.annualShares).filter(share => share.paid).length;
-										const sharesProportion = (item.shares / totalBoughtShares);
+				<div className='overflow-auto mb-5'>
+					<table className="table table-hover h-100">
+						<thead className='table-success position-sticky top-0 inx-1 1 text-uppercase small'>
+							<tr>
+								<th className='py-3 text-nowrap text-gray-700 fw-normal'>N°</th>
+								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Member</th>
+								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Active shares</th>
+								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Share % to {totalBoughtShares}</th>
+								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Interest <sub className='fs-60'>/RWF</sub></th>
+								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Receivable<sub className='fs-60'>/RWF</sub></th>
+								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Remains<sub className='fs-60'>/RWF</sub></th>
+							</tr>
+						</thead>
+						<tbody>
+							{activeMembers.map((item, index) => {
+								const memberNames = `${item.husbandFirstName} ${item.husbandLastName}`;
+								const activeShares = item.progressiveShares + JSON.parse(item.annualShares).filter(share => share.paid).length;
+								const sharesProportion = activeShares / totalActiveShares;
+								const sharesPercentage = (sharesProportion * 100).toFixed(3);
+								const interest = sharesProportion * (Number(interestToReceive) + Number(item.initialInterest));
+								const interestReceivable = Math.floor(interest / 20000) * 20000;
+								const interestRemains = interest - interestReceivable;
 
-										const sharesPercentage = (sharesProportion * 100).toFixed(3);
-										// Actual interest = (Shares percentage  * Total interest receivable)
-										const interest = sharesProportion * Number(interestToReceive);
-										// Interest to receive => 20,000 multiples of Actual interest
-										const interestReceivable = Math.floor((interest) / 20000) * 20000;
-										const interestRemains = interest - interestReceivable;
+								totalSharesPercentage += Number(sharesPercentage);
+								totalMonetaryInterest += Number(interest);
+								totalInterestReceivable += interestReceivable + Number(item.initialInterest);
+								totalInterestRemains += interestRemains;
 
-										totalSharesPercentage += Number(sharesPercentage);
-										totalMonetaryInterest += Number(interest);
-										totalInterestReceivable += interestReceivable;
-										totalInterestRemains += interestRemains;
-										totalAnnualShares += annualShares;
-
-										return (
-											<tr key={index} className="small cursor-default clickDown interest-row">
-												<td className="border-bottom-3 border-end">
-													{index + 1}
-												</td>
-												<td className='text-nowrap'>
-													{memberNames}
-												</td>
-												<td>
-													{annualShares}
-												</td>
-												<td className="text-nowrap">
-													{sharesPercentage} %
-												</td>
-												<td className="text-nowrap text-gray-700">
-													<CurrencyText amount={interest} smallCurrency />
-												</td>
-												<td className="text-nowrap text-success">
-													<CurrencyText amount={interestReceivable} smallCurrency />
-												</td>
-												<td className="text-nowrap text-gray-700">
-													<CurrencyText amount={interestRemains} smallCurrency />
-												</td>
-											</tr>
-										)
-									})
-								}
-								<tr className="small cursor-default fs-5 table-success clickDown interest-row">
-									<td className="border-bottom-3 border-end" title='Total'>
-										T
-									</td>
-									<td className='text-nowrap'>
-										{totalMembers} <span className="fs-60">members</span>
-									</td>
-									<td className='text-nowrap'>
-										<div className="d-grid">
-											{totalAnnualShares}
-											{/* <span className="fs-60">of {totalShares} shares</span> */}
-										</div>
-									</td>
-									<td className="text-nowrap">
-										<div className="d-grid">
-											<span>{totalSharesPercentage.toFixed(3)} <span className="fs-60">%</span></span>
-											{/* <span className="fs-60">of {totalShares} shares</span> */}
-										</div>
-									</td>
-									<td className="text-nowrap fw-bold">
-										<CurrencyText amount={totalMonetaryInterest} smallCurrency />
-									</td>
-									<td className="text-nowrap fw-bold text-success">
-										<CurrencyText amount={totalInterestReceivable} smallCurrency />
-									</td>
-									<td className="text-nowrap">
-										<CurrencyText amount={totalInterestRemains} smallCurrency />
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
+								return (
+									<tr key={index} className="small cursor-default clickDown interest-row">
+										<td className="border-bottom-3 border-end">{index + 1}</td>
+										<td className='text-nowrap'>{memberNames}</td>
+										<td>{activeShares}</td>
+										<td className="text-nowrap">{sharesPercentage} %</td>
+										<td className="text-nowrap text-gray-700">
+											<CurrencyText amount={interest} smallCurrency />
+										</td>
+										<td className="text-nowrap text-success">
+											<CurrencyText amount={interestReceivable} smallCurrency />
+										</td>
+										<td className="text-nowrap text-gray-700">
+											<CurrencyText amount={interestRemains} smallCurrency />
+										</td>
+									</tr>
+								);
+							})}
+							<tr className="small cursor-default fs-5 table-success clickDown interest-row">
+								<td className="border-bottom-3 border-end" title='Total'>T</td>
+								<td className='text-nowrap'>{totalMembers} <span className="fs-60">members</span></td>
+								<td className='text-nowrap'>{totalActiveShares}</td>
+								<td className="text-nowrap">{totalSharesPercentage.toFixed(3)} %</td>
+								<td className="text-nowrap fw-bold">
+									<CurrencyText amount={totalMonetaryInterest} smallCurrency />
+								</td>
+								<td className="text-nowrap fw-bold text-success">
+									<CurrencyText amount={totalInterestReceivable} smallCurrency />
+								</td>
+								<td className="text-nowrap">
+									<CurrencyText amount={totalInterestRemains} smallCurrency />
+								</td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 			</div>
 		)
@@ -3087,17 +3042,7 @@ const UserUI = () => {
 	// Reports
 	const Reports = () => {
 
-		const [showExportDataDialog, setShowExportDataDialog] = useState(false);
-		const [exportFileName, setExportFileName] = useState('exported-file');
-
 		const [activeReportSection, setActiveReportSection] = useState('incomeExpenses');
-		useEffect(() => {
-			if (activeReportSection === 'incomeExpenses') {
-				setExportFileName('Rapport sur les revenus et les dépenses');
-			} else if (activeReportSection === 'general') {
-				setExportFileName('Rapport général');
-			}
-		}, [activeReportSection]);
 
 		// Count report values
 		let totalCotisationsAndShares = 0;
@@ -3202,7 +3147,7 @@ const UserUI = () => {
 								<>
 									<div className='overflow-auto'>
 										<table className="table table-hover h-100">
-											<thead className='table-success position-sticky top-0 inx-1 text-uppercase small'>
+											<thead className='table-success position-sticky top-0 inx-1 1 text-uppercase small'>
 												<tr>
 													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Actif</th>
 													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Montant <sub className='fs-60'>/RWF</sub></th>
@@ -3229,7 +3174,7 @@ const UserUI = () => {
 														const memberSocial = item.social;
 														const memberBalance = memberCostisation + memberSocial;
 
-														const memberCredits = allLoans.find(loan => loan?.memberId === item.id);
+														const memberCredits = allLoans.find(loan => loan.memberId === item.id);
 														const pendingCredit = memberCredits.loanPending;
 
 														totalCotisationsAndShares += memberBalance;
@@ -3253,8 +3198,7 @@ const UserUI = () => {
 														)
 													})
 												}
-												<tr className="small cursor-default clickDown general-report-row fw-bold"
-													style={{ borderTopWidth: '2px' }} >
+												<tr className="small cursor-default clickDown general-report-row fw-bold" style={{ borderTopWidth: '2px' }} >
 													<td></td>
 													<td></td>
 													<td>
@@ -3271,7 +3215,7 @@ const UserUI = () => {
 														Verify
 													</td>
 													<td className="text-nowrap">
-														<CurrencyText amount={generalTotal - totalCotisationsAndShares} />
+														<CurrencyText amount={totalCotisationsAndShares - generalTotal} />
 													</td>
 												</tr>
 												<tr className="small cursor-default clickDown general-report-row fw-bold fs-5">
@@ -3489,7 +3433,7 @@ const UserUI = () => {
 								<Gear weight='fill' className="me-2 opacity-50" /> Settings
 							</MenuItem>
 							<MenuDivider />
-							<MenuItem onClick={() => { fncPlaceholder() }}>
+							<MenuItem onClick={() => { logout() }}>
 								<SignOut weight='fill' className="me-2 opacity-50" /> Sign out
 							</MenuItem>
 						</Menu>
@@ -3574,7 +3518,7 @@ const UserUI = () => {
 
 								<hr />
 
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'auditLogs' ? 'active' : ''}`}
+								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'auditLogs' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("auditLogs"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
@@ -3588,9 +3532,9 @@ const UserUI = () => {
 									<button className="nav-link w-100">
 										<Gear size={20} weight='fill' className="me-2" /> Settings
 									</button>
-								</li>
+								</li> */}
 
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-3 d-md-none`}>
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-3 d-md-none`} onClick={() => { logout() }}>
 									<button className="nav-link w-100">
 										<SignOut size={20} weight='fill' className="me-2" /> Sign out
 									</button>
