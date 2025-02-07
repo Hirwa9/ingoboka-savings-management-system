@@ -4745,7 +4745,7 @@ const Admin = () => {
 
 												return (
 													<div key={index} className="d-flex mb-2 py-2 border-bottom">
-														<img src={associatedMember.husbandAvatar ? associatedMember.husbandAvatar : '/images/man_avatar_image.jpg'} alt="User" className='w-2rem h-2rem flex-grow-0 flex-shrink-0 me-2 object-fit-cover bg-light rounded-circle' />
+														<img src={associatedMember.husbandAvatar ? associatedMember.husbandAvatar : '/images/man_avatar_image.jpg'} alt="" className='w-2rem h-2rem flex-grow-0 flex-shrink-0 me-2 object-fit-cover bg-light rounded-circle' />
 														<div className="">
 															<div className="d-flex align-items-center justify-content-between mb-1 pb-1 border-bottom text-primaryColor small">
 																<span>Loan request</span>
@@ -4780,7 +4780,7 @@ const Admin = () => {
 									<span className='ms-auto smaller'>{accountantNames}</span>
 									<span className='ms-auto fs-70 opacity-75' style={{ lineHeight: 1 }}>Accountant</span>
 								</div>
-								<img src={accountantAvatar} alt="User" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 border border-3 border-secondary bg-gray-600 rounded-circle' />
+								<img src={accountantAvatar} alt="" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 border border-3 border-secondary bg-gray-600 rounded-circle' />
 							</div>
 
 							<ul className="nav flex-column">
