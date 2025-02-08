@@ -4343,7 +4343,7 @@ const Admin = () => {
 
 		// Count report values
 		let totalCotisationsAndShares = 0;
-		let generalTotal = generalReport.balance;
+		let generalTotal = Number(allFigures?.balance);
 
 		// Handle exports
 		const reportViewRef = useRef();
@@ -4458,7 +4458,7 @@ const Admin = () => {
 														Balance
 													</td>
 													<td className="text-nowrap fw-bold">
-														<CurrencyText amount={generalReport.balance} />
+														<CurrencyText amount={Number(allFigures?.balance)} />
 													</td>
 													<td></td>
 													<td></td>
@@ -4511,8 +4511,8 @@ const Admin = () => {
 													<td>
 														Verify
 													</td>
-													<td className="text-nowrap">
-														<CurrencyText amount={totalCotisationsAndShares - generalTotal} />
+													<td className={`text-nowrap ${totalCotisationsAndShares - generalTotal < 0 ? 'text-danger' : ''}`}>
+														<CurrencyText amount={Math.abs(totalCotisationsAndShares - generalTotal)} />
 													</td>
 												</tr>
 												<tr className="small cursor-default clickDown general-report-row fw-bold fs-5">
@@ -4553,7 +4553,7 @@ const Admin = () => {
 							<Info className='me-1' />
 							Click the button to generate today's <b>{
 								activeReportSection === 'incomeExpenses' ?
-									'income and expense'
+									'income and expenses'
 									: activeReportSection === 'general' ?
 										'general'
 										: ''
