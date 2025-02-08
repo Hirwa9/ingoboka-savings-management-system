@@ -3,13 +3,13 @@ import React, { Fragment, useCallback, useContext, useEffect, useMemo, useRef, u
 import { Button, Card, Container, Form } from "react-bootstrap";
 import './user.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, EscalatorUp, Eye, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, GreaterThan, Info, LessThan, List, Minus, Notebook, Pen, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, UserFocus, UserMinus, Users, Warning, WarningCircle, X } from '@phosphor-icons/react';
-import { expensesTypes, generalReport, incomeExpenses, memberRoles } from '../../../data/data';
+import { ArrowClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, Files, FloppyDisk, Gavel, Gear,  List, Pen, Plus, Receipt,  SignOut, User, Users,  WarningCircle, X } from '@phosphor-icons/react';
+import { expensesTypes, generalReport, incomeExpenses } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
 import LoadingIndicator from '../../LoadingIndicator';
-import { cError, cLog, fncPlaceholder, normalizedLowercaseString, printDatesInterval } from '../../../scripts/myScripts';
+import { cError, fncPlaceholder, normalizedLowercaseString, printDatesInterval } from '../../../scripts/myScripts';
 import FormatedDate from '../../common/FormatedDate';
 import FetchError from '../../common/FetchError';
 import useCustomDialogs from '../../common/hooks/useCustomDialogs';
@@ -43,7 +43,11 @@ const UserUI = () => {
 		showToast,
 		toastMessage,
 		toastType,
+		toastSelfClose,
 		toast,
+		successToast,
+		warningToast,
+		messageToast,
 		resetToast,
 
 		// Confirm Dialog
@@ -738,40 +742,6 @@ const UserUI = () => {
 				toast({
 					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> {error.response?.data.message || 'Couldn\'t save changes. Tyr again'}</>,
 					type: 'warning'
-				});
-			} finally {
-				setIsWaitingFetchAction(false);
-			}
-		};
-
-		// Member financial overview and member removal 
-		const [showMemberFinances, setShowMemberFinances] = useState(false);
-		const [showMemberRemoval, setShowMemberRemoval] = useState(false);
-		const hideMemberFinances = () => {
-			setShowMemberFinances(false);
-			setShowMemberRemoval(false);
-		}
-
-		const [canRemoveMember, setCanRemoveMember] = useState(false);
-
-		const handleRemoveMember = async (email) => {
-			try {
-				setIsWaitingFetchAction(true);
-				const response = await Axios.post(`/user/remove`, { email });
-
-				// Successfull fetch
-				const data = response.data;
-				toast({ message: data.message, type: "dark", selfClose: false });
-				hideMemberFinances();
-				setErrorWithFetchAction(null);
-				fetchMembers();
-				fetchLoans();
-			} catch (error) {
-				setErrorWithFetchAction(error);
-				cError('Error removing member:', error.response?.data || error.message);
-				toast({
-					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> {error.response?.data.message || 'Couldn\'t remove this member'}</>,
-					type: 'warning',
 				});
 			} finally {
 				setIsWaitingFetchAction(false);
@@ -1934,9 +1904,9 @@ const UserUI = () => {
 			try {
 				const creditPayment = constructCreditPayment();
 				const payload = {
-					memberId: signedUser?.id, // Make sure this is retrieved correctly
+					memberId: signedUser?.id,
 					creditAmount,
-					requestDate: new Date().toISOString().split('T')[0], // Today’s date
+					requestDate,
 					dueDate,
 					tranches,
 					comment,
@@ -1946,12 +1916,12 @@ const UserUI = () => {
 				setIsWaitingFetchAction(true);
 				const response = await Axios.post(`/credit/create`, payload);
 				const data = response.data;
-				toast({ message: `Success: ${data.message}`, type: "dark" });
 				setShowRequestCreditForm(false);
+				fetchCredits();
+				successToast({ message: `Success: ${data.message}`, selfClose: false });
 			} catch (error) {
 				console.error('Error requesting credit:', error.response?.data || error.message);
-				toast({ message: error.response?.data || error.message, type: "warning" });
-				console.error("Error fetching figures:", error);
+				warningToast({ message: error.response?.data || error.message });
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -2684,6 +2654,11 @@ const UserUI = () => {
 											placeholder="Enter credit amount"
 											required
 										/>
+										{!['', 0].includes(creditAmount) && (
+											<div className="form-text px-2 py-1 bg-info-subtle rounded-bottom-3 smaller fst-italic">
+												With 5% Interest = <CurrencyText amount={creditAmount * 0.05} />
+											</div>
+										)}
 									</div>
 
 									{/* Request Date */}
@@ -2780,7 +2755,7 @@ const UserUI = () => {
 											}
 										</div>
 
-										<button type="submit" className="btn btn-sm btn-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="addSavingBtn" disabled={new Date(trancheDates[trancheDates.length - 1]) > new Date(dueDate)}
+										<button type="submit" className="btn btn-sm btn-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="addSavingBtn" disabled={(new Date(trancheDates[trancheDates.length - 1]) > new Date(dueDate)) || tranches === 0}
 										>
 											{!isWaitingFetchAction ?
 												<>Submit Request <FloppyDisk size={18} className='ms-2' /></>
@@ -3353,7 +3328,8 @@ const UserUI = () => {
 
 	return (
 		<>
-			<MyToast show={showToast} message={toastMessage} type={toastType} selfClose onClose={() => resetToast(false)} />
+			{/* Toast message */}
+			<MyToast show={showToast} message={toastMessage} type={toastType} selfClose={toastSelfClose} onClose={() => resetToast()} />
 
 			{/* Prompt actions */}
 			<ActionPrompt
