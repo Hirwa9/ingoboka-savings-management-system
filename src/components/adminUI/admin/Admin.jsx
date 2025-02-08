@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Button, Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, ChatTeardropText, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, EscalatorUp, Eye, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, GreaterThan, HandCoins, Info, LessThan, List, Minus, Notebook, Pen, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, UserFocus, UserMinus, Users, Warning, WarningCircle, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, ChatTeardropText, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, Envelope, EnvelopeSimple, EscalatorUp, Eye, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, GreaterThan, HandCoins, Info, LessThan, List, Minus, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Warning, WarningCircle, X } from '@phosphor-icons/react';
 import { expensesTypes, generalReport, incomeExpenses, memberRoles } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
@@ -32,6 +32,7 @@ import ContentToggler from '../../common/ContentToggler';
 import DividerText from '../../common/DividerText';
 import { BASE_URL, Axios } from '../../../api/api';
 import { AuthContext } from '../../AuthProvider';
+import RightFixedCard from '../../common/rightFixedCard/RightFixedCard';
 
 const Admin = () => {
 
@@ -511,6 +512,10 @@ const Admin = () => {
 			}
 		}, [memberSearchValue]);
 
+		// Show info
+		const [showMemberInfo, setShowMemberInfo] = useState(false);
+		const [showPrimaryMemberInfo, setShowPrimaryMemberInfo] = useState(true);
+
 		// Registration
 		const [showAddMemberForm, setShowAddMemberForm] = useState(false);
 
@@ -869,11 +874,19 @@ const Admin = () => {
 											style={{ right: 0, translate: "0 -50%" }}
 										>
 											<img src={member.husbandAvatar ? member.husbandAvatar : '/images/man_avatar_image.jpg'} alt=""
-												className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
+												className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle ptr"
+												onClick={() => { setSelectedMember(member); setShowMemberInfo(true); setShowPrimaryMemberInfo(true) }}
 											/>
 											<img src={member.wifeAvatar ? member.wifeAvatar : '/images/woman_avatar_image.jpg'}
 												alt={member.wifeFirstName ? `${member.wifeFirstName.slice(0, 1)}.${member.wifeLastName}` : 'Partner image'}
-												className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
+												className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle ptr"
+												onClick={() => {
+													if (member?.wifeFirstName === null) {
+														messageToast({ message: "No data to show" })
+													} else {
+														setSelectedMember(member); setShowMemberInfo(true); setShowPrimaryMemberInfo(false);
+													}
+												}}
 											/>
 										</div>
 
@@ -941,6 +954,67 @@ const Admin = () => {
 									</div>
 								))
 							}
+
+							{/* Member primary info preview */}
+							<RightFixedCard
+								show={showMemberInfo}
+								onClose={() => setShowMemberInfo(false)}
+								title="Personal information"
+								icon={<UserRectangle size={20} className='text-light' />}
+								content={
+									<>
+										<div>
+											<div className="position-relative w-fit mb-5" style={{ minWidth: '20rem' }}>
+												<img src={showPrimaryMemberInfo ? (selectedMember?.husbandAvatar || '/images/man_avatar_image.jpg') : (selectedMember?.wifeAvatar || '/images/woman_avatar_image.jpg')}
+													alt="Member avatar"
+													className="ratio-1-1 object-fit-cover rounded-3"
+													style={{ maxWidth: '20rem', objectPosition: 'center 25%' }}
+												/>
+												<div className='dim-fit position-absolute start-100 bottom-0 mb-2 bg-light border rounded-pill ptr clickDown' title='Edit photo' style={{ translate: '-125% 0' }}>
+													<Pen size={35} className='p-2' />
+												</div>
+												<div className="position-absolute bg-light text-gray-600 py-1 px-3 rounded-2 start-50 top-100 translate-middle text-nowrap smaller shadow-sm">
+													{showPrimaryMemberInfo ? `${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName} ` : `${selectedMember?.wifeFirstName} ${selectedMember?.wifeLastName}`}
+												</div>
+											</div>
+											<div className="d-flex gap-2 mb-3">
+												<a href={`tel:+${showPrimaryMemberInfo ? selectedMember.husbandPhone : selectedMember.wifePhone}`} className="btn btn-sm btn-outline-secondary border px-3 border-secondary border-opacity-25 rounded-pill flex-align-center clickDown">
+													<Phone className='me-2' /> Call
+												</a>
+												<a href={`mailto:${showPrimaryMemberInfo ? selectedMember.husbandEmail : selectedMember.wifeEmail}`} className="btn btn-sm btn-outline-secondary border px-3 border-secondary border-opacity-25 rounded-pill flex-align-center clickDown">
+													<EnvelopeSimple className='me-2' /> Email
+												</a>
+											</div>
+
+											{showPrimaryMemberInfo ? (
+												<ul className="list-unstyled text-gray-700 px-2 small">
+													<li className="py-1">
+														<b>Phone:</b> <span>{selectedMember?.husbandPhone}</span>
+													</li>
+													<li className="py-1">
+														<b>Email:</b> <span>{selectedMember?.husbandEmail}</span>
+													</li>
+												</ul>
+											) : (
+												<ul className="list-unstyled text-gray-700 px-2 small">
+													<li className="py-1">
+														<b>Phone:</b> {selectedMember?.wifePhone ? (
+															<span>{selectedMember?.wifePhone}</span>
+														) : 'Not provided'}
+													</li>
+													<li className="py-1">
+														<b>Email:</b>  {selectedMember?.wifeEmail ? (
+															<span>{selectedMember?.wifeEmail}</span>
+
+														) : 'Not provided'}
+													</li>
+												</ul>
+											)}
+										</div>
+									</>
+								}
+								fitWidth={true}
+							/>
 
 							{/* Registration */}
 							{showAddMemberForm &&
@@ -1972,7 +2046,6 @@ const Admin = () => {
 								)}
 							</Form>
 							{/* Content */}
-
 							<div className="d-lg-flex flex-wrap pb-5">
 								{savingsToShow
 									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
