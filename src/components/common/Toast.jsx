@@ -55,7 +55,7 @@ const MyToast = ({ show, message, type = 'light', selfClose, onClose }) => {
                 {!selfClose && (
                     <Button
                         variant="close"
-                        style={{border: `1px solid var(--bs-${textColor}) !important`}}
+                        style={{ border: `1px solid var(--bs-${textColor}) !important` }}
                         size="sm"
                         onClick={onClose}
                         className="ms-auto p-2"
