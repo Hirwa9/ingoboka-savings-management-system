@@ -76,7 +76,7 @@ const Admin = () => {
 		resetPrompt,
 	} = useCustomDialogs();
 
-    const { logout } = useContext(AuthContext);
+	const { logout } = useContext(AuthContext);
 
 	const sideNavbarRef = useRef();
 	const sideNavbarTogglerRef = useRef();
@@ -778,6 +778,7 @@ const Admin = () => {
 				warningToast({ message: error.response?.data.message || 'Couldn\'t remove this member' });
 			} finally {
 				setIsWaitingFetchAction(false);
+				resetConfirmDialog();
 			}
 		};
 
@@ -1833,8 +1834,10 @@ const Admin = () => {
 
 		// Handle add savings
 		const handleAddMultipleShares = async (id) => {
-			if (!multipleSharesAmount || Number(multipleSharesAmount) <= 0) {
-				return warningToast({ message: "Enter valid number of shares to continue" });
+			if (!updateNewMember) {
+				if (!multipleSharesAmount || Number(multipleSharesAmount) <= 0) {
+					return warningToast({ message: "Enter valid number of shares to continue" });
+				}
 			}
 
 			const payload = updateNewMember ? {
@@ -2253,18 +2256,20 @@ const Admin = () => {
 													{updateNewMember && (
 														<>
 															<div className="mb-3">
-																<label htmlFor="password" className="form-label fw-semibold">Social</label>
-																<input type="password" className="form-control" id="password"
+																<label htmlFor="newMemberinterest" className="form-label fw-semibold">Social ({newMemberSocial !== '' ? Number(newMemberSocial).toLocaleString() : ''} RWF)</label>
+																<input type="number" className="form-control" id="password"
 																	placeholder="Enter social amount"
 																	value={newMemberSocial}
+																	min="1"
 																	onChange={e => setNewMemberSocial(e.target.value)}
 																/>
 															</div>
 															<div className="mb-3">
-																<label htmlFor="password" className="form-label fw-semibold">Interest</label>
-																<input type="password" className="form-control" id="password"
+																<label htmlFor="newMemberinterest" className="form-label fw-semibold">Interest ({newMemberInterest !== '' ? Number(newMemberInterest).toLocaleString() : ''} RWF)</label>
+																<input type="number" className="form-control" id="newMemberinterest"
 																	placeholder="Enter interest"
 																	value={newMemberInterest}
+																	min="1"
 																	onChange={e => setNewMemberInterest(e.target.value)}
 																/>
 															</div>
@@ -2342,7 +2347,7 @@ const Admin = () => {
 				} catch (error) {
 					setErrorWithFetchAction(error);
 					cError("Error distributing interest:", error);
-					warningToast({ message: error, type: "danger" });
+					warningToast({ message: error });
 				} finally {
 					setIsWaitingFetchAction(false);
 				}
@@ -2372,7 +2377,7 @@ const Admin = () => {
 			// 		} catch (error) {
 			// 			setErrorWithFetchAction(error);
 			// 			cError("Error distributing interest:", error);
-			// 			warningToast({ message: error, type: "danger" });
+			// 			warningToast({ message: error});
 			// 		} finally {
 			// 			setIsWaitingFetchAction(false);
 			// 		}
@@ -2833,18 +2838,18 @@ const Admin = () => {
 
 		// handle approving a credit
 		const approveCreditRequest = async (id) => {
+
 			try {
 				setIsWaitingFetchAction(true);
 				const response = await fetch(`${BASE_URL}/credit/${id}/approve`, {
 					method: 'PATCH',
 					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ status: 'approved' }),
 				});
 
 				// Fetch error
 				if (!response.ok) {
 					const errorData = await response.json();
-					throw new Error(errorData.message || 'Error approving credit request');
+					throw new Error(errorData.message || errorData.error || 'Error approving credit request');
 				}
 
 				// Successful fetch
@@ -2858,9 +2863,10 @@ const Admin = () => {
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError("Error approving credit:", error);
-				warningToast({ message: error.message, type: "danger" });
+				warningToast({ message: error.message });
 			} finally {
 				setIsWaitingFetchAction(false);
+				resetConfirmDialog();
 			}
 		};
 
@@ -2888,7 +2894,7 @@ const Admin = () => {
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError("Error fetching members:", error);
-				warningToast({ message: error, type: "danger" });
+				warningToast({ message: error });
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -2918,9 +2924,10 @@ const Admin = () => {
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError("Error fetching members:", error);
-				warningToast({ message: error, type: "danger" });
+				warningToast({ message: error });
 			} finally {
 				setIsWaitingFetchAction(false);
+				resetConfirmDialog();
 			}
 		}
 
@@ -2960,7 +2967,7 @@ const Admin = () => {
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError("Error fetching members:", error);
-				warningToast({ message: error, type: "danger" });
+				warningToast({ message: error });
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
