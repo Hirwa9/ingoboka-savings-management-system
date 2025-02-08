@@ -31,7 +31,7 @@ import '@szhsin/react-menu/dist/transitions/zoom.css';
 import ContentToggler from '../../common/ContentToggler';
 import DividerText from '../../common/DividerText';
 import { BASE_URL, Axios } from '../../../api/api';
-import { AuthContext, useAuth } from '../../AuthProvider';
+import { AuthContext } from '../../AuthProvider';
 
 const Admin = () => {
 
