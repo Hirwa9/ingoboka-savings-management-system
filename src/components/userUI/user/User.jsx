@@ -3,7 +3,7 @@ import React, { Fragment, useCallback, useContext, useEffect, useMemo, useRef, u
 import { Button, Card, Container, Form } from "react-bootstrap";
 import './user.css';
 import MyToast from '../../common/Toast';
-import { ArrowClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, EnvelopeSimple, Files, FloppyDisk, Gavel, Gear, List, Pen, Phone, Plus, Receipt, SignOut, User, UserRectangle, Users, WarningCircle, X } from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowsClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, EnvelopeSimple, Files, FloppyDisk, Gavel, Gear, List, Pen, Phone, Plus, Receipt, SignOut, User, UserRectangle, Users, WarningCircle, X } from '@phosphor-icons/react';
 import { expensesTypes, generalReport, incomeExpenses } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
@@ -339,6 +339,14 @@ const UserUI = () => {
 			.filter(r => r.recordType === 'expense')
 			.reduce((sum, r) => sum + Number(r.recordAmount), 0)
 	), [allRecords]);
+
+	const refreshAllData = () => {
+		fetchMembers();
+		fetchFigures();
+		fetchCredits();
+		fetchLoans();
+		fetchRecords();
+	}
 
 	const [activeSection, setActiveSection] = useState("dashboard");
 	// const [activeSection, setActiveSection] = useState("messages");
@@ -3483,6 +3491,11 @@ const UserUI = () => {
 				<div className='d-none d-md-flex flex-grow-1 border-bottom py-1'>
 					<div className="me-3 ms-auto navbar-nav">
 						<div className="nav-item d-flex gap-2 text-nowrap small" style={{ '--_activeColor': 'var(--primaryColor)' }}>
+							<button className={`nav-link px-2 text-gray-600 rounded-pill clickDown`} title='Refresh data'
+								onClick={() => refreshAllData(true)}
+							>
+								<ArrowsClockwise size={20} />
+							</button>
 							<button className={`nav-link px-2 ${adminHasNewNotifications ? 'bg-gray-300 text-primaryColor active-with-dot' : 'text-gray-600'} rounded-pill clickDown`} title='Notifications'>
 								<BellSimple weight={adminHasNewNotifications ? 'fill' : undefined} size={20}
 									style={{ animation: adminHasNewNotifications ? 'shakeX 10s infinite' : 'unset' }}

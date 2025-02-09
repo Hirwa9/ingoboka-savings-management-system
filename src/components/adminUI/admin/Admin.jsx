@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Button, Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, ChatTeardropText, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, Envelope, EnvelopeSimple, EscalatorUp, Eye, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, GreaterThan, HandCoins, Info, LessThan, List, Minus, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Warning, WarningCircle, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, ChatTeardropText, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, Envelope, EnvelopeSimple, EscalatorUp, Eye, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, GreaterThan, HandCoins, Info, LessThan, List, Minus, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Warning, WarningCircle, X } from '@phosphor-icons/react';
 import { expensesTypes, generalReport, incomeExpenses, memberRoles } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
@@ -336,6 +336,14 @@ const Admin = () => {
 			.filter(r => r.recordType === 'expense')
 			.reduce((sum, r) => sum + Number(r.recordAmount), 0)
 	), [allRecords]);
+
+	const refreshAllData = () => {
+		fetchMembers();
+		fetchFigures();
+		fetchCredits();
+		fetchLoans();
+		fetchRecords();
+	}
 
 	const [activeSection, setActiveSection] = useState("dashboard");
 	// const [activeSection, setActiveSection] = useState("messages");
@@ -1903,8 +1911,6 @@ const Admin = () => {
 			}
 		}, [updateNewMember]);
 
-
-
 		// Handle add savings
 		const handleAddMultipleShares = async (id) => {
 			if (!updateNewMember) {
@@ -1947,6 +1953,7 @@ const Admin = () => {
 				setShowAddMultipleShares(false);
 				setErrorWithFetchAction(null);
 				fetchMembers();
+				fetchFigures();
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError("Error adding multiple shares:", error);
@@ -2591,7 +2598,7 @@ const Admin = () => {
 										<CurrencyText amount={totalInterestReceivable} smallCurrency />
 									</td>
 									<td className="text-nowrap fw-semibold text-success">
-										{totalSharesReceivable}
+										{totalSharesReceivable} <span className='fs-70 fw-normal'>shares</span>
 									</td>
 									<td className="text-nowrap">
 										<CurrencyText amount={totalInterestRemains} smallCurrency />
@@ -3948,7 +3955,7 @@ const Admin = () => {
 																	<div className='text-center bg-gray-300'><FormatedDate date={selectedCredit.requestDate} /></div>
 																</div>
 																<div className='col px-2'>
-																	<div className='flex-align-center smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Payment end date</span></div>
+																	<div className='flex-align-center smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Payment due date</span></div>
 																	<div className='text-center bg-gray-300'><FormatedDate date={selectedCredit.dueDate} /></div>
 																</div>
 															</div>
@@ -4810,6 +4817,11 @@ const Admin = () => {
 				<div className='d-none d-md-flex flex-grow-1 border-bottom py-1'>
 					<div className="me-3 ms-auto navbar-nav">
 						<div className="nav-item d-flex gap-2 text-nowrap small" style={{ '--_activeColor': 'var(--primaryColor)' }}>
+							<button className={`nav-link px-2 text-gray-600 rounded-pill clickDown`} title='Refresh data'
+								onClick={() => refreshAllData(true)}
+							>
+								<ArrowsClockwise size={20} />
+							</button>
 							<button className={`nav-link px-2 ${hasNewNotifications ? 'bg-gray-300 text-primaryColor active-with-dot' : 'text-gray-600'} rounded-pill clickDown`} title='Notifications'
 								onClick={() => setShowNotifications(true)}
 							>
