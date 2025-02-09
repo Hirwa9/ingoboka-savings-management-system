@@ -1747,7 +1747,7 @@ const UserUI = () => {
 									<CurrencyText amount={totalInterestReceivable} smallCurrency />
 								</td>
 								<td className="text-nowrap fw-semibold text-success">
-									{totalSharesReceivable}
+									{totalSharesReceivable} <span className='fs-70 fw-normal'>shares</span>
 								</td>
 								<td className="text-nowrap">
 									<CurrencyText amount={totalInterestRemains} smallCurrency />
@@ -2649,7 +2649,7 @@ const UserUI = () => {
 																	<div className='text-center bg-gray-300'><FormatedDate date={selectedCredit.requestDate} /></div>
 																</div>
 																<div className='col px-2'>
-																	<div className='flex-align-center smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Payment end date</span></div>
+																	<div className='flex-align-center smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Payment due date</span></div>
 																	<div className='text-center bg-gray-300'><FormatedDate date={selectedCredit.dueDate} /></div>
 																</div>
 															</div>
