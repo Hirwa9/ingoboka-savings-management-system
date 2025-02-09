@@ -2,7 +2,6 @@ import React, { useId, useState } from 'react';
 import './login.css';
 import '../common/formInput/formInput.css';
 import MyToast from '../common/Toast';
-import { useLocation } from 'react-router';
 import { useNavigate } from "react-router-dom";
 import $ from 'jquery';
 import { SignIn, UserCircleDashed, Wallet } from '@phosphor-icons/react';
@@ -20,12 +19,12 @@ const Login = () => {
         toastSelfClose,
         successToast,
         warningToast,
-        messageToast,
         resetToast,
     } = useCustomDialogs();
 
+    const [isWaitingFetchAction, setIsWaitingFetchAction] = useState(false);
+
     const navigate = useNavigate();
-    const location = useLocation();
     const signInId = useId();
 
     /**
@@ -44,6 +43,7 @@ const Login = () => {
         }
 
         try {
+            setIsWaitingFetchAction(true);
             const response = await fetch(`${BASE_URL}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -62,7 +62,6 @@ const Login = () => {
             // Authentication handling
             if (data.accessToken) {
                 const { id, type } = data.user;
-
                 if (type === "admin") {
                     navigate("/admin");
                 } else if (type === "member") {
@@ -75,6 +74,8 @@ const Login = () => {
             }
         } catch (error) {
             warningToast({ message: error.message || 'An unknown error occurred. Please try again.' });
+        } finally {
+            setIsWaitingFetchAction(false);
         }
     };
 
@@ -144,7 +145,12 @@ const Login = () => {
                                     </div>
 
                                     <div className="pt-1 my-4">
-                                        <button type="submit" className="btn btn-sm btn-dark flex-center px-3 rounded-0 w-100 clickDown" style={{ fontSize: "75%", paddingBlock: ".8rem" }}>SIGN IN <SignIn size={15} className='ms-2' /></button>
+                                        <button type="submit" className="btn btn-sm btn-dark flex-center px-3 rounded-0 w-100 clickDown" style={{ fontSize: "75%", paddingBlock: ".8rem" }}>
+                                            {!isWaitingFetchAction ?
+                                                <>SIGN IN <SignIn size={15} className='ms-2' /></>
+                                                : <>SIGN IN <span className="spinner-grow spinner-grow-sm ms-2"></span></>
+                                            }
+                                        </button>
                                     </div>
 
                                     <div className='d-grid gap-3 place-items-center'>
