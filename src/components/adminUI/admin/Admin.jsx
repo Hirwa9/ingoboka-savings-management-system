@@ -296,6 +296,7 @@ const Admin = () => {
 	}, []);
 
 	const interestToReceive = allLoans.reduce((sum, m) => sum + m.interestPaid, 0) - allFigures?.distributedInterest;
+	console.log(allFigures?.distributedInterest);
 	const pendingInterest = useMemo(() => (
 		allLoans.reduce((sum, m) => sum + m.interestPending, 0)
 	), [allLoans]);
@@ -2390,6 +2391,7 @@ const Admin = () => {
 		let totalSharesPercentage = 0;
 		let totalMonetaryInterest = 0;
 		let totalInterestReceivable = 0;
+		let totalSharesReceivable = 0;
 		let totalInterestRemains = 0;
 		let totalAnnualShares = 0;
 
@@ -2415,6 +2417,8 @@ const Admin = () => {
 					successToast({ message: data.message });
 					setShowShareAnnualInterest(false);
 					setErrorWithFetchAction(null);
+					fetchMembers();
+					fetchFigures();
 					fetchLoans();
 					fetchCredits();
 				} catch (error) {
@@ -2531,25 +2535,49 @@ const Admin = () => {
 									<th className='py-3 text-nowrap text-gray-700 fw-normal'>N°</th>
 									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Member</th>
 									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Active shares</th>
-									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Share % to {totalBoughtShares}</th>
+									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Share % to {totalActiveShares}</th>
 									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Interest <sub className='fs-60'>/RWF</sub></th>
 									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Receivable<sub className='fs-60'>/RWF</sub></th>
+									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Receivable shares</th>
 									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Remains<sub className='fs-60'>/RWF</sub></th>
 								</tr>
 							</thead>
 							<tbody>
 								{activeMembers.map((item, index) => {
 									const memberNames = `${item.husbandFirstName} ${item.husbandLastName}`;
-									const activeShares = item.progressiveShares + JSON.parse(item.annualShares).filter(share => share.paid).length;
-									const sharesProportion = activeShares / totalActiveShares;
+									const progressiveShares = item.progressiveShares;
+									const paidAnnualShares = JSON.parse(item.annualShares).filter(share => share.paid).length;
+									const activeShares = progressiveShares + paidAnnualShares;
+									const sharesProportion = totalActiveShares > 0 ? activeShares / totalActiveShares : 0;
 									const sharesPercentage = (sharesProportion * 100).toFixed(3);
-									const interest = sharesProportion * (Number(interestToReceive) + Number(item.initialInterest));
-									const interestReceivable = Math.floor(interest / 20000) * 20000;
+									const activeinterest = sharesProportion * interestToReceive;
+									const interest = activeinterest + item.initialInterest;
+									const interestReceivable = (Math.floor((activeinterest + item.initialInterest) / 20000) * 20000);
+									const sharesReceivable = interestReceivable / 20000;
 									const interestRemains = interest - interestReceivable;
+
+									{/* console.group(`Member: ${item.husbandFirstName} ${item.husbandLastName}`);
+
+									console.log("Member Name:", `${item.husbandFirstName} ${item.husbandLastName}`);
+									console.log("Progressive Shares:", progressiveShares);
+									console.log("Paid Annual Shares:", paidAnnualShares);
+									console.log("Active Shares:", activeShares);
+									console.log("Total Active Shares:", totalActiveShares);
+									console.log("Shares Proportion:", sharesProportion);
+									console.log("Shares Percentage:", sharesPercentage);
+									console.log("Interest to Receive:", interestToReceive);
+									console.log("Initial Interest:", item.initialInterest);
+									console.log("Computed Interest:", interest);
+									console.log("Receivable Interest (Multiples of 20,000):", interestReceivable);
+									console.log("Remaining Interest:", interestRemains);
+
+									console.groupEnd(); */}
+
 
 									totalSharesPercentage += Number(sharesPercentage);
 									totalMonetaryInterest += Number(interest);
 									totalInterestReceivable += interestReceivable + Number(item.initialInterest);
+									totalSharesReceivable += sharesReceivable;
 									totalInterestRemains += interestRemains;
 
 									return (
@@ -2564,6 +2592,7 @@ const Admin = () => {
 											<td className="text-nowrap text-success">
 												<CurrencyText amount={interestReceivable} smallCurrency />
 											</td>
+											<td>{sharesReceivable}</td>
 											<td className="text-nowrap text-gray-700">
 												<CurrencyText amount={interestRemains} smallCurrency />
 											</td>
@@ -2580,6 +2609,9 @@ const Admin = () => {
 									</td>
 									<td className="text-nowrap fw-bold text-success">
 										<CurrencyText amount={totalInterestReceivable} smallCurrency />
+									</td>
+									<td className="text-nowrap fw-bold text-success">
+										{totalSharesReceivable}
 									</td>
 									<td className="text-nowrap">
 										<CurrencyText amount={totalInterestRemains} smallCurrency />
