@@ -1018,7 +1018,7 @@ const Admin = () => {
 							{/* Registration */}
 							{showAddMemberForm &&
 								<>
-									<div className='position-fixed fixed-top inset-0 bg-black2 py-3 py-md-5 inx-high add-property-form'>
+									<div className='position-fixed fixed-top inset-0 bg-black3 py-3 py-md-5 inx-high'>
 										<div className="container col-md-6 col-lg-5 col-xl-4 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 											<div className="px-3 bg-light text-gray-700">
 												<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
@@ -1238,7 +1238,7 @@ const Admin = () => {
 							{/* Edit member */}
 							{showEditMemberForm &&
 								<>
-									<div className='position-fixed fixed-top inset-0 bg-black2 py-3 py-md-5 inx-high add-property-form'>
+									<div className='position-fixed fixed-top inset-0 bg-black3 py-3 py-md-5 inx-high'>
 										<div className="container col-md-6 col-lg-5 col-xl-4 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 											<div className="px-3 bg-light text-gray-700">
 												<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
@@ -1403,7 +1403,7 @@ const Admin = () => {
 							{/* Member Credits */}
 							{showMemberFinances &&
 								<>
-									<div className='position-fixed fixed-top inset-0 bg-black2 inx-high add-property-form'>
+									<div className='position-fixed fixed-top inset-0 bg-white3 inx-high'>
 										<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 											<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
 												<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom">
@@ -1437,7 +1437,7 @@ const Admin = () => {
 																Members are removed or deactivated according to their financial status. <span className='text-primary fw-semibold text-nowrap ptr clickDown' data-bs-toggle="collapse" data-bs-target="#readMore-member-removal-info">Read more</span>
 															</p>
 															<p className="p-3 bg-info-subtle rounded text-gray-700 collapse" id='readMore-member-removal-info'>
-																If the cotisation exceeds the credit, the credit is cleared, and the remaining balance is retained. If the credit exceeds the cotisation, the cotisation is deducted, and the member remains in the credits records.
+																If cotisation exceeds credit, the credit is cleared, and the remaining balance is retained. If credit exceeds the cotisation, the cotisation is deducted, and the member remains under credits records.
 															</p>
 														</div>
 														<CaretDown size={35} weight='light' className='p-2 d-block mx-auto' />
@@ -1517,7 +1517,7 @@ const Admin = () => {
 																				<div className='overflow-auto'>
 																					<table className="table table-hover h-100 mb-0">
 																						<thead className='table-secondary position-sticky top-0 inx-1 text-uppercase small'>
-																							<tr text-uppercase>
+																							<tr>
 																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Title</th>
 																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Taken  <sub className='fs-60'>/RWF</sub></th>
 																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Paid  <sub className='fs-60'>/RWF</sub></th>
@@ -2100,7 +2100,7 @@ const Admin = () => {
 							{/* Record savings */}
 							{showAddSavingRecord &&
 								<>
-									<div className='position-fixed fixed-top inset-0 flex-center py-3 py-md-5 bg-black2 inx-high add-property-form'>
+									<div className='position-fixed fixed-top inset-0 flex-center py-3 py-md-5 bg-black3 inx-high'>
 										<div className="container col-md-6 col-lg-5 col-xl-4 my-auto peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 											<div className="px-3 bg-light text-gray-700">
 												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
@@ -2250,7 +2250,7 @@ const Admin = () => {
 							{/* Record multiple shares */}
 							{showAddMultipleShares &&
 								<>
-									<div className='position-fixed fixed-top inset-0 flex-center py-3 py-md-5 bg-black2 inx-high add-property-form'>
+									<div className='position-fixed fixed-top inset-0 flex-center py-3 py-md-5 bg-black3 inx-high'>
 										<div className="container col-md-6 col-lg-5 col-xl-4 my-auto peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 											<div className="px-3 bg-light text-gray-700">
 												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
@@ -2532,11 +2532,11 @@ const Admin = () => {
 								<tr>
 									<th className='py-3 text-nowrap text-gray-700 fw-normal'>N°</th>
 									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Member</th>
-									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Active shares</th>
-									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Share % to {totalActiveShares}</th>
+									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Shares <sub className='fs-60'>/Active</sub></th>
+									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Share % <sub className='fs-60'>to <b>{totalActiveShares}</b></sub></th>
 									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Interest <sub className='fs-60'>/RWF</sub></th>
 									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Receivable<sub className='fs-60'>/RWF</sub></th>
-									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Receivable shares</th>
+									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Receivable<sub className='fs-60'>/Shares</sub></th>
 									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Remains<sub className='fs-60'>/RWF</sub></th>
 								</tr>
 							</thead>
@@ -2584,13 +2584,13 @@ const Admin = () => {
 									<td className='text-nowrap'>{totalMembers} <span className="fs-60">members</span></td>
 									<td className='text-nowrap'>{totalActiveShares}</td>
 									<td className="text-nowrap">{totalSharesPercentage.toFixed(3)} %</td>
-									<td className="text-nowrap fw-bold">
+									<td className="text-nowrap fw-semibold">
 										<CurrencyText amount={totalMonetaryInterest} smallCurrency />
 									</td>
-									<td className="text-nowrap fw-bold text-success">
+									<td className="text-nowrap fw-semibold text-success">
 										<CurrencyText amount={totalInterestReceivable} smallCurrency />
 									</td>
-									<td className="text-nowrap fw-bold text-success">
+									<td className="text-nowrap fw-semibold text-success">
 										{totalSharesReceivable}
 									</td>
 									<td className="text-nowrap">
@@ -2726,7 +2726,7 @@ const Admin = () => {
 
 						{showSelectedAnnualInterestRecord && (
 							<>
-								<div className='position-fixed fixed-top inset-0 bg-black2 inx-high add-property-form'>
+								<div className='position-fixed fixed-top inset-0 bg-white3 inx-high'>
 									<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 										<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
 											<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
@@ -3158,7 +3158,7 @@ const Admin = () => {
 						{/* Member Credits */}
 						{showSelectedMemberCredits &&
 							<>
-								<div className='position-fixed fixed-top inset-0 bg-black2 inx-high add-property-form'>
+								<div className='position-fixed fixed-top inset-0 bg-white3 inx-high'>
 									<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 										<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
 											<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom">
@@ -3896,7 +3896,7 @@ const Admin = () => {
 
 								{showBackfillPlanCard && (
 									<>
-										<div className='position-fixed fixed-top inset-0 bg-black2 py-3 inx-high add-property-form'>
+										<div className='position-fixed fixed-top inset-0 bg-black3 py-3 inx-high'>
 											<div className="container offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 												<div className="px-3 bg-light text-gray-700">
 													<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
@@ -3968,7 +3968,7 @@ const Admin = () => {
 														{/* The plan */}
 														<div className='overflow-auto'>
 															<table className="table table-hover h-100">
-																<thead className='table-primary position-sticky top-0 inx-1 1 text-uppercase small'>
+																<thead className='table-primary position-sticky top-0 inx-1 text-uppercase small'>
 																	<tr>
 																		<th className='ps-sm-3 py-3 text-nowrap text-gray-700 fw-normal'>Tranche</th>
 																		<th className='py-3 text-nowrap text-gray-700 fw-normal fw-normal'>Backfill amount</th>
@@ -4249,7 +4249,7 @@ const Admin = () => {
 
 									{showAddExpenseRecord &&
 										<>
-											<div className='position-fixed fixed-top inset-0 bg-black2 py-3 py-md-5 inx-high add-property-form'>
+											<div className='position-fixed fixed-top inset-0 bg-black3 py-3 py-md-5 inx-high'>
 												<div className="container col-md-6 col-lg-5 col-xl-4 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 													<div className="h-100 px-3 bg-light text-gray-700">
 														<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
@@ -4361,7 +4361,7 @@ const Admin = () => {
 							{activeTransactionSection === 'penalties' && (
 								<div className='overflow-auto'>
 									<table className="table table-hover h-100">
-										<thead className='table-primary position-sticky top-0 inx-1 1 text-uppercase small'>
+										<thead className='table-primary position-sticky top-0 inx-1 text-uppercase small'>
 											<tr>
 												<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
 												<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
@@ -4843,58 +4843,58 @@ const Admin = () => {
 
 			<main className="container-fluid">
 				{/* Notifications */}
-				{showNotifications && (
-					<div className='position-fixed fixed-top inset-0 bg-black2 px-2 pt-5 pb-3 inx-max'>
-						<div className="position-relative h-100 col-sm-7 col-md-5 col-lg-4 col-xxl-3 mx-auto me-md-0 bg-light border-secondary border-opacity-25 rounded-4 notifications-card" style={{ animation: 'flyInTop .3s 1' }}>
-							{/* Icon */}
-							<div className="position-absolute start-50 w-fit h-fit px-3 py-1 blur-bg-3px border border-light border-opacity-50 rounded-pill" style={{ translate: "-50% -120%", animation: 'flyInBottom .5s 1' }}>
-								<BellSimple weight="fill" size={20} className='text-light' /> <span className='smaller text-gray-200'>Notifications</span>
-							</div>
-							<AbsoluteCloseButton text="primaryColor" onClose={() => setShowNotifications(false)} />
-							{/* Content */}
-							<div className="h-100 p-3 overflow-auto">
-								{allCredits.filter(cr => cr.status === 'pending').length === 0 ? (
-									<EmptyBox
-										notFoundMessage="All clear. Any new notifications will show up here."
-										fluid
-										className="mt-5"
-									/>
-								) : (
-									<>
-										{allCredits
-											.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate))
-											.filter(cr => cr.status === 'pending')
-											.map((cr, index) => {
-												const associatedMember = allMembers.find(m => m.id === cr.memberId);
-												const names = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
 
-												return (
-													<div key={index} className="d-flex mb-2 py-2 border-bottom">
-														<img src={associatedMember.husbandAvatar ? associatedMember.husbandAvatar : '/images/man_avatar_image.jpg'} alt="" className='w-2rem h-2rem flex-grow-0 flex-shrink-0 me-2 object-fit-cover bg-light rounded-circle' />
-														<div className="">
-															<div className="d-flex align-items-center justify-content-between mb-1 pb-1 border-bottom text-primaryColor small">
-																<span>Loan request</span>
-																<small className='text-gray-600'>
-																	{formatDate(cr.updatedAt, { todayKeyword: true })}
-																</small>
-															</div>
-															<p className='mb-1 fs-75 text-gray-600'>
-																{names} is requesting a loan of <CurrencyText amount={Number(cr.creditAmount)} />
-															</p>
-															<button className='btn btn-sm pe-1 fs-60 rounded-pill bg-primaryColor text-light clickDown' style={{ paddingBlock: '.125rem' }}
-																onClick={() => { setActiveSection('credits'); setShowNotifications(false); }}
-															>Respond <CaretRight /></button>
+
+				{/* Member primary info preview */}
+				<RightFixedCard
+					show={showNotifications}
+					onClose={() => setShowNotifications(false)}
+					title="Notifications"
+					icon={<BellSimple weight="fill" size={20} className='text-light' />}
+					content={
+						<>
+							{allCredits.filter(cr => cr.status === 'pending').length === 0 ? (
+								<EmptyBox
+									notFoundMessage="All clear. Any new notifications will show up here."
+									fluid
+									className="mt-5"
+								/>
+							) : (
+								<>
+									{allCredits
+										.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate))
+										.filter(cr => cr.status === 'pending')
+										.map((cr, index) => {
+											const associatedMember = allMembers.find(m => m.id === cr.memberId);
+											const names = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+
+											return (
+												<div key={index} className="d-flex mb-2 py-2 border-bottom">
+													<img src={associatedMember.husbandAvatar ? associatedMember.husbandAvatar : '/images/man_avatar_image.jpg'} alt="" className='w-2rem h-2rem flex-grow-0 flex-shrink-0 me-2 object-fit-cover bg-light rounded-circle' />
+													<div className="">
+														<div className="d-flex align-items-center justify-content-between mb-1 pb-1 border-bottom text-primaryColor small">
+															<span>Loan request</span>
+															<small className='text-gray-600'>
+																{formatDate(cr.updatedAt, { todayKeyword: true })}
+															</small>
 														</div>
+														<p className='mb-1 fs-75 text-gray-600'>
+															{names} is requesting a loan of <CurrencyText amount={Number(cr.creditAmount)} />
+														</p>
+														<button className='btn btn-sm pe-1 fs-60 rounded-pill bg-primaryColor text-light clickDown' style={{ paddingBlock: '.125rem' }}
+															onClick={() => { setActiveSection('credits'); setShowNotifications(false); }}
+														>Respond <CaretRight /></button>
 													</div>
-												)
-											})
-										}
-									</>
-								)}
-							</div>
-						</div>
-					</div>
-				)}
+												</div>
+											)
+										})
+									}
+								</>
+							)}
+						</>
+					}
+					fitWidth={true}
+				/>
 
 				<div className="row">
 					{/* Sidebar Navigation */}

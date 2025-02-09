@@ -1688,11 +1688,11 @@ const UserUI = () => {
 							<tr>
 								<th className='py-3 text-nowrap text-gray-700 fw-normal'>N°</th>
 								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Member</th>
-								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Active shares</th>
-								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Share % to {totalActiveShares}</th>
+								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Shares <sub className='fs-60'>/Active</sub></th>
+								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Share % <sub className='fs-60'>to <b>{totalActiveShares}</b></sub></th>
 								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Interest <sub className='fs-60'>/RWF</sub></th>
 								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Receivable<sub className='fs-60'>/RWF</sub></th>
-								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Receivable shares</th>
+								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Receivable<sub className='fs-60'>/Shares</sub></th>
 								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Remains<sub className='fs-60'>/RWF</sub></th>
 							</tr>
 						</thead>
@@ -1740,13 +1740,13 @@ const UserUI = () => {
 								<td className='text-nowrap'>{totalMembers} <span className="fs-60">members</span></td>
 								<td className='text-nowrap'>{totalActiveShares}</td>
 								<td className="text-nowrap">{totalSharesPercentage.toFixed(3)} %</td>
-								<td className="text-nowrap fw-bold">
+								<td className="text-nowrap fw-semibold">
 									<CurrencyText amount={totalMonetaryInterest} smallCurrency />
 								</td>
-								<td className="text-nowrap fw-bold text-success">
+								<td className="text-nowrap fw-semibold text-success">
 									<CurrencyText amount={totalInterestReceivable} smallCurrency />
 								</td>
-								<td className="text-nowrap fw-bold text-success">
+								<td className="text-nowrap fw-semibold text-success">
 									{totalSharesReceivable}
 								</td>
 								<td className="text-nowrap">
