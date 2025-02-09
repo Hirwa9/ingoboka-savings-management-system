@@ -3,7 +3,7 @@ import React, { Fragment, useCallback, useContext, useEffect, useMemo, useRef, u
 import { Button, Card, Container, Form } from "react-bootstrap";
 import './user.css';
 import MyToast from '../../common/Toast';
-import { ArrowClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, EnvelopeSimple, Files, FloppyDisk, Gavel, Gear, List, Pen, Phone, Plus, Receipt, SignOut, User, UserRectangle, Users, WarningCircle, X } from '@phosphor-icons/react';
+import { ArrowClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, EnvelopeSimple, Files, FloppyDisk, Gavel, Gear, List, Pen, Phone, Plus, Receipt, SignOut, User, UserRectangle, Users, WarningCircle, X } from '@phosphor-icons/react';
 import { expensesTypes, generalReport, incomeExpenses } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
@@ -1547,6 +1547,7 @@ const UserUI = () => {
 		let totalSharesPercentage = 0;
 		let totalMonetaryInterest = 0;
 		let totalInterestReceivable = 0;
+		let totalSharesReceivable = 0;
 		let totalInterestRemains = 0;
 		let totalAnnualShares = 0;
 
@@ -1664,6 +1665,23 @@ const UserUI = () => {
 					</div>
 				</div>
 				<hr className='mb-4 d-lg-none' />
+
+				<div className="alert alert-info smaller">
+					<p className='display-6'>
+						Statut des intérêts annuels
+					</p>
+					<div className="d-flex flex-wrap gap-2 ms-lg-auto mb-2">
+						<div className='col'>
+							<div className='flex-align-center text-muted border-bottom'><ChartPie className='me-1 opacity-50' /> <span className="text-nowrap">All shares</span></div>
+							<div className='text-center bg-bodi fs-6'>{totalActiveShares}</div>
+						</div>
+						<div className='col'>
+							<div className='flex-align-center text-muted border-bottom'><Coins className='me-1 opacity-50' /> <span className="text-nowrap">Interest receivable</span></div>
+							<div className='text-center bg-bodi fs-6'><CurrencyText amount={interestToReceive} /></div>
+						</div>
+					</div>
+					<Calendar size={25} className='me-2' /> Année {new Date().getFullYear()}
+				</div>
 				<div className='overflow-auto mb-5'>
 					<table className="table table-hover h-100">
 						<thead className='table-success position-sticky top-0 inx-1 1 text-uppercase small'>
@@ -1671,25 +1689,31 @@ const UserUI = () => {
 								<th className='py-3 text-nowrap text-gray-700 fw-normal'>N°</th>
 								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Member</th>
 								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Active shares</th>
-								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Share % to {totalBoughtShares}</th>
+								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Share % to {totalActiveShares}</th>
 								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Interest <sub className='fs-60'>/RWF</sub></th>
 								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Receivable<sub className='fs-60'>/RWF</sub></th>
+								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Receivable shares</th>
 								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Remains<sub className='fs-60'>/RWF</sub></th>
 							</tr>
 						</thead>
 						<tbody>
 							{activeMembers.map((item, index) => {
 								const memberNames = `${item.husbandFirstName} ${item.husbandLastName}`;
-								const activeShares = item.progressiveShares + JSON.parse(item.annualShares).filter(share => share.paid).length;
-								const sharesProportion = activeShares / totalActiveShares;
+								const progressiveShares = item.progressiveShares;
+								const paidAnnualShares = JSON.parse(item.annualShares).filter(share => share.paid).length;
+								const activeShares = progressiveShares + paidAnnualShares;
+								const sharesProportion = totalActiveShares > 0 ? activeShares / totalActiveShares : 0;
 								const sharesPercentage = (sharesProportion * 100).toFixed(3);
-								const interest = sharesProportion * (Number(interestToReceive) + Number(item.initialInterest));
-								const interestReceivable = Math.floor(interest / 20000) * 20000;
+								const activeinterest = sharesProportion * interestToReceive;
+								const interest = activeinterest + item.initialInterest;
+								const interestReceivable = (Math.floor((activeinterest + item.initialInterest) / 20000) * 20000);
+								const sharesReceivable = interestReceivable / 20000;
 								const interestRemains = interest - interestReceivable;
 
 								totalSharesPercentage += Number(sharesPercentage);
 								totalMonetaryInterest += Number(interest);
 								totalInterestReceivable += interestReceivable + Number(item.initialInterest);
+								totalSharesReceivable += sharesReceivable;
 								totalInterestRemains += interestRemains;
 
 								return (
@@ -1704,6 +1728,7 @@ const UserUI = () => {
 										<td className="text-nowrap text-success">
 											<CurrencyText amount={interestReceivable} smallCurrency />
 										</td>
+										<td>{sharesReceivable}</td>
 										<td className="text-nowrap text-gray-700">
 											<CurrencyText amount={interestRemains} smallCurrency />
 										</td>
@@ -1720,6 +1745,9 @@ const UserUI = () => {
 								</td>
 								<td className="text-nowrap fw-bold text-success">
 									<CurrencyText amount={totalInterestReceivable} smallCurrency />
+								</td>
+								<td className="text-nowrap fw-bold text-success">
+									{totalSharesReceivable}
 								</td>
 								<td className="text-nowrap">
 									<CurrencyText amount={totalInterestRemains} smallCurrency />
