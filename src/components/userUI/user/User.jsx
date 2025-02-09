@@ -1299,7 +1299,7 @@ const UserUI = () => {
 							{/* Record savings */}
 							{showAddSavingRecord &&
 								<>
-									<div className='position-fixed fixed-top inset-0 flex-center py-3 py-md-5 bg-black2 inx-high add-property-form'>
+									<div className='position-fixed fixed-top inset-0 flex-center py-3 py-md-5 bg-black2 inx-high'>
 										<div className="container col-md-6 col-lg-5 col-xl-4 my-auto peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 											<div className="px-3 bg-light text-gray-700">
 												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
@@ -1449,7 +1449,7 @@ const UserUI = () => {
 							{/* Record multiple shares */}
 							{showAddMultipleShares &&
 								<>
-									<div className='position-fixed fixed-top inset-0 flex-center py-3 py-md-5 bg-black2 inx-high add-property-form'>
+									<div className='position-fixed fixed-top inset-0 flex-center py-3 py-md-5 bg-white3 inx-high'>
 										<div className="container col-md-6 col-lg-5 col-xl-4 my-auto peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 											<div className="px-3 bg-light text-gray-700">
 												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
@@ -2073,7 +2073,7 @@ const UserUI = () => {
 						{/* Member Credits */}
 						{showSelectedMemberCredits &&
 							<>
-								<div className='position-fixed fixed-top inset-0 bg-black2 inx-high add-property-form'>
+								<div className='position-fixed fixed-top inset-0 bg-white3 inx-high'>
 									<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 										<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
 											<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom">
@@ -2597,7 +2597,7 @@ const UserUI = () => {
 
 								{showBackfillPlanCard && (
 									<>
-										<div className='position-fixed fixed-top inset-0 bg-black2 py-3 inx-high add-property-form'>
+										<div className='position-fixed fixed-top inset-0 bg-black3 py-3 inx-high'>
 											<div className="container offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 												<div className="px-3 bg-light text-gray-700">
 													<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
@@ -2710,8 +2710,9 @@ const UserUI = () => {
 						</>
 					)}
 				</div>
+
 				{showRequestCreditForm && (
-					<div className="position-fixed fixed-top inset-0 bg-black2 py-3 inx-high add-credit-form">
+					<div className="position-fixed fixed-top inset-0 bg-black3 py-3 inx-high add-credit-form">
 						<div className="container col-md-6 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 							<div className="px-3 bg-light text-gray-700">
 								{/* Header */}
@@ -3040,7 +3041,7 @@ const UserUI = () => {
 
 									{showAddExpenseRecord &&
 										<>
-											<div className='position-fixed fixed-top inset-0 bg-black2 py-3 py-md-5 inx-high add-property-form'>
+											<div className='position-fixed fixed-top inset-0 bg-white3 py-3 py-md-5 inx-high'>
 												<div className="container col-md-6 col-lg-5 col-xl-4 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 													<div className="h-100 px-3 bg-light text-gray-700">
 														<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
