@@ -296,7 +296,6 @@ const Admin = () => {
 	}, []);
 
 	const interestToReceive = allLoans.reduce((sum, m) => sum + m.interestPaid, 0) - allFigures?.distributedInterest;
-	console.log(allFigures?.distributedInterest);
 	const pendingInterest = useMemo(() => (
 		allLoans.reduce((sum, m) => sum + m.interestPending, 0)
 	), [allLoans]);
