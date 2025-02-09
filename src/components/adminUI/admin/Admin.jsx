@@ -2511,7 +2511,7 @@ const Admin = () => {
 					</div>
 				</div>
 				<hr className='mb-4 d-lg-none' />
-				<div ref={interestPartitionViewRef}  >
+				<div ref={interestPartitionViewRef}>
 					<div className="alert alert-info smaller">
 						<p className='display-6'>
 							Statut des intérêts annuels
@@ -2555,24 +2555,6 @@ const Admin = () => {
 									const interestReceivable = (Math.floor((activeinterest + item.initialInterest) / 20000) * 20000);
 									const sharesReceivable = interestReceivable / 20000;
 									const interestRemains = interest - interestReceivable;
-
-									{/* console.group(`Member: ${item.husbandFirstName} ${item.husbandLastName}`);
-
-									console.log("Member Name:", `${item.husbandFirstName} ${item.husbandLastName}`);
-									console.log("Progressive Shares:", progressiveShares);
-									console.log("Paid Annual Shares:", paidAnnualShares);
-									console.log("Active Shares:", activeShares);
-									console.log("Total Active Shares:", totalActiveShares);
-									console.log("Shares Proportion:", sharesProportion);
-									console.log("Shares Percentage:", sharesPercentage);
-									console.log("Interest to Receive:", interestToReceive);
-									console.log("Initial Interest:", item.initialInterest);
-									console.log("Computed Interest:", interest);
-									console.log("Receivable Interest (Multiples of 20,000):", interestReceivable);
-									console.log("Remaining Interest:", interestRemains);
-
-									console.groupEnd(); */}
-
 
 									totalSharesPercentage += Number(sharesPercentage);
 									totalMonetaryInterest += Number(interest);
