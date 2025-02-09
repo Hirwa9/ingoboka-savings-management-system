@@ -762,8 +762,6 @@ const Admin = () => {
 			setShowMemberRemoval(false);
 		}
 
-		const [canRemoveMember, setCanRemoveMember] = useState(false);
-
 		const handleRemoveMember = async (email) => {
 			try {
 				setIsWaitingFetchAction(true);
@@ -777,6 +775,7 @@ const Admin = () => {
 				setErrorWithFetchAction(null);
 				fetchMembers();
 				fetchLoans();
+				fetchFigures();
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError('Error removing member:', error.response?.data || error.message);
@@ -3046,10 +3045,10 @@ const Admin = () => {
 				// Successfull fetch
 				const data = response.data;
 				successToast({ message: data.message });
-				resetPaymentinputs();
 				setErrorWithFetchAction(null);
 				fetchLoans();
 				fetchCredits();
+				resetPaymentinputs();
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError("Error fetching members:", error);
@@ -3374,7 +3373,6 @@ const Admin = () => {
 																							}
 																						</button>
 																					</div>
-
 																				</>
 																			) : (
 																				<div className="grid-center fs-5 py-5">
