@@ -3100,6 +3100,7 @@ const Admin = () => {
 				setErrorWithFetchAction(null);
 				fetchMembers();
 				fetchRecords();
+				fetchFigures();
 			} catch (error) {
 				console.error('Caught Error:', error);
 
