@@ -131,7 +131,7 @@ const UserUI = () => {
 	const [errorLoadingMembers, setErrorLoadingMembers] = useState(false);
 
 	const totalCotisation = allMembers.reduce((sum, m) => (sum + (m.shares * 20000)), 0);
-	const totalSocial = allMembers.reduce((sum, m) => sum + m.social, 0);
+	const totalSocial = allMembers.reduce((sum, m) => sum + Number(m.social), 0);
 
 	const accountantNames = useMemo(() => {
 		const member = allMembers.find(m => (m.role === 'accountant'));
@@ -299,7 +299,7 @@ const UserUI = () => {
 		fetchLoans();
 	}, []);
 
-	const interestToReceive = allLoans.reduce((sum, m) => sum + m.interestPaid, 0);
+	const interestToReceive = allLoans.reduce((sum, m) => sum + m.interestPaid, 0) - allFigures?.distributedInterest;
 	const pendingInterest = useMemo(() => (
 		allLoans.reduce((sum, m) => sum + m.interestPending, 0)
 	), [allLoans]);
@@ -1291,10 +1291,10 @@ const UserUI = () => {
 																<span className='d-table-cell border-start border-secondary ps-2'>Cotisation:</span> <span className='d-table-cell ps-2'>{cotisation.toLocaleString()} RWF</span>
 															</li>
 															<li className="py-1 d-table-row">
-																<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'>{social.toLocaleString()} RWF</span>
+																<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'>{Number(social).toLocaleString()} RWF</span>
 															</li>
 															<li className="py-1 fs-5 d-table-row">
-																<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'>{(cotisation + social).toLocaleString()} RWF</span>
+																<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'>{(cotisation + Number(social)).toLocaleString()} RWF</span>
 															</li>
 														</ul>
 													</div>
@@ -1489,10 +1489,10 @@ const UserUI = () => {
 														<span className='d-table-cell border-start border-secondary ps-2'>Cotisation:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.cotisation} /></span>
 													</li>
 													<li className="py-1 d-table-row">
-														<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.social} /></span>
+														<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'><CurrencyText amount={Number(selectedMember?.social)} /></span>
 													</li>
 													<li className="py-1 fs-5 d-table-row">
-														<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.cotisation + selectedMember?.social} /></span>
+														<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.cotisation + Number(selectedMember?.social)} /></span>
 													</li>
 												</ul>
 												<DividerText text="Add new shares" type='gray-300' className="mb-4" />
@@ -1714,8 +1714,8 @@ const UserUI = () => {
 								const sharesProportion = totalActiveShares > 0 ? activeShares / totalActiveShares : 0;
 								const sharesPercentage = (sharesProportion * 100).toFixed(3);
 								const activeinterest = sharesProportion * interestToReceive;
-								const interest = activeinterest + item.initialInterest;
-								const interestReceivable = (Math.floor((activeinterest + item.initialInterest) / 20000) * 20000);
+								const interest = activeinterest + Number(item.initialInterest);
+								const interestReceivable = (Math.floor((activeinterest + Number(item.initialInterest)) / 20000) * 20000);
 								const sharesReceivable = interestReceivable / 20000;
 								const interestRemains = interest - interestReceivable;
 
@@ -3250,7 +3250,7 @@ const UserUI = () => {
 													.map((item, index) => {
 														const memberNames = `${item.husbandFirstName} ${item.husbandLastName}`;
 														const memberCostisation = item.cotisation;
-														const memberSocial = item.social;
+														const memberSocial = Number(item.social);
 														const memberBalance = memberCostisation + memberSocial;
 
 														const memberCredits = allLoans.find(loan => loan.memberId === item.id);

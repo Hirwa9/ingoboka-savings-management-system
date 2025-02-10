@@ -128,7 +128,7 @@ const Admin = () => {
 	const [errorLoadingMembers, setErrorLoadingMembers] = useState(false);
 
 	const totalCotisation = allMembers.reduce((sum, m) => (sum + (m.shares * 20000)), 0);
-	const totalSocial = allMembers.reduce((sum, m) => sum + m.social, 0);
+	const totalSocial = allMembers.reduce((sum, m) => sum + Number(m.social), 0);
 
 	const accountantNames = useMemo(() => {
 		const member = allMembers.find(m => (m.role === 'accountant'));
@@ -1479,7 +1479,7 @@ const Admin = () => {
 																			Social
 																		</td>
 																		<td className='text-primary-emphasis'>
-																			<CurrencyText amount={selectedMember?.social} />
+																			<CurrencyText amount={Number(selectedMember?.social)} />
 																		</td>
 																	</tr>
 																	<tr className={`small credit-row`}>
@@ -1487,7 +1487,7 @@ const Admin = () => {
 																			Total
 																		</td>
 																		<td className='text-primary-emphasis text-decoration-underline'>
-																			<CurrencyText amount={selectedMember?.cotisation + selectedMember?.social} />
+																			<CurrencyText amount={selectedMember?.cotisation + Number(selectedMember?.social)} />
 																		</td>
 																	</tr>
 																</tbody>
@@ -1504,10 +1504,10 @@ const Admin = () => {
 																<span className='d-table-cell border-start border-secondary ps-2'>Cotisation:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.cotisation} /></span>
 															</li>
 															<li className="py-1 d-table-row">
-																<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.social} /></span>
+																<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'><CurrencyText amount={Number(selectedMember?.social)} /></span>
 															</li>
 															<li className="py-1 fs-5 d-table-row">
-																<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.cotisation + selectedMember?.social} /></span>
+																<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.cotisation + Number(selectedMember?.social)} /></span>
 															</li>
 														</ul> */}
 													</div>
@@ -1607,7 +1607,7 @@ const Admin = () => {
 																		{allLoans.filter(loan => (loan.memberId === selectedMember?.id && loan.loanTaken > 0))
 																			.map((item, index) => {
 																				const selectedLoan = item;
-																				const removeCompletely = (selectedMember?.cotisation + selectedMember?.social) > selectedLoan?.loanPending;
+																				const removeCompletely = (selectedMember?.cotisation + Number(selectedMember?.social)) > selectedLoan?.loanPending;
 																				return (
 																					<Fragment key={index} >
 																						<div className='overflow-auto'>
@@ -1624,7 +1624,7 @@ const Admin = () => {
 																								<tbody>
 																									<tr>
 																										<td className={`ps-sm-3 text-primary-emphasis`}>
-																											<CurrencyText amount={selectedMember?.cotisation + selectedMember?.social} />
+																											<CurrencyText amount={selectedMember?.cotisation + Number(selectedMember?.social)} />
 																										</td>
 																										<td>
 																											<div className="text-center">
@@ -1860,7 +1860,7 @@ const Admin = () => {
 			try {
 				setIsWaitingFetchAction(true);
 
-				const requestBody = savingRecordType === 'cotisation' ? {
+				const payload = savingRecordType === 'cotisation' ? {
 					savings: selectedMonths,
 					applyDelayPenalties,
 					comment: savingRecordType[0].toUpperCase() + savingRecordType.slice(1)
@@ -1872,7 +1872,7 @@ const Admin = () => {
 				const response = await fetch(`${BASE_URL}/member/${id}/${savingRecordType}`, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify(requestBody),
+					body: JSON.stringify(payload),
 				});
 
 				// Fetch error
@@ -2091,10 +2091,10 @@ const Admin = () => {
 																<span className='d-table-cell border-start border-secondary ps-2'>Cotisation:</span> <span className='d-table-cell ps-2'>{cotisation.toLocaleString()} RWF</span>
 															</li>
 															<li className="py-1 d-table-row">
-																<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'>{social.toLocaleString()} RWF</span>
+																<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'>{Number(social).toLocaleString()} RWF</span>
 															</li>
 															<li className="py-1 fs-5 d-table-row">
-																<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'>{(cotisation + social).toLocaleString()} RWF</span>
+																<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'>{(cotisation + Number(social)).toLocaleString()} RWF</span>
 															</li>
 														</ul>
 														<button className="btn btn-sm text-primaryColor border-primaryColor w-100 flex-center rounded-0 clickDown"
@@ -2292,10 +2292,10 @@ const Admin = () => {
 														<span className='d-table-cell border-start border-secondary ps-2'>Cotisation:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.cotisation} /></span>
 													</li>
 													<li className="py-1 d-table-row">
-														<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.social} /></span>
+														<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'><CurrencyText amount={Number(selectedMember?.social)} /></span>
 													</li>
 													<li className="py-1 fs-5 d-table-row">
-														<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.cotisation + selectedMember?.social} /></span>
+														<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.cotisation + Number(selectedMember?.social)} /></span>
 													</li>
 												</ul>
 												<DividerText text="Add new shares" type='gray-300' className="mb-4" />
@@ -2560,8 +2560,8 @@ const Admin = () => {
 									const sharesProportion = totalActiveShares > 0 ? activeShares / totalActiveShares : 0;
 									const sharesPercentage = (sharesProportion * 100).toFixed(3);
 									const activeinterest = sharesProportion * interestToReceive;
-									const interest = activeinterest + item.initialInterest;
-									const interestReceivable = (Math.floor((activeinterest + item.initialInterest) / 20000) * 20000);
+									const interest = activeinterest + Number(item.initialInterest);
+									const interestReceivable = (Math.floor((activeinterest + Number(item.initialInterest)) / 20000) * 20000);
 									const sharesReceivable = interestReceivable / 20000;
 									const interestRemains = interest - interestReceivable;
 
@@ -4566,7 +4566,7 @@ const Admin = () => {
 													.map((item, index) => {
 														const memberNames = `${item.husbandFirstName} ${item.husbandLastName}`;
 														const memberCostisation = item.cotisation;
-														const memberSocial = item.social;
+														const memberSocial = Number(item.social);
 														const memberBalance = memberCostisation + memberSocial;
 
 														const memberCredits = allLoans.find(loan => loan.memberId === item.id);
