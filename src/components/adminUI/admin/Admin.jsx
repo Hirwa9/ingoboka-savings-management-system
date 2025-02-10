@@ -2423,7 +2423,7 @@ const Admin = () => {
 					});
 					// Successfull fetch
 					const data = response.data;
-					successToast({ message: data.message });
+					successToast({ message: data.message, selfClose: false });
 					setShowShareAnnualInterest(false);
 					setErrorWithFetchAction(null);
 					fetchMembers();
@@ -2433,7 +2433,7 @@ const Admin = () => {
 				} catch (error) {
 					setErrorWithFetchAction(error);
 					cError("Error distributing interest:", error);
-					warningToast({ message: error });
+					warningToast({ message: error, selfClose: false });
 				} finally {
 					setIsWaitingFetchAction(false);
 				}
@@ -3108,7 +3108,7 @@ const Admin = () => {
 				const errorMessage = error.response?.data?.message || error.message || "An unknown error occurred";
 				setErrorWithFetchAction(errorMessage);
 				cError("Error applying penalties:", error);
-				warningToast({ message: errorMessage, })
+				warningToast({ message: errorMessage, selfClose: false });
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
