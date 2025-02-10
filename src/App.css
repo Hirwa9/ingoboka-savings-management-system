@@ -219,6 +219,20 @@ body {
 
 /* Customs */
 
+.balance-indicator {
+  background-color: var(--bs-gray-100);
+  color: var(--bs-gray-800);
+  font-weight: 600;
+}
+
+@media screen and (min-width: 768px) {
+  .balance-indicator {
+    background-color: var(--appColor);
+    color: var(--bs-gray-200);
+    font-weight: normal;
+  }
+}
+
 .app-loading-page {
   /* background-image: linear-gradient(150deg, rgba(39, 128, 157, 0.3), rgba(195, 133, 0, 0.3)); */
 
@@ -329,6 +343,14 @@ label {
 
 .fs-60 {
   font-size: 60%;
+}
+
+.fs-55 {
+  font-size: 55%;
+}
+
+.fs-50 {
+  font-size: 50%;
 }
 
 .text-divider > div {
