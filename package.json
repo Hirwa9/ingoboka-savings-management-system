@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@idui/react-popover": "^3.1.0",
     "@phosphor-icons/react": "^2.1.7",
     "@szhsin/react-menu": "^4.3.0",
     "@testing-library/jest-dom": "^5.17.0",
