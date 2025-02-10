@@ -27,6 +27,7 @@ import DividerText from '../../common/DividerText';
 import { BASE_URL, Axios } from '../../../api/api';
 import { AuthContext } from '../../AuthProvider';
 import RightFixedCard from '../../common/rightFixedCard/RightFixedCard';
+import Popover from '@idui/react-popover';
 
 const UserUI = () => {
 
@@ -3491,16 +3492,20 @@ const UserUI = () => {
 				<div className='d-none d-md-flex flex-grow-1 border-bottom py-1'>
 					<div className="me-3 ms-auto navbar-nav">
 						<div className="nav-item d-flex gap-2 text-nowrap small" style={{ '--_activeColor': 'var(--primaryColor)' }}>
-							<button className={`nav-link px-2 text-gray-600 rounded-pill clickDown`} title='Refresh data'
-								onClick={() => refreshAllData(true)}
-							>
-								<ArrowsClockwise size={20} />
-							</button>
-							<button className={`nav-link px-2 ${adminHasNewNotifications ? 'bg-gray-300 text-primaryColor active-with-dot' : 'text-gray-600'} rounded-pill clickDown`} title='Notifications'>
-								<BellSimple weight={adminHasNewNotifications ? 'fill' : undefined} size={20}
-									style={{ animation: adminHasNewNotifications ? 'shakeX 10s infinite' : 'unset' }}
-								/>
-							</button>
+							<Popover content="Refresh data" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='2rem'>
+								<button className={`nav-link px-2 text-gray-600 rounded-pill clickDown`} title='Refresh data'
+									onClick={refreshAllData}
+								>
+									<ArrowsClockwise size={20} />
+								</button>
+							</Popover>
+							<Popover content="Notifications" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='2rem'>
+								<button className={`nav-link px-2 ${adminHasNewNotifications ? 'bg-gray-300 text-primaryColor active-with-dot' : 'text-gray-600'} rounded-pill clickDown`} title='Notifications'>
+									<BellSimple weight={adminHasNewNotifications ? 'fill' : undefined} size={20}
+										style={{ animation: adminHasNewNotifications ? 'shakeX 10s infinite' : 'unset' }}
+									/>
+								</button>
+							</Popover>
 						</div>
 					</div>
 					<div className="d-flex align-items-center me-3 border-light border-opacity-25">
