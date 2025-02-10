@@ -28,6 +28,7 @@ import SystemSettings from '../../systemSettings/SystemSettings';
 import { Menu, MenuItem, MenuButton, MenuDivider } from '@szhsin/react-menu';
 import '@szhsin/react-menu/dist/index.css';
 import '@szhsin/react-menu/dist/transitions/zoom.css';
+import Popover from '@idui/react-popover';
 import ContentToggler from '../../common/ContentToggler';
 import DividerText from '../../common/DividerText';
 import { BASE_URL, Axios } from '../../../api/api';
@@ -1954,6 +1955,7 @@ const Admin = () => {
 				setErrorWithFetchAction(null);
 				fetchMembers();
 				fetchFigures();
+				fetchRecords();
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError("Error adding multiple shares:", error);
@@ -2075,12 +2077,14 @@ const Admin = () => {
 														<h5 className="mb-3 fs-4">{`${husbandFirstName} ${husbandLastName}`}</h5>
 														<ul className="list-unstyled text-gray-700 px-2 smaller">
 															<li className="py-1 w-100">
-																<span className="flex-align-center">
+																<span className="d-flex align-items-center justify-content-between">
 																	<b className='fs-5'>{shares} Shares</b>
-																	<span className='ms-auto py-1 px-2 border border-top-0 border-bottom-0 text-primaryColor flex-align-center ptr clickDown' title='Edit multiple shares'
-																		onClick={() => { setSelectedMember(member); setShowAddMultipleShares(true) }}>
-																		<EscalatorUp size={22} className='me-2' /> Umuhigo
-																	</span>
+																	<Popover content="Multiple shares" trigger='hover' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='2rem'>
+																		<span className='py-1 px-2 border border-top-0 border-bottom-0 text-primaryColor flex-align-center ptr clickDown'
+																			onClick={() => { setSelectedMember(member); setShowAddMultipleShares(true) }}>
+																			<EscalatorUp size={22} className='me-2' /> Umuhigo
+																		</span>
+																	</Popover>
 																</span>
 															</li>
 															<li className="py-1 d-table-row">
@@ -3053,8 +3057,10 @@ const Admin = () => {
 				const data = response.data;
 				successToast({ message: data.message });
 				setErrorWithFetchAction(null);
+				fetchMembers();
 				fetchLoans();
 				fetchCredits();
+				fetchFigures();
 				resetPaymentinputs();
 			} catch (error) {
 				setErrorWithFetchAction(error);
@@ -4817,18 +4823,22 @@ const Admin = () => {
 				<div className='d-none d-md-flex flex-grow-1 border-bottom py-1'>
 					<div className="me-3 ms-auto navbar-nav">
 						<div className="nav-item d-flex gap-2 text-nowrap small" style={{ '--_activeColor': 'var(--primaryColor)' }}>
-							<button className={`nav-link px-2 text-gray-600 rounded-pill clickDown`} title='Refresh data'
-								onClick={() => refreshAllData(true)}
-							>
-								<ArrowsClockwise size={20} />
-							</button>
-							<button className={`nav-link px-2 ${hasNewNotifications ? 'bg-gray-300 text-primaryColor active-with-dot' : 'text-gray-600'} rounded-pill clickDown`} title='Notifications'
-								onClick={() => setShowNotifications(true)}
-							>
-								<BellSimple weight={hasNewNotifications ? 'fill' : undefined} size={20}
-									style={{ animation: hasNewNotifications ? 'shakeX 10s infinite' : 'unset' }}
-								/>
-							</button>
+							<Popover content="Refresh data" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='2rem'>
+								<button className={`nav-link px-2 text-gray-600 rounded-pill clickDown`}
+									onClick={refreshAllData}
+								>
+									<ArrowsClockwise size={20} />
+								</button>
+							</Popover>
+							<Popover content="Notifications" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='2rem'>
+								<button className={`nav-link px-2 ${hasNewNotifications ? 'bg-gray-300 text-primaryColor active-with-dot' : 'text-gray-600'} rounded-pill clickDown`}
+									onClick={() => setShowNotifications(true)}
+								>
+									<BellSimple weight={hasNewNotifications ? 'fill' : undefined} size={20}
+										style={{ animation: hasNewNotifications ? 'shakeX 10s infinite' : 'unset' }}
+									/>
+								</button>
+							</Popover>
 						</div>
 					</div>
 					<div className="d-flex align-items-center me-3 border-light border-opacity-25">
