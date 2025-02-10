@@ -3471,7 +3471,7 @@ const UserUI = () => {
 			)}
 
 			<header className="navbar navbar-light sticky-top flex-md-nowrap py-0 admin-header">
-				<div className='nav-item navbar-brand col-12 col-md-3 col-xl-2 d-flex align-items-center me-0 px-2'>
+				<div className='nav-item navbar-brand position-relative col-12 col-md-3 col-xl-2 d-flex align-items-center me-0 px-2'>
 					<div className="me-2 logo">
 						<img src="/logo.png" alt="logo" className="rounded-circle logo"></img>
 					</div>
@@ -3488,6 +3488,13 @@ const UserUI = () => {
 							<List />
 						</button>
 					</div>
+					<Popover content="Balance" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none bg-appColor text-gray-200 border border-secondary border-opacity-25' arrowColor='var(--appColor)' height='2rem'>
+						<div className="position-absolute start-50 top-100 translate-middle flex-align-center gap-2  mt-md-1 px-3 py-1 text-gray-400 border border-secondary border-opacity-50 rounded-pill fs-60 shadow-sm ptr clickDown" style={{ backgroundColor: '#595432' }}
+							onClick={() => { setActiveSection("dashboard"); }}
+						>
+							<b>B:</b> <CurrencyText amount={Number(allFigures?.balance)} />
+						</div>
+					</Popover>
 				</div>
 				<div className='d-none d-md-flex flex-grow-1 border-bottom py-1'>
 					<div className="me-3 ms-auto navbar-nav">
@@ -3533,7 +3540,7 @@ const UserUI = () => {
 				<div className="row">
 					{/* Sidebar Navigation */}
 					<nav className={`col-12 col-md-3 col-xl-2 px-2 px-sm-5 px-md-0 d-md-block border-end overflow-y-auto sidebar ${sideNavbarIsFloated ? 'floated' : ''}`} id="sidebarMenu">
-						<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit my-2 my-md-0 py-3 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded-4' : ''}`}>
+						<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit my-2 my-md-0 py-3 pt-md-4 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded-4' : ''}`}>
 							<div className="d-flex align-items-center d-md-none mb-3 px-3 pb-2 border-light border-opacity-25">
 								<div className='ms-auto d-grid pb-1'>
 									<span className='ms-auto smaller'>{`${signedUser?.husbandFirstName} ${signedUser?.husbandLastName}`}</span>
@@ -3633,7 +3640,7 @@ const UserUI = () => {
 					</nav>
 
 					{/* Content Area */}
-					<div className="col-md-9 col-xl-10 ms-sm-auto px-md-4 py-2">
+					<div className="col-md-9 col-xl-10 ms-sm-auto px-md-4 pt-4 pt-md-2 pb-2">
 						{renderContent()}
 					</div>
 				</div>
