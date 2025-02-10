@@ -4820,7 +4820,7 @@ const Admin = () => {
 						</button>
 					</div>
 					<Popover content="Balance" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none bg-appColor text-gray-200 border border-secondary border-opacity-25' arrowColor='var(--appColor)' height='2rem'>
-						<div className="position-absolute start-50 top-100 translate-middle flex-align-center gap-2  mt-md-1 px-3 py-1 text-gray-400 border border-secondary border-opacity-50 rounded-pill fs-60 shadow-sm ptr clickDown" style={{ backgroundColor: '#595432' }}
+						<div className="position-absolute start-50 top-100 translate-middle flex-align-center gap-2  mt-md-1 px-3 py-1 text-gray-400 border border-secondary border-opacity-50 rounded-pill fs-60 fw-semibold shadow-sm ptr clickDown" style={{ backgroundColor: '#364018' }}
 							onClick={() => { setActiveSection("dashboard"); }}
 						>
 							<b>B:</b> <CurrencyText amount={Number(allFigures?.balance)} />
