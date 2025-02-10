@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Button, Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, ChatTeardropText, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, Envelope, EnvelopeSimple, EscalatorUp, Eye, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, GreaterThan, HandCoins, Info, LessThan, List, Minus, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Warning, WarningCircle, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, ChatTeardropText, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, Envelope, EnvelopeSimple, EscalatorUp, Eye, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, GreaterThan, HandCoins, Info, LessThan, List, Minus, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, X } from '@phosphor-icons/react';
 import { expensesTypes, incomeExpenses, memberRoles } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
@@ -4804,7 +4804,7 @@ const Admin = () => {
 					<div className="me-2 logo">
 						<img src="/logo.png" alt="logo" className="rounded-circle logo"></img>
 					</div>
-					<small className='fs-70 text-gray-400'>
+					<small className='fs-70 text-gray-200'>
 						INGOBOKA
 					</small>
 					<div className="d-flex gap-2 d-md-none ms-auto me-2 text-light" style={{ '--_activeColor': 'var(--bs-gray-500)' }}>
@@ -4820,10 +4820,10 @@ const Admin = () => {
 						</button>
 					</div>
 					<Popover content="Balance" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none bg-appColor text-gray-200 border border-secondary border-opacity-25' arrowColor='var(--appColor)' height='2rem'>
-						<div className="position-absolute start-50 top-100 translate-middle flex-align-center gap-2  mt-md-1 px-3 py-1 text-gray-400 border border-secondary border-opacity-50 rounded-pill fs-60 fw-semibold shadow-sm ptr clickDown" style={{ backgroundColor: '#364018' }}
+						<div className="position-absolute start-50 top-100 translate-middle flex-align-center gap-1  px-3 py-1 border border-secondary border-opacity-50 rounded-pill fs-50 shadow-sm ptr clickDown balance-indicator"
 							onClick={() => { setActiveSection("dashboard"); }}
 						>
-							<b>B:</b> <CurrencyText amount={Number(allFigures?.balance)} />
+							<Wallet size={14} weight='fill' /><CurrencyText amount={Number(allFigures?.balance)} />
 						</div>
 					</Popover>
 				</div>
