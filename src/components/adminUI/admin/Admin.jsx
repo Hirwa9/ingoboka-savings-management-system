@@ -1887,6 +1887,7 @@ const Admin = () => {
 				setShowAddSavingRecord(false);
 				setErrorWithFetchAction(null);
 				fetchMembers();
+				fetchFigures();
 				fetchRecords();
 			} catch (error) {
 				setErrorWithFetchAction(error);
