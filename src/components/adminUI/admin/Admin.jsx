@@ -1,6 +1,5 @@
 import React, { Fragment, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import axios from 'axios';
-import { Button, Form } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
 import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, ChatTeardropText, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, Envelope, EnvelopeSimple, EscalatorUp, Eye, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, GreaterThan, HandCoins, Info, LessThan, List, Minus, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, X } from '@phosphor-icons/react';
@@ -9,7 +8,7 @@ import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
 import LoadingIndicator from '../../LoadingIndicator';
-import { cError, cLog, fncPlaceholder, formatDate, normalizedLowercaseString, printDatesInterval } from '../../../scripts/myScripts';
+import { cError, fncPlaceholder, formatDate, normalizedLowercaseString, printDatesInterval } from '../../../scripts/myScripts';
 import FormatedDate from '../../common/FormatedDate';
 import FetchError from '../../common/FetchError';
 import useCustomDialogs from '../../common/hooks/useCustomDialogs';
@@ -388,7 +387,6 @@ const Admin = () => {
 
 		return (
 			<>
-
 				<div ref={accountingDashboardRef} className="container py-4 bg-bodi">
 					<h2 className="mb-3 text-center text-uppercase text-primaryColor">Accounting Dashboard</h2>
 					<div className='flex-align-center mb-3'>
@@ -1965,49 +1963,6 @@ const Admin = () => {
 			}
 		};
 
-		// const [shares, setShares] = useState(false);
-		// const [showEditSharesRecord, setShowEditSharesRecord] = useState(false);
-
-		// // Handle add shares
-		// const handleEditShares = async (id) => {
-		// 	if (!shares || Number(shares) <= 0) {
-		// 		return warningToast({ message: "Enter valid number of shares to continue", type: 'gray-700' });
-		// 	}
-
-		// 	try {
-		// 		setIsWaitingFetchAction(true);
-
-		// 		const response = await fetch(`${BASE_URL}/member/${id}/shares`, {
-		// 			method: 'POST',
-		// 			headers: { 'Content-Type': 'application/json' },
-		// 			body: JSON.stringify({
-		// 				shares,
-		// 				comment: shares[0].toUpperCase() + shares.slice(1),
-		// 			}),
-		// 		});
-
-		// 		// Fetch error
-		// 		if (!response.ok) {
-		// 			const errorData = await response.json();
-		// 			throw new Error(errorData.message || 'Error updating shares');
-		// 		}
-
-		// 		// Successful fetch
-		// 		const data = await response.json();
-		// 		successToast({ message: data.message });
-		// 		setShowEditSharesRecord(false); // Adjust based on your UI logic
-		// 		setErrorWithFetchAction(null);
-		// 		fetchMembers(); // Ensure the member data is updated
-		// 		fetchRecords();
-		// 	} catch (error) {
-		// 		setErrorWithFetchAction(error);
-		// 		cError("Error updating shares:", error);
-		// 		warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
-		// 	} finally {
-		// 		setIsWaitingFetchAction(false);
-		// 	}
-		// };
-
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="mb-3">
@@ -2438,38 +2393,6 @@ const Admin = () => {
 					setIsWaitingFetchAction(false);
 				}
 			}
-
-			// customConfirmDialog({
-			// 	message: (
-			// 		<>
-			// 			<h5 className='h6 border-bottom mb-3 pb-2'><Receipt size={25} weight='fill' className='opacity-50' /> Annual interest distribution</h5>
-			// 			<p>
-			// 				Are you sure to proceed with {keepAnnualInterest ? 'keeping' : 'withdrawing'} the annual interest ?
-			// 			</p>
-			// 		</>
-			// 	),
-			// 	type: 'dark',
-			// 	action: async () => {
-			// 		try {
-			// 			setIsWaitingFetchAction(true);
-			// 			const response = await Axios.post(`/api/${keepAnnualInterest ? 'distribute' : 'withdraw'}-interest`);
-			// 			// Successfull fetch
-			// 			const data = response.data;
-			// 			successToast({ message: data.message });
-			// 			setShowShareAnnualInterest(false);
-			// 			setErrorWithFetchAction(null);
-			// 			fetchLoans();
-			// 			fetchCredits();
-			// 		} catch (error) {
-			// 			setErrorWithFetchAction(error);
-			// 			cError("Error distributing interest:", error);
-			// 			warningToast({ message: error});
-			// 		} finally {
-			// 			setIsWaitingFetchAction(false);
-			// 		}
-			// 	},
-			// 	actionText: 'Yes, Continue',
-			// });
 		}
 
 		// Annual interes records
@@ -2841,15 +2764,12 @@ const Admin = () => {
 												</table>
 											</div>
 										</div>
-										{/* The table */}
 									</div>
 								</div>
 							</>
 						)}
 					</>
 				)}
-
-
 			</div>
 		)
 	}
@@ -3094,7 +3014,7 @@ const Admin = () => {
 				});
 
 				// Successful fetch
-				const data = response.data; // Axios stores the response data in `data`
+				const data = response.data;
 				successToast({ message: data.message });
 				setApplyCreditPenalty(false);
 				setErrorWithFetchAction(null);
@@ -3439,7 +3359,6 @@ const Admin = () => {
 																	</div>
 
 																	{/* Toggle Credit Records */}
-
 																	<ContentToggler
 																		state={showSelectedMemberCreditRecords}
 																		setState={setShowSelectedMemberCreditRecords}
@@ -4456,12 +4375,6 @@ const Admin = () => {
 							The reports panel provides detailed insights into financial activities, including breakdowns of income and expenses and an overview of members' financial status. It also offers export options for further analysis and use.
 						</div>
 					</div>
-					{/* <ul className='list-style-square'>
-						<li><b>User Reports</b>: Track active users, their interactions, and feedback</li>
-						<li><b>Financial Summaries</b>: Detailed breakdowns of income, expenses, and transactions</li>
-						<li><b>Customizable Filters</b>: Generate tailored reports by date, type, or category for specific analyses</li>
-						<li><b>Export Options</b>: Download reports in formats like PDF or Excel for further use</li>
-					</ul> */}
 				</div>
 				<hr className='mb-4 d-lg-none' />
 
@@ -4671,18 +4584,6 @@ const Admin = () => {
 		)
 	}
 
-	// Messages
-	const Messages = () => {
-		return (
-			<section>
-				**Messages & Notifications**
-				- Send updates to members about savings, penalties, or loan approvals.
-				- Handle inquiries from members.
-				- Manage email and SMS notifications.
-			</section>
-		)
-	}
-
 	// Settings
 	const Settings = () => {
 		return (
@@ -4721,8 +4622,6 @@ const Admin = () => {
 				return <Transactions />;
 			case "reports":
 				return <Reports />;
-			case "messages":
-				return <Messages />;
 			case "settings":
 				return <Settings />;
 			case "auditLogs":
@@ -5042,18 +4941,6 @@ const Admin = () => {
 				</div>
 
 				{/* Fixed components */}
-
-				{/* Property preview card */}
-				{/* <BottomFixedCard
-                show={showSelectedPropertyInfo}
-                content={[
-                    <PropertyPreview />
-                ]}
-                blurBg
-                closeButton={<X size={35} weight='bold' className='p-2' />}
-                onClose={() => setShowSelectedPropertyInfo(false)}
-                className="pb-3"
-            /> */}
 			</main>
 		</>
 	)

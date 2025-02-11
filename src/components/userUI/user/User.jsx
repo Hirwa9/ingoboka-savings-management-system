@@ -1,5 +1,4 @@
 import React, { Fragment, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-
 import { Button, Card, Container, Form } from "react-bootstrap";
 import './user.css';
 import MyToast from '../../common/Toast';
@@ -391,7 +390,6 @@ const UserUI = () => {
 
 		return (
 			<>
-
 				<div ref={accountingDashboardRef} className="container py-4 bg-bodi">
 					<h2 className="mb-3 text-center text-uppercase text-primaryColor">Accounting Dashboard</h2>
 					<div className='flex-align-center mb-3'>
@@ -1168,52 +1166,6 @@ const UserUI = () => {
 			}
 		};
 
-		// const [shares, setShares] = useState(false);
-		// const [showEditSharesRecord, setShowEditSharesRecord] = useState(false);
-
-		// // Handle add shares
-		// const handleEditShares = async (id) => {
-		// if (!shares || Number(shares) <= 0) {
-		// 	return toast({
-		// 		message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter valid number of shares to continue</>,
-		// 		type: 'gray-700'
-		// 	});
-		// }
-
-		// 	try {
-		// 		setIsWaitingFetchAction(true);
-
-		// 		const response = await fetch(`${BASE_URL}/member/${id}/shares`, {
-		// 			method: 'POST',
-		// 			headers: { 'Content-Type': 'application/json' },
-		// 			body: JSON.stringify({
-		// 				shares,
-		// 				comment: shares[0].toUpperCase() + shares.slice(1),
-		// 			}),
-		// 		});
-
-		// 		// Fetch error
-		// 		if (!response.ok) {
-		// 			const errorData = await response.json();
-		// 			throw new Error(errorData.message || 'Error updating shares');
-		// 		}
-
-		// 		// Successful fetch
-		// 		const data = await response.json();
-		// 		toast({ message: data.message, type: "dark" });
-		// 		setShowEditSharesRecord(false); // Adjust based on your UI logic
-		// 		setErrorWithFetchAction(null);
-		// 		fetchMembers(); // Ensure the member data is updated
-		// 		fetchRecords();
-		// 	} catch (error) {
-		// 		setErrorWithFetchAction(error);
-		// 		cError("Error updating shares:", error);
-		// 		toast({ message: error.message || "An unknown error occurred", type: "danger" });
-		// 	} finally {
-		// 		setIsWaitingFetchAction(false);
-		// 	}
-		// };
-
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="mb-3">
@@ -1592,38 +1544,6 @@ const UserUI = () => {
 					setIsWaitingFetchAction(false);
 				}
 			}
-
-			// customConfirmDialog({
-			// 	message: (
-			// 		<>
-			// 			<h5 className='h6 border-bottom mb-3 pb-2'><Receipt size={25} weight='fill' className='opacity-50' /> Annual interest distribution</h5>
-			// 			<p>
-			// 				Are you sure to proceed with {keepAnnualInterest ? 'keeping' : 'withdrawing'} the annual interest ?
-			// 			</p>
-			// 		</>
-			// 	),
-			// 	type: 'dark',
-			// 	action: async () => {
-			// 		try {
-			// 			setIsWaitingFetchAction(true);
-			// 			const response = await Axios.post(`/api/${keepAnnualInterest ? 'distribute' : 'withdraw'}-interest`);
-			// 			// Successfull fetch
-			// 			const data = response.data;
-			// 			toast({ message: data.message, type: "dark" });
-			// 			setShowShareAnnualInterest(false);
-			// 			setErrorWithFetchAction(null);
-			// 			fetchLoans();
-			// 			fetchCredits();
-			// 		} catch (error) {
-			// 			setErrorWithFetchAction(error);
-			// 			cError("Error distributing interest:", error);
-			// 			toast({ message: error, type: "danger" });
-			// 		} finally {
-			// 			setIsWaitingFetchAction(false);
-			// 		}
-			// 	},
-			// 	actionText: 'Yes, Continue',
-			// });
 		}
 
 		// Annual interes records
@@ -2193,12 +2113,10 @@ const UserUI = () => {
 																				</>
 																			)}
 																		</div>
-
 																	</div>
-
 																	<hr className='mt-0 mb-4' />
-																	{/* Toggle Credit Records */}
 
+																	{/* Toggle Credit Records */}
 																	<ContentToggler
 																		state={showSelectedMemberCreditRecords}
 																		setState={setShowSelectedMemberCreditRecords}
@@ -3140,12 +3058,6 @@ const UserUI = () => {
 							The reports panel provides detailed insights into financial activities, including breakdowns of income and expenses and an overview of members' financial status. It also offers export options for further analysis and use.
 						</div>
 					</div>
-					{/* <ul className='list-style-square'>
-						<li><b>User Reports</b>: Track active users, their interactions, and feedback</li>
-						<li><b>Financial Summaries</b>: Detailed breakdowns of income, expenses, and transactions</li>
-						<li><b>Customizable Filters</b>: Generate tailored reports by date, type, or category for specific analyses</li>
-						<li><b>Export Options</b>: Download reports in formats like PDF or Excel for further use</li>
-					</ul> */}
 				</div>
 				<hr className='mb-4 d-lg-none' />
 
@@ -3326,18 +3238,6 @@ const UserUI = () => {
 		)
 	}
 
-	// Messages
-	const Messages = () => {
-		return (
-			<section>
-				**Messages & Notifications**
-				- Send updates to members about savings, fines, or loan approvals.
-				- Handle inquiries from members.
-				- Manage email and SMS notifications.
-			</section>
-		)
-	}
-
 	// Settings
 	const Settings = () => {
 		return (
@@ -3384,8 +3284,6 @@ const UserUI = () => {
 				return <Transactions />;
 			case "reports":
 				return <Reports />;
-			case "messages":
-				return <Messages />;
 			case "settings":
 				return <Settings />;
 			case "auditLogs":
@@ -3646,18 +3544,6 @@ const UserUI = () => {
 				</div>
 
 				{/* Fixed components */}
-
-				{/* Property preview card */}
-				{/* <BottomFixedCard
-                show={showSelectedPropertyInfo}
-                content={[
-                    <PropertyPreview />
-                ]}
-                blurBg
-                closeButton={<X size={35} weight='bold' className='p-2' />}
-                onClose={() => setShowSelectedPropertyInfo(false)}
-                className="pb-3"
-            /> */}
 			</main>
 		</>
 	)
