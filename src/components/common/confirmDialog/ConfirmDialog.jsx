@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import './confirmDialog.css';
+import SmallLoader from '../SmallLoader';
 
 const ConfirmDialog = ({ show, message, type, action, actionText, actionIsWaiting, onClose, onCloseCallback, closeText }) => {
     message = message || 'This is an alert component designed to confirm or cancel something.';
@@ -85,7 +86,7 @@ const ConfirmDialog = ({ show, message, type, action, actionText, actionIsWaitin
                                     <>{actionText || 'Yes, continue'}</>
                                 ) : (
                                     <>
-                                        Working <div className="spinner-border spinner-border-sm ms-2"></div>
+                                        Working <SmallLoader color='gray-500' />
                                     </>
                                 )}
                             </button>

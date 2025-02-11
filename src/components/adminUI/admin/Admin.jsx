@@ -32,6 +32,7 @@ import DividerText from '../../common/DividerText';
 import { BASE_URL, Axios } from '../../../api/api';
 import { AuthContext } from '../../AuthProvider';
 import RightFixedCard from '../../common/rightFixedCard/RightFixedCard';
+import SmallLoader from '../../common/SmallLoader';
 
 const Admin = () => {
 
@@ -849,14 +850,14 @@ const Admin = () => {
 							className="mb-5 mt-4"
 						/>
 					)}
-					{!loadingMembers && !errorLoadingMembers && membersToShow.length === 0 && (
+					{!loadingMembers && !errorLoadingMembers && !membersToShow.length && (
 						<NotFound
 							notFoundMessage="No member found"
 							icon={<Users size={80} className="text-center w-100 mb-3 opacity-50" />}
 							refreshFunction={resetMembers}
 						/>
 					)}
-					{!loadingMembers && !errorLoadingMembers && membersToShow.length > 0 && (
+					{!loadingMembers && !errorLoadingMembers && membersToShow.length && (
 						<>
 							{/* Search bar */}
 							<Form onSubmit={e => e.preventDefault()} className='sticky-top col-lg-6 col-xxl-4 members-search-box'>
@@ -965,7 +966,7 @@ const Admin = () => {
 								show={showMemberInfo}
 								onClose={() => setShowMemberInfo(false)}
 								title="Personal information"
-								icon={<UserRectangle size={20} className='text-light' />}
+								icon={<UserRectangle size={20} weight="fill" className='text-gray-700' />}
 								content={
 									<>
 										<div>
@@ -1396,7 +1397,7 @@ const Admin = () => {
 													>
 														{!isWaitingFetchAction ?
 															<>Save changes <FloppyDisk size={18} className='ms-2' /></>
-															: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
+															: <>Working <SmallLoader /></>
 														}
 													</button>
 												</form>
@@ -1513,7 +1514,7 @@ const Admin = () => {
 													<div className="col mb-5 mb-xl-0">
 														<div className="fs-6 fw-semibold text-primaryColor text-center text-uppercase">Loan status</div>
 														<hr />
-														{allLoans.filter(loan => (loan.memberId === selectedMember?.id && loan.loanTaken > 0)).length > 0 ? (
+														{allLoans.filter(loan => (loan.memberId === selectedMember?.id && loan.loanTaken > 0)).length ? (
 															<>
 																{allLoans.filter(loan => (loan.memberId === selectedMember?.id && loan.loanTaken > 0))
 																	.map((item, index) => {
@@ -1598,7 +1599,7 @@ const Admin = () => {
 														{allRecords
 															.filter(cr =>
 																(cr.recordType === 'penalty' && cr.memberId === selectedMember?.id)
-															).length > 0 ? (
+															).length ? (
 															<div className='overflow-auto'>
 																<table className="table table-hover h-100">
 																	<thead className='table-primary position-sticky top-0 inx-1 text-uppercase small'>
@@ -1662,7 +1663,7 @@ const Admin = () => {
 																	This member will be removed or deactivated according to their financial status.
 																</p>
 
-																{allLoans.filter(loan => (loan.memberId === selectedMember?.id && loan.loanTaken > 0)).length > 0 ? (
+																{allLoans.filter(loan => (loan.memberId === selectedMember?.id && loan.loanTaken > 0)).length ? (
 																	<>
 																		{allLoans.filter(loan => (loan.memberId === selectedMember?.id && loan.loanTaken > 0))
 																			.map((item, index) => {
@@ -1743,7 +1744,7 @@ const Admin = () => {
 																								>
 																									{!isWaitingFetchAction ?
 																										<>Remove <UserMinus size={18} className='ms-2' /></>
-																										: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
+																										: <>Working <SmallLoader color='light' /></>
 																									}
 																								</button>
 																							</div>
@@ -1785,7 +1786,7 @@ const Admin = () => {
 																			>
 																				{!isWaitingFetchAction ?
 																					<>Remove <UserMinus size={18} className='ms-2' /></>
-																					: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
+																					: <>Working <SmallLoader color='light' /></>
 																				}
 																			</button>
 																		</div>
@@ -2047,7 +2048,7 @@ const Admin = () => {
 							className="mb-5 mt-4"
 						/>
 					)}
-					{!loadingMembers && !errorLoadingMembers && savingsToShow.length === 0 && (
+					{!loadingMembers && !errorLoadingMembers && !savingsToShow.length && (
 						<div className="col-sm-8 col-md-6 col-lg-5 col-xl-4 mx-auto my-5 p-3 rounded error-message">
 							<img src="/images/fetch_error_image.jpg" alt="Error" className="w-4rem h-4rem mx-auto mb-2 opacity-50" />
 							<p className="text-center text-muted small">
@@ -2058,7 +2059,7 @@ const Admin = () => {
 							</button>
 						</div>
 					)}
-					{!loadingMembers && !errorLoadingMembers && savingsToShow.length > 0 && (
+					{!loadingMembers && !errorLoadingMembers && savingsToShow.length && (
 						<>
 							{/* Search bar */}
 							<Form onSubmit={e => e.preventDefault()} className='sticky-top col-lg-6 col-xxl-4 savings-search-box'>
@@ -2264,7 +2265,7 @@ const Admin = () => {
 														>
 															{!isWaitingFetchAction ?
 																<>Save amount <FloppyDisk size={18} className='ms-2' /></>
-																: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
+																: <>Working <SmallLoader /></>
 															}
 														</button>
 													</div>
@@ -2384,7 +2385,7 @@ const Admin = () => {
 														>
 															{!isWaitingFetchAction ?
 																<>Add shares <FloppyDisk size={18} className='ms-2' /></>
-																: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
+																: <>Working <SmallLoader /></>
 															}
 														</button>
 													</div>
@@ -2687,7 +2688,7 @@ const Admin = () => {
 											</>
 										) : (
 											<>
-												Working <div className="spinner-border spinner-border-sm ms-2"></div>
+												Working <SmallLoader color='light' />
 											</>
 										)}
 									</button>
@@ -2839,7 +2840,7 @@ const Admin = () => {
 	// Credit
 	const Credit = () => {
 		const [activeLoanSection, setActiveLoanSection] = useState(
-			allCredits.filter(cr => cr.status === 'pending').length > 0
+			allCredits.filter(cr => cr.status === 'pending').length
 				? 'pending'
 				: 'approved'
 		);
@@ -3118,14 +3119,14 @@ const Admin = () => {
 						className="mb-5 mt-4"
 					/>
 				)}
-				{!loadingMembers && !errorLoadingMembers && membersToShow.length === 0 && (
+				{!loadingMembers && !errorLoadingMembers && !membersToShow.length && (
 					<NotFound
 						notFoundMessage="No member found"
 						icon={<Users size={80} className="text-center w-100 mb-3 opacity-50" />}
 						refreshFunction={resetMembers}
 					/>
 				)}
-				{!loadingMembers && !errorLoadingMembers && membersToShow.length > 0 && (
+				{!loadingMembers && !errorLoadingMembers && membersToShow.length && (
 					<>
 						<div className="mb-3">
 							<div className="d-flex justify-content-lg-between gap-2 mt-3 overflow-auto">
@@ -3172,7 +3173,7 @@ const Admin = () => {
 													<X size={25} className='ptr' />
 												</div>
 											</h6>
-											{allLoans.filter(loan => (loan.memberId === selectedMember?.id && loan.loanTaken > 0)).length > 0 ? (
+											{allLoans.filter(loan => (loan.memberId === selectedMember?.id && loan.loanTaken > 0)).length ? (
 												<>
 													{allLoans.filter(loan => (loan.memberId === selectedMember?.id && loan.loanTaken > 0))
 														.map((item, index) => {
@@ -3241,7 +3242,7 @@ const Admin = () => {
 																				</table>
 																			</div>
 
-																			{allCredits.filter(cr => cr.memberId === selectedMember?.id).length > 0 && (
+																			{allCredits.filter(cr => cr.memberId === selectedMember?.id).length && (
 																				<>
 																					<div className="d-flex">
 																						<div className='col p-2'>
@@ -3366,7 +3367,7 @@ const Admin = () => {
 																						>
 																							{!isWaitingFetchAction ?
 																								<>Save payment <FloppyDisk size={18} className='ms-2' /></>
-																								: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
+																								: <>Working <SmallLoader color='light' /></>
 																							}
 																						</button>
 																					</div>
@@ -3413,7 +3414,7 @@ const Admin = () => {
 																					>
 																						{!isWaitingFetchAction ?
 																							<>Apply penalty <Gavel size={18} className='ms-2' /></>
-																							: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
+																							: <>Working <SmallLoader color='gray-500' /></>
 																						}
 																					</button>
 																				</form>
@@ -3531,7 +3532,7 @@ const Admin = () => {
 							className="mb-5 mt-4"
 						/>
 					)}
-					{!loadingCredits && !errorLoadingCredits && creditsToShow.length === 0 && (
+					{!loadingCredits && !errorLoadingCredits && !creditsToShow.length && (
 						<div className="col-sm-8 col-md-6 col-lg-5 col-xl-4 mx-auto my-5 p-3 rounded error-message">
 							<img src="/images/fetch_error_image.jpg" alt="Error" className="w-4rem h-4rem mx-auto mb-2 opacity-50" />
 							<p className="text-center text-muted small">
@@ -3542,7 +3543,7 @@ const Admin = () => {
 							</button>
 						</div>
 					)}
-					{!loadingCredits && !errorLoadingCredits && !loadingMembers && !errorLoadingMembers && creditsToShow.length > 0 && (
+					{!loadingCredits && !errorLoadingCredits && !loadingMembers && !errorLoadingMembers && creditsToShow.length && (
 						<>
 							{/* Selectors */}
 							<div className="d-flex flex-wrap justify-content-center">
@@ -3573,7 +3574,7 @@ const Admin = () => {
 							<div style={{ minHeight: '60vh' }}>
 								{activeLoanSection === 'pending' && (
 									<>
-										{creditsToShow.filter(cr => cr.status === 'pending').length > 0 && (
+										{creditsToShow.filter(cr => cr.status === 'pending').length && (
 											<div className='overflow-auto'>
 												<table className="table table-hover h-100">
 													<thead className='table-warning position-sticky top-0 inx-1 1 text-uppercase small'>
@@ -3697,7 +3698,7 @@ const Admin = () => {
 											</div>
 										)}
 										{/* Zero content - no credits */}
-										{creditsToShow.filter(cr => cr.status === 'pending').length === 0 && (
+										{!creditsToShow.filter(cr => cr.status === 'pending').length && (
 											<NotFound
 												notFoundMessage="No credit found"
 												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
@@ -3709,7 +3710,7 @@ const Admin = () => {
 
 								{activeLoanSection === 'approved' && (
 									<>
-										{creditsToShow.filter(cr => cr.status === 'approved').length > 0 && (
+										{creditsToShow.filter(cr => cr.status === 'approved').length && (
 											<div className='overflow-auto'>
 												<table className="table table-hover h-100">
 													<thead className='table-success position-sticky top-0 inx-1 1 text-uppercase small'>
@@ -3776,7 +3777,7 @@ const Admin = () => {
 											</div>
 										)}
 										{/* Zero content - no credits */}
-										{creditsToShow.filter(cr => cr.status === 'approved').length === 0 && (
+										{!creditsToShow.filter(cr => cr.status === 'approved').length && (
 											<NotFound
 												notFoundMessage="No credit found"
 												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
@@ -3789,7 +3790,7 @@ const Admin = () => {
 
 								{activeLoanSection === 'rejected' && (
 									<>
-										{creditsToShow.filter(cr => cr.status === 'rejected').length > 0 && (
+										{creditsToShow.filter(cr => cr.status === 'rejected').length && (
 											<div className='overflow-auto'>
 												<table className="table table-hover h-100">
 													<thead className='table-danger position-sticky top-0 inx-1 1 text-uppercase small'>
@@ -3880,7 +3881,7 @@ const Admin = () => {
 											</div>
 										)}
 										{/* Zero content - no credits */}
-										{creditsToShow.filter(cr => cr.status === 'rejected').length === 0 && (
+										{!creditsToShow.filter(cr => cr.status === 'rejected').length && (
 											<NotFound
 												notFoundMessage="No credit found"
 												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
@@ -4187,14 +4188,14 @@ const Admin = () => {
 							className="mb-5 mt-4"
 						/>
 					)}
-					{!loadingMembers && !errorLoadingMembers && membersToShow.length === 0 && (
+					{!loadingMembers && !errorLoadingMembers && !membersToShow.length && (
 						<NotFound
 							notFoundMessage="No member found"
 							icon={<Users size={80} className="text-center w-100 mb-3 opacity-50" />}
 							refreshFunction={fetchMembers}
 						/>
 					)}
-					{!loadingMembers && !errorLoadingMembers && membersToShow.length > 0 && (
+					{!loadingMembers && !errorLoadingMembers && membersToShow.length && (
 						<div style={{ minHeight: '60vh' }}>
 							{/* Expenses table */}
 							{activeTransactionSection === 'withdrawals' && (
@@ -4297,7 +4298,7 @@ const Admin = () => {
 															>
 																{!isWaitingFetchAction ?
 																	<>Save Record <FloppyDisk size={18} className='ms-2' /></>
-																	: <>Working <span className="spinner-grow spinner-grow-sm ms-2"></span></>
+																	: <>Working <SmallLoader color='light' /></>
 																}
 															</button>
 														</form>
@@ -4706,7 +4707,7 @@ const Admin = () => {
 	const [hasNewNotifications, setHasNewNotifications] = useState(false);
 
 	useEffect(() => {
-		if (allCredits.filter(cr => cr.status === 'pending').length > 0) {
+		if (allCredits.filter(cr => cr.status === 'pending').length) {
 			setHasNewNotifications(true);
 		} else {
 			setHasNewNotifications(false);
@@ -4840,18 +4841,16 @@ const Admin = () => {
 			</header>
 
 			<main className="container-fluid">
-				{/* Notifications */}
-
 
 				{/* Member primary info preview */}
 				<RightFixedCard
 					show={showNotifications}
 					onClose={() => setShowNotifications(false)}
 					title="Notifications"
-					icon={<BellSimple weight="fill" size={20} className='text-light' />}
+					icon={<BellSimple size={20} weight="fill" className='text-gray-700' />}
 					content={
 						<>
-							{allCredits.filter(cr => cr.status === 'pending').length === 0 ? (
+							{!allCredits.filter(cr => cr.status === 'pending').length ? (
 								<EmptyBox
 									notFoundMessage="All clear. Any new notifications will show up here."
 									fluid

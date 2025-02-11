@@ -3,7 +3,7 @@ import React from 'react'
 import AbsoluteCloseButton from '../AbsoluteCloseButton';
 
 const RightFixedCard = ({ show, title = "Information", icon, content, onClose, fitWidth = false, className = '' }) => {
-    icon = icon || <Info weight="fill" size={20} className='text-light' />;
+    icon = icon || <Info size={20} weight="fill" className='text-gray-700' />;
     // onClose = onClose || () => alert('Finish up');
     content = content || <div className='p-2 fw-bold'>Put something here</div>;
 
@@ -13,8 +13,8 @@ const RightFixedCard = ({ show, title = "Information", icon, content, onClose, f
                 <div className='position-fixed fixed-top inset-0 bg-black3 px-2 pt-5 pb-3 inx-max'>
                     <div className={`position-relative h-100 ${fitWidth ? 'w-fit' : 'col-sm-7 col-md-5 col-lg-4 col-xxl-3'} mx-auto me-md-0 bg-light border-secondary border-opacity-25 rounded-4 ${className} right-fixed-card`} style={{ animation: 'flyInTop .3s 1' }}>
                         {/* Icon */}
-                        <div className="position-absolute start-50 w-fit h-fit px-3 py-1 blur-bg-3px border border-light border-opacity-50 rounded-pill text-truncate" style={{ translate: "-50% -120%", animation: 'flyInBottom .5s 1' }}>
-                            {icon} <span className='smaller text-gray-100'>{title}</span>
+                        <div className="position-absolute start-50 w-fit h-fit px-3 py-1 bg-white2 blur-bg-10px text-gray-700 border border-light border-opacity-50 rounded-pill text-truncate" style={{ translate: "-50% -120%", animation: 'flyInBottom .5s 1' }}>
+                            {icon} <span className='smaller'>{title}</span>
                         </div>
                         <AbsoluteCloseButton text="primaryColor" onClose={() => onClose()} />
                         {/* Content */}

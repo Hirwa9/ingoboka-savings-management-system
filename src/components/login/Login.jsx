@@ -7,6 +7,7 @@ import $ from 'jquery';
 import { SignIn, UserCircleDashed, Wallet } from '@phosphor-icons/react';
 import useCustomDialogs from '../common/hooks/useCustomDialogs';
 import { BASE_URL } from '../../api/api';
+import SmallLoader from '../common/SmallLoader';
 
 const Login = () => {
 
@@ -148,7 +149,7 @@ const Login = () => {
                                         <button type="submit" className="btn btn-sm btn-dark flex-center px-3 rounded-0 w-100 clickDown" style={{ fontSize: "75%", paddingBlock: ".8rem" }}>
                                             {!isWaitingFetchAction ?
                                                 <>SIGN IN <SignIn size={15} className='ms-2' /></>
-                                                : <>SIGN IN <span className="spinner-grow spinner-grow-sm ms-2"></span></>
+                                                : <>SIGN IN <SmallLoader color='light' /></>
                                             }
                                         </button>
                                     </div>

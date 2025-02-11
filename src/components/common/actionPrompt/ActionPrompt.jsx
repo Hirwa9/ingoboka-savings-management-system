@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import './actionPrompt.css';
 import { CaretRight } from '@phosphor-icons/react';
+import SmallLoader from '../SmallLoader';
 
 const ActionPrompt = ({ show, isStatic, message, type, inputType, selectInputOptions, promptInputValue, inputPlaceholder, action, actionText, actionIsWaiting, onClose, onCloseFallback, closeText }) => {
     message = message || 'This is an prompt component designed to submit information.';
@@ -137,7 +138,7 @@ const ActionPrompt = ({ show, isStatic, message, type, inputType, selectInputOpt
                                     <>{actionText || 'Submit'} <CaretRight className='ms-1' /></>
                                 ) : (
                                     <>
-                                        Working <div className="spinner-border spinner-border-sm ms-2"></div>
+                                        Working <SmallLoader color='gray-500' />
                                     </>
                                 )}
                             </button>
