@@ -8,7 +8,7 @@ import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
 import LoadingIndicator from '../../LoadingIndicator';
-import { cError, fncPlaceholder, formatDate, normalizedLowercaseString, printDatesInterval } from '../../../scripts/myScripts';
+import { cError, fncPlaceholder, formatDate, getDateHoursMinutes, normalizedLowercaseString, printDatesInterval } from '../../../scripts/myScripts';
 import FormatedDate from '../../common/FormatedDate';
 import FetchError from '../../common/FetchError';
 import useCustomDialogs from '../../common/hooks/useCustomDialogs';
@@ -1450,7 +1450,7 @@ const Admin = () => {
 													</div>
 												)}
 
-												<div className="d-xl-flex gap-3 mb-lg-4">
+												<div className="d-xl-flex gap-3">
 													{/* Cotisation and social */}
 													<div className='col col-xl-5 mb-5'>
 														<div className="fs-6 fw-semibold text-primaryColor text-center text-uppercase">Cotisation and social</div>
@@ -1590,6 +1590,68 @@ const Admin = () => {
 														)}
 													</div>
 												</div>
+
+												{!showMemberRemoval && (
+													<div className="mb-lg-4">
+														<div className="fs-6 fw-semibold text-primaryColor text-center text-uppercase">Penalties</div>
+														<hr />
+														{allRecords
+															.filter(cr =>
+																(cr.recordType === 'penalty' && cr.memberId === selectedMember?.id)
+															).length > 0 ? (
+															<div className='overflow-auto'>
+																<table className="table table-hover h-100">
+																	<thead className='table-primary position-sticky top-0 inx-1 text-uppercase small'>
+																		<tr>
+																			<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+																			<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
+																			<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
+																			<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
+																			<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date</th>
+																		</tr>
+																	</thead>
+																	<tbody>
+																		{allRecords
+																			.filter(cr => (cr.recordType === 'penalty' && cr.memberId === selectedMember?.id))
+																			.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+																			.map((record, index) => {
+																				const associatedMember = allMembers.find(m => m.id === record.memberId);
+																				const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+
+																				return (
+																					<tr key={index} className="small cursor-default clickDown expense-row">
+																						<td className="ps-sm-3 border-bottom-3 border-end">
+																							{index + 1}
+																						</td>
+																						<td className="text-nowrap">
+																							{memberNames}
+																						</td>
+																						<td>
+																							<CurrencyText amount={Number(record.recordAmount)} />
+																						</td>
+																						<td>
+																							{record.comment}
+																						</td>
+																						<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
+																							<Popover content={getDateHoursMinutes(record.createdAt, { long: true })} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
+																								<FormatedDate date={record.createdAt} />
+																							</Popover>
+																						</td>
+																					</tr>
+																				)
+																			})
+																		}
+																	</tbody>
+																</table>
+															</div>
+														) : (
+															<EmptyBox
+																notFoundMessage={`No penalties applied on this member.`}
+															/>
+														)}
+													</div>
+												)}
+
 												{/* Remove action */}
 												{showMemberRemoval && (
 													<>
@@ -2034,7 +2096,7 @@ const Admin = () => {
 															<li className="py-1 w-100">
 																<span className="d-flex align-items-center justify-content-between">
 																	<b className='fs-5'>{shares} Shares</b>
-																	<Popover content="Multiple shares" trigger='hover' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='2rem'>
+																	<Popover content="Multiple shares" trigger='hover' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='1.9rem'>
 																		<span className='py-1 px-2 border border-top-0 border-bottom-0 text-primaryColor flex-align-center ptr clickDown'
 																			onClick={() => { setSelectedMember(member); setShowAddMultipleShares(true) }}>
 																			<EscalatorUp size={22} className='me-2' /> Umuhigo
@@ -3070,18 +3132,19 @@ const Admin = () => {
 								{membersToShow
 									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
 									.map((member, index) => (
-										<div key={index} className='w-4rem ptr clickDown'
-											title={`${member.husbandFirstName} ${member.husbandLastName}`}
-											onClick={() => { setSelectedMember(member); setShowSelectedMemberCredits(true) }}
-										>
-											<img src={member.husbandAvatar ? member.husbandAvatar : '/images/man_avatar_image.jpg'}
-												alt={`${member.husbandFirstName} ${member.husbandLastName}`}
-												className="w-100 ratio-1-1 object-fit-cover p-1 bg-light rounded-circle"
-											/>
-											<div className="text-truncate fs-70 text-center mt-1">
-												{`${member.husbandFirstName} ${member.husbandLastName}`}
+										<Popover key={index} content={`${member.husbandFirstName} ${member.husbandLastName}`} trigger='hover' placement='bottom' className='d-none d-md-block py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='1.9rem'>
+											<div className='w-4rem ptr clickDown'
+												onClick={() => { setSelectedMember(member); setShowSelectedMemberCredits(true) }}
+											>
+												<img src={member.husbandAvatar ? member.husbandAvatar : '/images/man_avatar_image.jpg'}
+													alt={`${member.husbandFirstName} ${member.husbandLastName}`}
+													className="w-100 ratio-1-1 object-fit-cover p-1 bg-light rounded-circle"
+												/>
+												<div className="text-truncate fs-70 text-center mt-1">
+													{`${member.husbandFirstName} ${member.husbandLastName}`}
+												</div>
 											</div>
-										</div>
+										</Popover>
 									))}
 							</div>
 							<div className="d-flex d-lg-none">
@@ -4170,7 +4233,9 @@ const Admin = () => {
 																	{record.comment}
 																</td>
 																<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
-																	<FormatedDate date={record.createdAt} />
+																	<Popover content={getDateHoursMinutes(record.createdAt, { long: true })} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
+																		<FormatedDate date={record.createdAt} />
+																	</Popover>
 																</td>
 															</tr>
 														)
@@ -4280,7 +4345,9 @@ const Admin = () => {
 																{record.comment}
 															</td>
 															<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
-																<FormatedDate date={record.createdAt} />
+																<Popover content={getDateHoursMinutes(record.createdAt, { long: true })} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
+																	<FormatedDate date={record.createdAt} />
+																</Popover>
 															</td>
 														</tr>
 													)
@@ -4326,7 +4393,9 @@ const Admin = () => {
 																{record.comment}
 															</td>
 															<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
-																<FormatedDate date={record.createdAt} />
+																<Popover content={getDateHoursMinutes(record.createdAt, { long: true })} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
+																	<FormatedDate date={record.createdAt} />
+																</Popover>
 															</td>
 														</tr>
 													)
@@ -4719,7 +4788,7 @@ const Admin = () => {
 							<List />
 						</button>
 					</div>
-					<Popover content="Balance" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none bg-appColor text-gray-200 border border-secondary border-opacity-25' arrowColor='var(--appColor)' height='2rem'>
+					<Popover content="Balance" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none bg-appColor text-gray-200 border border-secondary border-opacity-25' arrowColor='var(--appColor)' height='1.9rem'>
 						<div className="position-absolute start-50 top-100 translate-middle flex-align-center gap-1  px-3 py-1 border border-secondary border-opacity-50 rounded-pill fs-50 shadow-sm ptr clickDown balance-indicator"
 							onClick={() => { setActiveSection("dashboard"); }}
 						>
@@ -4730,14 +4799,14 @@ const Admin = () => {
 				<div className='d-none d-md-flex flex-grow-1 border-bottom py-1'>
 					<div className="me-3 ms-auto navbar-nav">
 						<div className="nav-item d-flex gap-2 text-nowrap small" style={{ '--_activeColor': 'var(--primaryColor)' }}>
-							<Popover content="Refresh data" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='2rem'>
+							<Popover content="Refresh data" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='1.9rem'>
 								<button className={`nav-link px-2 text-gray-600 rounded-pill clickDown`}
 									onClick={refreshAllData}
 								>
 									<ArrowsClockwise size={20} />
 								</button>
 							</Popover>
-							<Popover content="Notifications" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='2rem'>
+							<Popover content="Notifications" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='1.9rem'>
 								<button className={`nav-link px-2 ${hasNewNotifications ? 'bg-gray-300 text-primaryColor active-with-dot' : 'text-gray-600'} rounded-pill clickDown`}
 									onClick={() => setShowNotifications(true)}
 								>
