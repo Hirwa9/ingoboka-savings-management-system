@@ -33,6 +33,7 @@ import { BASE_URL, Axios } from '../../../api/api';
 import { AuthContext } from '../../AuthProvider';
 import RightFixedCard from '../../common/rightFixedCard/RightFixedCard';
 import SmallLoader from '../../common/SmallLoader';
+import NextStepInformer from '../../common/NextStepInformer';
 
 const Admin = () => {
 
@@ -1025,7 +1026,7 @@ const Admin = () => {
 							{/* Registration */}
 							{showAddMemberForm &&
 								<>
-									<div className='position-fixed fixed-top inset-0 bg-black3 py-3 py-md-5 inx-high'>
+									<div className='position-fixed fixed-top inset-0 bg-black3 py-3 inx-high'>
 										<div className="container col-md-6 col-lg-5 col-xl-4 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 											<div className="px-3 bg-light text-gray-700">
 												<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
@@ -1037,10 +1038,11 @@ const Admin = () => {
 														<X size={25} className='ptr' />
 													</div>
 												</h6>
-												<div className='alert alert-primary grid-center mb-4 rounded-0 smaller'>
-													<p className='mb-0'>Enter primary details for the new member. You can update their financial details later.</p>
-													<CaretDown size={35} weight='light' className='p-2' />
-												</div>
+												<NextStepInformer
+													type='light'
+													content="Enter primary details for the new member. You can update their financial details later."
+													className='shadow'
+												/>
 
 												{/* The form */}
 												<form onSubmit={handleRegisterNewMember} className="px-sm-2 pb-5">
@@ -1245,7 +1247,7 @@ const Admin = () => {
 							{/* Edit member */}
 							{showEditMemberForm &&
 								<>
-									<div className='position-fixed fixed-top inset-0 bg-black3 py-3 py-md-5 inx-high'>
+									<div className='position-fixed fixed-top inset-0 bg-black3 py-3 inx-high'>
 										<div className="container col-md-6 col-lg-5 col-xl-4 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 											<div className="px-3 bg-light text-gray-700">
 												<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
@@ -1258,10 +1260,7 @@ const Admin = () => {
 													</div>
 												</h6>
 												<div className="mb-4">
-													<div className='alert alert-primary grid-center mb-4 rounded-0 smaller'>
-														<p className='mb-0'>Select whose information to edit and continue.</p>
-														<CaretDown size={35} weight='light' className='p-2' />
-													</div>
+													<NextStepInformer type='light' content="Select whose information to edit and continue." />
 													<ul className="list-unstyled d-flex">
 														<li className={`col-6 px-2 py-1 text-center small border-2 ${editHeadOfFamily ? 'border-bottom border-primaryColor text-primaryColor' : ''} ptr clickDown`}
 															onClick={() => { setEditHeadOfFamily(true); }}
@@ -1602,7 +1601,7 @@ const Admin = () => {
 															).length ? (
 															<div className='overflow-auto'>
 																<table className="table table-hover h-100">
-																	<thead className='table-primary position-sticky top-0 inx-1 text-uppercase small'>
+																	<thead className='table-secondary position-sticky top-0 inx-1 text-uppercase small'>
 																		<tr>
 																			<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
 																			<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
@@ -2129,7 +2128,7 @@ const Admin = () => {
 							{/* Record savings */}
 							{showAddSavingRecord &&
 								<>
-									<div className='position-fixed fixed-top inset-0 flex-center py-3 py-md-5 bg-black3 inx-high'>
+									<div className='position-fixed fixed-top inset-0 flex-center py-3 bg-black3 inx-high'>
 										<div className="container col-md-6 col-lg-5 col-xl-4 my-auto peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 											<div className="px-3 bg-light text-gray-700">
 												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
@@ -2279,7 +2278,7 @@ const Admin = () => {
 							{/* Record multiple shares */}
 							{showAddMultipleShares &&
 								<>
-									<div className='position-fixed fixed-top inset-0 flex-center py-3 py-md-5 bg-black3 inx-high'>
+									<div className='position-fixed fixed-top inset-0 flex-center py-3 bg-black3 inx-high'>
 										<div className="container col-md-6 col-lg-5 col-xl-4 my-auto peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 											<div className="px-3 bg-light text-gray-700">
 												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
@@ -2507,7 +2506,7 @@ const Admin = () => {
 				</div>
 				<hr className='mb-4 d-lg-none' />
 				<div ref={interestPartitionViewRef}>
-					<div className="alert alert-info smaller">
+					<div className="alert alert-success smaller">
 						<p className='display-6'>
 							Statut des intérêts annuels
 						</p>
@@ -3242,7 +3241,7 @@ const Admin = () => {
 																				</table>
 																			</div>
 
-																			{allCredits.filter(cr => cr.memberId === selectedMember?.id).length && (
+																			{allCredits.filter(cr => cr.memberId === selectedMember?.id).length > 0 && (
 																				<>
 																					<div className="d-flex">
 																						<div className='col p-2'>
@@ -3574,7 +3573,7 @@ const Admin = () => {
 							<div style={{ minHeight: '60vh' }}>
 								{activeLoanSection === 'pending' && (
 									<>
-										{creditsToShow.filter(cr => cr.status === 'pending').length && (
+										{creditsToShow.filter(cr => cr.status === 'pending').length > 0 && (
 											<div className='overflow-auto'>
 												<table className="table table-hover h-100">
 													<thead className='table-warning position-sticky top-0 inx-1 1 text-uppercase small'>
@@ -3698,7 +3697,7 @@ const Admin = () => {
 											</div>
 										)}
 										{/* Zero content - no credits */}
-										{!creditsToShow.filter(cr => cr.status === 'pending').length && (
+										{!creditsToShow.filter(cr => cr.status === 'pending').length > 0 && (
 											<NotFound
 												notFoundMessage="No credit found"
 												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
@@ -3710,7 +3709,7 @@ const Admin = () => {
 
 								{activeLoanSection === 'approved' && (
 									<>
-										{creditsToShow.filter(cr => cr.status === 'approved').length && (
+										{creditsToShow.filter(cr => cr.status === 'approved').length > 0 && (
 											<div className='overflow-auto'>
 												<table className="table table-hover h-100">
 													<thead className='table-success position-sticky top-0 inx-1 1 text-uppercase small'>
@@ -3777,7 +3776,7 @@ const Admin = () => {
 											</div>
 										)}
 										{/* Zero content - no credits */}
-										{!creditsToShow.filter(cr => cr.status === 'approved').length && (
+										{!creditsToShow.filter(cr => cr.status === 'approved').length > 0 && (
 											<NotFound
 												notFoundMessage="No credit found"
 												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
@@ -3790,7 +3789,7 @@ const Admin = () => {
 
 								{activeLoanSection === 'rejected' && (
 									<>
-										{creditsToShow.filter(cr => cr.status === 'rejected').length && (
+										{creditsToShow.filter(cr => cr.status === 'rejected').length > 0 && (
 											<div className='overflow-auto'>
 												<table className="table table-hover h-100">
 													<thead className='table-danger position-sticky top-0 inx-1 1 text-uppercase small'>
@@ -3881,7 +3880,7 @@ const Admin = () => {
 											</div>
 										)}
 										{/* Zero content - no credits */}
-										{!creditsToShow.filter(cr => cr.status === 'rejected').length && (
+										{!creditsToShow.filter(cr => cr.status === 'rejected').length > 0 && (
 											<NotFound
 												notFoundMessage="No credit found"
 												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
@@ -4248,7 +4247,7 @@ const Admin = () => {
 
 									{showAddExpenseRecord &&
 										<>
-											<div className='position-fixed fixed-top inset-0 bg-black3 py-3 py-md-5 inx-high'>
+											<div className='position-fixed fixed-top inset-0 bg-black3 py-3 inx-high'>
 												<div className="container col-md-6 col-lg-5 col-xl-4 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 													<div className="h-100 px-3 bg-light text-gray-700">
 														<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
@@ -4449,7 +4448,7 @@ const Admin = () => {
 				<hr className='mb-4 d-lg-none' />
 
 				<div ref={reportViewRef} className='mb-3 bg-bodi'>
-					<div className="alert alert-info smaller">
+					<div className="alert alert-success smaller">
 						<p className='display-6'>
 							{
 								activeReportSection === 'incomeExpenses' ?
@@ -4895,8 +4894,8 @@ const Admin = () => {
 
 				<div className="row">
 					{/* Sidebar Navigation */}
-					<nav className={`col-12 col-md-3 col-xl-2 px-2 px-sm-5 px-md-0 d-md-block border-end overflow-y-auto sidebar ${sideNavbarIsFloated ? 'floated' : ''}`} id="sidebarMenu">
-						<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit my-2 my-md-0 py-3 pt-md-4 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded-4' : ''}`}>
+					<nav className={`col-12 col-md-3 col-xl-2 px-3 px-sm-5 px-md-0 d-md-block border-end overflow-y-auto sidebar ${sideNavbarIsFloated ? 'floated' : ''}`} id="sidebarMenu">
+						<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit my-3 my-md-0 py-3 pt-md-4 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded-4' : ''}`}>
 							<div className="d-flex align-items-center d-md-none mb-3 px-3 pb-2 border-light border-opacity-25">
 								<div className='ms-auto d-grid pb-1'>
 									<span className='ms-auto smaller'>{accountantNames}</span>

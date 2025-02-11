@@ -1261,7 +1261,7 @@ const UserUI = () => {
 							{/* Record savings */}
 							{showAddSavingRecord &&
 								<>
-									<div className='position-fixed fixed-top inset-0 flex-center py-3 py-md-5 bg-black2 inx-high'>
+									<div className='position-fixed fixed-top inset-0 flex-center py-3 bg-black2 inx-high'>
 										<div className="container col-md-6 col-lg-5 col-xl-4 my-auto peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 											<div className="px-3 bg-light text-gray-700">
 												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
@@ -1411,7 +1411,7 @@ const UserUI = () => {
 							{/* Record multiple shares */}
 							{showAddMultipleShares &&
 								<>
-									<div className='position-fixed fixed-top inset-0 flex-center py-3 py-md-5 bg-white3 inx-high'>
+									<div className='position-fixed fixed-top inset-0 flex-center py-3 bg-white3 inx-high'>
 										<div className="container col-md-6 col-lg-5 col-xl-4 my-auto peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 											<div className="px-3 bg-light text-gray-700">
 												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
@@ -1595,8 +1595,7 @@ const UserUI = () => {
 					</div>
 				</div>
 				<hr className='mb-4 d-lg-none' />
-
-				<div className="alert alert-info smaller">
+				<div className="alert alert-success smaller">
 					<p className='display-6'>
 						Statut des intérêts annuels
 					</p>
@@ -2090,7 +2089,7 @@ const UserUI = () => {
 																				</table>
 																			</div>
 
-																			{allCredits.filter(cr => cr?.memberId === selectedMember?.id).length && (
+																			{allCredits.filter(cr => cr?.memberId === selectedMember?.id).length > 0 && (
 																				<>
 																					<div className="d-flex">
 																						<div className='col p-2'>
@@ -2269,7 +2268,7 @@ const UserUI = () => {
 							<div style={{ minHeight: '60vh' }}>
 								{activeLoanSection === 'pending' && (
 									<>
-										{creditsToShow.filter(cr => cr.status === 'pending').length && (
+										{creditsToShow.filter(cr => cr.status === 'pending').length > 0 && (
 											<div className='overflow-auto'>
 												<table className="table table-hover h-100">
 													<thead className='table-warning position-sticky top-0 inx-1 text-uppercase small'>
@@ -2332,7 +2331,7 @@ const UserUI = () => {
 											</div>
 										)}
 										{/* Zero content - no credits */}
-										{!creditsToShow.filter(cr => cr.status === 'pending').length && (
+										{!creditsToShow.filter(cr => cr.status === 'pending').length > 0 && (
 											<NotFound
 												notFoundMessage="No credit found"
 												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
@@ -2422,7 +2421,7 @@ const UserUI = () => {
 
 								{activeLoanSection === 'rejected' && (
 									<>
-										{creditsToShow.filter(cr => cr.status === 'rejected').length && (
+										{creditsToShow.filter(cr => cr.status === 'rejected').length > 0 && (
 											<div className='overflow-auto'>
 												<table className="table table-hover h-100">
 													<thead className='table-danger position-sticky top-0 inx-1 text-uppercase small'>
@@ -2514,7 +2513,7 @@ const UserUI = () => {
 											</div>
 										)}
 										{/* Zero content - no credits */}
-										{!creditsToShow.filter(cr => cr.status === 'rejected').length && (
+										{!creditsToShow.filter(cr => cr.status === 'rejected').length > 0 && (
 											<NotFound
 												notFoundMessage="No credit found"
 												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
@@ -3051,7 +3050,7 @@ const UserUI = () => {
 				<hr className='mb-4 d-lg-none' />
 
 				<div ref={reportViewRef} className='mb-3 bg-bodi'>
-					<div className="alert alert-info smaller">
+					<div className="alert alert-success smaller">
 						<p className='display-6'>
 							{
 								activeReportSection === 'incomeExpenses' ?
@@ -3426,8 +3425,8 @@ const UserUI = () => {
 			<main className="container-fluid">
 				<div className="row">
 					{/* Sidebar Navigation */}
-					<nav className={`col-12 col-md-3 col-xl-2 px-2 px-sm-5 px-md-0 d-md-block border-end overflow-y-auto sidebar ${sideNavbarIsFloated ? 'floated' : ''}`} id="sidebarMenu">
-						<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit my-2 my-md-0 py-3 pt-md-4 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded-4' : ''}`}>
+					<nav className={`col-12 col-md-3 col-xl-2 px-3 px-sm-5 px-md-0 d-md-block border-end overflow-y-auto sidebar ${sideNavbarIsFloated ? 'floated' : ''}`} id="sidebarMenu">
+						<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit my-3 my-md-0 py-3 pt-md-4 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded-4' : ''}`}>
 							<div className="d-flex align-items-center d-md-none mb-3 px-3 pb-2 border-light border-opacity-25">
 								<div className='ms-auto d-grid pb-1'>
 									<span className='ms-auto smaller'>{`${signedUser?.husbandFirstName} ${signedUser?.husbandLastName}`}</span>

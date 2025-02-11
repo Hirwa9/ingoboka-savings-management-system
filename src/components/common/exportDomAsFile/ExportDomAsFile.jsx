@@ -71,7 +71,7 @@ const ExportDomAsFile = ({ show, container, exportName, onClose }) => {
                                     onClick={() => exportAsPDF({ node: container.current, name: exportName })}
                                 ><FilePdf weight='fill' size={20} /> Export as PDF</button>
                             </div>
-                            <button className='btn btn-sm text-uppercase text-primaryColor w-100 px-3 text-nowrap rounded-pill clickDown shadow-sm'
+                            <button className='btn btn-sm text-uppercase text-primaryColor w-100 px-3 text-nowrap border rounded-pill clickDown'
                                 onClick={() => onClose()}
                             ><X /> Cancel</button>
                         </div>
