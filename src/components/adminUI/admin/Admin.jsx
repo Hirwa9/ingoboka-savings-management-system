@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useContext, useEffect, useMemo, useRef, u
 import { Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, ChatTeardropText, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, Envelope, EnvelopeSimple, EscalatorUp, Eye, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, GreaterThan, HandCoins, Info, LessThan, List, Minus, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, ChatTeardropText, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, Envelope, EnvelopeSimple, EscalatorUp, Export, Eye, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, GreaterThan, HandCoins, Info, LessThan, List, Minus, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, X } from '@phosphor-icons/react';
 import { expensesTypes, incomeExpenses, memberRoles } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
@@ -118,6 +118,47 @@ const Admin = () => {
 	/**
 	 * Data
 	*/
+
+	/**
+	 * Database
+	 */
+
+	const handelExportDatabase = async () => {
+		try {
+			setIsWaitingFetchAction(true);
+
+			const response = await Axios.post(`/api/database/backup`);
+
+			// Successful fetch
+			const data = response.data;
+			successToast({ message: data.message, selfClose: false });
+
+		} catch (error) {
+			setErrorWithFetchAction(error);
+
+			// Handle API errors properly
+			let errorMessage = "An error occurred while creating the database backup.";
+
+			if (error.response) {
+				// Server responded with a status code outside 2xx range
+				console.error("API Error Response:", error.response.data);
+				errorMessage = error.response.data.message || errorMessage;
+			} else if (error.request) {
+				// Request was made but no response received
+				console.error("No response from API:", error.request);
+				errorMessage = "No response from server. Please try again.";
+			} else {
+				// Something else happened
+				console.error("Error creating BD backup:", error.message);
+				errorMessage = error.message;
+			}
+
+			warningToast({ message: errorMessage });
+
+		} finally {
+			setIsWaitingFetchAction(false);
+		}
+	};
 
 	/**
 	 * Members
@@ -4649,6 +4690,19 @@ const Admin = () => {
 					exportName={exportFileName}
 					onClose={() => { setShowExportDataDialog(false) }}
 				/>
+
+				{/* Export database */}
+				{/* <div className="d-flex flex-wrap gap-2 my-5">
+					<button className="btn btn-sm bg-primaryColor flex-align-center text-light rounded-0 clickDown" onClick={() => handelExportDatabase()}>
+						Export database {!isWaitingFetchAction ? <Export size={18} className="ms-2" />
+							: <SmallLoader color="light" />
+						}
+					</button>
+					<p className='mb-0 p-2 smaller'>
+						<Info className='me-1' />
+						Click the button to backup current data that is into the database.
+					</p>
+				</div> */}
 			</div>
 		)
 	}
