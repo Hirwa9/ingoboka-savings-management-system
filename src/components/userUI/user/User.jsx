@@ -8,7 +8,7 @@ import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
 import LoadingIndicator from '../../LoadingIndicator';
-import { cError, fncPlaceholder, normalizedLowercaseString, printDatesInterval } from '../../../scripts/myScripts';
+import { cError, fncPlaceholder, getDateHoursMinutes, normalizedLowercaseString, printDatesInterval } from '../../../scripts/myScripts';
 import FormatedDate from '../../common/FormatedDate';
 import FetchError from '../../common/FetchError';
 import useCustomDialogs from '../../common/hooks/useCustomDialogs';
@@ -1984,17 +1984,18 @@ const UserUI = () => {
 								{membersToShow
 									.filter(m => m.id === signedUser?.id)
 									.map((member, index) => (
-										<div key={index} className='w-4rem ms-3 mx-xl-4 ptr clickDown'
-											title={`${member.husbandFirstName} ${member.husbandLastName}`}
-											onClick={() => { setSelectedMember(member); setShowSelectedMemberCredits(true) }}
-										>
-											<img src={member.husbandAvatar ? member.husbandAvatar : '/images/man_avatar_image.jpg'} alt=""
-												className="w-100 ratio-1-1 object-fit-cover p-1 bg-light rounded-circle"
-											/>
-											<div className="mt-1 fs-70 text-center text-primaryColor fw-semibold">
-												Summary
+										<Popover key={index} content={`${member.husbandFirstName} ${member.husbandLastName}`} trigger='hover' placement='bottom' className='d-none d-md-block py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='1.9rem'>
+											<div className='w-4rem ms-3 mx-xl-4 ptr clickDown'
+												onClick={() => { setSelectedMember(member); setShowSelectedMemberCredits(true) }}
+											>
+												<img src={member.husbandAvatar ? member.husbandAvatar : '/images/man_avatar_image.jpg'} alt=""
+													className="w-100 ratio-1-1 object-fit-cover p-1 bg-light rounded-circle"
+												/>
+												<div className="mt-1 fs-70 text-center text-primaryColor fw-semibold">
+													Summary
+												</div>
 											</div>
-										</div>
+										</Popover>
 									))}
 							</div>
 						</div>
@@ -2884,20 +2885,6 @@ const UserUI = () => {
 							<h5 className='mb-0 small'>Expenses</h5>
 							<p className='mb-0 fs-75'>( {recordsToShow.filter(cr => cr.recordType === 'expense').length} )</p>
 						</div>
-						{/* <div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-success border-opacity-25 tab-selector ${activeTransactionSection === 'deposits' ? 'active' : ''} user-select-none ptr clickDown`}
-							style={{ '--_activeColor': '#a3d5bb' }}
-							onClick={() => { setActiveTransactionSection('deposits'); }}
-						>
-							<h5 className='mb-0 small'>Deposits</h5>
-							<p className='mb-0 fs-75'>( {recordsToShow.filter(cr => cr.recordType === 'deposit').length} )</p>
-						</div>
-						<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-primary border-opacity-25 tab-selector ${activeTransactionSection === 'penalties' ? 'active' : ''} user-select-none ptr clickDown`}
-							style={{ '--_activeColor': '#c1c9eb' }}
-							onClick={() => { setActiveTransactionSection('penalties'); }}
-						>
-							<h5 className='mb-0 small'>Penalties</h5>
-							<p className='mb-0 fs-75'>( {recordsToShow.filter(cr => cr.recordType === 'penalty').length} )</p>
-						</div> */}
 					</div>
 
 					{/* Selected content */}
@@ -2956,7 +2943,9 @@ const UserUI = () => {
 																	{record.comment}
 																</td>
 																<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
-																	<FormatedDate date={record.createdAt} />
+																	<Popover content={getDateHoursMinutes(record.createdAt, { long: true })} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
+																		<FormatedDate date={record.createdAt} />
+																	</Popover>
 																</td>
 															</tr>
 														)
@@ -3386,7 +3375,7 @@ const UserUI = () => {
 							<List />
 						</button>
 					</div>
-					<Popover content="Balance" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none bg-appColor text-gray-200 border border-secondary border-opacity-25' arrowColor='var(--appColor)' height='2rem'>
+					<Popover content="Balance" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none bg-appColor text-gray-200 border border-secondary border-opacity-25' arrowColor='var(--appColor)' height='1.9rem'>
 						<div className="position-absolute start-50 top-100 translate-middle flex-align-center gap-1  px-3 py-1 border border-secondary border-opacity-50 rounded-pill fs-50 shadow-sm ptr clickDown balance-indicator"
 							onClick={() => { setActiveSection("dashboard"); }}
 						>
@@ -3397,14 +3386,14 @@ const UserUI = () => {
 				<div className='d-none d-md-flex flex-grow-1 border-bottom py-1'>
 					<div className="me-3 ms-auto navbar-nav">
 						<div className="nav-item d-flex gap-2 text-nowrap small" style={{ '--_activeColor': 'var(--primaryColor)' }}>
-							<Popover content="Refresh data" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='2rem'>
+							<Popover content="Refresh data" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='1.9rem'>
 								<button className={`nav-link px-2 text-gray-600 rounded-pill clickDown`} title='Refresh data'
 									onClick={refreshAllData}
 								>
 									<ArrowsClockwise size={20} />
 								</button>
 							</Popover>
-							<Popover content="Notifications" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='2rem'>
+							<Popover content="Notifications" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='1.9rem'>
 								<button className={`nav-link px-2 ${adminHasNewNotifications ? 'bg-gray-300 text-primaryColor active-with-dot' : 'text-gray-600'} rounded-pill clickDown`} title='Notifications'>
 									<BellSimple weight={adminHasNewNotifications ? 'fill' : undefined} size={20}
 										style={{ animation: adminHasNewNotifications ? 'shakeX 10s infinite' : 'unset' }}
