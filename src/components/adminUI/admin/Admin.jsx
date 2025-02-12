@@ -3995,10 +3995,10 @@ const Admin = () => {
 																<b>Amount requested</b>: <CurrencyText amount={Number(selectedCredit.creditAmount)} />
 															</li>
 															<li className='border-start border-dark border-opacity-50 ps-2'>
-																<b>Interest</b>: <CurrencyText amount={(Number(selectedCredit.creditAmount) * (5 / 100))} />
+																<b>Interest</b>: <CurrencyText amount={(Number(selectedCredit.creditAmount) * 0.05)} />
 															</li>
 															<li className='border-start border-dark border-opacity-50 ps-2'>
-																<b>Amount to pay</b>: <CurrencyText amount={(Number(selectedCredit.creditAmount) + (Number(selectedCredit.creditAmount) * (5 / 100)))} />
+																<b>Amount to pay</b>: <CurrencyText amount={(Number(selectedCredit.creditAmount) + (Number(selectedCredit.creditAmount) * 0.05))} />
 															</li>
 														</ul>
 
@@ -4016,7 +4016,7 @@ const Admin = () => {
 																	{JSON.parse(selectedCredit.creditPayment)
 																		.sort((a, b) => a.tranchNumber - b.tranchNumber) // Sort tranches
 																		.map((item, index) => {
-																			const amountToPay = Number(selectedCredit.creditAmount) + (Number(selectedCredit.creditAmount) * (5 / 100));
+																			const amountToPay = Number(selectedCredit.creditAmount) + (Number(selectedCredit.creditAmount) * 0.05);
 																			const backFillAmount = amountToPay / selectedCredit.tranches;
 																			return (
 																				<tr key={index} className="small expense-row">
@@ -4024,7 +4024,7 @@ const Admin = () => {
 																						{item.tranchNumber}
 																					</td>
 																					<td>
-																						<CurrencyText amount={backFillAmount} />
+																						<CurrencyText amount={item.tranchAmount} />
 																					</td>
 																					<td>
 																						<FormatedDate date={item.tranchDueDate} />
@@ -5030,13 +5030,13 @@ const Admin = () => {
 
 								<hr />
 
-								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'auditLogs' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'auditLogs' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("auditLogs"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Notebook size={20} weight='fill' className="me-2" /> Audit Logs
 									</button>
-								</li> */}
+								</li>
 
 								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'settings' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("settings"); hideSideNavbar() }}
