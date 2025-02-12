@@ -3,7 +3,7 @@ import { Button, Card, Container, Form } from "react-bootstrap";
 import './user.css';
 import MyToast from '../../common/Toast';
 import { ArrowClockwise, ArrowsClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, EnvelopeSimple, Files, FloppyDisk, Gavel, Gear, List, Pen, Phone, Plus, Receipt, SignOut, User, UserRectangle, Users, Wallet, WarningCircle, X } from '@phosphor-icons/react';
-import { expensesTypes, generalReport, incomeExpenses } from '../../../data/data';
+import { expensesTypes, incomeExpenses } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
@@ -28,6 +28,7 @@ import { AuthContext } from '../../AuthProvider';
 import RightFixedCard from '../../common/rightFixedCard/RightFixedCard';
 import Popover from '@idui/react-popover';
 import SmallLoader from '../../common/SmallLoader';
+import NextStepInformer from '../../common/NextStepInformer';
 
 const UserUI = () => {
 
@@ -818,7 +819,7 @@ const UserUI = () => {
 							refreshFunction={resetMembers}
 						/>
 					)}
-					{!loadingMembers && !errorLoadingMembers && membersToShow.length && (
+					{!loadingMembers && !errorLoadingMembers && membersToShow.length > 0 && (
 						<>
 							{/* Search bar */}
 							<Form onSubmit={e => e.preventDefault()} className='sticky-top col-lg-6 col-xxl-4 members-search-box'>
@@ -1200,7 +1201,7 @@ const UserUI = () => {
 							</button>
 						</div>
 					)}
-					{!loadingMembers && !errorLoadingMembers && savingsToShow.length && (
+					{!loadingMembers && !errorLoadingMembers && savingsToShow.length > 0 && (
 						<>
 							{/* Search bar */}
 							<Form onSubmit={e => e.preventDefault()} className='sticky-top col-lg-6 col-xxl-4 savings-search-box'>
@@ -1877,13 +1878,29 @@ const UserUI = () => {
 		 */
 
 		const [showRequestCreditForm, setShowRequestCreditForm] = useState(false);
-		const [memberId, setMemberId] = useState("");
-		const [creditAmount, setCreditAmount] = useState("");
-		const [requestDate, setRequestDate] = useState("");
+		const [creditAmount, setCreditAmount] = useState('');
+		const [requestDate, setRequestDate] = useState('');
 		const [dueDate, setDueDate] = useState('');
 		const [tranches, setTranches] = useState(1);
 		const [comment, setComment] = useState('');
 		const [trancheDates, setTrancheDates] = useState([]);
+		const [trancheAmounts, setTrancheAmounts] = useState([]);
+		const totaltrancheAmounts = useMemo(() => (
+			trancheAmounts.reduce((sum, val) => sum + Number(val), 0)
+		), [trancheAmounts])
+		const totalPaymentAmount = useMemo(() => (
+			creditAmount * (1 + 0.05)
+		), [creditAmount])
+
+		const calculateDefaultTrancheAmounts = (credit, numTranches) => {
+			const totalAmountWithInterest = Number(credit) * 1.05; // Add 5% interest
+			return Array.from({ length: numTranches }, () => totalAmountWithInterest / numTranches);
+		};
+
+		useEffect(() => {
+			const defaultTrancheAmounts = calculateDefaultTrancheAmounts(creditAmount, tranches);
+			setTrancheAmounts(defaultTrancheAmounts);
+		}, [creditAmount, tranches]);
 
 		// Handle tranche due date input changes
 		const handleTrancheDateChange = (index, value) => {
@@ -1892,20 +1909,47 @@ const UserUI = () => {
 			setTrancheDates(updatedDates);
 		};
 
+		// Handle tranche amount input changes
+		const handleTrancheAmountChange = (index, value) => {
+			const updatedAmounts = [...trancheAmounts];
+			updatedAmounts[index] = value;
+			setTrancheAmounts(updatedAmounts);
+		};
+
 		// Generate tranche due date inputs based on the selected number of tranches
 		const renderTrancheInputs = () => {
 			return Array.from({ length: tranches }).map((_, index) => (
 				<div key={index} className="mb-3">
-					<label className="form-label">
-						Tranche {index + 1} Due Date {!['', 0, undefined].includes(trancheDates[index]) && (<FormatedDate date={trancheDates[index]} className="ms-1 fw-semibold fst-italic" />)}
-					</label>
-					<input
-						type="date"
-						className="form-control"
-						value={trancheDates[index] || ''}
-						onChange={(e) => handleTrancheDateChange(index, e.target.value)}
-						required
-					/>
+					<div className="form-label fw-bold">
+						Tranche {index + 1}
+					</div>
+					<div className="d-sm-flex gap-2">
+						<div className="col">
+							<label className="form-label">
+								Due Date {!['', 0, undefined].includes(trancheDates[index]) && (<FormatedDate date={trancheDates[index]} className="ms-1 fw-semibold fst-italic" />)}
+							</label>
+							<input
+								type="date"
+								className="form-control"
+								value={trancheDates[index] || ''}
+								onChange={(e) => handleTrancheDateChange(index, e.target.value)}
+								required
+							/>
+						</div>
+						<div className="col">
+							<label className="form-label">
+								Tranche amount {!['', 0, undefined].includes(trancheAmounts[index]) && (<CurrencyText amount={Number(trancheAmounts[index])} className="ms-1 fw-semibold fst-italic" />)}
+							</label>
+							<input
+								type="number"
+								placeholder="Enter amount"
+								className="form-control"
+								value={trancheAmounts[index] || ''}
+								onChange={(e) => handleTrancheAmountChange(index, e.target.value)}
+								required
+							/>
+						</div>
+					</div>
 				</div>
 			));
 		};
@@ -1915,6 +1959,7 @@ const UserUI = () => {
 			return trancheDates.map((date, index) => ({
 				tranchNumber: index + 1,
 				tranchDueDate: date,
+				tranchAmount: trancheAmounts[index],
 				paid: false,
 				slipUrl: null,
 				finesCount: 0,
@@ -1970,14 +2015,14 @@ const UserUI = () => {
 						className="mb-5 mt-4"
 					/>
 				)}
-				{!loadingMembers && !errorLoadingMembers && !membersToShow.length && (
+				{!loadingMembers && !errorLoadingMembers && membersToShow.length === 0 && (
 					<NotFound
 						notFoundMessage="No member found"
 						icon={<Users size={80} className="text-center w-100 mb-3 opacity-50" />}
 						refreshFunction={resetMembers}
 					/>
 				)}
-				{!loadingMembers && !errorLoadingMembers && membersToShow.length && (
+				{!loadingMembers && !errorLoadingMembers && membersToShow.length > 0 && (
 					<>
 						<div className="mb-3">
 							<div className="d-flex justify-content-lg-between gap-2 mt-3 overflow-auto">
@@ -2020,7 +2065,7 @@ const UserUI = () => {
 													<X size={25} className='ptr' />
 												</div>
 											</h6>
-											{allLoans.filter(loan => (loan?.memberId === selectedMember?.id && loan?.loanTaken > 0)).length ? (
+											{allLoans.filter(loan => (loan?.memberId === selectedMember?.id && loan?.loanTaken > 0)).length > 0 ? (
 												<>
 													{allLoans.filter(loan => (loan?.memberId === selectedMember?.id && loan?.loanTaken > 0))
 														.map((item, index) => {
@@ -2226,7 +2271,7 @@ const UserUI = () => {
 							className="mb-5 mt-4"
 						/>
 					)}
-					{!loadingCredits && !errorLoadingCredits && !creditsToShow.length && (
+					{!loadingCredits && !errorLoadingCredits && creditsToShow.length === 0 && (
 						<div className="col-sm-8 col-md-6 col-lg-5 col-xl-4 mx-auto my-5 p-3 rounded error-message">
 							<img src="/images/fetch_error_image.jpg" alt="Error" className="w-4rem h-4rem mx-auto mb-2 opacity-50" />
 							<p className="text-center text-muted small">
@@ -2237,7 +2282,7 @@ const UserUI = () => {
 							</button>
 						</div>
 					)}
-					{!loadingCredits && !errorLoadingCredits && !loadingMembers && !errorLoadingMembers && creditsToShow.length && (
+					{!loadingCredits && !errorLoadingCredits && !loadingMembers && !errorLoadingMembers && creditsToShow.length > 0 && (
 						<>
 							{/* Selectors */}
 							<div className="d-flex flex-wrap justify-content-center">
@@ -2343,7 +2388,7 @@ const UserUI = () => {
 
 								{activeLoanSection === 'approved' && (
 									<>
-										{creditsToShow.filter(cr => cr.status === 'approved').length ? (
+										{creditsToShow.filter(cr => cr.status === 'approved').length > 0 ? (
 											<div className='overflow-auto'>
 												<table className="table table-hover h-100">
 													<thead className='table-success position-sticky top-0 inx-1 text-uppercase small'>
@@ -2587,10 +2632,10 @@ const UserUI = () => {
 																<b>Amount requested</b>: <CurrencyText amount={Number(selectedCredit.creditAmount)} />
 															</li>
 															<li className='border-start border-dark border-opacity-50 ps-2'>
-																<b>Interest</b>: <CurrencyText amount={(Number(selectedCredit.creditAmount) * (5 / 100))} />
+																<b>Interest</b>: <CurrencyText amount={(Number(selectedCredit.creditAmount) * 0.05)} />
 															</li>
 															<li className='border-start border-dark border-opacity-50 ps-2'>
-																<b>Amount to pay</b>: <CurrencyText amount={(Number(selectedCredit.creditAmount) + (Number(selectedCredit.creditAmount) * (5 / 100)))} />
+																<b>Amount to pay</b>: <CurrencyText amount={(Number(selectedCredit.creditAmount) + (Number(selectedCredit.creditAmount) * 0.05))} />
 															</li>
 														</ul>
 
@@ -2608,7 +2653,7 @@ const UserUI = () => {
 																	{JSON.parse(selectedCredit.creditPayment)
 																		.sort((a, b) => a.tranchNumber - b.tranchNumber) // Sort tranches
 																		.map((item, index) => {
-																			const amountToPay = Number(selectedCredit.creditAmount) + (Number(selectedCredit.creditAmount) * (5 / 100));
+																			const amountToPay = Number(selectedCredit.creditAmount) + (Number(selectedCredit.creditAmount) * 0.05);
 																			const backFillAmount = amountToPay / selectedCredit.tranches;
 																			return (
 																				<tr key={index} className="small expense-row">
@@ -2616,7 +2661,7 @@ const UserUI = () => {
 																						{item.tranchNumber}
 																					</td>
 																					<td>
-																						<CurrencyText amount={backFillAmount} />
+																						<CurrencyText amount={item.tranchAmount} />
 																					</td>
 																					<td>
 																						<FormatedDate date={item.tranchDueDate} />
@@ -2641,7 +2686,7 @@ const UserUI = () => {
 
 				{showRequestCreditForm && (
 					<div className="position-fixed fixed-top inset-0 bg-black3 py-3 inx-high add-credit-form">
-						<div className="container col-md-6 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
+						<div className="container col-md-9 col-lg-8 col-xl-6 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 							<div className="px-3 bg-light text-gray-700">
 								{/* Header */}
 								<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
@@ -2654,10 +2699,7 @@ const UserUI = () => {
 								</h6>
 
 								{/* Info Message */}
-								<div className="alert alert-primary grid-center mb-4 rounded-0 smaller">
-									<p className="mb-0">Fill in the details to request a new credit. Ensure all information is accurate.</p>
-									<CaretDown size={35} weight="light" className="p-2" />
-								</div>
+								<NextStepInformer type='info' content='Fill in the details to request a new credit. Ensure all information is accurate.' />
 
 								{/* Form */}
 								<form onSubmit={handleRequestCredit} className="px-sm-2 pb-5">
@@ -2767,7 +2809,7 @@ const UserUI = () => {
 												<div className="col fw-semibold">Due date:</div>
 												<div className="col"><FormatedDate date={dueDate} /></div>
 											</div>
-											{trancheDates.length && // Ensure trancheDates is not empty
+											{trancheDates.length > 0 && // Ensure trancheDates is not empty
 												new Date(trancheDates[trancheDates.length - 1]) > new Date(dueDate) && (
 													<div className="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller">
 														<WarningCircle size={22} weight='fill' className='me-1 opacity-50' />
@@ -2775,9 +2817,33 @@ const UserUI = () => {
 													</div>
 												)
 											}
+											{totaltrancheAmounts !== totalPaymentAmount && (
+												<div className="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller">
+													<WarningCircle size={22} weight='fill' className='me-1 opacity-50' />
+													{totaltrancheAmounts > totalPaymentAmount ? (
+														<>
+															<p>
+																Total tranche payment amount <CurrencyText amount={totaltrancheAmounts} boldAmount={true} /> can not be greater than total payment amount <CurrencyText amount={totalPaymentAmount} boldAmount={true} />. Please adjust tranche payment values to match the total payment.
+															</p>
+															<p>
+																Difference: <CurrencyText amount={totaltrancheAmounts - totalPaymentAmount} boldAmount={true} />
+															</p>
+														</>
+													) : (
+														<>
+															<p>
+																Total tranche payment amount <CurrencyText amount={totaltrancheAmounts} boldAmount={true} /> can not be less than total payment amount <CurrencyText amount={totalPaymentAmount} boldAmount={true} />. Please adjust tranche payment values to match the total payment.
+															</p>
+															<p>
+																Difference: <CurrencyText amount={totalPaymentAmount - totaltrancheAmounts} boldAmount={true} />
+															</p>
+														</>
+													)}
+												</div>
+											)}
 										</div>
 
-										<button type="submit" className="btn btn-sm btn-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="addSavingBtn" disabled={(new Date(trancheDates[trancheDates.length - 1]) > new Date(dueDate)) || tranches === 0}
+										<button type="submit" className="btn btn-sm btn-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="addSavingBtn" disabled={(new Date(trancheDates[trancheDates.length - 1]) > new Date(dueDate)) || tranches === 0 || (totaltrancheAmounts !== (creditAmount * (1 + 0.05)))}
 										>
 											{!isWaitingFetchAction ?
 												<>Submit Request <FloppyDisk size={18} className='ms-2' /></>
@@ -2903,7 +2969,7 @@ const UserUI = () => {
 							refreshFunction={fetchMembers}
 						/>
 					)}
-					{!loadingMembers && !errorLoadingMembers && membersToShow.length && (
+					{!loadingMembers && !errorLoadingMembers && membersToShow.length > 0 && (
 						<div style={{ minHeight: '60vh' }}>
 							{/* Expenses table */}
 							{activeTransactionSection === 'withdrawals' && (
@@ -3031,7 +3097,7 @@ const UserUI = () => {
 
 		// Count report values
 		let totalCotisationsAndShares = 0;
-		let generalTotal = generalReport.balance;
+		let generalTotal = Number(allFigures?.balance);
 
 		// Handle exports
 		const reportViewRef = useRef();
@@ -3140,7 +3206,7 @@ const UserUI = () => {
 														Balance
 													</td>
 													<td className="text-nowrap fw-bold">
-														<CurrencyText amount={generalReport.balance} />
+														<CurrencyText amount={Number(allFigures?.balance)} />
 													</td>
 													<td></td>
 													<td></td>
