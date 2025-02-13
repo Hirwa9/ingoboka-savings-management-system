@@ -24,8 +24,6 @@
     right: 0;
     bottom: 0;
     height: calc(100% - 3.125rem);
-    -webkit-backdrop-filter: blur(2px);
-    backdrop-filter: blur(1px);
     z-index: -1;
 }
 
