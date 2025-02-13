@@ -337,7 +337,9 @@ const Admin = () => {
 		fetchLoans();
 	}, []);
 
-	const currentPeriodPaidInterest = allLoans.reduce((sum, loan) => sum + loan.interestPaid, 0)
+	const totalPaidInterest = allLoans.reduce((sum, loan) => sum + loan.interestPaid, 0);
+
+	const currentPeriodPaidInterest = totalPaidInterest
 		- allMembers.reduce((sum, m) => sum + Number(m.distributedInterestPaid), 0);
 
 	const interestToReceive =
@@ -426,7 +428,7 @@ const Admin = () => {
 			{ label: 'Cotisation', value: totalCotisation, },
 			{ label: 'Social', value: totalSocial, },
 			{ label: 'Loan Delivered', value: totalLoanDisbursed, },
-			{ label: 'Paid Interest', value: allLoans.reduce((sum, loan) => sum + loan.interestPaid, 0), },
+			{ label: 'Paid Interest', value: totalPaidInterest, },
 			{ label: 'Pending Interest', value: pendingInterest, },
 			{ label: 'Paid Capital', value: totalPaidCapital, },
 			{ label: 'Penalties', value: totalPenalties, },
