@@ -2484,9 +2484,7 @@ const Admin = () => {
 			if (window.confirm(`Are you sure to proceed with ${keepAnnualInterest ? 'keeping' : 'withdrawing'} the annual interest ?`)) {
 				try {
 					setIsWaitingFetchAction(true);
-					const response = await Axios.post(`/api/${keepAnnualInterest ? 'distribute' : 'withdraw'}-interest`, {
-						annualReceivable: interestToReceive
-					});
+					const response = await Axios.post(`/api/${keepAnnualInterest ? 'distribute' : 'withdraw'}-interest`);
 					// Successfull fetch
 					const data = response.data;
 					successToast({ message: data.message, selfClose: false });
