@@ -337,7 +337,7 @@ const Admin = () => {
 		fetchLoans();
 	}, []);
 
-	const totalPaidInterest = allLoans.reduce((sum, loan) => sum + loan.interestPaid, 0);
+	const totalPaidInterest = allLoans.reduce((sum, loan) => sum + Number(loan.interestPaid), 0);
 
 	const currentPeriodPaidInterest = totalPaidInterest
 		- allMembers.reduce((sum, m) => sum + Number(m.distributedInterestPaid), 0);
