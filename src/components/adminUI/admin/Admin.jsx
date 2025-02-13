@@ -337,9 +337,15 @@ const Admin = () => {
 		fetchLoans();
 	}, []);
 
-	const interestToReceive = allLoans.reduce((sum, m) => sum + m.interestPaid, 0) - allFigures?.distributedInterest;
+	const currentPeriodPaidInterest = allLoans.reduce((sum, loan) => sum + loan.interestPaid, 0)
+		- allMembers.reduce((sum, m) => sum + Number(m.distributedInterestPaid), 0);
+
+	const interestToReceive =
+		currentPeriodPaidInterest
+		+ allMembers.reduce((sum, m) => sum + Number(m.initialInterest), 0);
+
 	const pendingInterest = useMemo(() => (
-		allLoans.reduce((sum, m) => sum + m.interestPending, 0)
+		allLoans.reduce((sum, loan) => sum + loan.interestPending, 0)
 	), [allLoans]);
 
 	/**
@@ -420,7 +426,7 @@ const Admin = () => {
 			{ label: 'Cotisation', value: totalCotisation, },
 			{ label: 'Social', value: totalSocial, },
 			{ label: 'Loan Delivered', value: totalLoanDisbursed, },
-			{ label: 'Paid Interest', value: interestToReceive, },
+			{ label: 'Paid Interest', value: allLoans.reduce((sum, loan) => sum + loan.interestPaid, 0), },
 			{ label: 'Pending Interest', value: pendingInterest, },
 			{ label: 'Paid Capital', value: totalPaidCapital, },
 			{ label: 'Penalties', value: totalPenalties, },
@@ -2578,22 +2584,22 @@ const Admin = () => {
 								</tr>
 							</thead>
 							<tbody>
-								{activeMembers.map((item, index) => {
-									const memberNames = `${item.husbandFirstName} ${item.husbandLastName}`;
-									const progressiveShares = item.progressiveShares;
-									const paidAnnualShares = JSON.parse(item.annualShares).filter(share => share.paid).length;
+								{activeMembers.map((member, index) => {
+									const memberNames = `${member.husbandFirstName} ${member.husbandLastName}`;
+									const progressiveShares = member.progressiveShares;
+									const paidAnnualShares = JSON.parse(member.annualShares).filter(share => share.paid).length;
 									const activeShares = progressiveShares + paidAnnualShares;
 									const sharesProportion = totalActiveShares > 0 ? activeShares / totalActiveShares : 0;
 									const sharesPercentage = (sharesProportion * 100).toFixed(3);
-									const activeinterest = sharesProportion * interestToReceive;
-									const interest = activeinterest + Number(item.initialInterest);
-									const interestReceivable = (Math.floor((activeinterest + Number(item.initialInterest)) / 20000) * 20000);
+									const activeinterest = currentPeriodPaidInterest * sharesProportion;
+									const interest = activeinterest + Number(member.initialInterest);
+									const interestReceivable = (Math.floor(interest / 20000) * 20000);
 									const sharesReceivable = interestReceivable / 20000;
 									const interestRemains = interest - interestReceivable;
 
 									totalSharesPercentage += Number(sharesPercentage);
 									totalMonetaryInterest += Number(interest);
-									totalInterestReceivable += interestReceivable + Number(item.initialInterest);
+									totalInterestReceivable += interestReceivable;
 									totalSharesReceivable += sharesReceivable;
 									totalInterestRemains += interestRemains;
 
@@ -2609,7 +2615,9 @@ const Admin = () => {
 											<td className="text-nowrap text-success">
 												<CurrencyText amount={interestReceivable} smallCurrency />
 											</td>
-											<td>{sharesReceivable}</td>
+											<td className="text-success">
+												{sharesReceivable}
+											</td>
 											<td className="text-nowrap text-gray-700">
 												<CurrencyText amount={interestRemains} smallCurrency />
 											</td>
@@ -4949,7 +4957,7 @@ const Admin = () => {
 				<div className="row">
 					{/* Sidebar Navigation */}
 					<nav className={`col-12 col-md-3 col-xl-2 px-3 px-sm-5 px-md-0 d-md-block border-end overflow-y-auto sidebar ${sideNavbarIsFloated ? 'floated' : ''}`} id="sidebarMenu">
-						<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit my-3 my-md-0 py-3 pt-md-4 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded-4' : ''}`}>
+						<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit my-3 my-md-0 py-3 pt-md-4 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded' : ''}`}>
 							<div className="d-flex align-items-center d-md-none mb-3 px-3 pb-2 border-light border-opacity-25">
 								<div className='ms-auto d-grid pb-1'>
 									<span className='ms-auto smaller'>{accountantNames}</span>
@@ -5030,13 +5038,13 @@ const Admin = () => {
 
 								<hr />
 
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'auditLogs' ? 'active' : ''}`}
+								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'auditLogs' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("auditLogs"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Notebook size={20} weight='fill' className="me-2" /> Audit Logs
 									</button>
-								</li>
+								</li> */}
 
 								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'settings' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("settings"); hideSideNavbar() }}
