@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Toast, Button } from 'react-bootstrap';
 
-const MyToast = ({ show, message, type = 'light', selfClose, onClose }) => {
+const MyToast = ({ show, message, type = 'light', selfClose, selfCloseTimeout = 4000, onClose }) => {
     let textColor;
 
     // Adjust toast color
@@ -28,14 +28,14 @@ const MyToast = ({ show, message, type = 'light', selfClose, onClose }) => {
         if (selfClose && show) {
             timer = setTimeout(() => {
                 onClose();
-            }, 4000);
+            }, selfCloseTimeout);
         }
 
         // Cleanup: Clear timer if component unmounts or `show` changes
         return () => {
             if (timer) clearTimeout(timer);
         };
-    }, [selfClose, show, onClose]);
+    }, [show, selfClose, selfCloseTimeout, onClose]);
 
     return (
         <Toast
