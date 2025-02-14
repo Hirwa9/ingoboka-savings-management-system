@@ -357,6 +357,7 @@ const UserUI = () => {
 
 	const refreshAllData = async () => {
 		try {
+			setIsWaitingFetchAction(true);
 			await Promise.all([
 				fetchMembers(),
 				fetchFigures(),
@@ -369,6 +370,8 @@ const UserUI = () => {
 		} catch (error) {
 			warningToast({ message: 'Failed to refresh some data. You can try again' });
 			console.error('Error refreshing data:', error);
+		} finally {
+			setIsWaitingFetchAction(false);
 		}
 	};
 
@@ -873,7 +876,7 @@ const UserUI = () => {
 												className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle ptr"
 												onClick={() => {
 													if (member?.wifeFirstName === null) {
-														messageToast({ message: "No data to show" })
+														messageToast({ message: "No data to show", selfCloseTimeout: 2000 })
 													} else {
 														setSelectedMember(member); setShowMemberInfo(true); setShowPrimaryMemberInfo(false);
 													}
@@ -1456,7 +1459,7 @@ const UserUI = () => {
 														Save multiple shares to {selectedMember?.husbandFirstName} {selectedMember?.husbandLastName}
 													</div>
 												</div>
-												<ul className="list-unstyled text-gray-700 px-2 opacity-75 smaller fst-italic">
+												<ul className="list-unstyled text-gray-700 px-2 opacity-75 smaller">
 													<li className="py-1 w-100">
 														<span className="flex-align-center">
 															<b className='fs-5'>{selectedMember?.shares} Shares</b>
