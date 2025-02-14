@@ -19,7 +19,7 @@ const useCustomDialogs = () => {
 
     const resetToast = () => {
         setShowToast(false);
-        setToastMessage('This is a toast message');
+        setToastMessage('');
         setToastType('gray-300');
         setToastSelfClose(true);
         setToastSelfCloseTimeout(4000);
