@@ -7,42 +7,48 @@ const useCustomDialogs = () => {
     const [toastMessage, setToastMessage] = useState('This is a toast message');
     const [toastType, setToastType] = useState('gray-300');
     const [toastSelfClose, setToastSelfClose] = useState(true);
+    const [toastSelfCloseTimeout, setToastSelfCloseTimeout] = useState(4000);
 
-    const toast = ({ message, type = 'gray-300', selfClose = true }) => {
+    const toast = ({ message, type = 'gray-300', selfClose = true, selfCloseTimeout = 4000 }) => {
         setShowToast(true);
         setToastMessage(message);
         setToastType(type);
         setToastSelfClose(selfClose);
+        setToastSelfCloseTimeout(selfCloseTimeout);
     };
 
     const resetToast = () => {
         setShowToast(false);
-        setToastMessage('');
+        setToastMessage('This is a toast message');
         setToastType('gray-300');
         setToastSelfClose(true);
+        setToastSelfCloseTimeout(4000);
     };
 
-    const successToast = ({ message, type = 'dark', selfClose = true }) => {
+    const successToast = ({ message, type = 'dark', selfClose = true, selfCloseTimeout = 4000 }) => {
         return toast({
             message: <><Check size={22} className='me-2 flex-shrink-0 opacity-50' /> {message}</>,
             type,
-            selfClose
+            selfClose,
+            selfCloseTimeout,
         });
     }
 
-    const warningToast = ({ message, type = 'warning', selfClose = true }) => {
+    const warningToast = ({ message, type = 'warning', selfClose = true, selfCloseTimeout = 4000 }) => {
         return toast({
             message: <><WarningCircle size={22} weight='fill' className='me-1 flex-shrink-0 opacity-50' /> {message}</>,
             type,
-            selfClose
+            selfClose,
+            selfCloseTimeout,
         });
     }
 
-    const messageToast = ({ message, type = 'gray-700', selfClose = true, }) => {
+    const messageToast = ({ message, type = 'gray-700', selfClose = true, selfCloseTimeout = 4000 }) => {
         return toast({
             message: <><ChatTeardropText size={22} weight='fill' className='me-2 flex-shrink-0 opacity-50' /> {message}</>,
             type,
-            selfClose
+            selfClose,
+            selfCloseTimeout,
         });
     }
 
@@ -117,6 +123,7 @@ const useCustomDialogs = () => {
         toastMessage,
         toastType,
         toastSelfClose,
+        toastSelfCloseTimeout,
         toast,
         successToast,
         warningToast,
