@@ -47,6 +47,7 @@ const UserUI = () => {
 		toastMessage,
 		toastType,
 		toastSelfClose,
+		toastSelfCloseTimeout,
 		toast,
 		successToast,
 		warningToast,
@@ -350,14 +351,28 @@ const UserUI = () => {
 			.reduce((sum, r) => sum + Number(r.recordAmount), 0)
 	), [allRecords]);
 
-	const refreshAllData = () => {
-		fetchMembers();
-		fetchFigures();
-		fetchCredits();
-		fetchLoans();
-		fetchRecords();
-	}
+	/**
+	 * Data refresh
+	 */
 
+	const refreshAllData = async () => {
+		try {
+			await Promise.all([
+				fetchMembers(),
+				fetchFigures(),
+				fetchCredits(),
+				fetchLoans(),
+				fetchRecords()
+			]);
+
+			messageToast({ message: 'Data refreshed', type: 'primaryColor', selfCloseTimeout: 2000 });
+		} catch (error) {
+			warningToast({ message: 'Failed to refresh some data. You can try again' });
+			console.error('Error refreshing data:', error);
+		}
+	};
+
+	// Active UI section
 	const [activeSection, setActiveSection] = useState("dashboard");
 	// const [activeSection, setActiveSection] = useState("messages");
 	// const [activeSection, setActiveSection] = useState("members");
@@ -3395,7 +3410,7 @@ const UserUI = () => {
 	return (
 		<>
 			{/* Toast message */}
-			<MyToast show={showToast} message={toastMessage} type={toastType} selfClose={toastSelfClose} onClose={() => resetToast()} />
+			<MyToast show={showToast} message={toastMessage} type={toastType} selfClose={toastSelfClose} selfCloseTimeout={toastSelfCloseTimeout} onClose={() => resetToast()} />
 
 			{/* Prompt actions */}
 			<ActionPrompt
