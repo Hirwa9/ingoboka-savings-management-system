@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useContext, useEffect, useMemo, useRef, u
 import { Button, Card, Container, Form } from "react-bootstrap";
 import './user.css';
 import MyToast from '../../common/Toast';
-import { ArrowClockwise, ArrowsClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, EnvelopeSimple, Files, FloppyDisk, Gavel, Gear, List, Pen, Phone, Plus, Receipt, SignOut, User, UserRectangle, Users, Wallet, WarningCircle, X } from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowsClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, EnvelopeSimple, Files, FloppyDisk, Gavel, Gear, List, Pen, Phone, Plus, Receipt, SignOut, User, UserRectangle, Users, Wallet, WarningCircle, Watch, X } from '@phosphor-icons/react';
 import { expensesTypes, incomeExpenses } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
@@ -3036,7 +3036,7 @@ const UserUI = () => {
 																	{record.comment}
 																</td>
 																<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
-																	<Popover content={getDateHoursMinutes(record.createdAt, { long: true })} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
+																	<Popover content={<><Watch size={15} /> {getDateHoursMinutes(record.createdAt)}</>} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
 																		<FormatedDate date={record.createdAt} />
 																	</Popover>
 																</td>
