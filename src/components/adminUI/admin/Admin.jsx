@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useContext, useEffect, useMemo, useRef, u
 import { Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, ChatTeardropText, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, Envelope, EnvelopeSimple, EscalatorUp, Export, Eye, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, GreaterThan, HandCoins, Info, LessThan, List, Minus, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, ChatTeardropText, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, Envelope, EnvelopeSimple, EscalatorUp, Export, Eye, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, GreaterThan, HandCoins, Info, LessThan, List, Minus, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, Watch, X } from '@phosphor-icons/react';
 import { expensesTypes, incomeExpenses, memberRoles } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
@@ -1700,9 +1700,7 @@ const Admin = () => {
 																							{record.comment}
 																						</td>
 																						<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
-																							<Popover content={getDateHoursMinutes(record.createdAt, { long: true })} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
-																								<FormatedDate date={record.createdAt} />
-																							</Popover>
+																							<FormatedDate date={record.createdAt} showTime={true} />
 																						</td>
 																					</tr>
 																				)
@@ -3144,7 +3142,7 @@ const Admin = () => {
 
 				// Successful fetch
 				const data = response.data;
-				successToast({ message: data.message });
+				successToast({ message: data.message, selfClose: false });
 				setApplyCreditPenalty(false);
 				setErrorWithFetchAction(null);
 				fetchMembers();
@@ -3239,6 +3237,7 @@ const Admin = () => {
 													<X size={25} className='ptr' />
 												</div>
 											</h6>
+
 											{allLoans.filter(loan => (loan.memberId === selectedMember?.id && loan.loanTaken > 0)).length ? (
 												<>
 													{allLoans.filter(loan => (loan.memberId === selectedMember?.id && loan.loanTaken > 0))
@@ -3448,45 +3447,6 @@ const Admin = () => {
 																	</div>
 
 																	<hr className='mt-0 mb-4' />
-																	{/* Credit penalties */}
-																	<div className="mb-3">
-																		<ContentToggler
-																			state={applyCreditPenalty}
-																			setState={setApplyCreditPenalty}
-																			text="Apply penalties"
-																			className="ms-auto"
-																		/>
-
-																		{applyCreditPenalty && (
-																			<>
-																				<form onSubmit={e => e.preventDefault()} className="px-sm-2 pb-5">
-																					<div className="mb-3">
-																						<label htmlFor="penaltyAmount" className="form-label fw-bold" required>Penalty amount ({creditPenaltyAmount !== '' ? Number(creditPenaltyAmount).toLocaleString() : ''} RWF )</label>
-																						<input type="number" id="penaltyAmount" name="penaltyAmount" className="form-control" min="1" required placeholder="Enter amount"
-																							value={creditPenaltyAmount}
-																							onChange={e => setCreditPenaltyAmount(e.target.value)}
-																						/>
-																					</div>
-																					<div className="mb-3">
-																						<label htmlFor="penaltyComment" className="form-label fw-bold" required>Penalty comment</label>
-																						<textarea rows={3} id="penaltyComment" name="penaltyComment" className="form-control" placeholder="Enter comment"
-																							value={penaltyComment}
-																							onChange={e => setPenaltyComment(e.target.value)}
-																						></textarea>
-																					</div>
-
-																					<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="applyPenaltyBtn"
-																						onClick={() => handleApplyCreditPenalty(selectedMember?.id)}
-																					>
-																						{!isWaitingFetchAction ?
-																							<>Apply penalty <Gavel size={18} className='ms-2' /></>
-																							: <>Working <SmallLoader color='gray-500' /></>
-																						}
-																					</button>
-																				</form>
-																			</>
-																		)}
-																	</div>
 
 																	{/* Toggle Credit Records */}
 																	<ContentToggler
@@ -3580,6 +3540,46 @@ const Admin = () => {
 													/>
 												</>
 											)}
+
+											{/* Credit penalties */}
+											<div className="mb-3">
+												<ContentToggler
+													state={applyCreditPenalty}
+													setState={setApplyCreditPenalty}
+													text="Apply penalties"
+													className="ms-auto"
+												/>
+
+												{applyCreditPenalty && (
+													<>
+														<form onSubmit={e => e.preventDefault()} className="px-sm-2 pb-5">
+															<div className="mb-3">
+																<label htmlFor="penaltyAmount" className="form-label fw-bold" required>Penalty amount ({creditPenaltyAmount !== '' ? Number(creditPenaltyAmount).toLocaleString() : ''} RWF )</label>
+																<input type="number" id="penaltyAmount" name="penaltyAmount" className="form-control" min="1" required placeholder="Enter amount"
+																	value={creditPenaltyAmount}
+																	onChange={e => setCreditPenaltyAmount(e.target.value)}
+																/>
+															</div>
+															<div className="mb-3">
+																<label htmlFor="penaltyComment" className="form-label fw-bold" required>Penalty comment</label>
+																<textarea rows={3} id="penaltyComment" name="penaltyComment" className="form-control" placeholder="Enter comment"
+																	value={penaltyComment}
+																	onChange={e => setPenaltyComment(e.target.value)}
+																></textarea>
+															</div>
+
+															<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="applyPenaltyBtn"
+																onClick={() => handleApplyCreditPenalty(selectedMember?.id)}
+															>
+																{!isWaitingFetchAction ?
+																	<>Apply penalty <Gavel size={18} className='ms-2' /></>
+																	: <>Working <SmallLoader color='gray-500' /></>
+																}
+															</button>
+														</form>
+													</>
+												)}
+											</div>
 										</div>
 									</div>
 								</div>
@@ -4300,7 +4300,7 @@ const Admin = () => {
 																	{record.comment}
 																</td>
 																<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
-																	<Popover content={getDateHoursMinutes(record.createdAt, { long: true })} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
+																	<Popover content={<><Watch size={15} /> {getDateHoursMinutes(record.createdAt)}</>} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
 																		<FormatedDate date={record.createdAt} />
 																	</Popover>
 																</td>
@@ -4412,7 +4412,7 @@ const Admin = () => {
 																{record.comment}
 															</td>
 															<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
-																<Popover content={getDateHoursMinutes(record.createdAt, { long: true })} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
+																<Popover content={<><Watch size={15} /> {getDateHoursMinutes(record.createdAt)}</>} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
 																	<FormatedDate date={record.createdAt} />
 																</Popover>
 															</td>
@@ -4460,7 +4460,7 @@ const Admin = () => {
 																{record.comment}
 															</td>
 															<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
-																<Popover content={getDateHoursMinutes(record.createdAt, { long: true })} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
+																<Popover content={<><Watch size={15} /> {getDateHoursMinutes(record.createdAt)}</>} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
 																	<FormatedDate date={record.createdAt} />
 																</Popover>
 															</td>
