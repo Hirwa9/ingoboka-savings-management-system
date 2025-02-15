@@ -4652,13 +4652,13 @@ const Admin = () => {
 														<CurrencyText amount={totalCotisationsAndShares} />
 													</td>
 												</tr>
-												<tr className="small cursor-default clickDown general-report-row fw-bold">
+												<tr className="small cursor-default clickDown general-report-row text-info-enphasis">
 													<td></td>
 													<td></td>
 													<td>
 														Verify
 													</td>
-													<td className={`text-nowrap ${totalCotisationsAndShares - generalTotal < 0 ? 'text-danger' : ''}`}>
+													<td className="text-nowrap">
 														<CurrencyText amount={Math.abs(totalCotisationsAndShares - generalTotal)} />
 													</td>
 												</tr>

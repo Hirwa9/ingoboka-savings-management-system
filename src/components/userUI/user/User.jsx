@@ -3179,7 +3179,7 @@ const UserUI = () => {
 								<>
 									<div className='overflow-auto'>
 										<table className="table table-hover h-100">
-											<thead className='table-success position-sticky top-0 inx-1 text-uppercase small'>
+											<thead className='table-success position-sticky top-0 inx-1 1 text-uppercase small'>
 												<tr>
 													<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
 													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Libelle</th>
@@ -3281,14 +3281,14 @@ const UserUI = () => {
 														<CurrencyText amount={totalCotisationsAndShares} />
 													</td>
 												</tr>
-												<tr className="small cursor-default clickDown general-report-row fw-bold">
+												<tr className="small cursor-default clickDown general-report-row text-info-enphasis">
 													<td></td>
 													<td></td>
 													<td>
 														Verify
 													</td>
 													<td className="text-nowrap">
-														<CurrencyText amount={totalCotisationsAndShares - generalTotal} />
+														<CurrencyText amount={Math.abs(totalCotisationsAndShares - generalTotal)} />
 													</td>
 												</tr>
 												<tr className="small cursor-default clickDown general-report-row fw-bold fs-5">
