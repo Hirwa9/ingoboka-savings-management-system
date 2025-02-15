@@ -8,7 +8,8 @@ const FormatedDate = ({
     dayFormat = "numeric",
     hour12Format = false,
     showDateKeyword = false,
-    className,
+    showTime = false,
+    className = '',
 }) => {
     // List of valid locales
     const validLocales = [
@@ -264,21 +265,30 @@ const FormatedDate = ({
     }
 
     // Format the date
-    const formattedDate = new Intl.DateTimeFormat(locale, {
+    const formattedDate = !showTime ? new Intl.DateTimeFormat(locale, {
         year: yearFormat,
         month: monthFormat,
         day: dayFormat,
         hour12: hour12Format,
-    }).format(parsedDate);
+    }).format(parsedDate)
+        : new Intl.DateTimeFormat(locale, {
+            year: yearFormat,
+            month: monthFormat,
+            day: dayFormat,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: hour12Format,
+        }).format(parsedDate);
 
     return (
         <>
             {showDateKeyword ? (
                 <>
-                    <span className={`${className ? className : ''}`}>Date: {formattedDate}</span>
+                    <span className={`${className}`}>Date: {formattedDate}</span>
                 </>
             ) : (
-                <span className={`${className ? className : ''}`}>{formattedDate}</span>
+                <span className={`${className}`}>{formattedDate}</span>
             )}
         </>
     );
