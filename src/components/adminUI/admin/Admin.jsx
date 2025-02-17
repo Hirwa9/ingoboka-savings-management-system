@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useContext, useEffect, useMemo, useRef, u
 import { Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, ChatTeardropText, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, Envelope, EnvelopeSimple, EscalatorUp, Export, Eye, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, GreaterThan, HandCoins, Info, LessThan, List, Minus, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, Watch, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, ChatTeardropText, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, Envelope, EnvelopeSimple, EscalatorUp, Export, Eye, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, GreaterThan, HandCoins, Info, LessThan, List, Minus, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, TextStrikethrough, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, Watch, X } from '@phosphor-icons/react';
 import { expensesTypes, incomeExpenses, memberRoles } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
@@ -3916,27 +3916,36 @@ const Admin = () => {
 																			{credit.rejectionMessage}
 																		</td>
 																		<td className='text-nowrap fs-75'>
-																			<button className='btn btn-sm btn-outline-secondary rounded-0'
-																				onClick={
-																					() => {
-																						customConfirmDialog({
-																							message: (
-																								<>
-																									<h5 className='h6 border-bottom mb-3 pb-2'><Receipt size={25} weight='fill' className='opacity-50' /> Restore Credit Request</h5>
-																									<p>
-																										A credit request of <CurrencyText amount={Number(credit.creditAmount)} /> submitted by {memberNames} will be restored and marked as pending for further actions.
-																									</p>
-																								</>
-																							),
-																							type: 'gray-700',
-																							action: () => restoreCreditRequest(credit.id),
-																							actionText: 'Restore',
-																						});
+																			<div className="dim-100 d-flex">
+																				<button className='btn btn-sm text-primary-emphasis border-primary border-opacity-25 mb-auto rounded-0'
+																					onClick={
+																						() => {
+																							customConfirmDialog({
+																								message: (
+																									<>
+																										<h5 className='h6 border-bottom mb-3 pb-2'><Receipt size={25} weight='fill' className='opacity-50' /> Restore Credit Request</h5>
+																										<p>
+																											A credit request of <CurrencyText amount={Number(credit.creditAmount)} /> submitted by {memberNames} will be restored and marked as pending for further actions.
+																										</p>
+																									</>
+																								),
+																								type: 'gray-700',
+																								action: () => restoreCreditRequest(credit.id),
+																								actionText: 'Restore',
+																							});
+																						}
 																					}
-																				}
-																			>
-																				<ArrowArcLeft /> Restore
-																			</button>
+																				>
+																					<ArrowArcLeft /> Restore
+																				</button>
+																				<button className='btn btn-sm flex-align-center text-danger-emphasis border-danger border-opacity-25 mt-auto rounded-0'
+																					onClick={
+																						() => fncPlaceholder()
+																					}
+																				>
+																					<TextStrikethrough /> Invalidate
+																				</button>
+																			</div>
 																		</td>
 																	</tr>
 																)
@@ -4050,7 +4059,7 @@ const Admin = () => {
 																						{item.tranchNumber}
 																					</td>
 																					<td>
-																						<CurrencyText amount={item.tranchAmount} />
+																						<CurrencyText amount={Number(item.tranchAmount)} />
 																					</td>
 																					<td>
 																						<FormatedDate date={item.tranchDueDate} />
