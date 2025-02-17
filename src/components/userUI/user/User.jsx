@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useContext, useEffect, useMemo, useRef, u
 import { Button, Card, Container, Form } from "react-bootstrap";
 import './user.css';
 import MyToast from '../../common/Toast';
-import { ArrowClockwise, ArrowsClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, EnvelopeSimple, Files, FloppyDisk, Gavel, Gear, List, Pen, Phone, Plus, Receipt, SignOut, User, UserRectangle, Users, Wallet, WarningCircle, Watch, X } from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowsClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, EnvelopeSimple, Files, FloppyDisk, Gavel, Gear, List, Notebook, Pen, Phone, Plus, Receipt, SignOut, User, UserRectangle, Users, Wallet, WarningCircle, Watch, X } from '@phosphor-icons/react';
 import { expensesTypes, incomeExpenses } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
@@ -2689,7 +2689,7 @@ const UserUI = () => {
 																						{item.tranchNumber}
 																					</td>
 																					<td>
-																						<CurrencyText amount={item.tranchAmount} />
+																						<CurrencyText amount={Number(item.tranchAmount)} />
 																					</td>
 																					<td>
 																						<FormatedDate date={item.tranchDueDate} />
@@ -2740,7 +2740,7 @@ const UserUI = () => {
 										</label>
 										<input
 											type="number"
-											className="form-control"
+											className="form-control border border-2 border-secondary border-opacity-25 rounded-0 h-3rem"
 											value={creditAmount}
 											onChange={(e) => setCreditAmount(e.target.value)}
 											min={1}
@@ -2814,6 +2814,7 @@ const UserUI = () => {
 											value={comment}
 											onChange={(e) => setComment(e.target.value)}
 											placeholder="Comment about this request"
+											rows={4}
 											required
 										></textarea>
 									</div>
@@ -2827,11 +2828,11 @@ const UserUI = () => {
 										<div className="px-3">
 											<div className='d-flex cols-2'>
 												<div className="col fw-semibold">Credit:</div>
-												<div className="col"><CurrencyText amount={creditAmount} smallCurrency /></div>
+												<div className="col"><CurrencyText amount={Number(creditAmount)} smallCurrency /></div>
 											</div>
 											<div className='d-flex cols-2'>
 												<div className="col fw-semibold">Interest (5%):</div>
-												<div className="col"><CurrencyText amount={creditAmount * 0.005} smallCurrency /></div>
+												<div className="col"><CurrencyText amount={Number(creditAmount) * 0.05} smallCurrency /></div>
 											</div>
 											<div className='d-flex cols-2'>
 												<div className="col fw-semibold">Due date:</div>
@@ -3600,9 +3601,9 @@ const UserUI = () => {
 									<button className="nav-link w-100">
 										<Notebook size={20} weight='fill' className="me-2" /> Audit Logs
 									</button>
-								</li>
+								</li> */}
 
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'settings' ? 'active' : ''}`}
+								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-0 mb-2 ${activeSection === 'settings' ? 'active' : ''}`}
 									onClick={() => { setActiveSection("settings"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
