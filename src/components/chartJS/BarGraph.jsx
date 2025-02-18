@@ -4,8 +4,8 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const BarGraph = ({ data, title = 'Bar graph data representation', displayLegend }) => {
-  const options = {
+const BarGraph = ({ options, data, title = 'Bar graph data representation', displayLegend }) => {
+  options = options || {
     responsive: true,
     plugins: {
       legend: {
