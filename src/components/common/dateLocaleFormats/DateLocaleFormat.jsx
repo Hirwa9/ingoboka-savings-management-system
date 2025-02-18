@@ -255,7 +255,7 @@ const DateLocaleFormat = () => {
                 <div className="col-md-6 col-lg-4 h-fit mb-3 mb-md-0 p-3 bg-gray-400 border sticky-top">
                     <h4 className="fw-normal">Selected Locale: <b>{selectedLocale}</b></h4>
                     <p className="small d-flex flex-wrap">
-                        <span className="">Formatted Date:</span>
+                        <span>Formatted Date:</span>
                         <span className="px-2 fw-semibold">{formattedDate}</span>
                     </p>
 
