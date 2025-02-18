@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useContext, useEffect, useMemo, useRef, u
 import { Button, Card, Container, Form } from "react-bootstrap";
 import './user.css';
 import MyToast from '../../common/Toast';
-import { ArrowClockwise, ArrowsClockwise, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, EnvelopeSimple, Files, FloppyDisk, Gavel, Gear, List, Notebook, Pen, Phone, Plus, Receipt, SignOut, User, UserRectangle, Users, Wallet, WarningCircle, Watch, X } from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowsClockwise, ArrowsHorizontal, ArrowsVertical, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, EnvelopeSimple, Files, FloppyDisk, Gavel, Gear, List, Notebook, Pen, Phone, Plus, Receipt, SignOut, User, UserRectangle, Users, Wallet, WarningCircle, Watch, X } from '@phosphor-icons/react';
 import { expensesTypes, incomeExpenses } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
@@ -2740,7 +2740,7 @@ const UserUI = () => {
 										</label>
 										<input
 											type="number"
-											className="form-control border border-2 border-info border-opacity-25 rounded-0 h-3rem"
+											className="form-control border border-2 border-info border-opacity-50 rounded-0 h-3rem"
 											value={creditAmount}
 											onChange={(e) => setCreditAmount(e.target.value)}
 											min={1}
@@ -2754,32 +2754,37 @@ const UserUI = () => {
 										)}
 									</div>
 
-									{/* Request Date */}
-									<div className="mb-3">
-										<label className="form-label fw-semibold">
-											Request Date {!['', 0].includes(requestDate) && (<FormatedDate date={requestDate} className="ms-1 fw-normal fst-italic" />)}
-										</label>
-										<input
-											type="date"
-											className="form-control"
-											value={requestDate}
-											onChange={(e) => setRequestDate(e.target.value)}
-											required
-										/>
-									</div>
+									<div className="d-md-flex gap-3 align-items-center">
+										{/* Request Date */}
+										<div className="mb-3 col">
+											<label className="form-label fw-semibold">
+												Request Date {!['', 0].includes(requestDate) && (<FormatedDate date={requestDate} className="ms-1 fw-normal fst-italic" />)}
+											</label>
+											<input
+												type="date"
+												className="form-control border border-2 border-secondary border-opacity-25 rounded-0"
+												value={requestDate}
+												onChange={(e) => setRequestDate(e.target.value)}
+												required
+											/>
+										</div>
 
-									{/* Due Date */}
-									<div className="mb-3">
-										<label className="form-label fw-semibold">
-											Due Date {!['', 0].includes(dueDate) && (<FormatedDate date={dueDate} className="ms-1 fw-normal fst-italic" />)}
-										</label>
-										<input
-											type="date"
-											className="form-control"
-											value={dueDate}
-											onChange={(e) => setDueDate(e.target.value)}
-											required
-										/>
+										<ArrowsVertical className='d-block d-md-none mx-auto' />
+										<ArrowsHorizontal className='d-none d-md-block mt-3' />
+
+										{/* Due Date */}
+										<div className="mb-3 col">
+											<label className="form-label fw-semibold">
+												Due Date {!['', 0].includes(dueDate) && (<FormatedDate date={dueDate} className="ms-1 fw-normal fst-italic" />)}
+											</label>
+											<input
+												type="date"
+												className="form-control border border-2 border-secondary border-opacity-25 rounded-0"
+												value={dueDate}
+												onChange={(e) => setDueDate(e.target.value)}
+												required
+											/>
+										</div>
 									</div>
 
 									{/* Number of Tranches */}
@@ -2810,7 +2815,7 @@ const UserUI = () => {
 									<div className="mb-3">
 										<label className="form-label fw-semibold">Comment</label>
 										<textarea
-											className="form-control"
+											className="form-control border border-2 border-secondary border-opacity-25 rounded-0"
 											value={comment}
 											onChange={(e) => setComment(e.target.value)}
 											placeholder="Comment about this request"
