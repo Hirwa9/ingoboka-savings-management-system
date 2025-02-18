@@ -2740,7 +2740,7 @@ const UserUI = () => {
 										</label>
 										<input
 											type="number"
-											className="form-control border border-2 border-secondary border-opacity-25 rounded-0 h-3rem"
+											className="form-control border border-2 border-info border-opacity-25 rounded-0 h-3rem"
 											value={creditAmount}
 											onChange={(e) => setCreditAmount(e.target.value)}
 											min={1}
