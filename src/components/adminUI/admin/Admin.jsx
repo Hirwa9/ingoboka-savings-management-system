@@ -352,6 +352,19 @@ const Admin = () => {
 	), [allLoans]);
 
 	// Bar graph data
+	// __Graph's UI states
+	const [creditsBarGraphIndexAxis, setCreditsBarGraphIndexAxis] = useState(window.innerWidth >= 576 ? 'x' : 'y');
+	const [creditsBarGraphMinHeight, setCreditsBarGraphMinHeight] = useState(window.innerWidth >= 576 ? '70vh' : '100vh');
+
+	useEffect(() => {
+		const handleResize = () => {
+			setCreditsBarGraphIndexAxis(window.innerWidth >= 576 ? 'x' : 'y');
+			setCreditsBarGraphMinHeight(window.innerWidth >= 576 ? '70vh' : '100vh');
+		};
+
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
 
 	const membersCreditsStatsData = useMemo(() => {
 		if (loansToShow.length > 0 && totalMembers > 0) {
@@ -374,7 +387,9 @@ const Admin = () => {
 			});
 
 			return {
-				labels: creditsStats.map(item => item.abrevShortName), // Member names on X-axis
+				labels: creditsBarGraphIndexAxis === 'y' ?
+					creditsStats.map(item => item.fName)
+					: creditsStats.map(item => item.abrevShortName), // Member names
 				datasets: [
 					{
 						label: 'Loan Taken',
@@ -401,35 +416,43 @@ const Admin = () => {
 			};
 		}
 		return null; // Return null if no data
-	}, [allMembers, totalMembers, loansToShow]);
+	}, [allMembers, totalMembers, loansToShow, creditsBarGraphIndexAxis]);
 
-	// Graph's UI
-	const [creditsBarGraphIndexAxis, setCreditsBarGraphIndexAxis] = useState(window.innerWidth >= 768 ? 'x' : 'y');
-	const [creditsBarGraphMinHeight, setCreditsBarGraphMinHeight] = useState(window.innerWidth >= 768 ? '70vh' : '100vh');
-
-	useEffect(() => {
-		const handleResize = () => {
-			setCreditsBarGraphIndexAxis(window.innerWidth >= 768 ? 'x' : 'y');
-			setCreditsBarGraphMinHeight(window.innerWidth >= 768 ? '70vh' : '100vh');
-		};
-
-		window.addEventListener("resize", handleResize);
-		return () => window.removeEventListener("resize", handleResize);
-	}, []);
-
-	// Graph's options
+	// __Graph's options
 	const membersCreditsStatsOptions = useRef();
 	membersCreditsStatsOptions.current = {
 		indexAxis: creditsBarGraphIndexAxis, // Dynamically set based on screen width
 		responsive: true,
 		maintainAspectRatio: false,
 		scales: {
-			x: { beginAtZero: true },
+			x: {
+				beginAtZero: true,
+				title: {
+					display: true,
+					text: creditsBarGraphIndexAxis === 'y' ? "Amount (RWF)" : "Members",
+					font: {
+						size: 14,
+						weight: "bold",
+					},
+					padding: 10,
+				},
+			},
+			y: {
+				title: {
+					display: true,
+					text: creditsBarGraphIndexAxis === 'x' ? "Amount (RWF)" : "Members",
+					font: {
+						size: 14,
+						weight: "bold",
+					},
+					padding: 10,
+				},
+			},
 		},
 		plugins: {
 			title: {
 				display: true,
-				text: 'Members credits statistics',
+				text: 'Credits statistics',
 				font: {
 					size: 18,
 					weight: 'bold',
