@@ -2833,13 +2833,13 @@ const Admin = () => {
 							<div className="alert bg-primaryColor text-light small rounded-4">
 								{keepAnnualInterest ? (
 									<>
-										<p className=''>
+										<p>
 											<Info size={22} weight='fill' className='me-1 opacity-50' /> The interest earned by each member will be added to their total cotisation amount, along with the corresponding share count. Only the maximum share multiples (<CurrencyText amount={20000} /> per share) of the earned interest will be applied, while any remaining balance will be carried forward as the initial interest for the following year.
 										</p>
 									</>
 								) : (
 									<>
-										<p className=''>
+										<p>
 											<Info size={22} weight='fill' className='me-1 opacity-50' /> The interest earned by each member will be calculated and withdrawn as requested. Only the maximum share multiples (<CurrencyText amount={20000} /> per share) of the earned interest are eligible for withdrawal, while any remaining balance will be carried forward as the initial interest for the following year.
 										</p>
 									</>
@@ -3610,7 +3610,7 @@ const Admin = () => {
 																										<td >
 																											{memberNames}
 																										</td>
-																										<td className="d-flex flex-column gap-2 text-muted small" >
+																										<td className="d-flex flex-column gap-2 text-muted" >
 																											<div>
 																												<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
 																												<span>{Number(credit.creditAmount).toLocaleString()}</span>
@@ -3622,8 +3622,8 @@ const Admin = () => {
 																											<div className='text-primaryColor'>{credit.tranches} tranche{credit.tranches > 1 ? 's' : ''}</div>
 																										</td>
 																										<td className='text-nowrap'>
-																											<div className='d-flex flex-column gap-2 smaller'>
-																												<span className='fw-bold'>
+																											<div className='d-flex flex-column gap-1 smaller'>
+																												<span>
 																													<FormatedDate date={credit.requestDate} monthFormat='numeric' /> <CaretRight /> <FormatedDate date={credit.dueDate} monthFormat='numeric' />
 																												</span>
 																												<span>{printDatesInterval(credit.requestDate, credit.dueDate)}</span>
@@ -3635,7 +3635,7 @@ const Admin = () => {
 																										<td style={{ maxWidth: '13rem' }}>
 																											{credit.comment}
 																										</td>
-																										<td className='text-nowrap fs-75'>
+																										<td className='text-nowrap'>
 																											Transfered
 																										</td>
 																									</tr>
@@ -3793,7 +3793,7 @@ const Admin = () => {
 																		<td >
 																			{memberNames}
 																		</td>
-																		<td className="d-flex flex-column gap-2 text-muted small" >
+																		<td className="d-flex flex-column gap-2 text-muted" >
 																			<div>
 																				<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
 																				<span>{Number(credit.creditAmount).toLocaleString()}</span>
@@ -3805,8 +3805,8 @@ const Admin = () => {
 																			<div className='text-primaryColor'>{credit.tranches} tranche{credit.tranches > 1 ? 's' : ''}</div>
 																		</td>
 																		<td className='text-nowrap'>
-																			<div className='d-flex flex-column gap-2 smaller'>
-																				<span className='fw-bold'>
+																			<div className='d-flex flex-column gap-1 smaller'>
+																				<span>
 																					<FormatedDate date={credit.requestDate} monthFormat='numeric' /> <CaretRight /> <FormatedDate date={credit.dueDate} monthFormat='numeric' />
 																				</span>
 																				<span>{printDatesInterval(credit.requestDate, credit.dueDate)}</span>
@@ -3818,7 +3818,7 @@ const Admin = () => {
 																		<td style={{ maxWidth: '13rem' }}>
 																			{credit.comment}
 																		</td>
-																		<td className='text-nowrap fs-75'>
+																		<td className='text-nowrap'>
 																			<div className="dim-100 d-flex">
 																				<button className='btn btn-sm text-primary-emphasis border-primary border-opacity-25 mb-auto rounded-0'
 																					onClick={
@@ -3929,7 +3929,7 @@ const Admin = () => {
 																		<td >
 																			{memberNames}
 																		</td>
-																		<td className="d-flex flex-column gap-2 text-muted small" >
+																		<td className="d-flex flex-column gap-2 text-muted" >
 																			<div>
 																				<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
 																				<span>{Number(credit.creditAmount).toLocaleString()}</span>
@@ -3941,8 +3941,8 @@ const Admin = () => {
 																			<div className='text-primaryColor'>{credit.tranches} tranche{credit.tranches > 1 ? 's' : ''}</div>
 																		</td>
 																		<td className='text-nowrap'>
-																			<div className='d-flex flex-column gap-2 smaller'>
-																				<span className='fw-bold'>
+																			<div className='d-flex flex-column gap-1 smaller'>
+																				<span>
 																					<FormatedDate date={credit.requestDate} monthFormat='numeric' /> <CaretRight /> <FormatedDate date={credit.dueDate} monthFormat='numeric' />
 																				</span>
 																				<span>{printDatesInterval(credit.requestDate, credit.dueDate)}</span>
@@ -3954,7 +3954,7 @@ const Admin = () => {
 																		<td style={{ maxWidth: '13rem' }}>
 																			{credit.comment}
 																		</td>
-																		<td className='text-nowrap fs-75'>
+																		<td className='text-nowrap'>
 																			Transfered
 																		</td>
 																	</tr>
@@ -4010,7 +4010,7 @@ const Admin = () => {
 																		<td >
 																			{memberNames}
 																		</td>
-																		<td className="d-flex flex-column gap-2 text-muted small" >
+																		<td className="d-flex flex-column gap-2 text-muted" >
 																			<div>
 																				<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
 																				<span>{Number(credit.creditAmount).toLocaleString()}</span>
@@ -4022,8 +4022,8 @@ const Admin = () => {
 																			<div className='text-primaryColor'>{credit.tranches} tranche{credit.tranches > 1 ? 's' : ''}</div>
 																		</td>
 																		<td className='text-nowrap'>
-																			<div className='d-flex flex-column gap-2 smaller'>
-																				<span className='fw-bold'>
+																			<div className='d-flex flex-column gap-1 smaller'>
+																				<span>
 																					<FormatedDate date={credit.requestDate} monthFormat='numeric' /> <CaretRight /> <FormatedDate date={credit.dueDate} monthFormat='numeric' />
 																				</span>
 																				<span>{printDatesInterval(credit.requestDate, credit.dueDate)}</span>
@@ -4038,7 +4038,7 @@ const Admin = () => {
 																		<td style={{ maxWidth: '13rem' }}>
 																			{credit.rejectionMessage}
 																		</td>
-																		<td className='text-nowrap fs-75'>
+																		<td className='text-nowrap'>
 																			<div className="dim-100 d-flex">
 																				<button className='btn btn-sm text-primary-emphasis border-primary border-opacity-25 mb-auto rounded-0'
 																					onClick={
@@ -4091,8 +4091,8 @@ const Admin = () => {
 
 								{showBackfillPlanCard && (
 									<>
-										<div className='position-fixed fixed-top inset-0 bg-black3 py-3 inx-high'>
-											<div className="container offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
+										<div className='position-fixed fixed-top inset-0 bg-white3 inx-high'>
+											<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 												<div className="px-3 bg-light text-gray-700">
 													<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
 														<div className='flex-align-center text-primaryColor'>
@@ -5079,7 +5079,7 @@ const Admin = () => {
 											return (
 												<div key={index} className="d-flex mb-2 py-2 border-bottom">
 													<img src={associatedMember.husbandAvatar ? associatedMember.husbandAvatar : '/images/man_avatar_image.jpg'} alt="" className='w-2rem h-2rem flex-grow-0 flex-shrink-0 me-2 object-fit-cover bg-light rounded-circle' />
-													<div className="">
+													<div>
 														<div className="d-flex align-items-center justify-content-between mb-1 pb-1 border-bottom text-primaryColor small">
 															<span>Loan request</span>
 															<small className='text-gray-600'>

@@ -2228,7 +2228,7 @@ const UserUI = () => {
 																										<td >
 																											{memberNames}
 																										</td>
-																										<td className="d-flex flex-column gap-2 text-muted small" >
+																										<td className="d-flex flex-column gap-2 text-muted" >
 																											<div>
 																												<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
 																												<span>{Number(credit.creditAmount).toLocaleString()}</span>
@@ -2240,8 +2240,8 @@ const UserUI = () => {
 																											<div className='text-primaryColor'>{credit.tranches} tranche{credit.tranches > 1 ? 's' : ''}</div>
 																										</td>
 																										<td className='text-nowrap'>
-																											<div className='d-flex flex-column gap-2 smaller'>
-																												<span className='fw-bold'>
+																											<div className='d-flex flex-column gap-1 smaller'>
+																												<span>
 																													<FormatedDate date={credit.requestDate} monthFormat='numeric' /> <CaretRight /> <FormatedDate date={credit.dueDate} monthFormat='numeric' />
 																												</span>
 																												<span>{printDatesInterval(credit.requestDate, credit.dueDate)}</span>
@@ -2253,7 +2253,7 @@ const UserUI = () => {
 																										<td style={{ maxWidth: '13rem' }}>
 																											{credit.comment}
 																										</td>
-																										<td className='text-nowrap fs-75'>
+																										<td className='text-nowrap'>
 																											Transfered
 																										</td>
 																									</tr>
@@ -2370,7 +2370,7 @@ const UserUI = () => {
 																		<td >
 																			{memberNames}
 																		</td>
-																		<td className="d-flex flex-column gap-2 text-muted small" >
+																		<td className="d-flex flex-column gap-2 text-muted" >
 																			<div>
 																				<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
 																				<span>{Number(credit.creditAmount).toLocaleString()}</span>
@@ -2382,8 +2382,8 @@ const UserUI = () => {
 																			<div className='text-primaryColor'>{credit.tranches} tranche{credit.tranches > 1 ? 's' : ''}</div>
 																		</td>
 																		<td className='text-nowrap'>
-																			<div className='d-flex flex-column gap-2 smaller'>
-																				<span className='fw-bold'>
+																			<div className='d-flex flex-column gap-1 smaller'>
+																				<span>
 																					<FormatedDate date={credit.requestDate} monthFormat='numeric' /> <CaretRight /> <FormatedDate date={credit.dueDate} monthFormat='numeric' />
 																				</span>
 																				<span>{printDatesInterval(credit.requestDate, credit.dueDate)}</span>
@@ -2446,7 +2446,7 @@ const UserUI = () => {
 																		<td >
 																			{memberNames}
 																		</td>
-																		<td className="d-flex flex-column gap-2 text-muted small" >
+																		<td className="d-flex flex-column gap-2 text-muted" >
 																			<div>
 																				<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
 																				<span>{Number(credit.creditAmount).toLocaleString()}</span>
@@ -2458,8 +2458,8 @@ const UserUI = () => {
 																			<div className='text-primaryColor'>{credit.tranches} tranche{credit.tranches > 1 ? 's' : ''}</div>
 																		</td>
 																		<td className='text-nowrap'>
-																			<div className='d-flex flex-column gap-2 smaller'>
-																				<span className='fw-bold'>
+																			<div className='d-flex flex-column gap-1 smaller'>
+																				<span>
 																					<FormatedDate date={credit.requestDate} monthFormat='numeric' /> <CaretRight /> <FormatedDate date={credit.dueDate} monthFormat='numeric' />
 																				</span>
 																				<span>{printDatesInterval(credit.requestDate, credit.dueDate)}</span>
@@ -2471,7 +2471,7 @@ const UserUI = () => {
 																		<td style={{ maxWidth: '13rem' }}>
 																			{credit.comment}
 																		</td>
-																		<td className='text-nowrap fs-75'>
+																		<td className='text-nowrap'>
 																			Transfered
 																		</td>
 																	</tr>
@@ -2525,7 +2525,7 @@ const UserUI = () => {
 																		<td >
 																			{memberNames}
 																		</td>
-																		<td className="d-flex flex-column gap-2 text-muted small" >
+																		<td className="d-flex flex-column gap-2 text-muted" >
 																			<div>
 																				<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
 																				<span>{Number(credit.creditAmount).toLocaleString()}</span>
@@ -2537,8 +2537,8 @@ const UserUI = () => {
 																			<div className='text-primaryColor'>{credit.tranches} tranche{credit.tranches > 1 ? 's' : ''}</div>
 																		</td>
 																		<td className='text-nowrap'>
-																			<div className='d-flex flex-column gap-2 smaller'>
-																				<span className='fw-bold'>
+																			<div className='d-flex flex-column gap-1 smaller'>
+																				<span>
 																					<FormatedDate date={credit.requestDate} monthFormat='numeric' /> <CaretRight /> <FormatedDate date={credit.dueDate} monthFormat='numeric' />
 																				</span>
 																				<span>{printDatesInterval(credit.requestDate, credit.dueDate)}</span>
@@ -2553,7 +2553,7 @@ const UserUI = () => {
 																		<td style={{ maxWidth: '13rem' }}>
 																			{credit.rejectionMessage}
 																		</td>
-																		<td className='text-nowrap fs-75'>
+																		<td className='text-nowrap'>
 																			<button className='btn btn-sm btn-outline-secondary rounded-0'
 																				onClick={
 																					() => {
@@ -2598,8 +2598,8 @@ const UserUI = () => {
 
 								{showBackfillPlanCard && (
 									<>
-										<div className='position-fixed fixed-top inset-0 bg-black3 py-3 inx-high'>
-											<div className="container offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
+										<div className='position-fixed fixed-top inset-0 bg-white3 inx-high'>
+											<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
 												<div className="px-3 bg-light text-gray-700">
 													<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
 														<div className='flex-align-center text-primaryColor'>
@@ -2823,9 +2823,8 @@ const UserUI = () => {
 											required
 										></textarea>
 									</div>
+
 									{/* Submit Button */}
-
-
 									<div className="mb-3 p-2 form-text bg-dark-subtle rounded">
 										<p className='mb-2 text-dark-emphasis'>
 											Please verify the details before submiting.
