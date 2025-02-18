@@ -351,6 +351,97 @@ const Admin = () => {
 		allLoans.reduce((sum, loan) => sum + loan.interestPending, 0)
 	), [allLoans]);
 
+	// Bar graph data
+
+	const membersCreditsStatsData = useMemo(() => {
+		if (loansToShow.length > 0 && totalMembers > 0) {
+			const membersPrimaryData = allMembers.map(m => ({
+				id: m.id,
+				fName: m.husbandFirstName,
+				abrevShortName: `${m.husbandFirstName.slice(0, 1)}. ${m.husbandLastName}`,
+			}));
+
+			let creditsStats = membersPrimaryData.map(item => {
+				const correspondingLoan = loansToShow.find(ln => ln.memberId === item.id);
+
+				return {
+					...item,
+					loanTaken: correspondingLoan?.loanTaken || 0,
+					loanPaid: correspondingLoan?.loanPaid || 0,
+					interestTaken: correspondingLoan?.interestTaken || 0,
+					interestPaid: correspondingLoan?.interestPaid || 0,
+				};
+			});
+
+			return {
+				labels: creditsStats.map(item => item.abrevShortName), // Member names on X-axis
+				datasets: [
+					{
+						label: 'Loan Taken',
+						data: creditsStats.map(item => item.loanTaken),
+						backgroundColor: 'rgba(121, 121, 121, 0.75)',
+					},
+					{
+						label: 'Loan Paid',
+						data: creditsStats.map(item => item.loanPaid),
+						backgroundColor: 'rgba(106, 142, 35, 0.75)',
+					},
+					{
+						label: 'Interest Taken',
+						data: creditsStats.map(item => item.interestTaken),
+						backgroundColor: 'rgba(255, 99, 132, 0.75)',
+					},
+					{
+						label: 'Interest Paid',
+						data: creditsStats.map(item => item.interestPaid),
+						backgroundColor: 'rgba(29, 155, 240, 0.75)',
+					},
+				],
+				hoverOffset: 5,
+			};
+		}
+		return null; // Return null if no data
+	}, [allMembers, totalMembers, loansToShow]);
+
+	// Graph's UI
+	const [creditsBarGraphIndexAxis, setCreditsBarGraphIndexAxis] = useState(window.innerWidth >= 768 ? 'x' : 'y');
+	const [creditsBarGraphMinHeight, setCreditsBarGraphMinHeight] = useState(window.innerWidth >= 768 ? '70vh' : '100vh');
+
+	useEffect(() => {
+		const handleResize = () => {
+			setCreditsBarGraphIndexAxis(window.innerWidth >= 768 ? 'x' : 'y');
+			setCreditsBarGraphMinHeight(window.innerWidth >= 768 ? '70vh' : '100vh');
+		};
+
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
+
+	// Graph's options
+	const membersCreditsStatsOptions = useRef();
+	membersCreditsStatsOptions.current = {
+		indexAxis: creditsBarGraphIndexAxis, // Dynamically set based on screen width
+		responsive: true,
+		maintainAspectRatio: false,
+		scales: {
+			x: { beginAtZero: true },
+		},
+		plugins: {
+			title: {
+				display: true,
+				text: 'Members credits statistics',
+				font: {
+					size: 18,
+					weight: 'bold',
+				},
+				padding: {
+					top: 10,
+					bottom: 20,
+				},
+			},
+		},
+	};
+
 	/**
 	 * Records
 	 */
@@ -2970,7 +3061,6 @@ const Admin = () => {
 		const [showBackfillPlanCard, setShowBackfillPlanCard] = useState(false);
 		const [selectedCredit, setSelectedCredit] = useState([]);
 		const [associatedMember, setAssociatedMember] = useState([]);
-		// cLog(associatedMember);
 
 		useEffect(() => {
 			if (selectedCredit.length !== 0) {
@@ -3217,7 +3307,17 @@ const Admin = () => {
 							</div>
 						</div>
 
-						{/* Member Credits */}
+						{/* Members Credits Stats */}
+
+						<div className="mb-5" style={{ minHeight: creditsBarGraphMinHeight, }}>
+							<BarGraph
+								options={membersCreditsStatsOptions.current}
+								data={membersCreditsStatsData}
+								title='Members credits statistics'
+							/>
+						</div>
+
+						{/* Member Credits History */}
 						{showSelectedMemberCredits &&
 							<>
 								<div className='position-fixed fixed-top inset-0 bg-white3 inx-high'>
