@@ -2195,6 +2195,7 @@ const Admin = () => {
 				fetchMembers();
 				fetchFigures();
 				fetchRecords();
+				fetchLoans();
 			} catch (error) {
 				setErrorWithFetchAction(error);
 				cError("Error adding multiple shares:", error);
