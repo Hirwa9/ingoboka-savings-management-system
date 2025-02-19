@@ -3,7 +3,7 @@ import { Button, Card, Container, Form } from "react-bootstrap";
 import './user.css';
 import MyToast from '../../common/Toast';
 import { ArrowClockwise, ArrowsClockwise, ArrowsHorizontal, ArrowsVertical, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, EnvelopeSimple, Files, FloppyDisk, Gavel, Gear, List, Pen, Phone, Plus, Receipt, SignOut, User, UserRectangle, Users, Wallet, WarningCircle, Watch, X } from '@phosphor-icons/react';
-import { expensesTypes, incomeExpenses } from '../../../data/data';
+import { expensesTypes } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
@@ -2862,6 +2862,42 @@ const UserUI = () => {
 		// Handle exports
 		const reportViewRef = useRef();
 
+		// Create income and expenses report
+
+		const expenses = allRecords.filter(r => r.recordType === 'expense');
+		const expenseTypes = [];
+		const expenseData = [];
+
+		// __Extract different types of expenses
+		expenses.forEach(item => {
+			const subtype = item.recordSecondaryType;
+			if (!expenseTypes.includes(subtype)) {
+				expenseTypes.push(subtype);
+			}
+		});
+
+		// ___Construct { expense : value } array
+		expenseTypes.forEach(item => {
+			const value = expenses
+				.filter(rc => rc.recordSecondaryType === item)
+				.reduce((sum, rc) => (sum + Number(rc.recordAmount)), 0);
+			expenseData.push({ type: 'expense', label: item, amount: value });
+		});
+
+		// __Construct incomes
+		const incomesData = [];
+		const incomes = [
+			{ penalties: Number(allFigures?.penalties) }
+		];
+
+		incomes.forEach(item => {
+			const [label, value] = Object.entries(item)[0]; // Extract key and value
+			incomesData.push({ type: 'income', label, amount: value });
+		});
+
+		// __Combine income and expenses
+		const incomeExpenses = [...expenseData, ...incomesData];
+
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="mb-3">
@@ -2933,8 +2969,8 @@ const UserUI = () => {
 															<td className={`ps-sm-3 border-end ${item.type === 'income' ? 'text-success' : 'text-warning-emphasis'}`}>
 																{index + 1}
 															</td>
-															<td className={`${item.type === 'income' ? 'text-success' : 'text-warning-emphasis'}`}>
-																{item.label}
+															<td className={`${item.type === 'income' ? 'text-success' : 'text-warning-emphasis'} text-capitalize`}>
+																{item.label} {item.label.toLowerCase() === 'social' ? ' expenses' : ''}
 															</td>
 															<td className={`${item.type === 'income' ? 'text-success' : 'text-warning-emphasis'}`}>
 																<CurrencyText amount={item.amount} />
