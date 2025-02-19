@@ -2274,7 +2274,7 @@ const UserUI = () => {
 											) : (
 												<>
 													<EmptyBox
-														notFoundMessage={`No credit records found for this member. It appears they have not received a loan yet.`}
+														notFoundMessage={`No credit records found on your account. Once recorded, the summary of your credits will appear here.`}
 														refreshKeyword="Got it"
 
 														refreshFunction={() => setShowSelectedMemberCredits(false)}
