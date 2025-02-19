@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useContext, useEffect, useMemo, useRef, u
 import { Button, Card, Container, Form } from "react-bootstrap";
 import './user.css';
 import MyToast from '../../common/Toast';
-import { ArrowClockwise, ArrowsClockwise, ArrowsHorizontal, ArrowsVertical, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, EnvelopeSimple, Files, FloppyDisk, Gavel, Gear, List, Notebook, Pen, Phone, Plus, Receipt, SignOut, User, UserRectangle, Users, Wallet, WarningCircle, Watch, X } from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowsClockwise, ArrowsHorizontal, ArrowsVertical, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, EnvelopeSimple, Files, FloppyDisk, Gavel, Gear, List, Pen, Phone, Plus, Receipt, SignOut, User, UserRectangle, Users, Wallet, WarningCircle, Watch, X } from '@phosphor-icons/react';
 import { expensesTypes, incomeExpenses } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
@@ -226,7 +226,7 @@ const UserUI = () => {
 			setErrorLoadingFigures(null);
 		} catch (error) {
 			setErrorLoadingFigures("Failed to load figures. Click the button to try again.");
-			toast({ message: errorLoadingFigures, type: "warning" });
+			warningToast({ message: errorLoadingFigures });
 			console.error("Error fetching figures:", error);
 		} finally {
 			setLoadingFigures(false);
@@ -249,16 +249,15 @@ const UserUI = () => {
 	// Fetch credits
 	const fetchCredits = async () => {
 		try {
-			toast({ message: signedUser?.id, type: "pulple" });
 			setLoadingCredits(true);
 			const response = await Axios.get(`/credits`);
 			const data = response.data;
 			setAllCredits(data);
-			setCreditsToShow(data.filter(cr => cr.memberId === signedUser?.id));
+			setCreditsToShow(data);
 			setErrorLoadingCredits(null);
 		} catch (error) {
 			setErrorLoadingCredits("Failed to load credits. Click the button to try again.");
-			toast({ message: errorLoadingCredits, type: "warning" });
+			warningToast({ message: errorLoadingCredits });
 			console.error("Error fetching credits:", error);
 		} finally {
 			setLoadingCredits(false);
@@ -290,7 +289,7 @@ const UserUI = () => {
 			setErrorLoadingLoans(null);
 		} catch (error) {
 			setErrorLoadingLoans("Failed to load loans. Click the button to try again.");
-			toast({ message: errorLoadingLoans, type: "warning" });
+			warningToast({ message: errorLoadingLoans });
 			console.error("Error fetching loans:", error);
 		} finally {
 			setLoadingLoans(false);
@@ -334,7 +333,7 @@ const UserUI = () => {
 			setErrorLoadingRecords(null);
 		} catch (error) {
 			setErrorLoadingRecords("Failed to load records. Click the button to try again.");
-			toast({ message: errorLoadingRecords, type: "warning" });
+			warningToast({ message: errorLoadingRecords });
 			console.error("Error fetching records:", error);
 		} finally {
 			setLoadingRecords(false);
@@ -538,122 +537,6 @@ const UserUI = () => {
 		const [showMemberInfo, setShowMemberInfo] = useState(false);
 		const [showPrimaryMemberInfo, setShowPrimaryMemberInfo] = useState(true);
 
-		const [formData, setFormData] = useState({
-			role: '',
-			username: '',
-			husbandFirstName: '',
-			husbandLastName: '',
-			husbandPhone: '',
-			husbandEmail: '',
-			wifeFirstName: '',
-			wifeLastName: '',
-			wifePhone: '',
-			wifeEmail: '',
-		});
-
-		const resetRegistrationForm = () => {
-			setFormData({
-				role: '',
-				username: '',
-				husbandFirstName: '',
-				husbandLastName: '',
-				husbandPhone: '',
-				husbandEmail: '',
-				wifeFirstName: '',
-				wifeLastName: '',
-				wifePhone: '',
-				wifeEmail: '',
-			});
-			setAutoGeneratePassword(true);
-		};
-
-		const [showWifeDetails, setShowWifeDetails] = useState(false);
-		const [autoGeneratePassword, setAutoGeneratePassword] = useState(false);
-		const [registrationPassword, setRegistrationPassword] = useState('');
-
-		const handleChange = (e) => {
-			const { name, value } = e.target;
-			setFormData((prevData) => ({
-				...prevData,
-				[name]: value,
-			}));
-		};
-
-		useEffect(() => {
-			if (autoGeneratePassword) {
-				setRegistrationPassword('');
-			}
-		}, [autoGeneratePassword]);
-
-		// Validate registration
-		const [emailTaken, setEmailTaken] = useState(false);
-		const [usernameTaken, setUsernameTaken] = useState(false);
-		const [phoneNumberTaken, setPhoneNumberTaken] = useState(false);
-		const [canRegisterNewMember, setCanRegisterNewMember] = useState(false);
-
-		// Check for unique data
-		useEffect(() => {
-			const emailExists = allMembers.some(m =>
-				m.husbandEmail === formData.husbandEmail ||
-				m.husbandEmail === formData.wifeEmail ||
-				m.wifeEmail === formData.wifeEmail ||
-				m.wifeEmail === formData.husbandEmail
-			);
-
-			const usernameExists = allMembers.some(m =>
-				normalizedLowercaseString(m.username) === normalizedLowercaseString(formData.username)
-			);
-
-			const phoneNumberExists = allMembers.some(m =>
-				m.husbandPhone === formData.husbandPhone ||
-				m.husbandPhone === formData.wifePhone ||
-				m.wifePhone === formData.wifePhone ||
-				m.wifePhone === formData.husbandPhone
-			);
-
-			// Only update states if values change (prevents redundant re-renders)
-			setEmailTaken(prev => (prev !== emailExists ? emailExists : prev));
-			setUsernameTaken(prev => (prev !== usernameExists ? usernameExists : prev));
-			setPhoneNumberTaken(prev => (prev !== phoneNumberExists ? phoneNumberExists : prev));
-		}, [formData, allMembers]);
-
-		// Allow or block registration
-		useEffect(() => {
-			setCanRegisterNewMember(!(emailTaken || usernameTaken || phoneNumberTaken));
-		}, [emailTaken, usernameTaken, phoneNumberTaken]);
-
-		// Handle registration
-		const handleRegisterNewMember = async (e) => {
-			if (e) e.preventDefault();
-
-			const payload = {
-				...formData,
-				password: registrationPassword,
-				autoGeneratePassword,
-			};
-
-			try {
-				setIsWaitingFetchAction(true);
-				const response = await Axios.post(`/users/register`, payload);
-				// Successfull fetch
-				const data = response.data;
-				toast({ message: `Success: ${data.message}`, type: "dark" });
-				resetRegistrationForm();
-				setErrorWithFetchAction(null);
-				fetchMembers();
-				fetchLoans();
-			} catch (error) {
-				setErrorWithFetchAction(error);
-				cError('Registration error:', error.response?.data || error.message);
-				toast({
-					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> {error.response?.data.message || 'Registration failed'}</>,
-					type: 'warning'
-				});
-			} finally {
-				setIsWaitingFetchAction(false);
-			}
-		};
-
 		// Edit member data
 		const [showEditMemberForm, setShowEditMemberForm] = useState(false);
 		const [selectedMember, setSelectedMember] = useState(activeMembers[0]);
@@ -716,15 +599,15 @@ const UserUI = () => {
 		// 		const response = await Axios.post(`/user/${id}/edit-${type}-info`, payload);
 		// 		// Successfull fetch
 		// 		const data = response.data;
-		// 		toast({ message: data.message, type: "dark" });
+		// 		successToast({ message: data.message });
 		// 		resetRegistrationForm();
 		// 		setErrorWithFetchAction(null);
 		// 		fetchLoans();
 		// 		fetchMembers();
 		// 	} catch (error) {
-		// 		setErrorWithFetchAction(error);
+		// 		setErrorWithFetchAction(error.message);
 		// 		cError('Registration error:', error.response?.data || error.message);
-		// 		toast({ message: `Error: ${error.response?.data.message || 'Registration failed'}`, type: 'warning' });
+		// 		warningToast({ message: `Error: ${error.response?.data.message || 'Registration failed'}` });
 		// 	} finally {
 		// 		setIsWaitingFetchAction(false);
 		// 	}
@@ -750,18 +633,12 @@ const UserUI = () => {
 			} : null;
 
 			if (memberInfo === null) {
-				return toast({
-					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Please select a member to edit and continue</>,
-					type: 'gray-700'
-				});
+				return warningToast({ message: 'Please select a member to edit and continue', type: 'gray-700' })
 			}
 
 			// Prevent empty string value
 			if (Object.values(memberInfo).some(value => value === '')) {
-				return toast({
-					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Please fill out all information to continue</>,
-					type: 'gray-700'
-				});
+				return warningToast({ message: 'Please fill out all information to continue', type: 'gray-700' })
 			}
 
 			try {
@@ -769,17 +646,15 @@ const UserUI = () => {
 				const response = await Axios.post(`/user/${id}/edit-${type}-info`, memberInfo);
 				// Successfull fetch
 				const data = response.data;
-				toast({ message: data.message, type: "dark" });
+				successToast({ message: data.message });
 				setShowEditMemberForm(false);
 				setErrorWithFetchAction(null);
 				fetchMembers();
 			} catch (error) {
-				setErrorWithFetchAction(error);
+				const errorMessage = error.response?.data?.error || error.response?.data?.message || "Couldn't save changes. Tyr again";
+				setErrorWithFetchAction(errorMessage);
+				warningToast({ message: errorMessage })
 				cError('Error saving changes:', error.response?.data || error.message);
-				toast({
-					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> {error.response?.data.message || 'Couldn\'t save changes. Tyr again'}</>,
-					type: 'warning'
-				});
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -1101,16 +976,13 @@ const UserUI = () => {
 		// Handle add savings
 		const handleAddSaving = async (id) => {
 			if (!savingRecordAmount || Number(savingRecordAmount) <= 0) {
-				return toast({
-					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter valid saving amount to continue</>,
-					type: 'gray-700'
-				});
+				return warningToast({ message: "Enter valid saving amount to continue" });
 			}
 
 			try {
 				setIsWaitingFetchAction(true);
 
-				const requestBody = savingRecordType === 'cotisation' ? {
+				const payload = savingRecordType === 'cotisation' ? {
 					savings: selectedMonths,
 					applyDelayPenalties,
 					comment: savingRecordType[0].toUpperCase() + savingRecordType.slice(1)
@@ -1122,7 +994,7 @@ const UserUI = () => {
 				const response = await fetch(`${BASE_URL}/member/${id}/${savingRecordType}`, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify(requestBody),
+					body: JSON.stringify(payload),
 				});
 
 				// Fetch error
@@ -1133,15 +1005,16 @@ const UserUI = () => {
 
 				// Successful fetch
 				const data = await response.json();
-				toast({ message: data.message, type: "dark" });
+				successToast({ message: data.message });
 				setShowAddSavingRecord(false);
 				setErrorWithFetchAction(null);
 				fetchMembers();
+				fetchFigures();
 				fetchRecords();
 			} catch (error) {
-				setErrorWithFetchAction(error);
+				setErrorWithFetchAction(error.message);
 				cError("Error adding savings:", error);
-				toast({ message: error.message || "An unknown error occurred", type: "danger" });
+				warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -1181,14 +1054,14 @@ const UserUI = () => {
 
 				// Successful fetch
 				const data = await response.json();
-				toast({ message: data.message, type: "dark" });
+				successToast({ message: data.message });
 				setShowAddMultipleShares(false);
 				setErrorWithFetchAction(null);
 				fetchMembers();
 			} catch (error) {
-				setErrorWithFetchAction(error);
+				setErrorWithFetchAction(error.message);
 				cError("Error adding multiple shares:", error);
-				toast({ message: error.message || "An unknown error occurred", type: "danger" });
+				warningToast({ message: error.message || "An unknown error occurred" });
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -1245,7 +1118,6 @@ const UserUI = () => {
 									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
 									.map((member, index) => {
 										const { husbandFirstName, husbandLastName, husbandAvatar, shares, cotisation, social } = member;
-										const cotisationAmount = shares * 20000;
 
 										return (
 											<div key={index} className='col-lg-6 px-lg-3'>
@@ -1532,47 +1404,12 @@ const UserUI = () => {
 			return sum + item.progressiveShares + paidAnnualShares;
 		}, 0);
 
-		const totalBoughtShares = activeMembers.reduce((sum, item) => sum + item.shares, 0);
 		let totalSharesPercentage = 0;
 		let totalMonetaryInterest = 0;
 		let totalInterestReceivable = 0;
 		let totalSharesReceivable = 0;
 		let totalInterestRemains = 0;
 		let totalAnnualShares = 0;
-
-		const [showShareAnnualInterest, setShowShareAnnualInterest] = useState(false);
-		const [keepAnnualInterest, setKeepAnnualInterest] = useState(false);
-		// Condition the dates for interest distribution
-		const currentDate = new Date();
-		const currentYear = currentDate.getFullYear();
-		const startCondition = new Date(`${currentYear}-12-26`); // 5 days before year end
-		const endCondition = new Date(`${currentYear + 1}-01-10`); // 10 days into next year
-		const isWithinCondition = currentDate >= startCondition && currentDate <= endCondition;
-
-		// Handle interest distribution
-		const distributeAnnualInterest = async (id) => {
-			if (window.confirm(`Are you sure to proceed with ${keepAnnualInterest ? 'keeping' : 'withdrawing'} the annual interest ?`)) {
-				try {
-					setIsWaitingFetchAction(true);
-					const response = await Axios.post(`/api/${keepAnnualInterest ? 'distribute' : 'withdraw'}-interest`, {
-						annualReceivable: interestToReceive
-					});
-					// Successfull fetch
-					const data = response.data;
-					toast({ message: data.message, type: "dark" });
-					setShowShareAnnualInterest(false);
-					setErrorWithFetchAction(null);
-					fetchLoans();
-					fetchCredits();
-				} catch (error) {
-					setErrorWithFetchAction(error);
-					cError("Error distributing interest:", error);
-					toast({ message: error, type: "danger" });
-				} finally {
-					setIsWaitingFetchAction(false);
-				}
-			}
-		}
 
 		// Annual interes records
 		const [allAnnualInterest, setAllAnnualInterest] = useState([]);
@@ -1586,7 +1423,7 @@ const UserUI = () => {
 
 		const interestRecentYears = useMemo((() => (
 			allAnnualInterest.length
-		)), []);
+		)), [allAnnualInterest]);
 
 		// Fetch annaul interest records
 		const fetchAnnualInterests = async () => {
@@ -1599,7 +1436,7 @@ const UserUI = () => {
 				setErrorLoadingAnnualInterest(null);
 			} catch (error) {
 				setErrorLoadingAnnualInterest("Failed to load loans. Click the button to try again.");
-				toast({ message: errorLoadingAnnualInterest, type: "warning" });
+				warningToast({ message: errorLoadingAnnualInterest });
 				console.error("Error fetching loans:", error);
 			} finally {
 				setLoadingAnnualInterest(false);
@@ -1796,111 +1633,6 @@ const UserUI = () => {
 			}
 		}, [selectedCredit,]);
 
-		// handle rejecting a credit
-		const rejectCreditRequest = async (id) => {
-			try {
-				setIsWaitingFetchAction(true);
-				const response = await fetch(`${BASE_URL}/credit/${id}/reject`, {
-					method: 'PATCH',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ status: 'rejected', rejectionMessage: promptInputValue.current }),
-				});
-
-				// Fetch error
-				if (!response.ok) {
-					const errorData = await response.json();
-					throw new Error(errorData.message || 'Error rejecting credit request');
-				}
-				// Successfull fetch
-				const data = await response.json();
-				toast({ message: data.message, type: "dark" });
-				resetPrompt();
-				setErrorWithFetchAction(null);
-				fetchCredits();
-			} catch (error) {
-				setErrorWithFetchAction(error);
-				cError("Error fetching members:", error);
-				toast({ message: error, type: "danger" });
-			} finally {
-				setIsWaitingFetchAction(false);
-			}
-		}
-
-		// handle rejecting a credit
-		const restoreCreditRequest = async (id) => {
-			try {
-				setIsWaitingFetchAction(true);
-				const response = await fetch(`${BASE_URL}/credit/${id}/restore`, {
-					method: 'PATCH',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ status: 'pending' }),
-				});
-
-				// Fetch error
-				if (!response.ok) {
-					const errorData = await response.json();
-					throw new Error(errorData.message || 'Error restoring credit request');
-				}
-				// Successfull fetch
-				const data = await response.json();
-				toast({ message: data.message, type: "dark" });
-				resetConfirmDialog();
-				setErrorWithFetchAction(null);
-				fetchCredits();
-			} catch (error) {
-				setErrorWithFetchAction(error);
-				cError("Error fetching members:", error);
-				toast({ message: error, type: "danger" });
-			} finally {
-				setIsWaitingFetchAction(false);
-			}
-		}
-
-		/**
-		 * Pay Loans
-		 */
-
-		const [payLoanAmount, setPayLoanAmount] = useState('');
-		const [payInterestAmount, setPayInterestAmount] = useState('');
-		const [payTranchesAmount, setPayTranchesAmount] = useState('');
-
-		const resetPaymentinputs = () => {
-			setPayLoanAmount('');
-			setPayInterestAmount('');
-			setPayTranchesAmount('');
-		}
-
-		const handeLoanPaymemnt = async (id) => {
-			if (payLoanAmount <= 0 || payTranchesAmount <= 0) {
-				return toast({
-					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter valid payment values to continue</>,
-					type: 'warning'
-				});
-			}
-
-			try {
-				setIsWaitingFetchAction(true);
-				const response = await Axios.put(`/loan/${id}/pay`, {
-					loanToPay: payLoanAmount,
-					interestToPay: payInterestAmount,
-					tranchesToPay: payTranchesAmount,
-				});
-				// Successfull fetch
-				const data = response.data;
-				toast({ message: data.message, type: "dark" });
-				resetPaymentinputs();
-				setErrorWithFetchAction(null);
-				fetchLoans();
-				fetchCredits();
-			} catch (error) {
-				setErrorWithFetchAction(error);
-				cError("Error fetching members:", error);
-				toast({ message: error, type: "danger" });
-			} finally {
-				setIsWaitingFetchAction(false);
-			}
-		}
-
 		/**
 		 * Apply loan penalties
 		 */
@@ -2016,8 +1748,9 @@ const UserUI = () => {
 				fetchCredits();
 				successToast({ message: `Success: ${data.message}`, selfClose: false });
 			} catch (error) {
+				const errorMessage = error.response?.data?.error || error.response?.data?.message || "An unknown error occurred";
+				warningToast({ message: errorMessage });
 				console.error('Error requesting credit:', error.response?.data || error.message);
-				warningToast({ message: error.response?.data || error.message });
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -2680,23 +2413,19 @@ const UserUI = () => {
 																<tbody>
 																	{JSON.parse(selectedCredit.creditPayment)
 																		.sort((a, b) => a.tranchNumber - b.tranchNumber) // Sort tranches
-																		.map((item, index) => {
-																			const amountToPay = Number(selectedCredit.creditAmount) + (Number(selectedCredit.creditAmount) * 0.05);
-																			const backFillAmount = amountToPay / selectedCredit.tranches;
-																			return (
-																				<tr key={index} className="small expense-row">
-																					<td className="ps-sm-3 border-bottom-3 border-end">
-																						{item.tranchNumber}
-																					</td>
-																					<td>
-																						<CurrencyText amount={Number(item.tranchAmount)} />
-																					</td>
-																					<td>
-																						<FormatedDate date={item.tranchDueDate} />
-																					</td>
-																				</tr>
-																			)
-																		})
+																		.map((item, index) => (
+																			<tr key={index} className="small expense-row">
+																				<td className="ps-sm-3 border-bottom-3 border-end">
+																					{item.tranchNumber}
+																				</td>
+																				<td>
+																					<CurrencyText amount={Number(item.tranchAmount)} />
+																				</td>
+																				<td>
+																					<FormatedDate date={item.tranchDueDate} />
+																				</td>
+																			</tr>
+																		))
 																	}
 																</tbody>
 															</table>
@@ -2935,15 +2664,15 @@ const UserUI = () => {
 
 				// Successful fetch
 				const data = await response.json();
-				toast({ message: data.message, type: "dark" });
+				successToast({ message: data.message });
 				setShowAddExpenseRecord(false);
 				setErrorWithFetchAction(null);
 				fetchMembers();
 				fetchRecords();
 			} catch (error) {
-				setErrorWithFetchAction(error);
+				setErrorWithFetchAction(error.message);
 				cError("Error adding savings:", error);
-				toast({ message: error.message || "An unknown error occurred", type: "danger" });
+				warningToast({ message: error.message || "An unknown error occurred" });
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -3023,8 +2752,6 @@ const UserUI = () => {
 													.filter(cr => cr.recordType === 'expense')
 													.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 													.map((record, index) => {
-														const associatedMember = allMembers.find(m => m.id === record.memberId);
-														const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
 
 														return (
 															<tr key={index} className="small cursor-default clickDown expense-row">

@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useContext, useEffect, useMemo, useRef, u
 import { Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, ChatTeardropText, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, Envelope, EnvelopeSimple, EscalatorUp, Export, Eye, Files, FloppyDisk, Gavel, Gear, GenderFemale, GenderMale, GreaterThan, HandCoins, Info, LessThan, List, Minus, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, TextStrikethrough, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, Watch, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, EnvelopeSimple, EscalatorUp, Files, FloppyDisk, Gavel, Gear, GreaterThan, HandCoins, Info, LessThan, List, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, TextStrikethrough, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, Watch, X } from '@phosphor-icons/react';
 import { expensesTypes, incomeExpenses, memberRoles } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
@@ -135,7 +135,7 @@ const Admin = () => {
 			successToast({ message: data.message, selfClose: false });
 
 		} catch (error) {
-			setErrorWithFetchAction(error);
+			setErrorWithFetchAction(error.message);
 
 			// Handle API errors properly
 			let errorMessage = "An error occurred while creating the database backup.";
@@ -785,7 +785,7 @@ const Admin = () => {
 			setEmailTaken(prev => (prev !== emailExists ? emailExists : prev));
 			setUsernameTaken(prev => (prev !== usernameExists ? usernameExists : prev));
 			setPhoneNumberTaken(prev => (prev !== phoneNumberExists ? phoneNumberExists : prev));
-		}, [formData, allMembers]);
+		}, [formData]);
 
 		// Allow or block registration
 		useEffect(() => {
@@ -813,9 +813,10 @@ const Admin = () => {
 				fetchMembers();
 				fetchLoans();
 			} catch (error) {
-				setErrorWithFetchAction(error);
+				const errorMessage = error.response?.data?.error || error.response?.data?.message || "Registration failed";
+				setErrorWithFetchAction(errorMessage);
+				warningToast({ message: errorMessage });
 				cError('Registration error:', error.response?.data || error.message);
-				warningToast({ message: error.response?.data.message || 'Registration failed' });
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -889,7 +890,7 @@ const Admin = () => {
 		// 		fetchLoans();
 		// 		fetchMembers();
 		// 	} catch (error) {
-		// 		setErrorWithFetchAction(error);
+		// 		setErrorWithFetchAction(error.message);
 		// 		cError('Registration error:', error.response?.data || error.message);
 		// 		warningToast({ message: `Error: ${error.response?.data.message || 'Registration failed'}` });
 		// 	} finally {
@@ -935,9 +936,10 @@ const Admin = () => {
 				setErrorWithFetchAction(null);
 				fetchMembers();
 			} catch (error) {
-				setErrorWithFetchAction(error);
+				const errorMessage = error.response?.data?.error || error.response?.data?.message || "Couldn't save changes. Tyr again";
+				setErrorWithFetchAction(errorMessage);
+				warningToast({ message: errorMessage })
 				cError('Error saving changes:', error.response?.data || error.message);
-				warningToast({ message: error.response?.data.message || 'Couldn\'t save changes. Tyr again' })
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -966,9 +968,10 @@ const Admin = () => {
 				fetchLoans();
 				fetchFigures();
 			} catch (error) {
-				setErrorWithFetchAction(error);
+				const errorMessage = error.response?.data?.error || error.response?.data?.message || "Couldn't remove this member";
+				setErrorWithFetchAction(errorMessage);
+				warningToast({ message: errorMessage });
 				cError('Error removing member:', error.response?.data || error.message);
-				warningToast({ message: error.response?.data.message || 'Couldn\'t remove this member' });
 			} finally {
 				setIsWaitingFetchAction(false);
 				resetConfirmDialog();
@@ -2129,7 +2132,7 @@ const Admin = () => {
 				fetchFigures();
 				fetchRecords();
 			} catch (error) {
-				setErrorWithFetchAction(error);
+				setErrorWithFetchAction(error.message);
 				cError("Error adding savings:", error);
 				warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
 			} finally {
@@ -2197,7 +2200,7 @@ const Admin = () => {
 				fetchRecords();
 				fetchLoans();
 			} catch (error) {
-				setErrorWithFetchAction(error);
+				setErrorWithFetchAction(error.message);
 				cError("Error adding multiple shares:", error);
 				warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
 			} finally {
@@ -2256,7 +2259,6 @@ const Admin = () => {
 									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
 									.map((member, index) => {
 										const { husbandFirstName, husbandLastName, husbandAvatar, shares, cotisation, social } = member;
-										const cotisationAmount = shares * 20000;
 
 										return (
 											<div key={index} className='col-lg-6 px-lg-3'>
@@ -2593,7 +2595,6 @@ const Admin = () => {
 			return sum + item.progressiveShares + paidAnnualShares;
 		}, 0);
 
-		const totalBoughtShares = activeMembers.reduce((sum, item) => sum + item.shares, 0);
 		let totalSharesPercentage = 0;
 		let totalMonetaryInterest = 0;
 		let totalInterestReceivable = 0;
@@ -2626,9 +2627,10 @@ const Admin = () => {
 					fetchLoans();
 					fetchCredits();
 				} catch (error) {
-					setErrorWithFetchAction(error);
+					const errorMessage = error.response?.data?.error || error.response?.data?.message || "An unknown error occurred";
+					setErrorWithFetchAction(errorMessage);
+					warningToast({ message: errorMessage, selfClose: false });
 					cError("Error distributing interest:", error);
-					warningToast({ message: error, selfClose: false });
 				} finally {
 					setIsWaitingFetchAction(false);
 				}
@@ -2647,7 +2649,7 @@ const Admin = () => {
 
 		const interestRecentYears = useMemo((() => (
 			allAnnualInterest.length
-		)), []);
+		)), [allAnnualInterest]);
 
 		// Fetch annaul interest records
 		const fetchAnnualInterests = async () => {
@@ -3118,7 +3120,7 @@ const Admin = () => {
 				fetchLoans();
 				fetchFigures();
 			} catch (error) {
-				setErrorWithFetchAction(error);
+				setErrorWithFetchAction(error.message);
 				cError("Error approving credit:", error);
 				warningToast({ message: error.message });
 			} finally {
@@ -3149,9 +3151,9 @@ const Admin = () => {
 				setErrorWithFetchAction(null);
 				fetchCredits();
 			} catch (error) {
-				setErrorWithFetchAction(error);
+				setErrorWithFetchAction(error.message);
 				cError("Error fetching members:", error);
-				warningToast({ message: error });
+				warningToast({ message: error.message });
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -3179,9 +3181,9 @@ const Admin = () => {
 				setErrorWithFetchAction(null);
 				fetchCredits();
 			} catch (error) {
-				setErrorWithFetchAction(error);
+				setErrorWithFetchAction(error.message);
 				cError("Error fetching members:", error);
-				warningToast({ message: error });
+				warningToast({ message: error.message });
 			} finally {
 				setIsWaitingFetchAction(false);
 				resetConfirmDialog();
@@ -3224,9 +3226,10 @@ const Admin = () => {
 				fetchFigures();
 				resetPaymentinputs();
 			} catch (error) {
-				setErrorWithFetchAction(error);
-				cError("Error fetching members:", error);
-				warningToast({ message: error });
+				const errorMessage = error.response?.data?.error || error.response?.data?.message || "An unknown error occurred";
+				setErrorWithFetchAction(errorMessage);
+				cError("Error paying the loan:", error);
+				warningToast({ message: errorMessage });
 			} finally {
 				setIsWaitingFetchAction(false);
 			}
@@ -3263,10 +3266,7 @@ const Admin = () => {
 				fetchRecords();
 				fetchFigures();
 			} catch (error) {
-				console.error('Caught Error:', error);
-
-				// Handle axios error
-				const errorMessage = error.response?.data?.message || error.message || "An unknown error occurred";
+				const errorMessage = error.response?.data?.error || error.response?.data?.message || "An unknown error occurred";
 				setErrorWithFetchAction(errorMessage);
 				cError("Error applying penalties:", error);
 				warningToast({ message: errorMessage, selfClose: false });
@@ -4174,23 +4174,19 @@ const Admin = () => {
 																<tbody>
 																	{JSON.parse(selectedCredit.creditPayment)
 																		.sort((a, b) => a.tranchNumber - b.tranchNumber) // Sort tranches
-																		.map((item, index) => {
-																			const amountToPay = Number(selectedCredit.creditAmount) + (Number(selectedCredit.creditAmount) * 0.05);
-																			const backFillAmount = amountToPay / selectedCredit.tranches;
-																			return (
-																				<tr key={index} className="small expense-row">
-																					<td className="ps-sm-3 border-bottom-3 border-end">
-																						{item.tranchNumber}
-																					</td>
-																					<td>
-																						<CurrencyText amount={Number(item.tranchAmount)} />
-																					</td>
-																					<td>
-																						<FormatedDate date={item.tranchDueDate} />
-																					</td>
-																				</tr>
-																			)
-																		})
+																		.map((item, index) => (
+																			<tr key={index} className="small expense-row">
+																				<td className="ps-sm-3 border-bottom-3 border-end">
+																					{item.tranchNumber}
+																				</td>
+																				<td>
+																					<CurrencyText amount={Number(item.tranchAmount)} />
+																				</td>
+																				<td>
+																					<FormatedDate date={item.tranchDueDate} />
+																				</td>
+																			</tr>
+																		))
 																	}
 																</tbody>
 															</table>
@@ -4313,7 +4309,7 @@ const Admin = () => {
 				fetchMembers();
 				fetchRecords();
 			} catch (error) {
-				setErrorWithFetchAction(error);
+				setErrorWithFetchAction(error.message);
 				cError("Error adding savings:", error);
 				warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
 			} finally {
@@ -4415,8 +4411,6 @@ const Admin = () => {
 													.filter(cr => cr.recordType === 'expense')
 													.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 													.map((record, index) => {
-														const associatedMember = allMembers.find(m => m.id === record.memberId);
-														const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
 
 														return (
 															<tr key={index} className="small cursor-default clickDown expense-row">
