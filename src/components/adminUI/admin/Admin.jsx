@@ -4308,6 +4308,7 @@ const Admin = () => {
 				setErrorWithFetchAction(null);
 				fetchMembers();
 				fetchRecords();
+				fetchFigures();
 			} catch (error) {
 				setErrorWithFetchAction(error.message);
 				cError("Error adding savings:", error);
