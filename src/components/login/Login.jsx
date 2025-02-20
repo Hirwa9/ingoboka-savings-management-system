@@ -1,12 +1,12 @@
-import React, { useEffect, useId, useMemo, useState } from 'react';
+import React, { useId, useState } from 'react';
 import './login.css';
 import '../common/formInput/formInput.css';
 import MyToast from '../common/Toast';
 import { useNavigate } from "react-router-dom";
 import $ from 'jquery';
-import { SignIn, UserCircleDashed, Wallet } from '@phosphor-icons/react';
+import { SignIn, Wallet } from '@phosphor-icons/react';
 import useCustomDialogs from '../common/hooks/useCustomDialogs';
-import { Axios, BASE_URL } from '../../api/api';
+import { BASE_URL } from '../../api/api';
 import SmallLoader from '../common/SmallLoader';
 
 const Login = () => {
