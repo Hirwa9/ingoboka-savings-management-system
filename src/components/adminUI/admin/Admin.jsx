@@ -1094,7 +1094,30 @@ const Admin = () => {
 													<Pen weight='fill' className="me-2 opacity-50" /> Edit
 												</MenuItem>
 												<MenuDivider />
-												<MenuItem onClick={() => { setSelectedMember(member); setShowMemberFinances(true); setShowMemberRemoval(true); }} className='text-danger'>
+												<MenuItem className='text-danger'
+													onClick={() => {
+														if (member.role === 'accountant') {
+															messageToast(
+																{
+																	message: <>
+																		<div>
+																			<h6 className='me-2 pt-1 pb-2 border-bottom border-light border-opacity-50'>
+																				Cannot remove {member.husbandFirstName}
+																			</h6>
+																			<p>
+																				This member holds accountant privileges and cannot be removed. Please assign the role to another member before proceeding
+																			</p>
+																		</div>
+																	</>,
+																	type: 'primaryColor',
+																	selfClose: false
+																}
+															);
+														} else {
+															setSelectedMember(member); setShowMemberFinances(true); setShowMemberRemoval(true);
+														}
+													}}
+												>
 													<UserMinus weight='fill' className="me-2 opacity-50" />Leaving
 												</MenuItem>
 											</Menu>
@@ -1784,7 +1807,7 @@ const Admin = () => {
 																(cr.recordType === 'penalty' && cr.memberId === selectedMember?.id)
 															).length ? (
 															<div className='overflow-auto'>
-																<table className="table table-hover h-100">
+																<table className="table table-striped table-hover h-100">
 																	<thead className='table-secondary position-sticky top-0 inx-1 text-uppercase small'>
 																		<tr>
 																			<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
@@ -4397,7 +4420,7 @@ const Admin = () => {
 							{activeTransactionSection === 'withdrawals' && (
 								<>
 									<div className='overflow-auto'>
-										<table className="table table-hover h-100">
+										<table className="table table-striped table-hover h-100">
 											<thead className='table-warning position-sticky top-0 inx-1 1 text-uppercase small'>
 												<tr>
 													<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
@@ -4507,7 +4530,7 @@ const Admin = () => {
 							{/* Deposits table */}
 							{activeTransactionSection === 'deposits' && (
 								<div className='overflow-auto'>
-									<table className="table table-hover h-100">
+									<table className="table table-striped table-hover h-100">
 										<thead className='table-success position-sticky top-0 inx-1 1 text-uppercase small'>
 											<tr>
 												<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
@@ -4555,7 +4578,7 @@ const Admin = () => {
 
 							{activeTransactionSection === 'penalties' && (
 								<div className='overflow-auto'>
-									<table className="table table-hover h-100">
+									<table className="table table-striped table-hover h-100">
 										<thead className='table-primary position-sticky top-0 inx-1 text-uppercase small'>
 											<tr>
 												<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
