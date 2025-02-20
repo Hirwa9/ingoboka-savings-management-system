@@ -4840,8 +4840,8 @@ const Admin = () => {
 													<td>
 														Verify
 													</td>
-													<td className="text-nowrap">
-														<CurrencyText amount={Math.abs(totalCotisationsAndShares - generalTotal)} />
+													<td className={`text-nowrap ${generalTotal - totalCotisationsAndShares < 0 ? 'text-danger' : ''}`}>
+														<CurrencyText amount={generalTotal - totalCotisationsAndShares} />
 													</td>
 												</tr>
 												<tr className="small cursor-default clickDown general-report-row fw-bold fs-5">
