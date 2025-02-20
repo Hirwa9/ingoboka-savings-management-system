@@ -78,7 +78,7 @@
 
 .sidebar .nav-item.active {
     background-color: var(--black2);
-    border: 2px solid var(--primaryColor);
+    border: 1.5px solid var(--primaryColor);
     border-radius: .5rem;
 }
 
