@@ -2737,7 +2737,7 @@ const UserUI = () => {
 							{activeTransactionSection === 'withdrawals' && (
 								<>
 									<div className='overflow-auto'>
-										<table className="table table-hover h-100">
+										<table className="table table-striped table-hover h-100">
 											<thead className='table-warning position-sticky top-0 inx-1 text-uppercase small'>
 												<tr>
 													<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
