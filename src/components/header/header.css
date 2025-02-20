@@ -24,15 +24,18 @@ header {
     }
 
     .admin-header {
-        background-image: linear-gradient(to bottom, var(--black2), var(--black2)), url('../../../public/images/saving_illustration_fancy1.webp');
-        background-position: 44.7% 0.8%;
+        background-image: linear-gradient(to bottom, rgba(0, 0, 0, .65), rgba(0, 0, 0, .65)), url('../../../public/images/saving_illustration_fancy1.webp');
+        /* background-position: 44.7% 0.8%; */
+        background-position: 45% 39%;
+
     }
 }
 
 @media screen and (min-width: 768px) {
     .admin-header .navbar-brand {
-        background-image: linear-gradient(to bottom, var(--black2), var(--black2)), url('../../../public/images/saving_illustration_fancy1.webp');
-        background-position: 44.7% 0%;
+        background-image: linear-gradient(to bottom, rgba(0, 0, 0, .65), rgba(0, 0, 0, .65)), url('../../../public/images/saving_illustration_fancy1.webp');
+        /* background-position: 44.7% 0%; */
+        background-position: 45% 39%;
     }
 }
 
