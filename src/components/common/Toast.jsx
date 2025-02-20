@@ -58,7 +58,7 @@ const MyToast = ({ show, message, type = 'light', selfClose, selfCloseTimeout = 
                         style={{ border: `1px solid var(--bs-${textColor}) !important` }}
                         size="sm"
                         onClick={onClose}
-                        className="ms-auto p-2"
+                        className="flex-shrink-0 ms-auto p-2"
                     />
                 )}
             </Toast.Body>
