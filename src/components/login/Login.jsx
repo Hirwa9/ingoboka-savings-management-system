@@ -90,42 +90,6 @@ const Login = () => {
         }
     };
 
-
-    /**
-     * Members
-     */
-
-    const [allMembers, setAllMembers] = useState([]);
-    const [loadingMembers, setLoadingMembers] = useState(false);
-    const [errorLoadingMembers, setErrorLoadingMembers] = useState(false);
-
-    const systemLogo = useMemo(() => {
-        const member = allMembers.find(m => (m.role === 'president'));
-        return member?.husbandAvatar;
-    }, [allMembers]);
-
-    // Fetch members
-    const fetchMembers = async () => {
-        try {
-            setLoadingMembers(true);
-            const response = await Axios.get(`/users`);
-            const data = response.data;
-            setAllMembers(data);
-            setErrorLoadingMembers(null);
-        } catch (error) {
-            setErrorLoadingMembers("Failed to load members. Click the button to try again.");
-            warningToast({ message: errorLoadingMembers, type: "danger" });
-            console.error("Error fetching members:", error);
-        } finally {
-            setLoadingMembers(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchMembers();
-    }, []);
-
-
     return (
         <>
             {/* Toast message */}
@@ -150,12 +114,7 @@ const Login = () => {
                         <div className="col-11 col-sm-9 col-md-7 col-lg-5 mx-auto mx-lg-0 py-4 bg-lightColor text-gray-900 login-form-wrapper">
                             <div className='px-3 py-3 px-sm-5 p-lg-5'>
                                 <div className='flex-center mb-4'>
-                                    {(loadingMembers || (!loadingMembers && errorLoadingMembers)) && (
-                                        <UserCircleDashed size={80} weight='duotone' className='text-gray-500' />
-                                    )}
-                                    {!loadingMembers && !errorLoadingMembers && (
-                                        <img src={systemLogo} alt="logo" className="w-4rem h-4rem mx-auto rounded-circle" />
-                                    )}
+                                    <img src='/logo.jpeg' alt="" className="w-4rem h-4rem mx-auto rounded-circle" />
                                 </div>
                                 <h1 className='h5 fw-bold text-center text-gray-800'>Welcome to Ingoboka</h1>
                                 <p className='mb-4 smaller text-center text-gray-600'>
