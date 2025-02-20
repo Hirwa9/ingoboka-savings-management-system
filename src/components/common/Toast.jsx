@@ -1,3 +1,4 @@
+import { X } from '@phosphor-icons/react';
 import React, { useEffect } from 'react';
 import { Toast, Button } from 'react-bootstrap';
 
@@ -54,12 +55,12 @@ const MyToast = ({ show, message, type = 'light', selfClose, selfCloseTimeout = 
                 {message}{' '}
                 {!selfClose && (
                     <Button
-                        variant="close"
-                        style={{ border: `1px solid var(--bs-${textColor}) !important` }}
                         size="sm"
                         onClick={onClose}
-                        className="flex-shrink-0 ms-auto p-2"
-                    />
+                        className={`flex-shrink-0 align-self-start flex-center ms-auto border border-${textColor} border-opacity-50 w-2rem ratio-1-1 btn-${type}`}
+                    >
+                        <X />
+                    </Button>
                 )}
             </Toast.Body>
         </Toast>
