@@ -5149,35 +5149,35 @@ const Admin = () => {
 							</div>
 
 							<ul className="nav flex-column">
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'dashboard' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'dashboard' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("dashboard"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<ChartPieSlice size={20} weight='fill' className="me-2" /> Dashboard
 									</button>
 								</li>
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'members' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'members' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("members"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Users size={20} weight='fill' className="me-2" /> Members
 									</button>
 								</li>
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'savings' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'savings' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("savings"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Coin size={20} weight='fill' className="me-2" /> Savings
 									</button>
 								</li>
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'interest' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'interest' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("interest"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Coins size={20} weight='fill' className="me-2" /> Interest
 									</button>
 								</li>
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'credits' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'credits' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("credits"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
@@ -5191,21 +5191,21 @@ const Admin = () => {
 										</span>
 									)}
 								</li>
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'transactions' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'transactions' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("transactions"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<CashRegister size={20} weight='fill' className="me-2" /> Transactions
 									</button>
 								</li>
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 ${activeSection === 'reports' ? 'active' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 ${activeSection === 'reports' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("reports"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Files size={20} weight='fill' className="me-2" /> Reports
 									</button>
 								</li>
-								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'messages' ? 'active' : ''}`}
+								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'messages' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("messages"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
@@ -5220,7 +5220,7 @@ const Admin = () => {
 
 								<hr />
 
-								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'auditLogs' ? 'active' : ''}`}
+								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'auditLogs' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("auditLogs"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
@@ -5228,7 +5228,7 @@ const Admin = () => {
 									</button>
 								</li> */}
 
-								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'settings' ? 'active' : ''}`}
+								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'settings' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("settings"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
@@ -5236,7 +5236,7 @@ const Admin = () => {
 									</button>
 								</li> */}
 
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-3 d-md-none`} onClick={() => { logout() }}>
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-3 d-md-none clickDown`} onClick={() => { logout() }}>
 									<button className="nav-link w-100">
 										<SignOut size={20} weight='fill' className="me-2" /> Sign out
 									</button>
