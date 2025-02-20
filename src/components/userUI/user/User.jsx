@@ -140,6 +140,11 @@ const UserUI = () => {
 		return `${member?.husbandLastName} ${member?.husbandFirstName}`;
 	}, [allMembers]);
 
+	const systemLogo = useMemo(() => {
+		const member = allMembers.find(m => (m.role === 'president'));
+		return member?.husbandAvatar;
+	}, [allMembers]);
+
 	// Fetch members
 	const fetchMembers = async () => {
 		try {
@@ -3221,7 +3226,7 @@ const UserUI = () => {
 			<header className="navbar navbar-light sticky-top flex-md-nowrap py-0 admin-header">
 				<div className='nav-item navbar-brand position-relative col-12 col-md-3 col-xl-2 d-flex align-items-center me-0 px-2'>
 					<div className="me-2 logo">
-						<img src="/logo.png" alt="logo" className="rounded-circle logo"></img>
+						<img src={systemLogo} alt="logo" className="rounded-circle logo p-2"></img>
 					</div>
 					<small className='fs-70 text-gray-200'>
 						INGOBOKA

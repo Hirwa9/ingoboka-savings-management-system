@@ -178,8 +178,8 @@ const Admin = () => {
 		return `${member?.husbandLastName} ${member?.husbandFirstName}`;
 	}, [allMembers]);
 
-	const accountantAvatar = useMemo(() => {
-		const member = allMembers.find(m => (m.role === 'accountant'));
+	const systemLogo = useMemo(() => {
+		const member = allMembers.find(m => (m.role === 'president'));
 		return member?.husbandAvatar;
 	}, [allMembers]);
 
@@ -5038,7 +5038,7 @@ const Admin = () => {
 			<header className="navbar navbar-light sticky-top flex-md-nowrap py-0 admin-header">
 				<div className='nav-item navbar-brand position-relative col-12 col-md-3 col-xl-2 d-flex align-items-center me-0 px-2'>
 					<div className="me-2 logo">
-						<img src="/logo.png" alt="logo" className="rounded-circle logo"></img>
+						<img src={systemLogo} alt="logo" className="rounded-circle logo p-2"></img>
 					</div>
 					<small className='fs-70 text-gray-200'>
 						INGOBOKA
@@ -5091,7 +5091,7 @@ const Admin = () => {
 						</div>
 						<Menu menuButton={
 							<MenuButton className="border-0 p-0">
-								<img src={accountantAvatar} alt="" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 d-none d-md-block border border-3 border-light bg-light rounded-circle ptr' />
+								<img src='/images/man_avatar_image.jpg' alt="" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 d-none d-md-block border border-3 border-light bg-light rounded-circle ptr' />
 							</MenuButton>
 						} transition>
 							<MenuItem onClick={() => { setActiveSection('settings') }}>
@@ -5168,7 +5168,7 @@ const Admin = () => {
 									<span className='ms-auto smaller'>{accountantNames}</span>
 									<span className='ms-auto fs-70 opacity-75' style={{ lineHeight: 1 }}>Accountant</span>
 								</div>
-								<img src={accountantAvatar} alt="" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 border border-3 border-secondary bg-gray-600 rounded-circle' />
+								<img src='/images/man_avatar_image.jpg' alt="" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 border border-3 border-secondary bg-gray-600 rounded-circle' />
 							</div>
 
 							<ul className="nav flex-column">
