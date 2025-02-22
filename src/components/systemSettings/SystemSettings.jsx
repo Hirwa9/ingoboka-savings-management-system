@@ -1,9 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
-import { Gear } from '@phosphor-icons/react';
+import { CaretDown, DotsThreeVertical, FloppyDisk, Gear, Plus, Trash } from '@phosphor-icons/react';
+
+import { Menu, MenuItem, MenuButton, MenuDivider } from '@szhsin/react-menu';
 import useCustomDialogs from '../common/hooks/useCustomDialogs';
 import MyToast from '../common/Toast';
-import { BASE_URL } from '../../api/api';
+import { Axios, BASE_URL } from '../../api/api';
+import { fncPlaceholder, getNumberWithSuffix, maxInputNumber } from '../../scripts/myScripts';
+import CurrencyText from '../common/CurrencyText';
 
 const SystemSettings = () => {
 
@@ -11,10 +15,15 @@ const SystemSettings = () => {
     const {
         // Toast
         showToast,
-        setShowToast,
         toastMessage,
         toastType,
+        toastSelfClose,
+        toastSelfCloseTimeout,
         toast,
+        successToast,
+        warningToast,
+        messageToast,
+        resetToast,
 
         // Confirm Dialog
         showConfirmDialog,
@@ -57,14 +66,14 @@ const SystemSettings = () => {
     const fetchSettings = async () => {
         try {
             setLoadingSettings(true);
-            const response = await axios.get(`${BASE_URL}/api/settings`);
+            const response = await Axios.get(`/api/settings/system/all`);
             const data = response.data;
             setAllSettings(data);
             setSettingsToShow(data);
             setErrorLoadingSettings(null);
         } catch (error) {
-            setErrorLoadingSettings("Failed to load settings. Click the button to try again.");
-            toast({ message: errorLoadingSettings, type: "danger" });
+            const errorMessage = error.response?.data?.error || error.response?.data?.message || "Failed to load settings. Please try again.";
+            warningToast({ message: errorMessage });
             console.error("Error fetching settings:", error);
         } finally {
             setLoadingSettings(false);
@@ -167,9 +176,18 @@ const SystemSettings = () => {
         setRoleSettings(newRoles);
     };
 
+    const [newRole, setNewRole] = useState('');
     const handleAddRole = () => {
-        setRoleSettings([...roleSettings, '']);
+        const trimmedValue = newRole.trim();
+        if (trimmedValue === '') return messageToast({ message: "Enter a new role to continue", selfCloseTimeout: 2000 });
+
+        const existingRole = roleSettings.find(role => new RegExp(`^${trimmedValue}$`, 'i').test(role));
+        if (existingRole) {
+            return messageToast({ message: `The role "${existingRole}" already exists`, selfCloseTimeout: 3000 });
+        }
+        setRoleSettings([...roleSettings, trimmedValue.toLowerCase()]);
     };
+
 
     const handleSaveRoles = async () => {
         try {
@@ -201,6 +219,24 @@ const SystemSettings = () => {
         }
     };
 
+
+    const [expenseTypeSettings, setExpenseTypeSettings] = useState(
+        [
+            ...expenseTypes
+        ]
+    );
+    const [newExpenseType, setNewExpenseType] = useState('');
+    const handleAddType = () => {
+        const trimmedValue = newExpenseType.trim();
+        if (trimmedValue === '') return messageToast({ message: "Enter a new role to continue", selfCloseTimeout: 2000 });
+
+        const existingType = expenseTypeSettings.find(role => new RegExp(`^${trimmedValue}$`, 'i').test(role));
+        if (existingType) {
+            return messageToast({ message: `The role "${existingType}" already exists`, selfCloseTimeout: 3000 });
+        }
+        setExpenseTypeSettings([...expenseTypeSettings, trimmedValue.toLowerCase()]);
+    };
+
     const handleSaveExpenseTypes = async () => {
         try {
             await axios.post(`${BASE_URL}/api/settings/expenses`, { types: expenseTypes });
@@ -223,7 +259,7 @@ const SystemSettings = () => {
 
     return (
         <>
-            <MyToast show={showToast} message={toastMessage} type={toastType} selfClose onClose={() => setShowToast(false)} />
+            <MyToast show={showToast} message={toastMessage} type={toastType} selfClose={toastSelfClose} selfCloseTimeout={toastSelfCloseTimeout} onClose={() => resetToast()} />
             <div className="pt-2 pt-md-0 pb-3">
                 <div className="mb-3">
                     <h2 className='text-appColor'><Gear weight='fill' className="me-1 opacity-50" /> Settings</h2>
@@ -249,72 +285,218 @@ const SystemSettings = () => {
                     </div>
 
                     {/* Role Settings */}
-                    <div>
+                    <div className="mb-4 p-3 p-xl-4 border-bottom border-secondary text-gray-700">
                         <h3>Role Settings</h3>
-                        {roleSettings.map((role, index) => (
-                            <input
-                                key={index}
-                                type="text"
-                                value={role}
-                                onChange={(e) => handleRoleChange(index, e.target.value)}
-                            />
-                        ))}
-                        <button onClick={handleAddRole}>Add Role</button>
-                        <button onClick={handleSaveRoles}>Save Roles</button>
+                        <div className="d-lg-flex align-items-start gap-3">
+                            <ul className='list-unstyled d-flex align-items-start gap-2 flex-wrap mb-2 col-lg-7 col-xl-8'>
+                                {roleSettings.map((role, index) => (
+                                    <li key={index} className='flex-align-center gap-2 ps-3 pe-2 py-1 border border-secondary border-opacity-50'>
+                                        <span className='text-capitalize'>{role}</span> <Menu menuButton={
+                                            <MenuButton className="border-0 p-0 bg-transparent">
+                                                <DotsThreeVertical weight='bold' />
+                                            </MenuButton>
+                                        } transition>
+                                            <MenuItem className="smaller" onClick={() => { fncPlaceholder() }}>
+                                                Edit role
+                                            </MenuItem>
+                                            <MenuItem className="smaller text-danger" onClick={() => { fncPlaceholder() }}>
+                                                Remove role
+                                            </MenuItem>
+                                        </Menu>
+                                    </li>
+                                ))}
+                            </ul>
+                            <div className='col'>
+                                <p className='mt-lg-3 mb-1 text-secondary text-center text-uppercase small'>Add a new role</p>
+                                <input
+                                    type="text"
+                                    placeholder='Enter new role'
+                                    className='form-control border border-secondary rounded-0'
+                                    value={newRole}
+                                    onChange={e => setNewRole(e.target.value)}
+                                />
+                                <button className='btn btn-sm btn-secondary py-1 rounded-0 w-100 flex-center gap-2 bounceClick'
+                                    onClick={handleAddRole}
+                                >
+                                    <Plus /> Add role
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Credit Settings */}
-                    <div>
+                    <div className="mb-4 p-3 p-xl-4 border-bottom border-secondary text-gray-700">
                         <h3>Credit Settings</h3>
-                        <input
-                            type="number"
-                            name="interest5"
-                            value={creditSettings.interest5}
-                            onChange={(e) => setCreditSettings({ ...creditSettings, interest5: e.target.value })}
-                        />
-                        {/* Add other credit fields */}
-                        <button onClick={handleSaveCreditSettings}>Save Credit Settings</button>
+                        <div className="d-lg-flex align-items-start gap-3">
+                            <div className="mb-2 col-lg-7 col-xl-8">
+                                <p>
+                                    Interest rate per approved credit is <b className='text-nowrap'>{creditSettings.interest5} %</b>.
+                                </p>
+                                <p className='p-3 border border-secondary smaller'>
+                                    For every approved credit, the borrower is required to repay the full amount along with an interest of <span className='text-nowrap'>{creditSettings.interest5}%</span> of the initially requested sum.
+                                </p>
+                            </div>
+                            <div className='col'>
+                                <p className='mt-lg-3 mb-1 text-secondary text-center text-uppercase small'>Change interest % rate</p>
+                                <input
+                                    type="number"
+                                    name="interest5"
+                                    className='form-control border border-secondary rounded-0'
+                                    value={creditSettings.interest5}
+                                    min={1}
+                                    max={100}
+                                    placeholder="Enter interest percentage rate"
+                                    onChange={(e) => setCreditSettings({ ...creditSettings, interest5: maxInputNumber(e, 100) })}
+                                />
+                                <button className='btn btn-sm btn-secondary py-1 rounded-0 w-100 flex-center gap-2 bounceClick'
+                                    onClick={handleSaveCreditSettings}
+                                >
+                                    <FloppyDisk /> Save changes
+                                </button>
+                                {/* Add other credit fields */}
+                            </div>
+                        </div>
                     </div>
 
                     {/* Shares Settings */}
-                    <div>
+                    <div className="mb-4 p-3 p-xl-4 border-bottom border-secondary text-gray-700">
                         <h3>Shares Settings</h3>
-                        <input
-                            type="number"
-                            value={shareSettings.valuePerShare}
-                            onChange={(e) => setShareSettings({ valuePerShare: e.target.value })}
-                        />
-                        <button onClick={handleSaveShares}>Save Shares Settings</button>
+                        <div className="d-lg-flex align-items-start gap-3">
+                            <div className="mb-2 col-lg-7 col-xl-8">
+                                <p>
+                                    Unit share price is <CurrencyText amount={Number(shareSettings.valuePerShare)} className="fw-bold" />.
+                                </p>
+                                <p className='p-3 border border-secondary smaller'>
+                                    The value of one share is <CurrencyText amount={Number(shareSettings.valuePerShare)} />. Only multiples of this value are elligible for withdrawal or distribution at the end of the year.
+                                </p>
+                            </div>
+                            <div className='col'>
+                                <p className='mt-lg-3 mb-1 text-secondary text-center text-uppercase small'>Change Unit Share value</p>
+                                <input
+                                    type="number"
+                                    name="interest5"
+                                    className='form-control border border-secondary rounded-0'
+                                    value={shareSettings.valuePerShare}
+                                    min={1}
+                                    placeholder="Enter share value"
+                                    onChange={(e) => setShareSettings({ valuePerShare: e.target.value })}
+                                />
+                                <button className='btn btn-sm btn-secondary py-1 rounded-0 w-100 flex-center gap-2 bounceClick'
+                                    onClick={handleSaveShares}
+                                >
+                                    <FloppyDisk /> Save changes
+                                </button>
+                                {/* Add other credit fields */}
+                            </div>
+                        </div>
                     </div>
 
                     {/* Expense Types */}
-                    <div>
+                    <div className="mb-4 p-3 p-xl-4 border-bottom border-secondary text-gray-700">
                         <h3>Expense Types</h3>
-                        {expenseTypes.map((type, index) => (
-                            <input
-                                key={index}
-                                type="text"
-                                value={type}
-                                onChange={(e) => {
-                                    const newTypes = [...expenseTypes];
-                                    newTypes[index] = e.target.value;
-                                    setExpenseTypes(newTypes);
-                                }}
-                            />
-                        ))}
-                        <button onClick={handleSaveExpenseTypes}>Save Expense Types</button>
+                        <div className="d-lg-flex align-items-start gap-3">
+                            <ul className='list-unstyled d-flex align-items-start gap-2 flex-wrap mb-2 col-lg-7 col-xl-8'>
+                                {expenseTypes.map((type, index) => (
+                                    <li key={index} className='flex-align-center gap-2 ps-3 pe-2 py-1 border border-secondary border-opacity-50'>
+                                        <span className='text-capitalize'>{type}</span> <Menu menuButton={
+                                            <MenuButton className="border-0 p-0 bg-transparent">
+                                                <DotsThreeVertical weight='bold' />
+                                            </MenuButton>
+                                        } transition>
+                                            <MenuItem className="smaller" onClick={() => { fncPlaceholder() }}>
+                                                Edit type
+                                            </MenuItem>
+                                            <MenuItem className="smaller text-danger" onClick={() => { fncPlaceholder() }}>
+                                                Remove type
+                                            </MenuItem>
+                                        </Menu>
+                                    </li>
+                                ))}
+                            </ul>
+                            <div className='col'>
+                                <p className='mt-lg-3 mb-1 text-secondary text-center text-uppercase small'>Add a new expense type</p>
+                                <input
+                                    type="text"
+                                    placeholder='Enter new type'
+                                    className='form-control border border-secondary rounded-0'
+                                    value={newExpenseType}
+                                    onChange={e => setNewExpenseType(e.target.value)}
+                                />
+                                <button className='btn btn-sm btn-secondary py-1 rounded-0 w-100 flex-center gap-2 bounceClick'
+                                    onClick={handleAddType}
+                                >
+                                    <Plus /> Add role
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
-                    {/* Savings Settings */}
-                    <div>
+                    {/* Shares Settings */}
+                    <div className="mb-4 p-3 p-xl-4 border-bottom border-secondary text-gray-700">
                         <h3>Savings Settings</h3>
-                        <input
-                            type="number"
-                            value={savingSettings.dueDate}
-                            onChange={(e) => setSavingSettings({ ...savingSettings, dueDate: e.target.value })}
-                        />
-                        {/* Add other saving fields */}
-                        <button onClick={handleSaveSavings}>Save Savings Settings</button>
+                        <div className="d-lg-flex align-items-start gap-3">
+                            <div className="mb-2 col-lg-7 col-xl-8">
+                                <p className='d-list-item list-style-square ms-4'>
+                                    Monthly savings due day is on the <b>{getNumberWithSuffix(Number(savingSettings.dueDate))}</b>.
+                                </p>
+                                <p className='p-3 border border-secondary smaller'>
+                                    Monthly contributions and social savings should be recorded by the {getNumberWithSuffix(Number(savingSettings.dueDate))} of each month. Any payments made after this date is considered late and subject to delay penalties.
+                                </p>
+                            </div>
+                            <div className='col'>
+                                <div className="mb-2">
+                                    <p className='mt-lg-3 mb-1 text-secondary text-center text-uppercase small'>Change savings due day</p>
+                                    <input
+                                        type="number"
+                                        name="interest5"
+                                        className='form-control border border-secondary rounded-0'
+                                        value={savingSettings.dueDate}
+                                        min={1}
+                                        max={31}
+                                        placeholder="Enter montly due day"
+                                        onChange={(e) => {
+                                            setSavingSettings({ ...savingSettings, dueDate: maxInputNumber(e, 31) })
+                                        }}
+                                    />
+                                    <button className='btn btn-sm btn-secondary py-1 rounded-0 w-100 flex-center gap-2 bounceClick'
+                                        onClick={handleSaveSavings}
+                                    >
+                                        <FloppyDisk /> Save changes
+                                    </button>
+                                </div>
+                                {/* Add other credit fields */}
+                            </div>
+                        </div>
+                        <div className="d-lg-flex align-items-start gap-3">
+                            <div className="mb-2 col-lg-7 col-xl-8">
+                                <p className='d-list-item list-style-square ms-4'>
+                                    Cotisation savings delay penalty is <CurrencyText amount={Number(savingSettings.delayPenalty)} className="fw-bold" />.
+                                </p>
+                                <p className='p-3 border border-secondary smaller'>
+                                    A penalty of <CurrencyText amount={Number(savingSettings.delayPenalty)} /> applies to monthly contribution savings recorded after the due date mentioned above.
+                                </p>
+                            </div>
+                            <div className='col'>
+                                <div className="mb-2">
+                                    <p className='mt-lg-3 mb-1 text-secondary text-center text-uppercase small'>Change Delay Penalty amount</p>
+                                    <input
+                                        type="number"
+                                        name="interest5"
+                                        className='form-control border border-secondary rounded-0'
+                                        value={savingSettings.delayPenalty}
+                                        min={1}
+                                        placeholder="Enter penalty amount"
+                                        onChange={(e) => setSavingSettings({ ...savingSettings, delayPenalty: e.target.value })}
+                                    />
+                                    <button className='btn btn-sm btn-secondary py-1 rounded-0 w-100 flex-center gap-2 bounceClick'
+                                        onClick={handleSaveSavings}
+                                    >
+                                        <FloppyDisk /> Save changes
+                                    </button>
+                                </div>
+                                {/* Add other credit fields */}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
