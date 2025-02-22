@@ -1529,6 +1529,10 @@ label {
   align-items: center !important;
 }
 
+.d-list-item {
+  display: list-item;
+}
+
 .justify-self-center {
   justify-self: center !important;
 }
