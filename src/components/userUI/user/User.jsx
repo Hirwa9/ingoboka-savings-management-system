@@ -8,7 +8,7 @@ import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
 import LoadingIndicator from '../../LoadingIndicator';
-import { cError, fncPlaceholder, getDateHoursMinutes, normalizedLowercaseString, printDatesInterval } from '../../../scripts/myScripts';
+import { cError, fncPlaceholder, getDateHoursMinutes, normalizedLowercaseString, printDatesInterval, maxInputNumber } from '../../../scripts/myScripts';
 import FormatedDate from '../../common/FormatedDate';
 import FetchError from '../../common/FetchError';
 import useCustomDialogs from '../../common/hooks/useCustomDialogs';
@@ -144,18 +144,16 @@ const UserUI = () => {
 	const fetchMembers = async () => {
 		try {
 			setLoadingMembers(true);
-			const response = await fetch(`${BASE_URL}/users`);
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-			const data = await response.json();
-			// console.log(data);
+			const response = await Axios.get(`/users`);
+			const data = response.data;
 			setAllMembers(data);
 			setMembersToShow(data);
-			setSignedUser(data.filter(u => u.id === Number(userId))[0]);
 			setErrorLoadingMembers(null);
 		} catch (error) {
-			setErrorLoadingMembers("Failed to load members. Click the button to try again.");
+			const errorMessage = error.response?.data?.error || error.response?.data?.message || "Failed to load members. Please try again.";
+			setErrorWithFetchAction(errorMessage);
+			setErrorLoadingMembers(errorMessage);
+			warningToast({ message: errorMessage });
 			console.error("Error fetching members:", error);
 		} finally {
 			setLoadingMembers(false);
@@ -225,8 +223,10 @@ const UserUI = () => {
 			setAllFigures(data);
 			setErrorLoadingFigures(null);
 		} catch (error) {
-			setErrorLoadingFigures("Failed to load figures. Click the button to try again.");
-			warningToast({ message: errorLoadingFigures });
+			const errorMessage = error.response?.data?.error || error.response?.data?.message || "Failed to load figures. Please try again.";
+			setErrorWithFetchAction(errorMessage);
+			setErrorLoadingFigures(errorMessage);
+			warningToast({ message: errorMessage });
 			console.error("Error fetching figures:", error);
 		} finally {
 			setLoadingFigures(false);
@@ -256,8 +256,10 @@ const UserUI = () => {
 			setCreditsToShow(data);
 			setErrorLoadingCredits(null);
 		} catch (error) {
-			setErrorLoadingCredits("Failed to load credits. Click the button to try again.");
-			warningToast({ message: errorLoadingCredits });
+			const errorMessage = error.response?.data?.error || error.response?.data?.message || "Failed to load credits. Please try again.";
+			setErrorWithFetchAction(errorMessage);
+			setErrorLoadingCredits(errorMessage);
+			warningToast({ message: errorMessage });
 			console.error("Error fetching credits:", error);
 		} finally {
 			setLoadingCredits(false);
@@ -288,8 +290,10 @@ const UserUI = () => {
 			setLoansToShow(data);
 			setErrorLoadingLoans(null);
 		} catch (error) {
-			setErrorLoadingLoans("Failed to load loans. Click the button to try again.");
-			warningToast({ message: errorLoadingLoans });
+			const errorMessage = error.response?.data?.error || error.response?.data?.message || "Failed to load loans. Please try again.";
+			setErrorWithFetchAction(errorMessage);
+			setErrorLoadingLoans(errorMessage);
+			warningToast({ message: errorMessage });
 			console.error("Error fetching loans:", error);
 		} finally {
 			setLoadingLoans(false);
@@ -332,8 +336,10 @@ const UserUI = () => {
 			setRecordsToShow(data);
 			setErrorLoadingRecords(null);
 		} catch (error) {
-			setErrorLoadingRecords("Failed to load records. Click the button to try again.");
-			warningToast({ message: errorLoadingRecords });
+			const errorMessage = error.response?.data?.error || error.response?.data?.message || "Failed to load records. Please try again.";
+			setErrorWithFetchAction(errorMessage);
+			setErrorLoadingRecords(errorMessage);
+			warningToast({ message: errorMessage });
 			console.error("Error fetching records:", error);
 		} finally {
 			setLoadingRecords(false);
@@ -1435,7 +1441,7 @@ const UserUI = () => {
 				setAnnualInterestToShow(data);
 				setErrorLoadingAnnualInterest(null);
 			} catch (error) {
-				setErrorLoadingAnnualInterest("Failed to load loans. Click the button to try again.");
+				setErrorLoadingAnnualInterest("Failed to load loans. Please try again.");
 				warningToast({ message: errorLoadingAnnualInterest });
 				console.error("Error fetching loans:", error);
 			} finally {
@@ -2525,10 +2531,7 @@ const UserUI = () => {
 												className="form-control"
 												value={tranches}
 												onChange={(e) => {
-													const inputValue = e.target.value;
-													const numericValue = Math.max(0, Number(inputValue)); // Avoid negative values
-													const newTranches = numericValue > 12 ? 12 : numericValue; // Reset to 12 if needed
-													setTranches(newTranches);
+													setTranches(maxInputNumber(e, 12));
 												}}
 												min={1}
 												max={12}
@@ -3370,13 +3373,13 @@ const UserUI = () => {
 									</button>
 								</li> */}
 
-								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'settings' ? 'active blur-bg-2px' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'settings' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("settings"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Gear size={20} weight='fill' className="me-2" /> Settings
 									</button>
-								</li> */}
+								</li>
 
 								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-3 d-md-none clickDown`} onClick={() => { logout() }}>
 									<button className="nav-link w-100">

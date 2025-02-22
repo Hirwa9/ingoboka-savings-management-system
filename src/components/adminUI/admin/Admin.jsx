@@ -188,8 +188,9 @@ const Admin = () => {
 			setMembersToShow(data);
 			setErrorLoadingMembers(null);
 		} catch (error) {
-			setErrorLoadingMembers("Failed to load members. Click the button to try again.");
-			warningToast({ message: errorLoadingMembers, type: "danger" });
+			const errorMessage = error.response?.data?.error || error.response?.data?.message || "Failed to load members. Please try again.";
+			setErrorWithFetchAction(errorMessage);
+			warningToast({ message: errorMessage });
 			console.error("Error fetching members:", error);
 		} finally {
 			setLoadingMembers(false);
@@ -259,8 +260,10 @@ const Admin = () => {
 			setAllFigures(data);
 			setErrorLoadingFigures(null);
 		} catch (error) {
-			setErrorLoadingFigures("Failed to load figures. Click the button to try again.");
-			warningToast({ message: errorLoadingFigures });
+			const errorMessage = error.response?.data?.error || error.response?.data?.message || "Failed to load figures. Please try again.";
+			setErrorWithFetchAction(errorMessage);
+			setErrorLoadingFigures(errorMessage);
+			warningToast({ message: errorMessage });
 			console.error("Error fetching figures:", error);
 		} finally {
 			setLoadingFigures(false);
@@ -290,8 +293,10 @@ const Admin = () => {
 			setCreditsToShow(data);
 			setErrorLoadingCredits(null);
 		} catch (error) {
-			setErrorLoadingCredits("Failed to load credits. Click the button to try again.");
-			warningToast({ message: errorLoadingCredits });
+			const errorMessage = error.response?.data?.error || error.response?.data?.message || "Failed to load credits. Please try again.";
+			setErrorWithFetchAction(errorMessage);
+			setErrorLoadingCredits(errorMessage);
+			warningToast({ message: errorMessage });
 			console.error("Error fetching credits:", error);
 		} finally {
 			setLoadingCredits(false);
@@ -321,8 +326,10 @@ const Admin = () => {
 			setLoansToShow(data);
 			setErrorLoadingLoans(null);
 		} catch (error) {
-			setErrorLoadingLoans("Failed to load loans. Click the button to try again.");
-			warningToast({ message: errorLoadingLoans });
+			const errorMessage = error.response?.data?.error || error.response?.data?.message || "Failed to load loans. Please try again.";
+			setErrorWithFetchAction(errorMessage);
+			setErrorLoadingLoans(errorMessage);
+			warningToast({ message: errorMessage });
 			console.error("Error fetching loans:", error);
 		} finally {
 			setLoadingLoans(false);
@@ -479,8 +486,10 @@ const Admin = () => {
 			setRecordsToShow(data);
 			setErrorLoadingRecords(null);
 		} catch (error) {
-			setErrorLoadingRecords("Failed to load records. Click the button to try again.");
-			warningToast({ message: errorLoadingRecords });
+			const errorMessage = error.response?.data?.error || error.response?.data?.message || "Failed to load records. Please try again.";
+			setErrorWithFetchAction(errorMessage);
+			setErrorLoadingRecords(errorMessage);
+			warningToast({ message: errorMessage });
 			console.error("Error fetching records:", error);
 		} finally {
 			setLoadingRecords(false);
@@ -522,7 +531,7 @@ const Admin = () => {
 	};
 
 	// Active UI section
-	const [activeSection, setActiveSection] = useState("dashboard");
+	// const [activeSection, setActiveSection] = useState("dashboard");
 	// const [activeSection, setActiveSection] = useState("messages");
 	// const [activeSection, setActiveSection] = useState("members");
 	// const [activeSection, setActiveSection] = useState("savings");
@@ -530,7 +539,7 @@ const Admin = () => {
 	// const [activeSection, setActiveSection] = useState("interest");
 	// const [activeSection, setActiveSection] = useState("transactions");
 	// const [activeSection, setActiveSection] = useState("reports");
-	// const [activeSection, setActiveSection] = useState("settings");
+	const [activeSection, setActiveSection] = useState("settings");
 	// const [activeSection, setActiveSection] = useState("auditLogs");
 
 	const [isWaitingFetchAction, setIsWaitingFetchAction] = useState(false);
@@ -2679,8 +2688,10 @@ const Admin = () => {
 				setAnnualInterestToShow(data);
 				setErrorLoadingAnnualInterest(null);
 			} catch (error) {
-				setErrorLoadingAnnualInterest("Failed to load loans. Click the button to try again.");
-				warningToast({ message: errorLoadingAnnualInterest });
+				const errorMessage = error.response?.data?.error || error.response?.data?.message || "Failed to load annual interest records. Please try again.";
+				setErrorWithFetchAction(errorMessage);
+				setErrorLoadingAnnualInterest(errorMessage);
+				warningToast({ message: errorMessage });
 				console.error("Error fetching loans:", error);
 			} finally {
 				setLoadingAnnualInterest(false);
@@ -4182,7 +4193,7 @@ const Admin = () => {
 														{/* The plan */}
 														<div className='overflow-auto'>
 															<table className="table table-hover h-100">
-																<thead className='table-primary position-sticky top-0 inx-1 text-uppercase small'>
+																<thead className='table-secondary position-sticky top-0 inx-1 text-uppercase small'>
 																	<tr>
 																		<th className='ps-sm-3 py-3 text-nowrap text-gray-700 fw-normal'>Tranche</th>
 																		<th className='py-3 text-nowrap text-gray-700 fw-normal fw-normal'>Backfill amount</th>
