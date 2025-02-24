@@ -238,11 +238,11 @@ const Admin = () => {
 			.find(t => t.type === 'secondary')?.rate
 	}, [creditsSettings]);
 
-	const creditPrimaryInterestPercentage = useCallback(() => {
+	const creditPrimaryInterestPercentage = useMemo(() => {
 		return creditPrimaryInterest / 100
 	}, [creditPrimaryInterest]);
 
-	const creditSecondaryInterestPercentage = useCallback(() => {
+	const creditSecondaryInterestPercentage = useMemo(() => {
 		return creditSecondaryInterest / 100
 	}, [creditSecondaryInterest]);
 
@@ -4042,7 +4042,7 @@ const Admin = () => {
 										{/* Zero content - no credits */}
 										{!creditsToShow.filter(cr => cr.status === 'pending').length > 0 && (
 											<NotFound
-												notFoundMessage="No credit found"
+												notFoundMessage="No pending credits found"
 												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
 												refreshFunction={fetchCredits}
 											/>
@@ -4121,7 +4121,7 @@ const Admin = () => {
 										{/* Zero content - no credits */}
 										{!creditsToShow.filter(cr => cr.status === 'approved').length > 0 && (
 											<NotFound
-												notFoundMessage="No credit found"
+												notFoundMessage="No approved credits found"
 												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
 												refreshFunction={fetchCredits}
 											/>
@@ -4234,7 +4234,7 @@ const Admin = () => {
 										{/* Zero content - no credits */}
 										{!creditsToShow.filter(cr => cr.status === 'rejected').length > 0 && (
 											<NotFound
-												notFoundMessage="No credit found"
+												notFoundMessage="No rejected credits found"
 												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
 												refreshFunction={fetchCredits}
 											/>
@@ -4306,10 +4306,15 @@ const Admin = () => {
 																<b>Amount requested</b>: <CurrencyText amount={Number(selectedCredit.creditAmount)} />
 															</li>
 															<li className='border-start border-dark border-opacity-50 ps-2'>
-																<b>Interest</b>: <CurrencyText amount={(Number(selectedCredit.creditAmount) * creditPrimaryInterestPercentage)} />
+																<b>Interest</b>: <CurrencyText amount={
+																	JSON.parse(selectedCredit.creditPayment).reduce((sum, tr) => sum + Number(tr.tranchAmount), 0) -
+																	Number(selectedCredit.creditAmount)
+																} />
 															</li>
 															<li className='border-start border-dark border-opacity-50 ps-2'>
-																<b>Amount to pay</b>: <CurrencyText amount={(Number(selectedCredit.creditAmount) + (Number(selectedCredit.creditAmount) * creditPrimaryInterestPercentage))} />
+																<b>Amount to pay</b>: <CurrencyText amount={
+																	JSON.parse(selectedCredit.creditPayment).reduce((sum, tr) => sum + Number(tr.tranchAmount), 0)
+																} />
 															</li>
 														</ul>
 

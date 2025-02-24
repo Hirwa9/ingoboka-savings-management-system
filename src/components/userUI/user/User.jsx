@@ -196,20 +196,20 @@ const UserUI = () => {
 	// Credits settings
 
 	const creditPrimaryInterest = useMemo(() => {
-		return creditsSettings?.interests
-			.find(t => t.type === 'primary')?.rate
+		return Number(creditsSettings?.interests
+			.find(t => t.type === 'primary')?.rate)
 	}, [creditsSettings]);
 
 	const creditSecondaryInterest = useMemo(() => {
-		return creditsSettings?.interests
-			.find(t => t.type === 'secondary')?.rate
+		return Number(creditsSettings?.interests
+			.find(t => t.type === 'secondary')?.rate)
 	}, [creditsSettings]);
 
-	const creditPrimaryInterestPercentage = useCallback(() => {
+	const creditPrimaryInterestPercentage = useMemo(() => {
 		return creditPrimaryInterest / 100
 	}, [creditPrimaryInterest]);
 
-	const creditSecondaryInterestPercentage = useCallback(() => {
+	const creditSecondaryInterestPercentage = useMemo(() => {
 		return creditSecondaryInterest / 100
 	}, [creditSecondaryInterest]);
 
@@ -275,6 +275,7 @@ const UserUI = () => {
 			const data = response.data;
 			setAllMembers(data);
 			setMembersToShow(data);
+			setSignedUser(data.find(m => m.id === Number(userId)));
 			setErrorLoadingMembers(null);
 		} catch (error) {
 			const errorMessage = error.response?.data?.error || error.response?.data?.message || "Failed to load members. Please try again.";
@@ -392,7 +393,6 @@ const UserUI = () => {
 			setLoadingCredits(false);
 		}
 	};
-
 
 	useEffect(() => {
 		fetchCredits();
@@ -1785,8 +1785,10 @@ const UserUI = () => {
 			creditAmount * (1 + creditPrimaryInterestPercentage)
 		), [creditAmount])
 
+
 		const calculateDefaultTrancheAmounts = (credit, numTranches) => {
 			const totalAmountWithInterest = Number(credit) * (1 + creditPrimaryInterestPercentage);
+			// console.log('totalAmountWithInterest: ', totalAmountWithInterest);
 			return Array.from({ length: numTranches }, () => totalAmountWithInterest / numTranches);
 		};
 
@@ -2185,21 +2187,21 @@ const UserUI = () => {
 									onClick={() => { setActiveLoanSection('pending'); setActiveLoanSectionColor('#f4e4b675') }}
 								>
 									<h5 className='mb-0 small'>Pending</h5>
-									<p className='mb-0 fs-75'>( {creditsToShow.filter(cr => cr.status === 'pending').length} )</p>
+									<p className='mb-0 fs-75'>( {creditsToShow.filter(cr => (cr.status === 'pending' && cr.memberId === signedUser?.id)).length} )</p>
 								</div>
 								<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-success border-opacity-25 tab-selector ${activeLoanSection === 'approved' ? 'active' : ''} user-select-none ptr clickDown`}
 									style={{ '--_activeColor': '#a3d5bb' }}
 									onClick={() => { setActiveLoanSection('approved'); setActiveLoanSectionColor('#a3d5bb75') }}
 								>
 									<h5 className='mb-0 small'>Approved</h5>
-									<p className='mb-0 fs-75'>( {creditsToShow.filter(cr => cr.status === 'approved').length} )</p>
+									<p className='mb-0 fs-75'>( {creditsToShow.filter(cr => (cr.status === 'approved' && cr.memberId === signedUser?.id)).length} )</p>
 								</div>
 								<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-danger border-opacity-25 tab-selector ${activeLoanSection === 'rejected' ? 'active' : ''} user-select-none ptr clickDown`}
 									style={{ '--_activeColor': '#ebc1c5' }}
 									onClick={() => { setActiveLoanSection('rejected'); setActiveLoanSectionColor('#ebc1c575') }}
 								>
 									<h5 className='mb-0 small'>Rejected</h5>
-									<p className='mb-0 fs-75'>( {creditsToShow.filter(cr => cr.status === 'rejected').length} )</p>
+									<p className='mb-0 fs-75'>( {creditsToShow.filter(cr => (cr.status === 'rejected' && cr.memberId === signedUser?.id)).length} )</p>
 								</div>
 							</div>
 
@@ -2207,7 +2209,7 @@ const UserUI = () => {
 							<div style={{ minHeight: '60vh' }}>
 								{activeLoanSection === 'pending' && (
 									<>
-										{creditsToShow.filter(cr => cr.status === 'pending').length > 0 && (
+										{creditsToShow.filter(cr => (cr.status === 'pending' && cr.memberId === signedUser?.id)).length > 0 && (
 											<div className='overflow-auto'>
 												<table className="table table-hover h-100">
 													<thead className='table-warning position-sticky top-0 inx-1 text-uppercase small'>
@@ -2221,7 +2223,7 @@ const UserUI = () => {
 													</thead>
 													<tbody>
 														{creditsToShow
-															.filter(cr => cr.status === 'pending')
+															.filter(cr => (cr.status === 'pending' && cr.memberId === signedUser?.id))
 															.sort((a, b) => new Date(a.updatedAt) - new Date(b.updatedAt))
 															.map((credit, index) => {
 																const associatedMember = allMembers.find(m => m.id === credit.memberId);
@@ -2270,9 +2272,9 @@ const UserUI = () => {
 											</div>
 										)}
 										{/* Zero content - no credits */}
-										{!creditsToShow.filter(cr => cr.status === 'pending').length > 0 && (
+										{!creditsToShow.filter(cr => (cr.status === 'pending' && cr.memberId === signedUser?.id)).length > 0 && (
 											<NotFound
-												notFoundMessage="No credit found"
+												notFoundMessage="No pending credits found"
 												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
 												refreshFunction={fetchCredits}
 											/>
@@ -2282,7 +2284,7 @@ const UserUI = () => {
 
 								{activeLoanSection === 'approved' && (
 									<>
-										{creditsToShow.filter(cr => cr.status === 'approved').length > 0 ? (
+										{creditsToShow.filter(cr => (cr.status === 'approved' && cr.memberId === signedUser?.id)).length > 0 ? (
 											<div className='overflow-auto'>
 												<table className="table table-hover h-100">
 													<thead className='table-success position-sticky top-0 inx-1 text-uppercase small'>
@@ -2297,7 +2299,7 @@ const UserUI = () => {
 													</thead>
 													<tbody>
 														{creditsToShow
-															.filter(cr => cr.status === 'approved')
+															.filter(cr => (cr.status === 'approved' && cr.memberId === signedUser?.id))
 															.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 															.map((credit, index) => {
 																const associatedMember = allMembers.find(m => m.id === credit.memberId);
@@ -2349,7 +2351,7 @@ const UserUI = () => {
 											</div>
 										) : (
 											<NotFound
-												notFoundMessage="No credit found"
+												notFoundMessage="No approved credits found"
 												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
 												refreshFunction={fetchCredits}
 											/>
@@ -2360,7 +2362,7 @@ const UserUI = () => {
 
 								{activeLoanSection === 'rejected' && (
 									<>
-										{creditsToShow.filter(cr => cr.status === 'rejected').length > 0 && (
+										{creditsToShow.filter(cr => (cr.status === 'rejected' && cr.memberId === signedUser?.id)).length > 0 && (
 											<div className='overflow-auto'>
 												<table className="table table-hover h-100">
 													<thead className='table-danger position-sticky top-0 inx-1 text-uppercase small'>
@@ -2376,7 +2378,7 @@ const UserUI = () => {
 													</thead>
 													<tbody>
 														{creditsToShow
-															.filter(cr => cr.status === 'rejected')
+															.filter(cr => (cr.status === 'rejected' && cr.memberId === signedUser?.id))
 															.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 															.map((credit, index) => {
 																const associatedMember = allMembers.find(m => m.id === credit.memberId);
@@ -2452,9 +2454,9 @@ const UserUI = () => {
 											</div>
 										)}
 										{/* Zero content - no credits */}
-										{!creditsToShow.filter(cr => cr.status === 'rejected').length > 0 && (
+										{!creditsToShow.filter(cr => (cr.status === 'rejected' && cr.memberId === signedUser?.id)).length > 0 && (
 											<NotFound
-												notFoundMessage="No credit found"
+												notFoundMessage="No rejected credits found"
 												icon={<Receipt size={80} className="text-center w-100 mb-3 opacity-50" />}
 												refreshFunction={fetchCredits}
 											/>
@@ -2526,10 +2528,15 @@ const UserUI = () => {
 																<b>Amount requested</b>: <CurrencyText amount={Number(selectedCredit.creditAmount)} />
 															</li>
 															<li className='border-start border-dark border-opacity-50 ps-2'>
-																<b>Interest</b>: <CurrencyText amount={(Number(selectedCredit.creditAmount) * creditPrimaryInterestPercentage)} />
+																<b>Interest</b>: <CurrencyText amount={
+																	JSON.parse(selectedCredit.creditPayment).reduce((sum, tr) => sum + Number(tr.tranchAmount), 0) -
+																	Number(selectedCredit.creditAmount)
+																} />
 															</li>
 															<li className='border-start border-dark border-opacity-50 ps-2'>
-																<b>Amount to pay</b>: <CurrencyText amount={(Number(selectedCredit.creditAmount) + (Number(selectedCredit.creditAmount) * creditPrimaryInterestPercentage))} />
+																<b>Amount to pay</b>: <CurrencyText amount={
+																	JSON.parse(selectedCredit.creditPayment).reduce((sum, tr) => sum + Number(tr.tranchAmount), 0)
+																} />
 															</li>
 														</ul>
 
