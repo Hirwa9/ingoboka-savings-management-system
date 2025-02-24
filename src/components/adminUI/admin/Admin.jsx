@@ -8,7 +8,7 @@ import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
 import LoadingIndicator from '../../LoadingIndicator';
-import { cError, fncPlaceholder, formatDate, getDateHoursMinutes, normalizedLowercaseString, printDatesInterval } from '../../../scripts/myScripts';
+import { cError, cLog, fncPlaceholder, formatDate, getDateHoursMinutes, normalizedLowercaseString, printDatesInterval } from '../../../scripts/myScripts';
 import FormatedDate from '../../common/FormatedDate';
 import FetchError from '../../common/FetchError';
 import useCustomDialogs from '../../common/hooks/useCustomDialogs';
@@ -161,7 +161,6 @@ const Admin = () => {
 		}
 	};
 
-
 	/**
 	 * Settings
 	 */
@@ -191,6 +190,99 @@ const Admin = () => {
 		fetchSettings();
 	}, []);
 
+	// Extract settings data
+
+	const [retrievedData, setRetrievedData] = useState({});
+
+	useEffect(() => {
+		if (allSettings.settingsData) {
+			setRetrievedData(JSON.parse(allSettings?.settingsData));
+		}
+	}, [allSettings]);
+
+	const sysSettings = useMemo(() => (
+		retrievedData?.system
+	), [retrievedData])
+
+	const membersSettings = useMemo(() => (
+		retrievedData?.members
+	), [retrievedData])
+
+	const savingsSettings = useMemo(() => (
+		retrievedData?.savings
+	), [retrievedData])
+
+	const expensesSettings = useMemo(() => (
+		retrievedData?.expenses
+	), [retrievedData])
+
+	const creditsSettings = useMemo(() => (
+		retrievedData?.credits
+	), [retrievedData])
+
+	// Members settings
+
+	const memberRoles = useMemo(() => membersSettings?.roles || [], [membersSettings]);
+
+	const [roleSettings, setRoleSettings] = useState(memberRoles || []);
+
+	// Credits settings
+
+	const creditPrimaryInterest = useMemo(() => {
+		return creditsSettings?.interests
+			.find(t => t.type === 'primary')?.rate
+	}, [creditsSettings]);
+
+	const creditSecondaryInterest = useMemo(() => {
+		return creditsSettings?.interests
+			.find(t => t.type === 'secondary')?.rate
+	}, [creditsSettings]);
+
+	const creditPrimaryInterestPercentage = useCallback(() => {
+		return creditPrimaryInterest / 100
+	}, [creditPrimaryInterest]);
+
+	const creditSecondaryInterestPercentage = useCallback(() => {
+		return creditSecondaryInterest / 100
+	}, [creditSecondaryInterest]);
+
+	const [creditSettings, setCreditSettings] = useState({
+		interestPrimary: creditPrimaryInterest,
+		interestSecondary: creditSecondaryInterest,
+		penalty: 2,
+	});
+
+	// Savings settings
+
+	const monthlySavingsDay = useMemo(() => {
+		return savingsSettings?.monthlyDueDay
+	}, [savingsSettings]);
+
+	const unitShareValue = useMemo(() => {
+		return savingsSettings?.types
+			.find(t => t.type === 'cotisation')?.amount
+	}, [savingsSettings]);
+
+	const cotisationPenalty = useMemo(() => {
+		return savingsSettings?.types
+			.find(t => t.type === 'cotisation')?.delayPenaltyAmount
+	}, [savingsSettings]);
+
+	const [shareSettings, setShareSettings] = useState({
+		valuePerShare: unitShareValue,
+	});
+
+	const [savingSettings, setSavingSettings] = useState({
+		cotisation: true,
+		social: true,
+		dueDate: savingsSettings?.monthlyDueDay,
+		delayPenalty: cotisationPenalty,
+	});
+
+	// Records settings
+
+	const expenseTypes = useMemo(() => expensesSettings?.types || [], [expensesSettings]);
+
 	/**
 	 * Members
 	 */
@@ -200,7 +292,7 @@ const Admin = () => {
 	const [loadingMembers, setLoadingMembers] = useState(false);
 	const [errorLoadingMembers, setErrorLoadingMembers] = useState(false);
 
-	const totalCotisation = allMembers.reduce((sum, m) => (sum + (m.shares * 20000)), 0);
+	const totalCotisation = allMembers.reduce((sum, m) => (sum + (m.shares * unitShareValue)), 0);
 	const totalSocial = allMembers.reduce((sum, m) => sum + Number(m.social), 0);
 
 	const accountantNames = useMemo(() => {
@@ -2140,9 +2232,9 @@ const Admin = () => {
 				const totalAmount = updatedMonths.reduce((total, currentMonth) => {
 					if (applyDelayPenalties) {
 						const isCurrentLate = checkIfLate(currentMonth);
-						return total + (isCurrentLate ? 21000 : 20000);
+						return total + (isCurrentLate ? (unitShareValue + cotisationPenalty) : unitShareValue);
 					} else {
-						return total + 20000;
+						return total + unitShareValue;
 					}
 				}, 0);
 
@@ -2479,7 +2571,7 @@ const Admin = () => {
 													{savingRecordType === 'cotisation' && applyDelayPenalties && delayedMonths > 0 && (
 														<div className="mb-3 p-2 form-text bg-danger-subtle rounded">
 															<p className='mb-2 small text-danger-emphasis'>
-																This applies a fine of <CurrencyText amount={1000} /> for each of the delayed months.
+																This applies a fine of <CurrencyText amount={cotisationPenalty} /> for each of the delayed months.
 															</p>
 															<ul className="list-unstyled d-flex gap-2 flex-wrap mb-0 mb-0">
 																{selectedMonths
@@ -2562,7 +2654,7 @@ const Admin = () => {
 														<label htmlFor="savingAmount" className="form-label fw-bold" required>
 															Number of shares ({multipleSharesAmount !== '' ? `${multipleSharesAmount} Share${multipleSharesAmount > 1 ? 's' : ''}` : ''}) {multipleSharesAmount !== '' && multipleSharesAmount !== 0 && (
 																<>
-																	= <CurrencyText amount={Number(multipleSharesAmount) * 20000} />
+																	= <CurrencyText amount={Number(multipleSharesAmount) * unitShareValue} />
 																</>
 															)}
 														</label>
@@ -2577,7 +2669,7 @@ const Admin = () => {
 															value={multipleSharesAmount}
 															onChange={(e) => setMultipleSharesAmount(e.target.value)}
 														/>
-														<div className="form-text text-info-emphasis fw-bold">Unit share value is <CurrencyText amount={20000} /> </div>
+														<div className="form-text text-info-emphasis fw-bold">Unit share value is <CurrencyText amount={unitShareValue} /> </div>
 													</div>
 
 													{/* Register new member */}
@@ -2666,7 +2758,7 @@ const Admin = () => {
 		const currentDate = new Date();
 		const currentYear = currentDate.getFullYear();
 		const startCondition = new Date(`${currentYear}-12-26`); // 5 days before year end
-		const endCondition = new Date(`${currentYear + 1}-01-10`); // 10 days into next year
+		const endCondition = new Date(`${currentYear}-01-${monthlySavingsDay}`); // 10 days into next year
 		const isWithinCondition = currentDate >= startCondition && currentDate <= endCondition;
 
 		// Handle interest distribution
@@ -2786,8 +2878,8 @@ const Admin = () => {
 									const sharesPercentage = (sharesProportion * 100).toFixed(3);
 									const activeinterest = currentPeriodPaidInterest * sharesProportion;
 									const interest = activeinterest + Number(member.initialInterest);
-									const interestReceivable = (Math.floor(interest / 20000) * 20000);
-									const sharesReceivable = interestReceivable / 20000;
+									const interestReceivable = (Math.floor(interest / unitShareValue) * unitShareValue);
+									const sharesReceivable = interestReceivable / unitShareValue;
 									const interestRemains = interest - interestReceivable;
 
 									totalSharesPercentage += Number(sharesPercentage);
@@ -2897,13 +2989,13 @@ const Admin = () => {
 								{keepAnnualInterest ? (
 									<>
 										<p>
-											<Info size={22} weight='fill' className='me-1 opacity-50' /> The interest earned by each member will be added to their total cotisation amount, along with the corresponding share count. Only the maximum share multiples (<CurrencyText amount={20000} /> per share) of the earned interest will be applied, while any remaining balance will be carried forward as the initial interest for the following year.
+											<Info size={22} weight='fill' className='me-1 opacity-50' /> The interest earned by each member will be added to their total cotisation amount, along with the corresponding share count. Only the maximum share multiples (<CurrencyText amount={unitShareValue} /> per share) of the earned interest will be applied, while any remaining balance will be carried forward as the initial interest for the following year.
 										</p>
 									</>
 								) : (
 									<>
 										<p>
-											<Info size={22} weight='fill' className='me-1 opacity-50' /> The interest earned by each member will be calculated and withdrawn as requested. Only the maximum share multiples (<CurrencyText amount={20000} /> per share) of the earned interest are eligible for withdrawal, while any remaining balance will be carried forward as the initial interest for the following year.
+											<Info size={22} weight='fill' className='me-1 opacity-50' /> The interest earned by each member will be calculated and withdrawn as requested. Only the maximum share multiples (<CurrencyText amount={unitShareValue} /> per share) of the earned interest are eligible for withdrawal, while any remaining balance will be carried forward as the initial interest for the following year.
 										</p>
 									</>
 								)}
@@ -4214,10 +4306,10 @@ const Admin = () => {
 																<b>Amount requested</b>: <CurrencyText amount={Number(selectedCredit.creditAmount)} />
 															</li>
 															<li className='border-start border-dark border-opacity-50 ps-2'>
-																<b>Interest</b>: <CurrencyText amount={(Number(selectedCredit.creditAmount) * 0.05)} />
+																<b>Interest</b>: <CurrencyText amount={(Number(selectedCredit.creditAmount) * creditPrimaryInterestPercentage)} />
 															</li>
 															<li className='border-start border-dark border-opacity-50 ps-2'>
-																<b>Amount to pay</b>: <CurrencyText amount={(Number(selectedCredit.creditAmount) + (Number(selectedCredit.creditAmount) * 0.05))} />
+																<b>Amount to pay</b>: <CurrencyText amount={(Number(selectedCredit.creditAmount) + (Number(selectedCredit.creditAmount) * creditPrimaryInterestPercentage))} />
 															</li>
 														</ul>
 
@@ -4960,7 +5052,7 @@ const Admin = () => {
 	// Settings
 	const Settings = () => {
 		return (
-			<SystemSettings data={allSettings} />
+			<SystemSettings data={allSettings} userType='admin' />
 		)
 	}
 
@@ -5280,21 +5372,21 @@ const Admin = () => {
 
 								<hr />
 
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'auditLogs' ? 'active blur-bg-2px' : ''}`}
+								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'auditLogs' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("auditLogs"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Notebook size={20} weight='fill' className="me-2" /> Audit Logs
 									</button>
-								</li>
+								</li> */}
 
-								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'settings' ? 'active blur-bg-2px' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'settings' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("settings"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Gear size={20} weight='fill' className="me-2" /> Settings
 									</button>
-								</li> */}
+								</li>
 
 								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-3 d-md-none clickDown`} onClick={() => { logout() }}>
 									<button className="nav-link w-100">

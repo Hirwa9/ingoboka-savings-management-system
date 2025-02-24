@@ -29,6 +29,7 @@ import RightFixedCard from '../../common/rightFixedCard/RightFixedCard';
 import Popover from '@idui/react-popover';
 import SmallLoader from '../../common/SmallLoader';
 import NextStepInformer from '../../common/NextStepInformer';
+import SystemSettings from '../../systemSettings/SystemSettings';
 
 const UserUI = () => {
 
@@ -38,6 +39,10 @@ const UserUI = () => {
 
 	const signedUserNames = useMemo(() => (
 		`${signedUser?.husbandFirstName} ${signedUser?.husbandLastName}`
+	), [signedUser]);
+
+	const signedUserType = useMemo(() => (
+		signedUser?.type
 	), [signedUser]);
 
 	// Custom hooks
@@ -124,6 +129,128 @@ const UserUI = () => {
 	*/
 
 	/**
+	 * Settings
+	 */
+
+	const [allSettings, setAllSettings] = useState([]);
+	const [loadingSettings, setLoadingSettings] = useState(false);
+	const [errorLoadingSettings, setErrorLoadingSettings] = useState(false);
+
+	// Fetch settings
+	const fetchSettings = async () => {
+		try {
+			setLoadingSettings(true);
+			const response = await Axios.get(`/api/settings/system/all`);
+			const data = response.data;
+			setAllSettings(data);
+			setErrorLoadingSettings(null);
+		} catch (error) {
+			const errorMessage = error.response?.data?.error || error.response?.data?.message || "Failed to load settings. Please try again.";
+			warningToast({ message: errorMessage });
+			console.error("Error fetching settings:", error);
+		} finally {
+			setLoadingSettings(false);
+		}
+	};
+
+	useEffect(() => {
+		fetchSettings();
+	}, []);
+
+	// Extract settings data
+
+	const [retrievedData, setRetrievedData] = useState({});
+
+	useEffect(() => {
+		if (allSettings.settingsData) {
+			setRetrievedData(JSON.parse(allSettings?.settingsData));
+		}
+	}, [allSettings]);
+
+	const sysSettings = useMemo(() => (
+		retrievedData?.system
+	), [retrievedData])
+
+	const membersSettings = useMemo(() => (
+		retrievedData?.members
+	), [retrievedData])
+
+	const savingsSettings = useMemo(() => (
+		retrievedData?.savings
+	), [retrievedData])
+
+	const expensesSettings = useMemo(() => (
+		retrievedData?.expenses
+	), [retrievedData])
+
+	const creditsSettings = useMemo(() => (
+		retrievedData?.credits
+	), [retrievedData])
+
+	// Members settings
+
+	const memberRoles = useMemo(() => membersSettings?.roles || [], [membersSettings]);
+
+	const [roleSettings, setRoleSettings] = useState(memberRoles || []);
+
+	// Credits settings
+
+	const creditPrimaryInterest = useMemo(() => {
+		return creditsSettings?.interests
+			.find(t => t.type === 'primary')?.rate
+	}, [creditsSettings]);
+
+	const creditSecondaryInterest = useMemo(() => {
+		return creditsSettings?.interests
+			.find(t => t.type === 'secondary')?.rate
+	}, [creditsSettings]);
+
+	const creditPrimaryInterestPercentage = useCallback(() => {
+		return creditPrimaryInterest / 100
+	}, [creditPrimaryInterest]);
+
+	const creditSecondaryInterestPercentage = useCallback(() => {
+		return creditSecondaryInterest / 100
+	}, [creditSecondaryInterest]);
+
+	const [creditSettings, setCreditSettings] = useState({
+		interestPrimary: creditPrimaryInterest,
+		interestSecondary: creditSecondaryInterest,
+		penalty: 2,
+	});
+
+	// Savings settings
+
+	const monthlySavingsDay = useMemo(() => {
+		return savingsSettings?.monthlyDueDay
+	}, [savingsSettings]);
+
+	const unitShareValue = useMemo(() => {
+		return savingsSettings?.types
+			.find(t => t.type === 'cotisation')?.amount
+	}, [savingsSettings]);
+
+	const cotisationPenalty = useMemo(() => {
+		return savingsSettings?.types
+			.find(t => t.type === 'cotisation')?.delayPenaltyAmount
+	}, [savingsSettings]);
+
+	const [shareSettings, setShareSettings] = useState({
+		valuePerShare: unitShareValue,
+	});
+
+	const [savingSettings, setSavingSettings] = useState({
+		cotisation: true,
+		social: true,
+		dueDate: savingsSettings?.monthlyDueDay,
+		delayPenalty: cotisationPenalty,
+	});
+
+	// Records settings
+
+	const expenseTypes = useMemo(() => expensesSettings?.types || [], [expensesSettings]);
+
+	/**
 	 * Members
 	 */
 
@@ -132,7 +259,7 @@ const UserUI = () => {
 	const [loadingMembers, setLoadingMembers] = useState(false);
 	const [errorLoadingMembers, setErrorLoadingMembers] = useState(false);
 
-	const totalCotisation = allMembers.reduce((sum, m) => (sum + (m.shares * 20000)), 0);
+	const totalCotisation = allMembers.reduce((sum, m) => (sum + (m.shares * unitShareValue)), 0);
 	const totalSocial = allMembers.reduce((sum, m) => sum + Number(m.social), 0);
 
 	const accountantNames = useMemo(() => {
@@ -968,9 +1095,9 @@ const UserUI = () => {
 				const totalAmount = updatedMonths.reduce((total, currentMonth) => {
 					if (applyDelayPenalties) {
 						const isCurrentLate = checkIfLate(currentMonth);
-						return total + (isCurrentLate ? 21000 : 20000);
+						return total + (isCurrentLate ? (unitShareValue + cotisationPenalty) : unitShareValue);
 					} else {
-						return total + 20000;
+						return total + unitShareValue;
 					}
 				}, 0);
 
@@ -1277,7 +1404,7 @@ const UserUI = () => {
 													{savingRecordType === 'cotisation' && applyDelayPenalties && delayedMonths > 0 && (
 														<div className="mb-3 p-2 form-text bg-danger-subtle rounded">
 															<p className='mb-2 small text-danger-emphasis'>
-																This applies a fine of <CurrencyText amount={1000} /> for each of the delayed months.
+																This applies a fine of <CurrencyText amount={cotisationPenalty} /> for each of the delayed months.
 															</p>
 															<ul className="list-unstyled d-flex gap-2 flex-wrap mb-0 mb-0">
 																{selectedMonths
@@ -1360,7 +1487,7 @@ const UserUI = () => {
 														<label htmlFor="savingAmount" className="form-label fw-bold" required>
 															Number of shares ({multipleSharesAmount !== '' ? `${multipleSharesAmount} Share${multipleSharesAmount > 1 ? 's' : ''}` : ''}) {multipleSharesAmount !== '' && multipleSharesAmount !== 0 && (
 																<>
-																	= <CurrencyText amount={Number(multipleSharesAmount) * 20000} />
+																	= <CurrencyText amount={Number(multipleSharesAmount) * unitShareValue} />
 																</>
 															)}
 														</label>
@@ -1375,7 +1502,7 @@ const UserUI = () => {
 															value={multipleSharesAmount}
 															onChange={(e) => setMultipleSharesAmount(e.target.value)}
 														/>
-														<div className="form-text text-info-emphasis fw-bold">Unit share value is <CurrencyText amount={20000} /> </div>
+														<div className="form-text text-info-emphasis fw-bold">Unit share value is <CurrencyText amount={unitShareValue} /> </div>
 													</div>
 													<div className="mb-3 p-2 form-text bg-dark-subtle rounded">
 														<p className='mb-2 small text-dark-emphasis'>
@@ -1505,8 +1632,8 @@ const UserUI = () => {
 								const sharesPercentage = (sharesProportion * 100).toFixed(3);
 								const activeinterest = currentPeriodPaidInterest * sharesProportion;
 								const interest = activeinterest + Number(member.initialInterest);
-								const interestReceivable = (Math.floor(interest / 20000) * 20000);
-								const sharesReceivable = interestReceivable / 20000;
+								const interestReceivable = (Math.floor(interest / unitShareValue) * unitShareValue);
+								const sharesReceivable = interestReceivable / unitShareValue;
 								const interestRemains = interest - interestReceivable;
 
 								totalSharesPercentage += Number(sharesPercentage);
@@ -1655,11 +1782,11 @@ const UserUI = () => {
 			trancheAmounts.reduce((sum, val) => sum + Number(val), 0)
 		), [trancheAmounts])
 		const totalPaymentAmount = useMemo(() => (
-			creditAmount * (1 + 0.05)
+			creditAmount * (1 + creditPrimaryInterestPercentage)
 		), [creditAmount])
 
 		const calculateDefaultTrancheAmounts = (credit, numTranches) => {
-			const totalAmountWithInterest = Number(credit) * 1.05; // Add 5% interest
+			const totalAmountWithInterest = Number(credit) * (1 + creditPrimaryInterestPercentage);
 			return Array.from({ length: numTranches }, () => totalAmountWithInterest / numTranches);
 		};
 
@@ -2399,10 +2526,10 @@ const UserUI = () => {
 																<b>Amount requested</b>: <CurrencyText amount={Number(selectedCredit.creditAmount)} />
 															</li>
 															<li className='border-start border-dark border-opacity-50 ps-2'>
-																<b>Interest</b>: <CurrencyText amount={(Number(selectedCredit.creditAmount) * 0.05)} />
+																<b>Interest</b>: <CurrencyText amount={(Number(selectedCredit.creditAmount) * creditPrimaryInterestPercentage)} />
 															</li>
 															<li className='border-start border-dark border-opacity-50 ps-2'>
-																<b>Amount to pay</b>: <CurrencyText amount={(Number(selectedCredit.creditAmount) + (Number(selectedCredit.creditAmount) * 0.05))} />
+																<b>Amount to pay</b>: <CurrencyText amount={(Number(selectedCredit.creditAmount) + (Number(selectedCredit.creditAmount) * creditPrimaryInterestPercentage))} />
 															</li>
 														</ul>
 
@@ -2484,7 +2611,7 @@ const UserUI = () => {
 										/>
 										{!['', 0].includes(creditAmount) && (
 											<div className="form-text px-2 py-1 bg-info-subtle rounded-bottom-3 smaller fst-italic">
-												With 5% Interest = <CurrencyText amount={creditAmount * 0.05} />
+												With {creditPrimaryInterest}% Interest = <CurrencyText amount={creditAmount * creditPrimaryInterestPercentage} />
 											</div>
 										)}
 									</div>
@@ -2567,8 +2694,8 @@ const UserUI = () => {
 												<div className="col"><CurrencyText amount={Number(creditAmount)} smallCurrency /></div>
 											</div>
 											<div className='d-flex cols-2'>
-												<div className="col fw-semibold">Interest (5%):</div>
-												<div className="col"><CurrencyText amount={Number(creditAmount) * 0.05} smallCurrency /></div>
+												<div className="col fw-semibold">Interest ({creditPrimaryInterest}%):</div>
+												<div className="col"><CurrencyText amount={Number(creditAmount) * creditPrimaryInterestPercentage} smallCurrency /></div>
 											</div>
 											<div className='d-flex cols-2'>
 												<div className="col fw-semibold">Due date:</div>
@@ -2608,7 +2735,7 @@ const UserUI = () => {
 											)}
 										</div>
 
-										<button type="submit" className="btn btn-sm btn-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="addSavingBtn" disabled={(new Date(trancheDates[trancheDates.length - 1]) > new Date(dueDate)) || tranches === 0 || (totaltrancheAmounts !== (creditAmount * (1 + 0.05)))}
+										<button type="submit" className="btn btn-sm btn-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="addSavingBtn" disabled={(new Date(trancheDates[trancheDates.length - 1]) > new Date(dueDate)) || tranches === 0 || (totaltrancheAmounts !== (creditAmount * (1 + creditPrimaryInterestPercentage)))}
 										>
 											{!isWaitingFetchAction ?
 												<>Submit Request <FloppyDisk size={18} className='ms-2' /></>
@@ -3094,11 +3221,7 @@ const UserUI = () => {
 	// Settings
 	const Settings = () => {
 		return (
-			<section>
-				- Manage system-wide configurations (interest rates, fine rates, loan terms).
-				- Configure payment gateways.
-				- Adjust admin privileges and roles.
-			</section>
+			<SystemSettings data={allSettings} userType={signedUserType} />
 		)
 	}
 
