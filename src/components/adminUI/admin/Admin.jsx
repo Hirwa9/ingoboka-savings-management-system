@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useContext, useEffect, useMemo, useRef, u
 import { Form } from "react-bootstrap";
 import './admin.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, EnvelopeSimple, EscalatorUp, Files, FloppyDisk, Gavel, Gear, GreaterThan, HandCoins, Info, LessThan, List, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, TextStrikethrough, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, Watch, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, EnvelopeSimple, EscalatorUp, Files, FloppyDisk, Gavel, Gear, GreaterThan, HandCoins, Info, LessThan, List, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, TextStrikethrough, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, Watch, X } from '@phosphor-icons/react';
 import { expensesTypes, memberRoles } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
@@ -160,6 +160,36 @@ const Admin = () => {
 			setIsWaitingFetchAction(false);
 		}
 	};
+
+
+	/**
+	 * Settings
+	 */
+
+	const [allSettings, setAllSettings] = useState([]);
+	const [loadingSettings, setLoadingSettings] = useState(false);
+	const [errorLoadingSettings, setErrorLoadingSettings] = useState(false);
+
+	// Fetch settings
+	const fetchSettings = async () => {
+		try {
+			setLoadingSettings(true);
+			const response = await Axios.get(`/api/settings/system/all`);
+			const data = response.data;
+			setAllSettings(data);
+			setErrorLoadingSettings(null);
+		} catch (error) {
+			const errorMessage = error.response?.data?.error || error.response?.data?.message || "Failed to load settings. Please try again.";
+			warningToast({ message: errorMessage });
+			console.error("Error fetching settings:", error);
+		} finally {
+			setLoadingSettings(false);
+		}
+	};
+
+	useEffect(() => {
+		fetchSettings();
+	}, []);
 
 	/**
 	 * Members
@@ -518,7 +548,8 @@ const Admin = () => {
 				fetchFigures(),
 				fetchCredits(),
 				fetchLoans(),
-				fetchRecords()
+				fetchRecords(),
+				fetchSettings()
 			]);
 
 			messageToast({ message: 'Data refreshed', type: 'primaryColor', selfCloseTimeout: 2000 });
@@ -4929,7 +4960,7 @@ const Admin = () => {
 	// Settings
 	const Settings = () => {
 		return (
-			<SystemSettings />
+			<SystemSettings data={allSettings} />
 		)
 	}
 
@@ -5249,13 +5280,13 @@ const Admin = () => {
 
 								<hr />
 
-								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'auditLogs' ? 'active blur-bg-2px' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'auditLogs' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("auditLogs"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Notebook size={20} weight='fill' className="me-2" /> Audit Logs
 									</button>
-								</li> */}
+								</li>
 
 								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'settings' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("settings"); hideSideNavbar() }}
