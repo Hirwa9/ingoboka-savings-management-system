@@ -4621,7 +4621,7 @@ const Admin = () => {
 																	onChange={(e) => setExpenseRecordType(e.target.value)}
 																	required>
 																	<option value="" disabled className='p-2 px-3 small text-gray-500'>Select type</option>
-																	{expensesTypes
+																	{expenseTypes
 																		.map((val, index) => (
 																			<option key={index} value={val} className='p-2 px-3 small'>
 																				{val}
