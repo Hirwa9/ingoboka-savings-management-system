@@ -1,10 +1,10 @@
 import React, { Fragment, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Card, Container, Form } from "react-bootstrap";
 import './user.css';
+import '../../header/header.css';
 import MyToast from '../../common/Toast';
 import { ArrowClockwise, ArrowsClockwise, ArrowsHorizontal, ArrowsVertical, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, EnvelopeSimple, Files, FloppyDisk, Gavel, Gear, List, Pen, Phone, Plus, Receipt, SignOut, User, UserRectangle, Users, Wallet, WarningCircle, Watch, X } from '@phosphor-icons/react';
 import { expensesTypes } from '../../../data/data';
-import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
 import LoadingIndicator from '../../LoadingIndicator';
@@ -884,7 +884,7 @@ const UserUI = () => {
 												className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle ptr"
 												onClick={() => {
 													if (member?.wifeFirstName === null) {
-														messageToast({ message: "No data to show", selfCloseTimeout: 2000 })
+														messageToast({ message: "No information available", selfCloseTimeout: 2000 })
 													} else {
 														setSelectedMember(member); setShowMemberInfo(true); setShowPrimaryMemberInfo(false);
 													}

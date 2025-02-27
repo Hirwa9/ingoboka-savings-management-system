@@ -1,14 +1,14 @@
 import React, { Fragment, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Form } from "react-bootstrap";
 import './admin.css';
+import '../../header/header.css';
 import MyToast from '../../common/Toast';
 import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, EnvelopeSimple, EscalatorUp, Files, FloppyDisk, Gavel, Gear, GreaterThan, HandCoins, Info, LessThan, List, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, TextStrikethrough, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, Watch, X } from '@phosphor-icons/react';
-import { expensesTypes, memberRoles } from '../../../data/data';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
 import LoadingIndicator from '../../LoadingIndicator';
-import { cError, cLog, fncPlaceholder, formatDate, getDateHoursMinutes, normalizedLowercaseString, printDatesInterval } from '../../../scripts/myScripts';
+import { cError, fncPlaceholder, formatDate, getDateHoursMinutes, normalizedLowercaseString, printDatesInterval } from '../../../scripts/myScripts';
 import FormatedDate from '../../common/FormatedDate';
 import FetchError from '../../common/FetchError';
 import useCustomDialogs from '../../common/hooks/useCustomDialogs';
@@ -1200,7 +1200,7 @@ const Admin = () => {
 												className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle ptr"
 												onClick={() => {
 													if (member?.wifeFirstName === null) {
-														messageToast({ message: "No data to show", selfCloseTimeout: 2000 })
+														messageToast({ message: "No information available", selfCloseTimeout: 2000 })
 													} else {
 														setSelectedMember(member); setShowMemberInfo(true); setShowPrimaryMemberInfo(false);
 													}
