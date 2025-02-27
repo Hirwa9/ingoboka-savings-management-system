@@ -2,37 +2,114 @@ import React, { createContext, useState, useEffect, useContext } from "react";
 import LoadingIndicator from "./LoadingIndicator";
 import { Bank, CaretDown } from "@phosphor-icons/react";
 import { Axios } from "../api/api";
-import { Navigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
+import MyToast from "./common/Toast";
+import useCustomDialogs from "./common/hooks/useCustomDialogs";
 
-// Create the AuthContext
+// AuthContext
 export const AuthContext = createContext();
 
-// Create a custom hook for using the AuthContext
+// A custom hook for using AuthContext
 export const useAuth = () => {
     return useContext(AuthContext);
 };
 
 // AuthProvider Component
 export const AuthProvider = ({ children }) => {
+
+    // Custom hooks
+    const {
+        // Toast
+        showToast,
+        toastMessage,
+        toastType,
+        resetToast,
+        warningToast,
+    } = useCustomDialogs();
+
+    const navigate = useNavigate();
+
     const [user, setUser] = useState(null); // User object or null
     const [loading, setLoading] = useState(true); // Loading state for auth checks
+    const [isAuthenticated, setIsAuthenticated] = useState(false); // Auth state
 
-    // Mock a login function
-    const login = (userData) => {
-        setUser(userData); // Update the user state
-        localStorage.setItem("user", JSON.stringify(userData)); // Save user in localStorage
+    // Check authentication
+    const checkAuthOnMount = async () => {
+        try {
+            const response = await Axios.get(`/verifyToken`, {
+                withCredentials: true,  // Send cookies and auth headers
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (response.status !== 200) {
+                const text = response.data;
+                throw new Error(`HTTP error! Status: ${response.status}, Response: ${text}`);
+            }
+
+            const data = response.data;
+            setUser(data.user);
+            setIsAuthenticated(true);
+        } catch (error) {
+            setUser(null);
+            setIsAuthenticated(false);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    // Mock a logout function
+    // Check authentication on mount
+    useEffect(() => {
+        checkAuthOnMount();
+    }, []);
+
+    // Login function
+    const login = async (emailOrUsername, password) => {
+
+        try {
+            const response = await Axios.post(`/login`, {
+                emailOrUsername,
+                password
+            }, {
+                withCredentials: true
+            });
+
+            const data = response.data;
+
+            // Authentication handling
+            if (data.accessToken) {
+                const { id, type } = data.user;
+                setUser(data.user);
+                setIsAuthenticated(true);
+
+                if (type === "admin") {
+                    navigate("/admin");
+                } else if (type === "member") {
+                    navigate(`/user/${id}`);
+                } else {
+                    warningToast({ message: 'Unable to login. Please contact support.' });
+                }
+            } else {
+                warningToast({ message: 'Invalid credentials. Please try again.' });
+            }
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || "Login failed";
+            warningToast({ message: errorMessage });
+            setUser(null);
+            setIsAuthenticated(false);
+            console.error("Login failed:", error);
+        }
+    };
+
+    // Logout function
     const logout = async () => {
         try {
-            // Make a POST request to the logout endpoint
             await Axios.post('/logout', {}, {
-                withCredentials: true // Ensure cookies (including refreshToken) are sent
+                withCredentials: true // Include cookies
             });
-    
+
             // Clear user state and redirect to login
             setUser(null);
+            setIsAuthenticated(false);
             <Navigate to="/login" replace />;
         } catch (error) {
             console.error("Logout failed:", error);
@@ -48,12 +125,13 @@ export const AuthProvider = ({ children }) => {
         setLoading(false); // Authentication check is complete
     }, []);
 
-    // Context value to provide to children
+    // Context value
     const value = {
         user,
         login,
         logout,
-        isAuthenticated: !!user, // Boolean indicating if the user is logged in
+        isAuthenticated,
+        checkAuthOnMount,
     };
 
     // Show a loading indicator until the auth check is complete
@@ -68,5 +146,12 @@ export const AuthProvider = ({ children }) => {
         );
     }
 
-    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+    return (
+        <>
+            <MyToast show={showToast} message={toastMessage} type={toastType} selfClose onClose={() => resetToast(false)} />
+            <AuthContext.Provider value={value}>
+                {children}
+            </AuthContext.Provider>
+        </>
+    );
 };
