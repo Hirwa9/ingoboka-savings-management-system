@@ -1,4 +1,4 @@
-import React, { useId, useState } from 'react';
+import React, { useContext, useId, useState } from 'react';
 import './login.css';
 import '../common/formInput/formInput.css';
 import MyToast from '../common/Toast';
@@ -6,8 +6,9 @@ import { useNavigate } from "react-router-dom";
 import $ from 'jquery';
 import { SignIn, Wallet } from '@phosphor-icons/react';
 import useCustomDialogs from '../common/hooks/useCustomDialogs';
-import { BASE_URL } from '../../api/api';
+import { Axios, BASE_URL } from '../../api/api';
 import SmallLoader from '../common/SmallLoader';
+import { AuthContext } from '../AuthProvider';
 
 const Login = () => {
 
@@ -23,9 +24,10 @@ const Login = () => {
         resetToast,
     } = useCustomDialogs();
 
-    const [isWaitingFetchAction, setIsWaitingFetchAction] = useState(false);
+    // Auth check
+    const { isAuthenticated, checkAuthOnMount, login } = useContext(AuthContext);
 
-    const navigate = useNavigate();
+    const [isWaitingFetchAction, setIsWaitingFetchAction] = useState(false);
     const signInId = useId();
 
     /**
@@ -45,39 +47,15 @@ const Login = () => {
 
         try {
             setIsWaitingFetchAction(true);
-            const response = await fetch(`${BASE_URL}/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: "include",
-                body: JSON.stringify({ emailOrUsername, password })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Error logging you in. Please try again.');
-            }
-
-            const data = await response.json();
-            successToast({ message: data.message || "Login successful" });
-
-            // Authentication handling
-            if (data.accessToken) {
-                const { id, type } = data.user;
-                if (type === "admin") {
-                    navigate("/admin");
-                } else if (type === "member") {
-                    navigate(`/user/${id}`);
-                } else {
-                    warningToast({ message: 'Unable to login. Please contact support.' });
-                }
-            } else {
-                warningToast({ message: 'Invalid credentials. Please try again.' });
-            }
+            await login(emailOrUsername, password);
         } catch (error) {
-            warningToast({ message: error.message || 'An unknown error occurred. Please try again.' });
+            const errorMessage = error.response?.data?.error || error.response?.data?.message || "Login failed";
+            warningToast({ message: errorMessage });
+            console.error('Error signing in:', error);
         } finally {
             setIsWaitingFetchAction(false);
         }
+
     };
 
     // Handle input's UI
