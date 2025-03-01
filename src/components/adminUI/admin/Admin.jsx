@@ -22,10 +22,9 @@ import BarGraph from '../../chartJS/BarGraph';
 import PieGraph from '../../chartJS/PieGraph';
 import CountUp from 'react-countup'
 import SystemSettings from '../../systemSettings/SystemSettings';
-
-import { Menu, MenuItem, MenuButton, MenuDivider } from '@szhsin/react-menu';
 import '@szhsin/react-menu/dist/index.css';
 import '@szhsin/react-menu/dist/transitions/zoom.css';
+import { Menu, MenuItem, MenuButton, MenuDivider } from '@szhsin/react-menu';
 import Popover from '@idui/react-popover';
 import ContentToggler from '../../common/ContentToggler';
 import DividerText from '../../common/DividerText';
@@ -5057,7 +5056,12 @@ const Admin = () => {
 	// Settings
 	const Settings = () => {
 		return (
-			<SystemSettings data={allSettings} userType='admin' />
+			<SystemSettings data={allSettings}
+				userType='admin'
+				refresh={() => refreshAllData()}
+				startLoading={() => setIsWaitingFetchAction(true)}
+				stopLoading={() => setIsWaitingFetchAction(false)}
+			/>
 		)
 	}
 
