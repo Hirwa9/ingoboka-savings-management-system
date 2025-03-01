@@ -9,7 +9,7 @@ import { Axios, BASE_URL } from '../../api/api';
 import { cLog, fncPlaceholder, getNumberWithSuffix, maxInputNumber } from '../../scripts/myScripts';
 import CurrencyText from '../common/CurrencyText';
 
-const SystemSettings = ({ data, userType = 'member' }) => {
+const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stopLoading }) => {
 
     // Custom hooks
     const {
@@ -226,34 +226,48 @@ const SystemSettings = ({ data, userType = 'member' }) => {
         }
     };
 
-    const handleRoleChange = (index, value) => {
-        const newRoles = [...roleSettings];
-        newRoles[index] = value;
-        setRoleSettings(newRoles);
-    };
+    // const handleRoleChange = (index, value) => {
+    //     const newRoles = [...roleSettings];
+    //     newRoles[index] = value;
+    //     setRoleSettings(newRoles);
+    // };
 
     const [newRole, setNewRole] = useState('');
-    const handleAddRole = () => {
+    const handleAddRole = async () => {
         const trimmedValue = newRole.trim();
         if (trimmedValue === '') return messageToast({ message: "Enter a new role to continue", selfCloseTimeout: 2000 });
 
-        const existingRole = roleSettings.find(role => new RegExp(`^${trimmedValue}$`, 'i').test(role));
+        const existingRole = memberRoles.find(role => new RegExp(`^${trimmedValue}$`, 'i').test(role));
         if (existingRole) {
             return messageToast({ message: `The role "${existingRole}" already exists`, selfCloseTimeout: 3000 });
         }
-        setRoleSettings([...roleSettings, trimmedValue.toLowerCase()]);
-    };
+        setRoleSettings([...memberRoles, trimmedValue.toLowerCase()]);
 
+        console.log(roleSettings);
 
-    const handleSaveRoles = async () => {
+        // Save roles
         try {
-            await axios.post(`${BASE_URL}/api/settings/roles`, { roles: roleSettings });
+            startLoading();
+            await Axios.put(`/api/settings/members/roles`, { roles: roleSettings });
             toast({ message: 'Roles saved successfully', type: "dark" });
+            refresh()
         } catch (error) {
             console.error(error);
             toast({ message: 'Failed to save roles!', type: "danger" });
+        } finally {
+            stopLoading();
         }
     };
+
+    // const handleSaveRoles = async () => {
+    //     try {
+    //         await axios.put(`${BASE_URL}/api/settings/members/roles`, { roles: roleSettings });
+    //         toast({ message: 'Roles saved successfully', type: "dark" });
+    //     } catch (error) {
+    //         console.error(error);
+    //         toast({ message: 'Failed to save roles!', type: "danger" });
+    //     }
+    // };
 
     const handleSaveCreditSettings = async () => {
         try {
