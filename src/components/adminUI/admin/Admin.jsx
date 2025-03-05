@@ -4940,9 +4940,10 @@ const Admin = () => {
 
 														const memberCredits = allLoans.find(loan => loan.memberId === item.id);
 														const pendingCredit = memberCredits.loanPending;
+														const pendingInterest = memberCredits.interestPending;
 
 														totalCotisationsAndShares += memberBalance;
-														generalTotal += pendingCredit;
+														generalTotal += pendingCredit + pendingInterest;
 
 														return (
 															<tr key={index} className="small cursor-default clickDown general-report-row">
@@ -4950,7 +4951,7 @@ const Admin = () => {
 																	<b>{index + 1}</b>. {memberNames}
 																</td>
 																<td className="text-nowrap">
-																	Credit: <CurrencyText amount={pendingCredit} boldAmount smallCurrency className='text-gray-700' />
+																	Credit: <CurrencyText amount={pendingCredit + pendingInterest} boldAmount smallCurrency className='text-gray-700' />
 																</td>
 																<td>
 																	{memberNames}
