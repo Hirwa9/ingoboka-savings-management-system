@@ -33,6 +33,7 @@ import { AuthContext } from '../../AuthProvider';
 import RightFixedCard from '../../common/rightFixedCard/RightFixedCard';
 import SmallLoader from '../../common/SmallLoader';
 import NextStepInformer from '../../common/NextStepInformer';
+import AbsoluteCloseButton from '../../common/AbsoluteCloseButton';
 
 const Admin = () => {
 
@@ -831,6 +832,14 @@ const Admin = () => {
 		const [showMemberInfo, setShowMemberInfo] = useState(false);
 		const [showPrimaryMemberInfo, setShowPrimaryMemberInfo] = useState(true);
 
+		useEffect(() => {
+			if (!showMemberInfo) {
+				setEditSelectedmemberImage(false);
+			}
+
+		}, [showMemberInfo]);
+
+
 		// Registration
 		const [showAddMemberForm, setShowAddMemberForm] = useState(false);
 
@@ -959,6 +968,7 @@ const Admin = () => {
 		const [editSelectedmemberLName, setEditSelectedmemberLName] = useState('');
 		const [editSelectedmemberPhone, setEditSelectedmemberPhone] = useState('');
 		const [editSelectedmemberEmail, setEditSelectedmemberEmail] = useState('');
+		const [editSelectedmemberImage, setEditSelectedmemberImage] = useState(false);
 
 		// Togger member editor
 		useEffect(() => {
@@ -986,17 +996,14 @@ const Admin = () => {
 			}
 		}, [selectedMember, editHeadOfFamily, showEditMemberForm]);
 
-		const [showAddImageForm, setShowAddImageForm] = useState(false);
+		// Edit member image/avatar 
 		const [imageFile, setImageFile] = useState(null);
 		const [imageFileName, setImageFileName] = useState(null);
 
 		const handleImageFileChange = (e) => {
 			const file = e.target.files[0];
 			if (file && !file.type.startsWith("image/")) {
-				toast({
-					message: "Please upload valid image file.",
-					type: "danger",
-				});
+				messageToast({ message: "Please upload valid image file." });
 				return;
 			}
 			setImageFile(file);
@@ -1004,25 +1011,34 @@ const Admin = () => {
 		};
 
 		// Handle edit member photo/avatar
-		// const handleEditMemberAvatar = async (id, type) => {
-		// 	try {
-		// 		setIsWaitingFetchAction(true);
-		// 		const response = await Axios.post(`/user/${id}/edit-${type}-info`, payload);
-		// 		// Successfull fetch
-		// 		const data = response.data;
-		// 		successToast({ message: data.message });
-		// 		resetRegistrationForm();
-		// 		setErrorWithFetchAction(null);
-		// 		fetchLoans();
-		// 		fetchMembers();
-		// 	} catch (error) {
-		// 		setErrorWithFetchAction(error.message);
-		// 		cError('Registration error:', error.response?.data || error.message);
-		// 		warningToast({ message: `Error: ${error.response?.data.message || 'Registration failed'}` });
-		// 	} finally {
-		// 		setIsWaitingFetchAction(false);
-		// 	}
-		// };
+		const handleEditMemberAvatar = async (id, type, file) => {
+			if (!file) {
+				return warningToast({ message: "Select an image to continue." });
+			}
+
+			const formData = new FormData();
+			formData.append('file', file);
+
+			try {
+				setIsWaitingFetchAction(true);
+				const response = await Axios.post(`/user/${id}/edit-${type}-photo`, formData);
+				// Successfull fetch
+				const data = response.data;
+				successToast({ message: data.message });
+				setEditSelectedmemberImage(false);
+				setImageFile(null);
+				setImageFileName(null);
+				setErrorWithFetchAction(null);
+				fetchMembers();
+			} catch (error) {
+				const errorMessage = error.response?.data?.error || error.response?.data?.message || "Couldn't update the profile image. Tyr again";
+				setErrorWithFetchAction(errorMessage);
+				warningToast({ message: errorMessage, selfClose: false });
+				cError('Error updating profile image:', error.response?.data || error.message);
+			} finally {
+				setIsWaitingFetchAction(false);
+			}
+		};
 
 		// Handle edit member info
 		const handleEditMemberInfo = async (id, type) => {
@@ -1314,16 +1330,37 @@ const Admin = () => {
 										<div>
 											<div className="position-relative w-fit mb-5" style={{ minWidth: '20rem' }}>
 												<img src={showPrimaryMemberInfo ? (selectedMember?.husbandAvatar || '/images/man_avatar_image.jpg') : (selectedMember?.wifeAvatar || '/images/woman_avatar_image.jpg')}
-													alt="Member avatar"
+													alt=""
 													className="ratio-1-1 object-fit-cover rounded-3"
 													style={{ maxWidth: '20rem', objectPosition: 'center 25%' }}
 												/>
-												<div className='dim-fit position-absolute start-100 bottom-0 mb-2 bg-light border rounded-pill ptr clickDown' title='Edit photo' style={{ translate: '-125% 0' }}>
+												<div className='dim-fit position-absolute start-100 bottom-0 mb-2 bg-light border rounded-pill ptr clickDown' title='Edit photo' style={{ translate: '-125% 0' }} onClick={() => setEditSelectedmemberImage(!editSelectedmemberImage)}>
 													<Pen size={35} className='p-2' />
 												</div>
-												<div className="position-absolute bg-light text-gray-600 py-1 px-3 rounded-2 start-50 top-100 translate-middle text-nowrap smaller shadow-sm">
+												<div className="position-absolute start-50 top-100 translate-middle bg-light text-gray-600 py-1 px-3 rounded-2 text-nowrap smaller shadow-sm">
 													{showPrimaryMemberInfo ? `${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName} ` : `${selectedMember?.wifeFirstName} ${selectedMember?.wifeLastName}`}
 												</div>
+												{editSelectedmemberImage && (
+													<div className="position-absolute start-50 top-50 translate-middle col-11 bg-gray-800 text-gray-200 p-3 py-4 text-nowrap smaller shadow-sm" style={{ animation: 'zoomInBack .2s 1' }}>
+														<AbsoluteCloseButton bg="gray-800" text="gray-200" onClose={() => setEditSelectedmemberImage(false)} />
+														<div className="flex-align-center flex-wrap gap-2 mb-3">
+															<input
+																type="file"
+																accept="image/jpeg, image/jpg, image/png, image/webp"
+																name="propImage"
+																id="propImage"
+																className="form-control file-input"
+																onChange={handleImageFileChange}
+															/>
+															<p className={`${imageFileName ? 'text-info' : ''} mb-0 px-2`}>{imageFileName || "No file chosen"}</p>
+														</div>
+														<button className="btn btn-sm btn-dark w-100 rounded-pill px-3"
+															onClick={() => handleEditMemberAvatar(selectedMember?.id, showPrimaryMemberInfo ? 'husband' : 'wife', imageFile)}
+														>
+															Update image
+														</button>
+													</div>
+												)}
 											</div>
 											<div className="d-flex gap-2 mb-3">
 												<a href={`tel:+${showPrimaryMemberInfo ? selectedMember.husbandPhone : selectedMember.wifePhone}`} className="btn btn-sm btn-outline-secondary border px-3 border-secondary border-opacity-25 rounded-pill flex-align-center clickDown">
