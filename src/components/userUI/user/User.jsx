@@ -953,11 +953,11 @@ const UserUI = () => {
 										<div>
 											<div className="position-relative w-fit mb-5" style={{ minWidth: '20rem' }}>
 												<img src={showPrimaryMemberInfo ? (selectedMember?.husbandAvatar || '/images/man_avatar_image.jpg') : (selectedMember?.wifeAvatar || '/images/woman_avatar_image.jpg')}
-													alt="Member avatar"
+													alt=""
 													className="ratio-1-1 object-fit-cover rounded-3"
 													style={{ maxWidth: '20rem', objectPosition: 'center 25%' }}
 												/>
-												<div className="position-absolute bg-light text-gray-600 py-1 px-3 rounded-2 start-50 top-100 translate-middle text-nowrap smaller shadow-sm">
+												<div className="position-absolute start-50 top-100 translate-middle bg-light text-gray-600 py-1 px-3 rounded-2 text-nowrap smaller shadow-sm">
 													{showPrimaryMemberInfo ? `${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName} ` : `${selectedMember?.wifeFirstName} ${selectedMember?.wifeLastName}`}
 												</div>
 											</div>
