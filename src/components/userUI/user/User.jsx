@@ -879,17 +879,19 @@ const UserUI = () => {
 												className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle ptr"
 												onClick={() => { setSelectedMember(member); setShowMemberInfo(true); setShowPrimaryMemberInfo(true) }}
 											/>
-											<img src={member.wifeAvatar ? member.wifeAvatar : '/images/woman_avatar_image.jpg'}
-												alt={member.wifeFirstName ? `${member.wifeFirstName.slice(0, 1)}.${member.wifeLastName}` : 'Partner image'}
-												className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle ptr"
-												onClick={() => {
-													if (member?.wifeFirstName === null) {
-														messageToast({ message: "No information available", selfCloseTimeout: 2000 })
-													} else {
-														setSelectedMember(member); setShowMemberInfo(true); setShowPrimaryMemberInfo(false);
-													}
-												}}
-											/>
+											{member.wifeFirstName && (
+												<img src={member.wifeAvatar ? member.wifeAvatar : '/images/woman_avatar_image.jpg'}
+													alt={member.wifeFirstName ? `${member.wifeFirstName.slice(0, 1)}.${member.wifeLastName}` : 'Partner image'}
+													className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle ptr"
+													onClick={() => {
+														if (member?.wifeFirstName === null) {
+															messageToast({ message: "No information available", selfCloseTimeout: 2000 })
+														} else {
+															setSelectedMember(member); setShowMemberInfo(true); setShowPrimaryMemberInfo(false);
+														}
+													}}
+												/>
+											)}
 										</div>
 
 										<div className="px-lg-2">
@@ -911,27 +913,29 @@ const UserUI = () => {
 														</li>
 													</ul>
 												</div>
-												<div className="col-lg-6 px-lg-2">
-													<h6 className="flex-align-center px-2 py-1 border-bottom border-2 text-primaryColor fw-bolder">
-														<User className="me-1" /> Wife
-													</h6>
-													<ul className="list-unstyled text-gray-700 px-2 smaller">
-														<li className="py-1">
-															<b>Names:</b> {member.wifeFirstName ? `${member.wifeFirstName} ${member.wifeLastName}` : 'Not provided'}
-														</li>
-														<li className="py-1">
-															<b>Phone:</b> {member.wifePhone ? (
-																<a href={`tel:+${member.wifePhone}`} className='text-decoration-none text-inherit' title={`Call ${member.wifeFirstName}`}>{member.wifePhone}</a>
-															) : 'Not provided'}
-														</li>
-														<li className="py-1">
-															<b>Email:</b>  {member.wifeEmail ? (
-																<a href={`mailto:${member.wifeEmail}`} className='text-decoration-none text-inherit' title={`Send email to ${member.wifeFirstName}`}>{member.wifeEmail}</a>
+												{member.wifeFirstName && (
+													<div className="col-lg-6 px-lg-2">
+														<h6 className="flex-align-center px-2 py-1 border-bottom border-2 text-primaryColor fw-bolder">
+															<User className="me-1" /> Wife
+														</h6>
+														<ul className="list-unstyled text-gray-700 px-2 smaller">
+															<li className="py-1">
+																<b>Names:</b> {`${member.wifeFirstName} ${member.wifeLastName}`}
+															</li>
+															<li className="py-1">
+																<b>Phone:</b> {member.wifePhone ? (
+																	<a href={`tel:+${member.wifePhone}`} className='text-decoration-none text-inherit' title={`Call ${member.wifeFirstName}`}>{member.wifePhone}</a>
+																) : 'Not provided'}
+															</li>
+															<li className="py-1">
+																<b>Email:</b>  {member.wifeEmail ? (
+																	<a href={`mailto:${member.wifeEmail}`} className='text-decoration-none text-inherit' title={`Send email to ${member.wifeFirstName}`}>{member.wifeEmail}</a>
 
-															) : 'Not provided'}
-														</li>
-													</ul>
-												</div>
+																) : 'Not provided'}
+															</li>
+														</ul>
+													</div>
+												)}
 											</div>
 										</div>
 									</div>
