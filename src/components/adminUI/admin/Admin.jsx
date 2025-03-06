@@ -1269,25 +1269,35 @@ const Admin = () => {
 													</ul>
 												</div>
 												<div className="col-lg-6 px-lg-2">
-													<h6 className="flex-align-center px-2 py-1 border-bottom border-2 text-primaryColor fw-bolder">
-														<User className="me-1" /> Wife
-													</h6>
-													<ul className="list-unstyled text-gray-700 px-2 smaller">
-														<li className="py-1">
-															<b>Names:</b> {member.wifeFirstName ? `${member.wifeFirstName} ${member.wifeLastName}` : 'Not provided'}
-														</li>
-														<li className="py-1">
-															<b>Phone:</b> {member.wifePhone ? (
-																<a href={`tel:+${member.wifePhone}`} className='text-decoration-none text-inherit' title={`Call ${member.wifeFirstName}`}>{member.wifePhone}</a>
-															) : 'Not provided'}
-														</li>
-														<li className="py-1">
-															<b>Email:</b>  {member.wifeEmail ? (
-																<a href={`mailto:${member.wifeEmail}`} className='text-decoration-none text-inherit' title={`Send email to ${member.wifeFirstName}`}>{member.wifeEmail}</a>
+													{!member.wifeFirstName ? (
+														<div className="h-100 p-3 border border-2 border-top-0 rounded-0 flex-center">
+															<button className="btn text-primaryColor fw-semibold rounded-0 clickDown flex-center gap-2" onClick={() => { setSelectedMember(member); setShowEditMemberForm(true); setEditHeadOfFamily(false); }}>
+																<Users /> Add a partner
+															</button>
+														</div>
+													) : (
+														<>
+															<h6 className="flex-align-center px-2 py-1 border-bottom border-2 text-primaryColor fw-bolder">
+																<User className="me-1" /> Wife
+															</h6>
+															<ul className="list-unstyled text-gray-700 px-2 smaller">
+																<li className="py-1">
+																	<b>Names:</b> {`${member.wifeFirstName} ${member.wifeLastName}`}
+																</li>
+																<li className="py-1">
+																	<b>Phone:</b> {member.wifePhone ? (
+																		<a href={`tel:+${member.wifePhone}`} className='text-decoration-none text-inherit' title={`Call ${member.wifeFirstName}`}>{member.wifePhone}</a>
+																	) : 'Not provided'}
+																</li>
+																<li className="py-1">
+																	<b>Email:</b>  {member.wifeEmail ? (
+																		<a href={`mailto:${member.wifeEmail}`} className='text-decoration-none text-inherit' title={`Send email to ${member.wifeFirstName}`}>{member.wifeEmail}</a>
 
-															) : 'Not provided'}
-														</li>
-													</ul>
+																	) : 'Not provided'}
+																</li>
+															</ul>
+														</>
+													)}
 												</div>
 											</div>
 										</div>
@@ -1624,7 +1634,7 @@ const Admin = () => {
 															editHeadOfFamily ? (
 																selectedMember?.husbandFirstName ? `${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName}` : 'Not provided'
 															) : (
-																selectedMember?.wifeFirstName ? `${selectedMember?.wifeFirstName} ${selectedMember?.wifeLastName}` : 'wife information'
+																selectedMember?.wifeFirstName ? `${selectedMember?.wifeFirstName} ${selectedMember?.wifeLastName}` : 'wife/partner information'
 															)
 														}
 
