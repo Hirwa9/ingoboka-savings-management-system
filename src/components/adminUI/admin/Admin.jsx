@@ -1035,8 +1035,6 @@ const Admin = () => {
 				husbandPhone: editSelectedmemberPhone,
 				husbandEmail: editSelectedmemberEmail
 			} : type === 'wife' ? {
-				role: editSelectedmemberRole,
-				username: editSelectedmemberUsername,
 				wifeFirstName: editSelectedmemberFName,
 				wifeLastName: editSelectedmemberLName,
 				wifePhone: editSelectedmemberPhone,
@@ -1645,22 +1643,24 @@ const Admin = () => {
 												{/* The form */}
 												<form onSubmit={(e) => e.preventDefault()} className="px-sm-2 pb-5">
 													{/* Selected member info */}
-													<div className="mb-3">
-														<label htmlFor="role" className="form-label fw-semibold">Role</label>
-														<select id="role" name="role" className="form-select"
-															value={editSelectedmemberRole}
-															onChange={e => setEditSelectedmemberRole(e.target.value)}
-															required>
-															<option value="" disabled className='p-2 px-3 small text-gray-500'>Select role</option>
-															{memberRoles
-																.map((val, index) => (
-																	<option key={index} value={val} className='p-2 px-3 small text-capitalize'>
-																		{val}
-																	</option>
-																))
-															}
-														</select>
-													</div>
+													{editHeadOfFamily && (
+														<div className="mb-3">
+															<label htmlFor="role" className="form-label fw-semibold">Role</label>
+															<select id="role" name="role" className="form-select"
+																value={editSelectedmemberRole}
+																onChange={e => setEditSelectedmemberRole(e.target.value)}
+																required>
+																<option value="" disabled className='p-2 px-3 small text-gray-500'>Select role</option>
+																{memberRoles
+																	.map((val, index) => (
+																		<option key={index} value={val} className='p-2 px-3 small text-capitalize'>
+																			{val}
+																		</option>
+																	))
+																}
+															</select>
+														</div>
+													)}
 													<div className="mb-3">
 														<label htmlFor="memberFirstName" className="form-label fw-semibold">First Name</label>
 														<input
@@ -1687,27 +1687,29 @@ const Admin = () => {
 															required
 														/>
 													</div>
-													<div className="mb-3">
-														<label htmlFor="memberUsername" className="form-label fw-semibold">Username</label>
-														<input
-															type="text"
-															className="form-control"
-															id="memberUsername"
-															name="memberUsername"
-															value={editSelectedmemberUsername}
-															onChange={e => setEditSelectedmemberUsername(e.target.value)}
-															placeholder="Enter username"
-															required
-														/>
-														{allMembers
-															.find(m => (
-																m.id !== selectedMember?.id &&
-																normalizedLowercaseString(m.username) === normalizedLowercaseString(editSelectedmemberUsername)
-															)) && (
-																<div className="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller"><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Userame already taken</div>
-															)
-														}
-													</div>
+													{editHeadOfFamily && (
+														<div className="mb-3">
+															<label htmlFor="memberUsername" className="form-label fw-semibold">Username</label>
+															<input
+																type="text"
+																className="form-control"
+																id="memberUsername"
+																name="memberUsername"
+																value={editSelectedmemberUsername}
+																onChange={e => setEditSelectedmemberUsername(e.target.value)}
+																placeholder="Enter username"
+																required
+															/>
+															{allMembers
+																.find(m => (
+																	m.id !== selectedMember?.id &&
+																	normalizedLowercaseString(m.username) === normalizedLowercaseString(editSelectedmemberUsername)
+																)) && (
+																	<div className="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller"><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Userame already taken</div>
+																)
+															}
+														</div>
+													)}
 													<div className="mb-3">
 														<label htmlFor="memberPhone" className="form-label fw-semibold">Phone</label>
 														<input
