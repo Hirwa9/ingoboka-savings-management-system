@@ -2620,8 +2620,8 @@ const UserUI = () => {
 											required
 										/>
 										{!['', 0].includes(creditAmount) && (
-											<div className="form-text px-2 py-1 bg-info-subtle rounded-bottom-3 smaller fst-italic">
-												With {tranches <= 6 ? creditPrimaryInterest : creditSecondaryInterest}% Interest = <CurrencyText amount={creditAmount * (tranches <= 6 ? creditPrimaryInterestPercentage : creditSecondaryInterestPercentage)} />
+											<div className="form-text px-2 py-1 bg-info-subtle rounded-bottom-3 smaller">
+												With {tranches <= 6 ? creditPrimaryInterest : creditSecondaryInterest}% (<CurrencyText amount={creditAmount * (tranches <= 6 ? creditPrimaryInterestPercentage : creditSecondaryInterestPercentage)} />) Interest
 											</div>
 										)}
 									</div>
@@ -2705,7 +2705,7 @@ const UserUI = () => {
 											</div>
 											<div className='d-flex cols-2'>
 												<div className="col fw-semibold">Interest ({tranches <= 6 ? creditPrimaryInterest : creditSecondaryInterest}%):</div>
-												<div className="col"><CurrencyText amount={Number(creditAmount) * (tranches <= 6 ? creditPrimaryInterest : creditSecondaryInterest)} smallCurrency /></div>
+												<div className="col"><CurrencyText amount={Number(creditAmount) * (tranches <= 6 ? creditPrimaryInterestPercentage : creditSecondaryInterestPercentage)} smallCurrency /></div>
 											</div>
 											<div className='d-flex cols-2'>
 												<div className="col fw-semibold">Due date:</div>
