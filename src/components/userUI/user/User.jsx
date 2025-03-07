@@ -3410,10 +3410,10 @@ const UserUI = () => {
 								<img src={signedUser?.husbandAvatar} alt="" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 d-none d-md-block border border-3 border-light bg-light rounded-circle ptr' />
 							</MenuButton>
 						} transition>
-							<MenuItem onClick={() => { setActiveSection('settings') }}>
+							{/* <MenuItem onClick={() => { setActiveSection('settings') }}>
 								<Gear weight='fill' className="me-2 opacity-50" /> Settings
 							</MenuItem>
-							<MenuDivider />
+							<MenuDivider /> */}
 							<MenuItem onClick={() => { logout() }}>
 								<SignOut weight='fill' className="me-2 opacity-50" /> Sign out
 							</MenuItem>
@@ -3507,13 +3507,13 @@ const UserUI = () => {
 									</button>
 								</li> */}
 
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'settings' ? 'active blur-bg-2px' : ''}`}
+								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'settings' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("settings"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Gear size={20} weight='fill' className="me-2" /> Settings
 									</button>
-								</li>
+								</li> */}
 
 								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-3 d-md-none clickDown`} onClick={() => { logout() }}>
 									<button className="nav-link w-100">
