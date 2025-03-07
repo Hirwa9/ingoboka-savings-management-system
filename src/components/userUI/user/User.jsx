@@ -1786,13 +1786,12 @@ const UserUI = () => {
 			trancheAmounts.reduce((sum, val) => sum + Number(val), 0)
 		), [trancheAmounts])
 		const totalPaymentAmount = useMemo(() => (
-			creditAmount * (1 + creditPrimaryInterestPercentage)
-		), [creditAmount])
-
+			creditAmount * (1 + (tranches <= 6 ? creditPrimaryInterestPercentage : creditSecondaryInterestPercentage))
+		), [tranches, creditAmount])
 
 		const calculateDefaultTrancheAmounts = (credit, numTranches) => {
-			const totalAmountWithInterest = Number(credit) * (1 + creditPrimaryInterestPercentage);
-			// console.log('totalAmountWithInterest: ', totalAmountWithInterest);
+			const interestRate = numTranches <= 6 ? creditPrimaryInterestPercentage : creditSecondaryInterestPercentage;
+			const totalAmountWithInterest = Number(credit) * (1 + interestRate);
 			return Array.from({ length: numTranches }, () => totalAmountWithInterest / numTranches);
 		};
 
@@ -2622,7 +2621,7 @@ const UserUI = () => {
 										/>
 										{!['', 0].includes(creditAmount) && (
 											<div className="form-text px-2 py-1 bg-info-subtle rounded-bottom-3 smaller fst-italic">
-												With {creditPrimaryInterest}% Interest = <CurrencyText amount={creditAmount * creditPrimaryInterestPercentage} />
+												With {tranches <= 6 ? creditPrimaryInterest : creditSecondaryInterest}% Interest = <CurrencyText amount={creditAmount * (tranches <= 6 ? creditPrimaryInterestPercentage : creditSecondaryInterestPercentage)} />
 											</div>
 										)}
 									</div>
@@ -2705,8 +2704,8 @@ const UserUI = () => {
 												<div className="col"><CurrencyText amount={Number(creditAmount)} smallCurrency /></div>
 											</div>
 											<div className='d-flex cols-2'>
-												<div className="col fw-semibold">Interest ({creditPrimaryInterest}%):</div>
-												<div className="col"><CurrencyText amount={Number(creditAmount) * creditPrimaryInterestPercentage} smallCurrency /></div>
+												<div className="col fw-semibold">Interest ({tranches <= 6 ? creditPrimaryInterest : creditSecondaryInterest}%):</div>
+												<div className="col"><CurrencyText amount={Number(creditAmount) * (tranches <= 6 ? creditPrimaryInterest : creditSecondaryInterest)} smallCurrency /></div>
 											</div>
 											<div className='d-flex cols-2'>
 												<div className="col fw-semibold">Due date:</div>
@@ -2720,7 +2719,7 @@ const UserUI = () => {
 													</div>
 												)
 											}
-											{totaltrancheAmounts !== totalPaymentAmount && (
+											{Number(totaltrancheAmounts) !== Number(totalPaymentAmount) && (
 												<div className="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller">
 													<WarningCircle size={22} weight='fill' className='me-1 opacity-50' />
 													{totaltrancheAmounts > totalPaymentAmount ? (
