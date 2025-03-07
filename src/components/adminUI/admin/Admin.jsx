@@ -1341,8 +1341,8 @@ const Admin = () => {
 													{showPrimaryMemberInfo ? `${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName} ` : `${selectedMember?.wifeFirstName} ${selectedMember?.wifeLastName}`}
 												</div>
 												{editSelectedmemberImage && (
-													<div className="position-absolute start-50 top-50 translate-middle col-11 bg-gray-800 text-gray-200 p-3 py-4 text-nowrap smaller shadow-sm" style={{ animation: 'zoomInBack .2s 1' }}>
-														<AbsoluteCloseButton bg="gray-800" text="gray-200" onClose={() => setEditSelectedmemberImage(false)} />
+													<div className="position-absolute start-50 top-50 translate-middle col-11 bg-gray-400 text-gray-700 p-3 py-4 text-nowrap smaller shadow-sm" style={{ animation: 'zoomInBack .2s 1' }}>
+														<AbsoluteCloseButton bg="gray-400" text="gray-700" onClose={() => setEditSelectedmemberImage(false)} />
 														<div className="flex-align-center flex-wrap gap-2 mb-3">
 															<input
 																type="file"
@@ -1352,7 +1352,7 @@ const Admin = () => {
 																className="form-control file-input"
 																onChange={handleImageFileChange}
 															/>
-															<p className={`${imageFileName ? 'text-info' : ''} mb-0 px-2`}>{imageFileName || "No file chosen"}</p>
+															<p className={`${imageFileName ? 'text-success' : ''} mb-0 px-2`}>{imageFileName || "No file chosen"}</p>
 														</div>
 														<button className="btn btn-sm btn-dark w-100 rounded-pill px-3"
 															onClick={() => handleEditMemberAvatar(selectedMember?.id, showPrimaryMemberInfo ? 'husband' : 'wife', imageFile)}
