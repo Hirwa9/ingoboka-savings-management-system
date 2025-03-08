@@ -1782,7 +1782,7 @@ const UserUI = () => {
 		const [comment, setComment] = useState('');
 		const [trancheDates, setTrancheDates] = useState([]);
 		const [trancheAmounts, setTrancheAmounts] = useState([]);
-		const totaltrancheAmounts = useMemo(() => (
+		const totalTrancheAmounts = useMemo(() => (
 			trancheAmounts.reduce((sum, val) => sum + Number(val), 0)
 		), [trancheAmounts])
 		const totalPaymentAmount = useMemo(() => (
@@ -1792,7 +1792,7 @@ const UserUI = () => {
 		const calculateDefaultTrancheAmounts = (credit, numTranches) => {
 			const interestRate = numTranches <= 6 ? creditPrimaryInterestPercentage : creditSecondaryInterestPercentage;
 			const totalAmountWithInterest = Number(credit) * (1 + interestRate);
-			return Array.from({ length: numTranches }, () => totalAmountWithInterest / numTranches);
+			return Array.from({ length: numTranches }, () => (totalAmountWithInterest / numTranches).toFixed(3));
 		};
 
 		useEffect(() => {
@@ -2694,10 +2694,11 @@ const UserUI = () => {
 									</div>
 
 									{/* Submit Button */}
-									<div className="mb-3 p-2 form-text bg-dark-subtle rounded">
-										<p className='mb-2 text-dark-emphasis'>
-											Please verify the details before submiting.
-										</p>
+									<div className="mb-3 px-2 py-3 form-text bg-dark-subtle rounded">
+										<div className='text-center text-dark-emphasis'>
+											Please verify the details before submiting
+										</div>
+										<hr />
 										<div className="px-3">
 											<div className='d-flex cols-2'>
 												<div className="col fw-semibold">Credit:</div>
@@ -2706,6 +2707,15 @@ const UserUI = () => {
 											<div className='d-flex cols-2'>
 												<div className="col fw-semibold">Interest ({tranches <= 6 ? creditPrimaryInterest : creditSecondaryInterest}%):</div>
 												<div className="col"><CurrencyText amount={Number(creditAmount) * (tranches <= 6 ? creditPrimaryInterestPercentage : creditSecondaryInterestPercentage)} smallCurrency /></div>
+											</div>
+											<div className='d-flex cols-2'>
+												<div className="col fw-semibold">Total:</div>
+												<div className="col"><CurrencyText amount={Number(totalTrancheAmounts)} smallCurrency boldAmount /></div>
+											</div>
+											<hr />
+											<div className='d-flex cols-2'>
+												<div className="col fw-semibold">Request date:</div>
+												<div className="col"><FormatedDate date={requestDate} /></div>
 											</div>
 											<div className='d-flex cols-2'>
 												<div className="col fw-semibold">Due date:</div>
@@ -2719,25 +2729,25 @@ const UserUI = () => {
 													</div>
 												)
 											}
-											{Number(totaltrancheAmounts) !== Number(totalPaymentAmount) && (
+											{Number(totalTrancheAmounts) !== Number(totalPaymentAmount) && (
 												<div className="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller">
 													<WarningCircle size={22} weight='fill' className='me-1 opacity-50' />
-													{totaltrancheAmounts > totalPaymentAmount ? (
+													{Number(totalTrancheAmounts) > Number(totalPaymentAmount) ? (
 														<>
 															<p>
-																Total tranche payment amount <CurrencyText amount={totaltrancheAmounts} boldAmount={true} /> can not be greater than total payment amount <CurrencyText amount={totalPaymentAmount} boldAmount={true} />. Please adjust tranche payment values to match the total payment.
+																Total tranche payment amount <CurrencyText amount={totalTrancheAmounts} boldAmount={true} /> can not be greater than total payment amount <CurrencyText amount={totalPaymentAmount} boldAmount={true} />. Please adjust tranche payment values to match the total payment.
 															</p>
 															<p>
-																Difference: <CurrencyText amount={totaltrancheAmounts - totalPaymentAmount} boldAmount={true} />
+																Difference: <CurrencyText amount={totalTrancheAmounts - totalPaymentAmount} boldAmount={true} />
 															</p>
 														</>
 													) : (
 														<>
 															<p>
-																Total tranche payment amount <CurrencyText amount={totaltrancheAmounts} boldAmount={true} /> can not be less than total payment amount <CurrencyText amount={totalPaymentAmount} boldAmount={true} />. Please adjust tranche payment values to match the total payment.
+																Total tranche payment amount <CurrencyText amount={totalTrancheAmounts} boldAmount={true} /> can not be less than total payment amount <CurrencyText amount={totalPaymentAmount} boldAmount={true} />. Please adjust tranche payment values to match the total payment.
 															</p>
 															<p>
-																Difference: <CurrencyText amount={totalPaymentAmount - totaltrancheAmounts} boldAmount={true} />
+																Difference: <CurrencyText amount={totalPaymentAmount - totalTrancheAmounts} boldAmount={true} />
 															</p>
 														</>
 													)}
@@ -2745,7 +2755,7 @@ const UserUI = () => {
 											)}
 										</div>
 
-										<button type="submit" className="btn btn-sm btn-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="addSavingBtn" disabled={(new Date(trancheDates[trancheDates.length - 1]) > new Date(dueDate)) || tranches === 0 || (totaltrancheAmounts !== (creditAmount * (1 + creditPrimaryInterestPercentage)))}
+										<button type="submit" className="btn btn-sm btn-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="addSavingBtn" disabled={(new Date(trancheDates[trancheDates.length - 1]) > new Date(dueDate)) || tranches === 0 || (totalTrancheAmounts !== (creditAmount * (1 + creditPrimaryInterestPercentage)))}
 										>
 											{!isWaitingFetchAction ?
 												<>Submit Request <FloppyDisk size={18} className='ms-2' /></>
