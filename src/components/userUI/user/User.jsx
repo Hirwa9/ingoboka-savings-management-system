@@ -2758,7 +2758,7 @@ const UserUI = () => {
 										<button type="submit" className="btn btn-sm btn-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="addSavingBtn" disabled={(new Date(trancheDates[trancheDates.length - 1]) > new Date(dueDate)) || tranches === 0 || (totalTrancheAmounts !== (creditAmount * (1 + creditPrimaryInterestPercentage)))}
 										>
 											{!isWaitingFetchAction ?
-												<>Submit Request <FloppyDisk size={18} className='ms-2' /></>
+												<>Submit Request <CaretRight size={18} className='ms-2' /></>
 												: <>Submitting... <SmallLoader color='light' /></>
 											}
 										</button>
