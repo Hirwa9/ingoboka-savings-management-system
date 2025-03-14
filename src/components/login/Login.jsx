@@ -2,11 +2,9 @@ import React, { useContext, useId, useState } from 'react';
 import './login.css';
 import '../common/formInput/formInput.css';
 import MyToast from '../common/Toast';
-import { useNavigate } from "react-router-dom";
 import $ from 'jquery';
-import { SignIn, Wallet } from '@phosphor-icons/react';
+import { CaretRight, SignIn, Wallet } from '@phosphor-icons/react';
 import useCustomDialogs from '../common/hooks/useCustomDialogs';
-import { Axios, BASE_URL } from '../../api/api';
 import SmallLoader from '../common/SmallLoader';
 import { AuthContext } from '../AuthProvider';
 
@@ -55,7 +53,6 @@ const Login = () => {
         } finally {
             setIsWaitingFetchAction(false);
         }
-
     };
 
     // Handle input's UI
@@ -77,14 +74,41 @@ const Login = () => {
                     <div className='h-100 d-flex flex-column flex-lg-row mx-0'>
 
                         {/* Intro & illustration(s) */}
-                        <div className="col-lg-7 px-4 px-sm-5 p-5 bg-primaryColor login-hero-wrapper">
+                        <div className="col-lg-7 position-relative isolate px-4 px-sm-5 p-5 bg-primaryColor login-hero-wrapper">
                             <h2 className='fw-bolder text-gray-200'><Wallet size={40} className='me-2' /> Ikimina <span className='text-secondaryColor'>_ Ingoboka</span></h2>
-                            <p className='text-light small'>
+                            <p className='text-light small fw-light'>
                                 Your savings management system ...
                             </p>
                             <div className='d-none d-lg-block'>
-                                <img src="/images/saving_illustration.png" alt="" className='mt-5 col-7' />
+                                <img src="/images/management.avif" alt="" className='position-absolute inx--1 ptr-none'
+                                    style={{
+                                        opacity: .1,
+                                        left: 0,
+                                        top: 0,
+                                        width: "100%",
+                                        height: "100%",
+                                        objectFit: "cover",
+                                        animation: "zoomInFrontMiddle 8s infinite"
+                                    }} />
 
+                                <ul className="list-unstyled text-light welcome-list">
+                                    <li className='d-flex align-items-center mb-3 py-3 fs-3 fw-lighter'>
+                                        <span className='me-2'><CaretRight size={20} /></span>
+                                        <span>Manage your savings</span>
+                                    </li>
+                                    <li className='d-flex align-items-center mb-3 py-3 fs-3 fw-lighter' style={{ marginLeft: "3rem", }}>
+                                        <span className='me-2'><CaretRight size={20} /></span>
+                                        <span>Track your credits</span>
+                                    </li>
+                                    <li className='d-flex align-items-center mb-3 py-3 fs-3 fw-lighter' style={{ marginLeft: "5rem", }}>
+                                        <span className='me-2'><CaretRight size={20} /></span>
+                                        <span>Record group expenses</span>
+                                    </li>
+                                    <li className='d-flex align-items-center mb-3 py-3 fs-3 fw-lighter' style={{ marginLeft: "5rem", }}>
+                                        <span className='me-2'><CaretRight size={20} /></span>
+                                        <span>Take effective financial decisions</span>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
 
@@ -101,7 +125,7 @@ const Login = () => {
                                 <form onSubmit={handleSignIn}>
                                     <div className={`form-input-element`}>
                                         <input
-                                            type="text" // Changed from email to text to allow both email and username
+                                            type="text"
                                             id={signInId + "EmailOrUsername"}
                                             className="form-control form-control-lg"
                                             value={emailOrUsername}

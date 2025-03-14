@@ -4700,9 +4700,21 @@ hr.hr-lg {
   }
 }
 
+@keyframes zoomInBackMiddle {
+  50% {
+    transform: scale(.95);
+  }
+}
+
 @keyframes zoomInFront {
   0% {
     opacity: 0;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes zoomInFrontMiddle {
+  50% {
     transform: scale(1.05);
   }
 }
