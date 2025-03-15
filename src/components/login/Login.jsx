@@ -116,7 +116,7 @@ const Login = () => {
                         <div className="col-11 col-sm-9 col-md-7 col-lg-5 mx-auto mx-lg-0 py-4 bg-lightColor text-gray-900 login-form-wrapper">
                             <div className='px-3 py-3 px-sm-5 p-lg-5'>
                                 <div className='flex-center mb-4'>
-                                    <img src='/logo.jpeg' alt="" className="w-4rem h-4rem mx-auto rounded-circle" />
+                                    <img src='/logo.jpg' alt="" className="w-4rem h-4rem mx-auto rounded-circle" />
                                 </div>
                                 <h1 className='h5 fw-bold text-center text-gray-800'>Welcome to Ingoboka</h1>
                                 <p className='mb-4 smaller text-center text-gray-600'>
