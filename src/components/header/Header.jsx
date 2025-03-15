@@ -11,7 +11,7 @@ const Header = () => {
             <header className="navbar navbar-light sticky-top flex-md-nowrap py-0 admin-header">
                 <div className='nav-item navbar-brand col-md-3 col-xl-2 d-flex align-items-center me-0 px-2'>
                     <div className="me-2 logo">
-                        <img src="logo.png" alt="" className="rounded-circle logo"></img>
+                        <img src="logo.jpg" alt="" className="rounded-circle logo"></img>
                     </div>
                     <small className='fs-70 text-gray-200'>
                         INGOBOKA
