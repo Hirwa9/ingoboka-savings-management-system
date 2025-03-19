@@ -13,7 +13,7 @@ const Header = () => {
                     <div className="me-2 logo">
                         <img src="logo.jpg" alt="" className="rounded-circle logo"></img>
                     </div>
-                    <small className='fs-70 text-gray-200'>
+                    <small className='fs-70 org-name'>
                         INGOBOKA
                     </small>
                 </div>
