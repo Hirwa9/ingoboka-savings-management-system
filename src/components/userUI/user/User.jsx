@@ -3370,16 +3370,16 @@ const UserUI = () => {
 					<div className="me-2 logo">
 						<img src='/logo.jpg' alt="" className="rounded-circle logo p-2"></img>
 					</div>
-					<small className='fs-70 text-gray-200'>
+					<small className='fs-70 org-name'>
 						INGOBOKA
 					</small>
-					<div className="d-flex gap-2 d-md-none ms-auto me-2 text-light" style={{ '--_activeColor': 'var(--bs-gray-500)' }}>
-						<button className={`nav-link px-2 ${adminHasNewNotifications ? 'active-with-dot' : ''} text-gray-400 rounded-0 clickDown`} title='Notifications'>
+					<div className="d-flex gap-2 d-md-none ms-auto me-2" style={{ '--_activeColor': 'var(--bs-gray-500)' }}>
+						{/* <button className={`nav-link px-2 ${adminHasNewNotifications ? 'active-with-dot' : ''} rounded-0 clickDown`} title='Notifications'>
 							<BellSimple weight={adminHasNewNotifications ? 'fill' : undefined} size={20}
 								style={{ animation: adminHasNewNotifications ? 'shakeX 10s infinite' : 'unset' }}
 							/>
-						</button>
-						<button ref={sideNavbarTogglerRef} className="text-gray-400 rounded-0 shadow-none bounceClick navbar-toggler" type="button" aria-controls="sidebarMenu" aria-label="Toggle navigation" onClick={() => setSideNavbarIsFloated(!sideNavbarIsFloated)}>
+						</button> */}
+						<button ref={sideNavbarTogglerRef} className="rounded-0 shadow-none bounceClick navbar-toggler" type="button" aria-controls="sidebarMenu" aria-label="Toggle navigation" onClick={() => setSideNavbarIsFloated(!sideNavbarIsFloated)}>
 							<List />
 						</button>
 					</div>
@@ -3435,7 +3435,7 @@ const UserUI = () => {
 				<div className="row">
 					{/* Sidebar Navigation */}
 					<nav className={`col-12 col-md-3 col-xl-2 px-3 px-sm-5 px-md-0 d-md-block border-end overflow-y-auto sidebar ${sideNavbarIsFloated ? 'floated' : ''}`} id="sidebarMenu">
-						<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit my-3 my-md-0 py-3 pt-md-4 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded' : ''}`}>
+						<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit my-3 my-md-0 py-3 pt-md-4 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded-4' : ''}`}>
 							<div className="d-flex align-items-center d-md-none mb-3 px-3 pb-2 border-light border-opacity-25">
 								<div className='ms-auto d-grid pb-1'>
 									<span className='ms-auto smaller'>{`${signedUser?.husbandFirstName} ${signedUser?.husbandLastName}`}</span>
