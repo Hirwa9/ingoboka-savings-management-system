@@ -10,6 +10,17 @@ header {
     transition: translate var(--trans), opacity var(--trans);
 }
 
+.admin-header .org-name,
+.admin-header .nav-actions > button {
+    color: var(--bs-gray-600);
+}
+
+@media screen and (min-width: 768px) {
+    .admin-header .org-name {
+        color: var(--bs-gray-200);
+    }
+}
+
 @media screen and (max-width: 768px) {
     header.dom-scrolling-down {
         translate: 0 -20%;
@@ -21,13 +32,6 @@ header {
     header.dom-scrolling-down {
         translate: 0 -20%;
         opacity: 0;
-    }
-
-    .admin-header {
-        background-image: linear-gradient(to bottom, rgba(0, 0, 0, .65), rgba(0, 0, 0, .65)), url('../../../public/images/saving_illustration_fancy1.webp');
-        /* background-position: 44.7% 0.8%; */
-        background-position: 45% 39%;
-
     }
 }
 
