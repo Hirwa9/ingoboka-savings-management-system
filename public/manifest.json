@@ -22,8 +22,8 @@
   "id": "/",
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#6B8E23",
-  "background_color": "#6B8E23",
+  "theme_color": "#f0f0f0",
+  "background_color": "#f0f0f0",
   "screenshots": [
     {
       "src": "/images/screenshot_sm.jpg",
