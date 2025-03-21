@@ -2206,7 +2206,7 @@ const UserUI = () => {
 																				</div>
 																			) : (
 																				<EmptyBox
-																					notFoundMessage={`No records available. Credit payment records/history will show up here as the get paid`}
+																					notFoundMessage={`No records available. Credit payment records/history will show up here as loans get paid.`}
 																				/>
 																			)}
 																		</>
