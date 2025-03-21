@@ -3,7 +3,7 @@ import { Button, Card, Container, Form } from "react-bootstrap";
 import './user.css';
 import '../../header/header.css';
 import MyToast from '../../common/Toast';
-import { ArrowClockwise, ArrowsClockwise, ArrowsHorizontal, ArrowsVertical, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, EnvelopeSimple, Files, FloppyDisk, Gavel, Gear, List, Pen, Phone, Plus, Receipt, SignOut, User, UserRectangle, Users, Wallet, WarningCircle, Watch, X } from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowsClockwise, ArrowsHorizontal, ArrowsVertical, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, EnvelopeSimple, Files, FloppyDisk, Gavel, Gear, List, ListChecks, Pen, Phone, Plus, Receipt, SignOut, User, UserRectangle, Users, Wallet, WarningCircle, Watch, X } from '@phosphor-icons/react';
 import { expensesTypes } from '../../../data/data';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
@@ -30,6 +30,7 @@ import Popover from '@idui/react-popover';
 import SmallLoader from '../../common/SmallLoader';
 import NextStepInformer from '../../common/NextStepInformer';
 import SystemSettings from '../../systemSettings/SystemSettings';
+import ToogleButton from '../../common/ToogleButton';
 
 const UserUI = () => {
 
@@ -1757,6 +1758,8 @@ const UserUI = () => {
 		const [selectedMember, setSelectedMember] = useState(null);
 		const [showSelectedMemberCreditRecords, setShowSelectedMemberCreditRecords] = useState(false);
 
+		const [showSelectedMemberPaymentHistory, setShowSelectedMemberPaymentHistory] = useState(false);
+
 		// Show credits per member
 		const [showBackfillPlanCard, setShowBackfillPlanCard] = useState(false);
 		const [selectedCredit, setSelectedCredit] = useState([]);
@@ -1899,10 +1902,7 @@ const UserUI = () => {
 				<div className="d-flex flex-wrap justify-content-between align-items-center mb-3">
 					<h2 className='text-appColor'><Blueprint weight='fill' className="me-1 opacity-50" /> Credit panel</h2>
 					<div className="ms-auto d-flex gap-1">
-						<button className='btn btn-sm flex-center gap-1 text-primaryColor fw-semibold border-secondary border border-opacity-25 clickDown'
-							onClick={() => setShowRequestCreditForm(true)}>
-							<Plus /> Request credit
-						</button>
+						<ToogleButton icon={<Plus />} text='Request credit' func={() => setShowRequestCreditForm(true)} />
 					</div>
 				</div>
 
@@ -2065,7 +2065,7 @@ const UserUI = () => {
 																	<ContentToggler
 																		state={showSelectedMemberCreditRecords}
 																		setState={setShowSelectedMemberCreditRecords}
-																		text={<>My credit records</>}
+																		text="My credit records"
 																		className="ms-auto"
 																	/>
 
@@ -2136,6 +2136,81 @@ const UserUI = () => {
 																			</div>
 																		</>
 																	)}
+
+																	{/* Toggle Credit Payment Records */}
+																	<ContentToggler
+																		state={showSelectedMemberPaymentHistory}
+																		setState={setShowSelectedMemberPaymentHistory}
+																		text="My credit payment history"
+																		className="ms-auto"
+																	/>
+
+																	{showSelectedMemberPaymentHistory &&
+																		<>
+																			{allRecords
+																				.filter(cr => (cr.memberId === selectedMember?.id && cr.recordType === 'loan' && cr.recordSecondaryType === 'payment')).length > 0 ? (
+
+																				<div className='overflow-auto'>
+																					<table className="table table-striped table-hover h-100">
+																						<thead className='table-secondary position-sticky top-0 inx-1 1 text-uppercase small'>
+																							<tr>
+																								<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Member</th>
+																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Loan paid  <sub className='fs-60'>/RWF</sub></th>
+																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Interest Paid <sub className='fs-60'>/RWF</sub></th>
+																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Tranches Paid</th>
+																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date</th>
+																							</tr>
+																						</thead>
+																						<tbody>
+																							{allRecords
+																								.filter(cr => (cr.recordType === 'loan' && cr.recordSecondaryType === 'payment'))
+																								.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+																								.map((record, index) => {
+
+																									const associatedMember = allMembers.find(m => m.id === record.memberId);
+																									const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+																									const transactionInfo = JSON.parse(record.comment);
+																									const loanPaid = transactionInfo.loanPaid;
+																									const interestPaid = transactionInfo.interestPaid;
+																									const tranchesPaid = transactionInfo.tranchesPaid;
+
+																									return (
+																										<tr key={index} className="small cursor-default clickDown expense-row">
+																											<td className="ps-sm-3 border-bottom-3 border-end">
+																												{index + 1}
+																											</td>
+																											<td className="text-nowrap">
+																												{memberNames}
+																											</td>
+																											<td>
+																												<CurrencyText amount={Number(loanPaid)} />
+																											</td>
+																											<td>
+																												<CurrencyText amount={Number(interestPaid)} />
+																											</td>
+																											<td>
+																												{tranchesPaid}
+																											</td>
+																											<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
+																												<Popover content={<><Watch size={15} /> {getDateHoursMinutes(record.createdAt)}</>} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
+																													<FormatedDate date={record.createdAt} />
+																												</Popover>
+																											</td>
+																										</tr>
+																									)
+																								})
+																							}
+																						</tbody>
+																					</table>
+																				</div>
+																			) : (
+																				<EmptyBox
+																					notFoundMessage={`No records available. Credit payment records/history will show up here as the get paid`}
+																				/>
+																			)}
+																		</>
+																	}
 
 																</Fragment>
 															)
