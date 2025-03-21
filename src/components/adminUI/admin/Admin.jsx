@@ -3,7 +3,7 @@ import { Form } from "react-bootstrap";
 import './admin.css';
 import '../../header/header.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, EnvelopeSimple, EscalatorUp, Files, FloppyDisk, Gavel, Gear, GreaterThan, HandCoins, Info, LessThan, List, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, TextStrikethrough, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, Watch, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CreditCard, CurrencyDollarSimple, DotsThreeOutline, EnvelopeSimple, EscalatorUp, Files, FloppyDisk, Gavel, Gear, GreaterThan, HandCoins, Info, LessThan, List, ListChecks, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, TextStrikethrough, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, Watch, X } from '@phosphor-icons/react';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
@@ -34,6 +34,7 @@ import RightFixedCard from '../../common/rightFixedCard/RightFixedCard';
 import SmallLoader from '../../common/SmallLoader';
 import NextStepInformer from '../../common/NextStepInformer';
 import AbsoluteCloseButton from '../../common/AbsoluteCloseButton';
+import ToogleButton from '../../common/ToogleButton';
 
 const Admin = () => {
 
@@ -1123,14 +1124,8 @@ const Admin = () => {
 				<div className="d-flex flex-wrap justify-content-between align-items-center mb-3">
 					<h2 className='text-appColor'><Users weight='fill' className="me-1 opacity-50" /> Members</h2>
 					<div className="ms-auto d-flex gap-1">
-						<button className='btn btn-sm flex-center gap-1 text-primaryColor fw-semibold border-secondary border border-opacity-25 clickDown'
-							onClick={() => setShowMemberStats(!showMemberStats)}>
-							<ChartBar /> <span className='d-none d-sm-inline'> Statistics</span>
-						</button>
-						<button className='btn btn-sm flex-center gap-1 text-primaryColor fw-semibold border-secondary border border-opacity-25 clickDown'
-							onClick={() => setShowAddMemberForm(true)}>
-							<Plus /> New member
-						</button>
+						<ToogleButton icon={<ChartBar />} text={<span className='d-none d-sm-inline'> Statistics</span>} func={() => setShowMemberStats(!showMemberStats)} />
+						<ToogleButton icon={<Plus />} text='New member' func={() => setShowAddMemberForm(true)} />
 					</div>
 				</div>
 
@@ -3394,6 +3389,9 @@ const Admin = () => {
 		 * Pay Loans
 		 */
 
+		const [showGlobalPaymentHistory, setShowGlobalPaymentHistory] = useState(false);
+		const [showSelectedMemberPaymentHistory, setShowSelectedMemberPaymentHistory] = useState(false);
+
 		const [payLoanAmount, setPayLoanAmount] = useState('');
 		const [payInterestAmount, setPayInterestAmount] = useState('');
 		const [payTranchesAmount, setPayTranchesAmount] = useState('');
@@ -3424,6 +3422,7 @@ const Admin = () => {
 				fetchLoans();
 				fetchCredits();
 				fetchFigures();
+				fetchRecords();
 				resetPaymentinputs();
 			} catch (error) {
 				const errorMessage = error.response?.data?.error || error.response?.data?.message || "An unknown error occurred";
@@ -3533,6 +3532,98 @@ const Admin = () => {
 
 						{/* Members Credits Stats */}
 
+						<div className="mb-4 ms-auto d-flex gap-1">
+							<ToogleButton icon={<ListChecks />} text='Credit payment history' func={() => setShowGlobalPaymentHistory(true)} />
+						</div>
+
+						{/* Member Credits Payment History */}
+						{showGlobalPaymentHistory &&
+							<>
+								<div className='position-fixed fixed-top inset-0 bg-white3 inx-high'>
+									<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
+										<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
+											<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom">
+												<div className='flex-align-center'>
+													<ListChecks
+														className="flex-shrink-0 w-3rem h-3rem p-2 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
+													/>
+													<span className='ms-2' style={{ lineHeight: 1 }}>
+														Credit payment history
+													</span>
+												</div>
+												<div onClick={() => { setShowGlobalPaymentHistory(false); }}>
+													<X size={25} className='ptr' />
+												</div>
+											</h6>
+											{allRecords
+												.filter(cr => (cr.recordType === 'loan' && cr.recordSecondaryType === 'payment')).length > 0 ? (
+
+												<div className='overflow-auto'>
+													<table className="table table-striped table-hover h-100">
+														<thead className='table-secondary position-sticky top-0 inx-1 1 text-uppercase small'>
+															<tr>
+																<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+																<th className='py-3 text-nowrap text-gray-700 fw-normal'>Member</th>
+																<th className='py-3 text-nowrap text-gray-700 fw-normal'>Loan paid  <sub className='fs-60'>/RWF</sub></th>
+																<th className='py-3 text-nowrap text-gray-700 fw-normal'>Interest Paid <sub className='fs-60'>/RWF</sub></th>
+																<th className='py-3 text-nowrap text-gray-700 fw-normal'>Tranches Paid</th>
+																<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date</th>
+															</tr>
+														</thead>
+														<tbody>
+															{allRecords
+																.filter(cr => (cr.recordType === 'loan' && cr.recordSecondaryType === 'payment'))
+																.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+																.map((record, index) => {
+
+																	const associatedMember = allMembers.find(m => m.id === record.memberId);
+																	const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+																	const transactionInfo = JSON.parse(record.comment);
+																	const loanPaid = transactionInfo.loanPaid;
+																	const interestPaid = transactionInfo.interestPaid;
+																	const tranchesPaid = transactionInfo.tranchesPaid;
+
+																	return (
+																		<tr key={index} className="small cursor-default clickDown expense-row">
+																			<td className="ps-sm-3 border-bottom-3 border-end">
+																				{index + 1}
+																			</td>
+																			<td className="text-nowrap">
+																				{memberNames}
+																			</td>
+																			<td>
+																				<CurrencyText amount={Number(loanPaid)} />
+																			</td>
+																			<td>
+																				<CurrencyText amount={Number(interestPaid)} />
+																			</td>
+																			<td>
+																				{tranchesPaid}
+																			</td>
+																			<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
+																				<Popover content={<><Watch size={15} /> {getDateHoursMinutes(record.createdAt)}</>} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
+																					<FormatedDate date={record.createdAt} />
+																				</Popover>
+																			</td>
+																		</tr>
+																	)
+																})
+															}
+														</tbody>
+													</table>
+												</div>
+											) : (
+												<EmptyBox
+													notFoundMessage={`No records available. Credit payment records/history will show up here as the get paid`}
+												/>
+											)}
+										</div>
+									</div>
+								</div>
+							</>
+						}
+
+						{/* Members Credits Stats */}
 						<div className="mb-5" style={{ minHeight: creditsBarGraphMinHeight, }}>
 							<BarGraph
 								options={membersCreditsStatsOptions.current}
@@ -4539,10 +4630,7 @@ const Admin = () => {
 					<div className="d-flex flex-wrap justify-content-between align-items-center">
 						<h2 className='text-appColor'><CashRegister weight='fill' className="me-1 opacity-50" /> Transactions panel</h2>
 						<div className="ms-auto d-flex gap-1">
-							<button className='btn btn-sm flex-center gap-1 text-primaryColor fw-semibold border-secondary border border-opacity-25 clickDown'
-								onClick={() => { setActiveTransactionSection('withdrawals'); setShowAddExpenseRecord(true) }}>
-								<Plus /> Record expenses
-							</button>
+							<ToogleButton icon={<Plus />} text='Record expenses' func={() => { setActiveTransactionSection('withdrawals'); setShowAddExpenseRecord(true) }} />
 						</div>
 					</div>
 					<div className="d-lg-flex align-items-center">
