@@ -4934,7 +4934,11 @@ const Admin = () => {
 																	{record.comment.toLowerCase().indexOf('cotisation') === 0 && (
 																		<MenuItem className="text-danger" onClick={() => {
 																			if (record.comment.indexOf('(') === -1) {
-																				messageToast({ message: "Sorry, this record can not be revered because there's no list of months of saving. Only records made after this feature are eligible", selfClose: false });
+																				messageToast({
+																					message: "This record cannot be reversed as it does not contain a list of recorded months. Only cotisation records created after this feature was introduced are eligible for reversal.",
+																					type: 'primaryColor',
+																					selfClose: false
+																				});
 																			} else {
 																				customConfirmDialog({
 																					message: (
