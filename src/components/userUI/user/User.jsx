@@ -1648,7 +1648,7 @@ const UserUI = () => {
 								totalInterestRemains += interestRemains;
 
 								return (
-									<tr key={index} className="small cursor-default clickDown interest-row">
+									<tr key={index} className="small cursor-default interest-row">
 										<td className="border-bottom-3 border-end">{index + 1}</td>
 										<td className='text-nowrap'>{memberNames}</td>
 										<td>{activeShares}</td>
@@ -2176,7 +2176,7 @@ const UserUI = () => {
 																									const tranchesPaid = transactionInfo.tranchesPaid;
 
 																									return (
-																										<tr key={index} className="small cursor-default clickDown expense-row">
+																										<tr key={index} className="small cursor-default expense-row">
 																											<td className="ps-sm-3 border-bottom-3 border-end">
 																												{index + 1}
 																											</td>
@@ -2464,7 +2464,7 @@ const UserUI = () => {
 																const creditInterest = Number(credit.creditAmount) * (5 / 100);
 
 																return (
-																	<tr key={index} className={`small cursor-default clickDown loan-row`}>
+																	<tr key={index} className={`small cursor-default loan-row`}>
 																		<td className={`ps-sm-3 border-bottom-3 border-end`}>
 																			{index + 1}
 																		</td>
@@ -2979,7 +2979,7 @@ const UserUI = () => {
 													.map((record, index) => {
 
 														return (
-															<tr key={index} className="small cursor-default clickDown expense-row">
+															<tr key={index} className="small cursor-default expense-row">
 																<td className="ps-sm-3 border-bottom-3 border-end">
 																	{index + 1}
 																</td>
@@ -3190,7 +3190,7 @@ const UserUI = () => {
 															.sort((a, b) => a.amount - b.amount)
 													)
 													.map((item, index) => (
-														<tr key={index} className="small cursor-default clickDown expense-row">
+														<tr key={index} className="small cursor-default expense-row">
 															<td className={`ps-sm-3 border-end ${item.type === 'income' ? 'text-success' : 'text-warning-emphasis'}`}>
 																{index + 1}
 															</td>
@@ -3222,7 +3222,7 @@ const UserUI = () => {
 												</tr>
 											</thead>
 											<tbody>
-												<tr className="small cursor-default clickDown general-report-row">
+												<tr className="small cursor-default general-report-row">
 													<td className="ps-sm-3 border-bottom-3 border-end fw-bold">
 														Balance
 													</td>
@@ -3248,7 +3248,7 @@ const UserUI = () => {
 														generalTotal += pendingCredit + pendingInterest;
 
 														return (
-															<tr key={index} className="small cursor-default clickDown general-report-row">
+															<tr key={index} className="small cursor-default general-report-row">
 																<td className="ps-sm-3">
 																	<b>{index + 1}</b>. {memberNames}
 																</td>
@@ -3265,7 +3265,7 @@ const UserUI = () => {
 														)
 													})
 												}
-												<tr className="small cursor-default clickDown general-report-row fw-bold" style={{ borderTopWidth: '2px' }} >
+												<tr className="small cursor-default general-report-row fw-bold" style={{ borderTopWidth: '2px' }} >
 													<td></td>
 													<td></td>
 													<td>
@@ -3275,7 +3275,7 @@ const UserUI = () => {
 														<CurrencyText amount={totalCotisationsAndShares} />
 													</td>
 												</tr>
-												<tr className="small cursor-default clickDown general-report-row text-info-enphasis">
+												<tr className="small cursor-default general-report-row text-info-enphasis">
 													<td></td>
 													<td></td>
 													<td>
@@ -3285,7 +3285,7 @@ const UserUI = () => {
 														<CurrencyText amount={generalTotal - totalCotisationsAndShares} />
 													</td>
 												</tr>
-												<tr className="small cursor-default clickDown general-report-row fw-bold fs-5">
+												<tr className="small cursor-default general-report-row fw-bold fs-5">
 													<td className="ps-sm-3">General Total:</td>
 													<td>
 														<CurrencyText amount={generalTotal} /> {/* Must be equal */}
