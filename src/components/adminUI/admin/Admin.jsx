@@ -3,7 +3,7 @@ import { Form } from "react-bootstrap";
 import './admin.css';
 import '../../header/header.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CreditCard, CurrencyDollarSimple, DotsThreeOutline, EnvelopeSimple, EscalatorUp, Files, FloppyDisk, Gavel, Gear, GreaterThan, HandCoins, Info, LessThan, List, ListChecks, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, TextStrikethrough, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, Watch, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowsLeftRight, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CreditCard, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, EnvelopeSimple, EscalatorUp, Files, FloppyDisk, Gavel, Gear, GreaterThan, HandCoins, Info, LessThan, List, ListChecks, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, TextStrikethrough, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, Watch, X } from '@phosphor-icons/react';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
@@ -2298,7 +2298,7 @@ const Admin = () => {
 				const payload = savingRecordType === 'cotisation' ? {
 					savings: selectedMonths,
 					applyDelayPenalties,
-					comment: savingRecordType[0].toUpperCase() + savingRecordType.slice(1)
+					comment: savingRecordType[0].toUpperCase() + savingRecordType.slice(1) + ` (${selectedMonths.toString()})`
 				} : savingRecordType === 'social' ? {
 					savingAmount: savingRecordAmount,
 					comment: savingRecordType[0].toUpperCase() + savingRecordType.slice(1)
@@ -4624,6 +4624,93 @@ const Admin = () => {
 			}
 		}, [activeTransactionSection]);
 
+		// Handle reverse cotisation
+		const handleReverseCotisation = async (values) => {
+			if (!values || typeof values !== 'object') {
+				return warningToast({ message: "Invalid record values" });
+			}
+
+			const { id, recordId, savings, comment } = values;
+
+			try {
+				setIsWaitingFetchAction(true);
+
+				const payload = {
+					savings: savings.slice(1, -1).split(","), comment, recordId
+				}
+
+				const response = await fetch(`${BASE_URL}/member/${id}/cotisation/reverse`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(payload),
+				});
+
+				// Fetch error
+				if (!response.ok) {
+					const errorData = await response.json();
+					throw new Error(errorData.message || 'Error reversing the cotisation record');
+				}
+
+				// Successful fetch
+				const data = await response.json();
+				successToast({ message: data.message });
+				setErrorWithFetchAction(null);
+				fetchMembers();
+				fetchFigures();
+				fetchRecords();
+			} catch (error) {
+				setErrorWithFetchAction(error.message);
+				cError("Error reversing the cotisation record:", error);
+				warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
+			} finally {
+				setIsWaitingFetchAction(false);
+			}
+		};
+
+		// Handle edit socal savings
+		const handleEditSocalSavings = async (values) => {
+			if (!values || typeof values !== 'object') {
+				return warningToast({ message: "Invalid record values" });
+			}
+
+			const { id, recordId, savingAmount } = values;
+
+			try {
+				setIsWaitingFetchAction(true);
+
+				const payload = {
+					savingAmount, recordId
+				}
+
+				const response = await fetch(`${BASE_URL}/member/${id}/social/edit`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(payload),
+				});
+
+				// Fetch error
+				if (!response.ok) {
+					const errorData = await response.json();
+					throw new Error(errorData.message || 'Error updating social savings amount');
+				}
+
+				// Successful fetch
+				const data = await response.json();
+				successToast({ message: data.message });
+				setErrorWithFetchAction(null);
+				resetPrompt();
+				fetchMembers();
+				fetchFigures();
+				fetchRecords();
+			} catch (error) {
+				setErrorWithFetchAction(error.message);
+				cError("Error updating social savings amount:", error);
+				warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
+			} finally {
+				setIsWaitingFetchAction(false);
+			}
+		};
+
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="mb-3">
@@ -4808,6 +4895,7 @@ const Admin = () => {
 												<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
 												<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
 												<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date</th>
+												<th className='py-3 text-nowrap text-gray-700 fw-normal'>Actions</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -4836,6 +4924,67 @@ const Admin = () => {
 																<Popover content={<><Watch size={15} /> {getDateHoursMinutes(record.createdAt)}</>} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
 																	<FormatedDate date={record.createdAt} />
 																</Popover>
+															</td>
+															<td>
+																<Menu menuButton={
+																	<MenuButton className="border-0 p-0">
+																		<DotsThreeVertical size={20} weight='bold' />
+																	</MenuButton>
+																} transition>
+																	{record.comment.toLowerCase().indexOf('cotisation') === 0 && (
+																		<MenuItem className="text-danger" onClick={() => {
+																			if (record.comment.indexOf('(') === -1) {
+																				messageToast({ message: "Sorry, this record can not be revered because there's no list of months of saving. Only records made after this feature are eligible", selfClose: false });
+																			} else {
+																				customConfirmDialog({
+																					message: (
+																						<>
+																							<h5 className='h6 border-bottom mb-3 pb-2'><ArrowsLeftRight size={25} weight='fill' className='opacity-50' /> Reversing member cotisations</h5>
+																							<p className='fw-semibold'>
+																								This will reverse cotisation record of {memberNames} for months {record.comment.slice(record.comment.indexOf('('))} from this year ({new Date().getFullYear()}).
+																							</p>
+																						</>
+																					),
+																					type: 'warning',
+																					action: () => handleReverseCotisation({
+																						id: record.memberId,
+																						recordId: record.id,
+																						savings: record.comment.slice(record.comment.indexOf('(')),
+																						comment: record.comment
+																					}),
+																				});
+																			}
+																		}}>
+																			<ArrowsLeftRight weight='fill' className="me-2 opacity-50" /> Reverse record
+																		</MenuItem>
+																	)}
+																	{(record.recordType.toLowerCase() === 'deposit' && record.comment.toLowerCase() === 'social') && (
+																		<MenuItem onClick={() => {
+																			customPrompt(
+																				{
+																					message: (
+																						<>
+																							<h5 className='h6 border-bottom mb-3 pb-2'><ReceiptX size={25} weight='fill' className='opacity-50' /> Edit/update social savings for {memberNames}</h5>
+																							<p>
+																								Current amount: <CurrencyText amount={Number(record.recordAmount)} /><br /><br />
+																								Enter new social amount for this record.
+																							</p>
+																						</>
+																					),
+																					inputType: 'number',
+																					action: () => handleEditSocalSavings({
+																						id: record.memberId,
+																						recordId: record.id,
+																						savingAmount: promptInputValue.current,
+																					}),
+																					placeholder: 'Updated amount',
+																				}
+																			)
+																		}}>
+																			<Pen weight='fill' className="me-2 opacity-50" /> Update
+																		</MenuItem>
+																	)}
+																</Menu>
 															</td>
 														</tr>
 													)
@@ -4896,7 +5045,7 @@ const Admin = () => {
 						</div>
 					)}
 				</div>
-			</div>
+			</div >
 		)
 	}
 
@@ -5274,7 +5423,7 @@ const Admin = () => {
 	return (
 		<>
 			{/* Toast message */}
-			<MyToast show={showToast} message={toastMessage} type={toastType} selfClose={toastSelfClose} selfCloseTimeout={toastSelfCloseTimeout} onClose={() => resetToast()} />
+			<MyToast show={showToast} message={toastMessage} type={toastType} selfClose={toastSelfClose} selfCloseTimeout={toastSelfCloseTimeout} onClose={resetToast} />
 
 			{/* Prompt actions */}
 			<ActionPrompt
