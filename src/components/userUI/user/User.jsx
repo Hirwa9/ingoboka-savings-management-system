@@ -3403,7 +3403,7 @@ const UserUI = () => {
 	return (
 		<>
 			{/* Toast message */}
-			<MyToast show={showToast} message={toastMessage} type={toastType} selfClose={toastSelfClose} selfCloseTimeout={toastSelfCloseTimeout} onClose={() => resetToast()} />
+			<MyToast show={showToast} message={toastMessage} type={toastType} selfClose={toastSelfClose} selfCloseTimeout={toastSelfCloseTimeout} onClose={resetToast} />
 
 			{/* Prompt actions */}
 			<ActionPrompt
