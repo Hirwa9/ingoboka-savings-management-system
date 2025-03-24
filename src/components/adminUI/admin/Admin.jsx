@@ -4990,8 +4990,15 @@ const Admin = () => {
 																						message: (
 																							<>
 																								<h5 className='h6 border-bottom mb-3 pb-2'><ArrowsLeftRight size={25} weight='fill' className='opacity-50' /> Reversing member cotisations</h5>
-																								<p className='fw-semibold'>
-																									This will reverse cotisation record of {memberNames} for months {record.comment.slice(record.comment.indexOf('('))} from this year ({new Date().getFullYear()}).
+																								<p>
+																									This action will reverse the cotisation record, covering the months listed in the transaction, for the associated member.<br /><br />
+																									<span className='d-block alert alert-dark'>
+																										<b>Member:</b> {memberNames}<br />
+																										<b>Amount:</b> <CurrencyText amount={Number(record.recordAmount)} /><br />
+																										<b>Months:</b> {record.comment.slice(record.comment.indexOf('('))}<br />
+																										<b>Year:</b> {new Date(record.createdAt).getFullYear()}<br />
+																										<b>Recorded on:</b> <FormatedDate date={record.createdAt} />.
+																									</span>
 																								</p>
 																							</>
 																						),
