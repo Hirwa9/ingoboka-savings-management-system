@@ -3,7 +3,7 @@ import { Form } from "react-bootstrap";
 import './admin.css';
 import '../../header/header.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowsLeftRight, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CreditCard, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, EnvelopeSimple, EscalatorUp, Files, FloppyDisk, Gavel, Gear, GreaterThan, HandCoins, Info, LessThan, List, ListChecks, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, TextStrikethrough, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, Watch, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowsLeftRight, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CreditCard, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, EnvelopeSimple, EscalatorUp, Files, FloppyDisk, Gavel, Gear, GreaterThan, HandCoins, Info, LessThan, List, ListChecks, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, TextStrikethrough, Trash, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, Watch, X } from '@phosphor-icons/react';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
@@ -4654,6 +4654,7 @@ const Admin = () => {
 				// Successful fetch
 				const data = await response.json();
 				successToast({ message: data.message });
+				resetConfirmDialog();
 				setErrorWithFetchAction(null);
 				fetchMembers();
 				fetchFigures();
@@ -4705,6 +4706,50 @@ const Admin = () => {
 			} catch (error) {
 				setErrorWithFetchAction(error.message);
 				cError("Error updating social savings amount:", error);
+				warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
+			} finally {
+				setIsWaitingFetchAction(false);
+			}
+		};
+
+		// Handle delete socal savings record
+		const handleDeleteSocalSavings = async (values) => {
+			if (!values || typeof values !== 'object') {
+				return warningToast({ message: "Invalid record values" });
+			}
+
+			const { id, recordId } = values;
+
+			try {
+				setIsWaitingFetchAction(true);
+
+				const payload = {
+					recordId
+				}
+
+				const response = await fetch(`${BASE_URL}/member/${id}/social/delete`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(payload),
+				});
+
+				// Fetch error
+				if (!response.ok) {
+					const errorData = await response.json();
+					throw new Error(errorData.message || 'Error deleting social savings record');
+				}
+
+				// Successful fetch
+				const data = await response.json();
+				successToast({ message: data.message });
+				setErrorWithFetchAction(null);
+				resetConfirmDialog();
+				fetchMembers();
+				fetchFigures();
+				fetchRecords();
+			} catch (error) {
+				setErrorWithFetchAction(error.message);
+				cError("Error deleting social savings record:", error);
 				warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
 			} finally {
 				setIsWaitingFetchAction(false);
@@ -4932,61 +4977,90 @@ const Admin = () => {
 																	</MenuButton>
 																} transition>
 																	{record.comment.toLowerCase().indexOf('cotisation') === 0 && (
-																		<MenuItem className="text-danger" onClick={() => {
-																			if (record.comment.indexOf('(') === -1) {
-																				messageToast({
-																					message: "This record cannot be reversed as it does not contain a list of recorded months. Only cotisation records created after this feature was introduced are eligible for reversal.",
-																					type: 'primaryColor',
-																					selfClose: false
-																				});
-																			} else {
+																		<>
+																			<MenuItem onClick={() => {
+																				if (record.comment.indexOf('(') === -1) {
+																					messageToast({
+																						message: "This record cannot be reversed as it does not contain a list of recorded months. Only cotisation records created after this feature was introduced are eligible for reversal.",
+																						type: 'primaryColor',
+																						selfClose: false
+																					});
+																				} else {
+																					customConfirmDialog({
+																						message: (
+																							<>
+																								<h5 className='h6 border-bottom mb-3 pb-2'><ArrowsLeftRight size={25} weight='fill' className='opacity-50' /> Reversing member cotisations</h5>
+																								<p className='fw-semibold'>
+																									This will reverse cotisation record of {memberNames} for months {record.comment.slice(record.comment.indexOf('('))} from this year ({new Date().getFullYear()}).
+																								</p>
+																							</>
+																						),
+																						type: 'warning',
+																						action: () => handleReverseCotisation({
+																							id: record.memberId,
+																							recordId: record.id,
+																							savings: record.comment.slice(record.comment.indexOf('(')),
+																							comment: record.comment
+																						}),
+																					});
+																				}
+																			}}>
+																				<ArrowsLeftRight weight='fill' className="me-2 opacity-50" /> Reverse record
+																			</MenuItem>
+																		</>
+																	)}
+																	{(record.recordType.toLowerCase() === 'deposit' && record.comment.toLowerCase() === 'social') && (
+																		<>
+																			<MenuItem onClick={() => {
+																				customPrompt(
+																					{
+																						message: (
+																							<>
+																								<h5 className='h6 border-bottom mb-3 pb-2'><ReceiptX size={25} weight='fill' className='opacity-50' /> Edit/update social savings for {memberNames}</h5>
+																								<p>
+																									Current amount: <CurrencyText amount={Number(record.recordAmount)} /><br /><br />
+																									Enter new social amount for this record.
+																								</p>
+																							</>
+																						),
+																						inputType: 'number',
+																						action: () => handleEditSocalSavings({
+																							id: record.memberId,
+																							recordId: record.id,
+																							savingAmount: promptInputValue.current,
+																						}),
+																						placeholder: 'Updated amount',
+																					}
+																				)
+																			}}>
+																				<Pen weight='fill' className="me-2 opacity-50" /> Update
+																			</MenuItem>
+																			<MenuItem onClick={() => {
 																				customConfirmDialog({
 																					message: (
 																						<>
-																							<h5 className='h6 border-bottom mb-3 pb-2'><ArrowsLeftRight size={25} weight='fill' className='opacity-50' /> Reversing member cotisations</h5>
-																							<p className='fw-semibold'>
-																								This will reverse cotisation record of {memberNames} for months {record.comment.slice(record.comment.indexOf('('))} from this year ({new Date().getFullYear()}).
+																							<h5 className='h6 border-bottom mb-3 pb-2'><Trash size={25} weight='fill' className='opacity-50' /> Delete member social savings</h5>
+																							<p>
+																								This action will undo all transactions associated with this record and permanently remove it from the transaction history.<br /><br />
+																								<span className='d-block alert alert-dark'>
+																									<b>Member:</b> {memberNames}<br />
+																									<b>Social saving amount:</b>  <CurrencyText amount={Number(record.recordAmount)} /><br />
+																									<b>Recorded on:</b> <FormatedDate date={record.createdAt} />.
+																								</span>
 																							</p>
 																						</>
 																					),
 																					type: 'warning',
-																					action: () => handleReverseCotisation({
+																					action: () => handleDeleteSocalSavings({
 																						id: record.memberId,
 																						recordId: record.id,
-																						savings: record.comment.slice(record.comment.indexOf('(')),
-																						comment: record.comment
 																					}),
+																					actionText: "Delete record"
 																				});
-																			}
-																		}}>
-																			<ArrowsLeftRight weight='fill' className="me-2 opacity-50" /> Reverse record
-																		</MenuItem>
-																	)}
-																	{(record.recordType.toLowerCase() === 'deposit' && record.comment.toLowerCase() === 'social') && (
-																		<MenuItem onClick={() => {
-																			customPrompt(
-																				{
-																					message: (
-																						<>
-																							<h5 className='h6 border-bottom mb-3 pb-2'><ReceiptX size={25} weight='fill' className='opacity-50' /> Edit/update social savings for {memberNames}</h5>
-																							<p>
-																								Current amount: <CurrencyText amount={Number(record.recordAmount)} /><br /><br />
-																								Enter new social amount for this record.
-																							</p>
-																						</>
-																					),
-																					inputType: 'number',
-																					action: () => handleEditSocalSavings({
-																						id: record.memberId,
-																						recordId: record.id,
-																						savingAmount: promptInputValue.current,
-																					}),
-																					placeholder: 'Updated amount',
-																				}
-																			)
-																		}}>
-																			<Pen weight='fill' className="me-2 opacity-50" /> Update
-																		</MenuItem>
+																			}}>
+																				<Trash weight='fill' className="me-2 opacity-50" /> Delete
+																			</MenuItem>
+																		</>
 																	)}
 																</Menu>
 															</td>
