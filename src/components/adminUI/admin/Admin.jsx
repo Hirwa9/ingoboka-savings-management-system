@@ -4940,7 +4940,7 @@ const Admin = () => {
 												<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
 												<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
 												<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date</th>
-												<th className='py-3 text-nowrap text-gray-700 fw-normal'>Actions</th>
+												<th className='py-3 text-center text-nowrap text-gray-700 fw-normal'>Actions</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -4970,7 +4970,7 @@ const Admin = () => {
 																	<FormatedDate date={record.createdAt} />
 																</Popover>
 															</td>
-															<td>
+															<td className='text-center'>
 																<Menu menuButton={
 																	<MenuButton className="border-0 p-0">
 																		<DotsThreeVertical size={20} weight='bold' />
