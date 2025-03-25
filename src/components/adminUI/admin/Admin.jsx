@@ -4059,7 +4059,7 @@ const Admin = () => {
 															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
 															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date & Interval</th>
 															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
-															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Action</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Actions</th>
 														</tr>
 													</thead>
 													<tbody>
@@ -4272,7 +4272,7 @@ const Admin = () => {
 															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date & Interval</th>
 															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
 															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Rejection</th>
-															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Action</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Actions</th>
 														</tr>
 													</thead>
 													<tbody>
@@ -5579,7 +5579,7 @@ const Admin = () => {
 						</div>
 					</div>
 					<div className="d-flex align-items-center me-3 border-light border-opacity-25">
-						<div className='ms-auto d-grid pb-1'>
+						<div className='d-grid pb-1'>
 							<span className='ms-auto smaller'>{accountantNames}</span>
 							<span className='ms-auto fs-70 opacity-75' style={{ lineHeight: 1 }}>Accountant</span>
 						</div>
@@ -5657,12 +5657,15 @@ const Admin = () => {
 					{/* Sidebar Navigation */}
 					<nav className={`col-12 col-md-3 col-xl-2 px-3 px-sm-5 px-md-0 d-md-block border-end overflow-y-auto sidebar ${sideNavbarIsFloated ? 'floated' : ''}`} id="sidebarMenu">
 						<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit my-3 my-md-0 py-3 pt-md-4 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded-4' : ''}`}>
-							<div className="d-flex align-items-center d-md-none mb-3 px-3 pb-2 border-light border-opacity-25">
-								<div className='ms-auto d-grid pb-1'>
-									<span className='ms-auto smaller'>{accountantNames}</span>
-									<span className='ms-auto fs-70 opacity-75' style={{ lineHeight: 1 }}>Accountant</span>
+							<div className="d-flex align-items-center justify-content-between d-md-none mb-3 px-3 pb-2">
+								<div className="d-flex align-items-center">
+									<img src='/images/man_avatar_image.jpg' alt="" className='w-2_5rem ratio-1-1 object-fit-cover me-2 border border-3 border-secondary bg-gray-600 rounded-circle' />
+									<div className='d-grid pb-1'>
+										<span className='smaller'>{accountantNames}</span>
+										<span className='fs-70 opacity-75' style={{ lineHeight: 1 }}>Accountant</span>
+									</div>
 								</div>
-								<img src='/images/man_avatar_image.jpg' alt="" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 border border-3 border-secondary bg-gray-600 rounded-circle' />
+								<button type="button" className='btn text-light' onClick={() => setSideNavbarIsFloated(false)}><X size={25} /></button>
 							</div>
 
 							<ul className="nav flex-column">
