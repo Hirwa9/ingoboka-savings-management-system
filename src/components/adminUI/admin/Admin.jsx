@@ -705,12 +705,6 @@ const Admin = () => {
 						<CurrencyDollarSimple size={45} className='mx-2 p-2 text-gray-500 border border-2 border-secondary border-opacity-25 rounded-circle' />
 						<hr className='flex-grow-1 my-0' />
 					</div>
-					{/* <div className="d-lg-flex align-items-center">
-						<img src="/images/dashboard_visual.png" alt="" className='col-md-5' />
-						<div className='alert mb-4 rounded-0 smaller fw-light'>
-							This numerical report provides a financial status overview for IKIMINA INGOBOKA saving management system. It highlights key metrics, including contributions, social funds, loans disbursed, interest receivables, paid capital, and other financial indicators. The report reflects the financial management system's performance, tracking transactions from stakeholder contributions, savings, investments, and other financial activities, all aligned with the system's saving balance and agreements established among its members.
-						</div>
-					</div> */}
 					{loadingFigures && (
 						<div className="row gx-3 gy-4 gy-lg-3 pb-3 rounded-4 loading-skeleton">
 							{Array.from({ length: 9 }).map((_, index) => (
@@ -738,7 +732,7 @@ const Admin = () => {
 								<div className="col-md-6 col-lg-4" key={index}>
 									<div className="card py-3 h-100 bg-transparent border-0 border-4 border-end rounded-0 border-primaryColor">
 										<div className="card-body">
-											<h6 className="card-title mb-4 fs-5 text-uppercase fw-bold text-gray-800">
+											<h6 className="card-title mb-4 fs-5 text-uppercase fw-bold text-gray-700">
 												{item.label}
 											</h6>
 											<p className="card-text text-primaryColor">
@@ -1193,7 +1187,7 @@ const Admin = () => {
 							{membersToShow
 								.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
 								.map((member, index) => (
-									<div className="position-relative mb-3 my-5 px-2 pt-5 border-top border-3 border-secondary border-opacity-25 text-gray-800 member-element"
+									<div className="position-relative mb-3 my-5 px-2 pt-5 border-top border-3 border-secondary border-opacity-25 text-gray-700 member-element"
 										key={index}
 									>
 										<div className="position-absolute top-0 me-3 d-flex gap-3"
@@ -1265,7 +1259,7 @@ const Admin = () => {
 													<h6 className="flex-align-center px-2 py-1 border-bottom border-2 text-primaryColor fw-bolder">
 														<User className="me-1" /> Husband
 													</h6>
-													<ul className="list-unstyled text-gray-800 px-2 smaller">
+													<ul className="list-unstyled text-gray-700 px-2 smaller">
 														<li className="py-1">
 															<b>Names:</b> {`${member.husbandFirstName} ${member.husbandLastName}`}
 														</li>
@@ -1289,7 +1283,7 @@ const Admin = () => {
 															<h6 className="flex-align-center px-2 py-1 border-bottom border-2 text-primaryColor fw-bolder">
 																<User className="me-1" /> Wife
 															</h6>
-															<ul className="list-unstyled text-gray-800 px-2 smaller">
+															<ul className="list-unstyled text-gray-700 px-2 smaller">
 																<li className="py-1">
 																	<b>Names:</b> {`${member.wifeFirstName} ${member.wifeLastName}`}
 																</li>
@@ -1319,7 +1313,7 @@ const Admin = () => {
 								show={showMemberInfo}
 								onClose={() => setShowMemberInfo(false)}
 								title="Personal information"
-								icon={<UserRectangle size={20} weight="fill" className='text-gray-800' />}
+								icon={<UserRectangle size={20} weight="fill" className='text-gray-700' />}
 								content={
 									<>
 										<div>
@@ -1332,11 +1326,11 @@ const Admin = () => {
 												<div className='dim-fit position-absolute start-100 bottom-0 mb-2 bg-light border rounded-pill ptr clickDown' title='Edit photo' style={{ translate: '-125% 0' }} onClick={() => setEditSelectedmemberImage(!editSelectedmemberImage)}>
 													<Pen size={35} className='p-2' />
 												</div>
-												<div className="position-absolute start-50 top-100 translate-middle bg-light text-gray-600 py-1 px-3 rounded-2 text-nowrap smaller shadow-sm">
+												<div className="position-absolute start-50 top-100 translate-middle bg-light text-gray-700 py-1 px-3 rounded-2 text-nowrap smaller shadow-sm">
 													{showPrimaryMemberInfo ? `${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName} ` : `${selectedMember?.wifeFirstName} ${selectedMember?.wifeLastName}`}
 												</div>
 												{editSelectedmemberImage && (
-													<div className="position-absolute start-50 top-50 translate-middle col-11 bg-gray-400 text-gray-800 p-3 py-4 text-nowrap smaller shadow-sm" style={{ animation: 'zoomInBack .2s 1' }}>
+													<div className="position-absolute start-50 top-50 translate-middle col-11 bg-gray-400 text-gray-700 p-3 py-4 text-nowrap smaller shadow-sm" style={{ animation: 'zoomInBack .2s 1' }}>
 														<AbsoluteCloseButton bg="gray-400" text="gray-700" onClose={() => setEditSelectedmemberImage(false)} />
 														<div className="flex-align-center flex-wrap gap-2 mb-3">
 															<input
@@ -1367,7 +1361,7 @@ const Admin = () => {
 											</div>
 
 											{showPrimaryMemberInfo ? (
-												<ul className="list-unstyled text-gray-800 px-2 small">
+												<ul className="list-unstyled text-gray-700 px-2 small">
 													<li className="py-1">
 														<b>Phone:</b> <span>{selectedMember?.husbandPhone}</span>
 													</li>
@@ -1376,7 +1370,7 @@ const Admin = () => {
 													</li>
 												</ul>
 											) : (
-												<ul className="list-unstyled text-gray-800 px-2 small">
+												<ul className="list-unstyled text-gray-700 px-2 small">
 													<li className="py-1">
 														<b>Phone:</b> {selectedMember?.wifePhone ? (
 															<span>{selectedMember?.wifePhone}</span>
@@ -1401,8 +1395,8 @@ const Admin = () => {
 								<>
 									<div className='position-fixed fixed-top inset-0 bg-black3 py-3 inx-high'>
 										<div className="container col-md-6 col-lg-5 col-xl-4 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-											<div className="px-3 bg-light text-gray-800">
-												<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
+											<div className="px-3 bg-light text-gray-700">
+												<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
 													<div className='flex-align-center'>
 														<UserCirclePlus weight='fill' className="me-1" />
 														<span style={{ lineHeight: 1 }}>Register a new member </span>
@@ -1622,8 +1616,8 @@ const Admin = () => {
 								<>
 									<div className='position-fixed fixed-top inset-0 bg-black3 py-3 inx-high'>
 										<div className="container col-md-6 col-lg-5 col-xl-4 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-											<div className="px-3 bg-light text-gray-800">
-												<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
+											<div className="px-3 bg-light text-gray-700">
+												<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
 													<div className='flex-align-center'>
 														<Users weight='fill' className="me-1" />
 														<span style={{ lineHeight: 1 }}>Edit Member</span>
@@ -1788,8 +1782,8 @@ const Admin = () => {
 								<>
 									<div className='position-fixed fixed-top inset-0 bg-white3 inx-high'>
 										<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-											<div className="container h-100 overflow-auto px-3 bg-light text-gray-800">
-												<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom">
+											<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
+												<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-700 border-bottom">
 													<div className='flex-align-center'>
 														<img src={selectedMember?.husbandAvatar ? selectedMember?.husbandAvatar : '/images/man_avatar_image.jpg'}
 															alt={`${selectedMember?.husbandFirstName.slice(0, 1)}.${selectedMember?.husbandLastName}`}
@@ -1808,7 +1802,7 @@ const Admin = () => {
 													<div className="position-relative flex-shrink-0 flex-center w-fit h-7rem px-4 fw-bold border border-3 border-secondary border-opacity-25 text-primaryColor rounded-pill" style={{ minWidth: '7rem' }}>
 														<span className="display-3 fw-bold"><CountUp end={selectedMember?.shares} duration={0.6} /> </span> <small className='position-absolute start-50 bottom-0 border border-2 px-2 rounded-pill bg-light'>shares</small>
 													</div>
-													<div className='px-sm-3 py-3 smaller text-gray-800 fw-light'>
+													<div className='px-sm-3 py-3 smaller text-gray-700 fw-light'>
 														Below is the financial status of {`${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName}`}, as recorded in the IKIMINA INGOBOKA saving management system. This status includes the total personal capital, comprising cotisation and social contributions, along with their credit status.
 													</div>
 												</div>
@@ -1819,7 +1813,7 @@ const Admin = () => {
 															<p className='text-center'>
 																Members are removed or deactivated according to their financial status. <span className='text-primary fw-semibold text-nowrap ptr clickDown' data-bs-toggle="collapse" data-bs-target="#readMore-member-removal-info">Read more</span>
 															</p>
-															<p className="p-3 bg-info-subtle rounded text-gray-800 collapse" id='readMore-member-removal-info'>
+															<p className="p-3 bg-info-subtle rounded text-gray-700 collapse" id='readMore-member-removal-info'>
 																If cotisation exceeds credit, the credit is cleared, and the remaining balance is retained. If credit exceeds the cotisation, the cotisation is deducted, and the member remains under credits records.
 															</p>
 														</div>
@@ -1836,8 +1830,8 @@ const Admin = () => {
 															<table className="table table-hover h-100">
 																<thead className='table-secondary position-sticky top-0 inx-1 text-uppercase small'>
 																	<tr>
-																		<th className='py-3 text-nowrap text-gray-800 fw-normal'>Title</th>
-																		<th className='py-3 text-nowrap text-gray-800 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
+																		<th className='py-3 text-nowrap text-gray-700 fw-normal'>Title</th>
+																		<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
 																	</tr>
 																</thead>
 																<tbody>
@@ -1869,7 +1863,7 @@ const Admin = () => {
 															</table>
 														</div>
 
-														{/* <ul className="list-unstyled text-gray-800 px-2">
+														{/* <ul className="list-unstyled text-gray-700 px-2">
 															<li className="py-1 w-100">
 																<span className="flex-align-center">
 																	<b className='fs-5'>{selectedMember?.shares} Shares</b>
@@ -1901,10 +1895,10 @@ const Admin = () => {
 																					<table className="table table-hover h-100 mb-0">
 																						<thead className='table-secondary position-sticky top-0 inx-1 text-uppercase small'>
 																							<tr>
-																								<th className='py-3 text-nowrap text-gray-800 fw-normal'>Title</th>
-																								<th className='py-3 text-nowrap text-gray-800 fw-normal'>Taken  <sub className='fs-60'>/RWF</sub></th>
-																								<th className='py-3 text-nowrap text-gray-800 fw-normal'>Paid  <sub className='fs-60'>/RWF</sub></th>
-																								<th className='py-3 text-nowrap text-gray-800 fw-normal'>Pending  <sub className='fs-60'>/RWF</sub></th>
+																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Title</th>
+																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Taken  <sub className='fs-60'>/RWF</sub></th>
+																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Paid  <sub className='fs-60'>/RWF</sub></th>
+																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Pending  <sub className='fs-60'>/RWF</sub></th>
 																							</tr>
 																						</thead>
 																						<tbody>
@@ -1980,11 +1974,11 @@ const Admin = () => {
 																<table className="table table-striped table-hover h-100">
 																	<thead className='table-secondary position-sticky top-0 inx-1 text-uppercase small'>
 																		<tr>
-																			<th className='ps-sm-3 py-3 text-nowrap text-gray-800'>N°</th>
-																			<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
-																			<th className='py-3 text-nowrap text-gray-800 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
-																			<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
-																			<th className='py-3 text-nowrap text-gray-800 fw-normal'>Date</th>
+																			<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+																			<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
+																			<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
+																			<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
+																			<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date</th>
 																		</tr>
 																	</thead>
 																	<tbody>
@@ -2049,11 +2043,11 @@ const Admin = () => {
 																							<table className="table table-hover h-100 mb-0">
 																								<thead className='table-warning position-sticky top-0 inx-1 1 text-uppercase small'>
 																									<tr>
-																										<th className='py-3 text-nowrap text-gray-800 fw-normal'>Cotisation</th>
-																										<th className='py-3 text-nowrap text-gray-800 fw-normal'>
+																										<th className='py-3 text-nowrap text-gray-700 fw-normal'>Cotisation</th>
+																										<th className='py-3 text-nowrap text-gray-700 fw-normal'>
 																											<div className="text-center">Comparison</div>
 																										</th>
-																										<th className='py-3 text-nowrap text-gray-800 fw-normal'>Pending Loan</th>
+																										<th className='py-3 text-nowrap text-gray-700 fw-normal'>Pending Loan</th>
 																									</tr>
 																								</thead>
 																								<tbody>
@@ -2455,7 +2449,7 @@ const Admin = () => {
 
 										return (
 											<div key={index} className='col-lg-6 px-lg-3'>
-												<div className="position-relative mb-3 my-5 px-2 pt-5 border-top border-3 border-secondary border-opacity-25 text-gray-800 member-element"
+												<div className="position-relative mb-3 my-5 px-2 pt-5 border-top border-3 border-secondary border-opacity-25 text-gray-700 member-element"
 												>
 													<div className="position-absolute top-0 me-3 d-flex gap-3"
 														style={{ right: 0, translate: "0 -50%" }}
@@ -2467,7 +2461,7 @@ const Admin = () => {
 													</div>
 													<div className="px-lg-2">
 														<h5 className="mb-3 fs-4">{`${husbandFirstName} ${husbandLastName}`}</h5>
-														<ul className="list-unstyled text-gray-800 px-2 smaller">
+														<ul className="list-unstyled text-gray-700 px-2 smaller">
 															<li className="py-1 w-100">
 																<span className="d-flex align-items-center justify-content-between">
 																	<b className='fs-5'>{shares} Shares</b>
@@ -2505,8 +2499,8 @@ const Admin = () => {
 								<>
 									<div className='position-fixed fixed-top inset-0 flex-center py-3 bg-black3 inx-high'>
 										<div className="container col-md-6 col-lg-5 col-xl-4 my-auto peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-											<div className="px-3 bg-light text-gray-800">
-												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
+											<div className="px-3 bg-light text-gray-700">
+												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
 													<div className='flex-align-center'>
 														<CashRegister weight='fill' className="me-1" />
 														<span style={{ lineHeight: 1 }}>Add monthly savings</span>
@@ -2655,8 +2649,8 @@ const Admin = () => {
 								<>
 									<div className='position-fixed fixed-top inset-0 flex-center py-3 bg-black3 inx-high'>
 										<div className="container col-md-6 col-lg-5 col-xl-4 my-auto peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-											<div className="px-3 bg-light text-gray-800">
-												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
+											<div className="px-3 bg-light text-gray-700">
+												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
 													<div className='flex-align-center'>
 														<CashRegister weight='fill' className="me-1" />
 														<span style={{ lineHeight: 1 }}>Add multiple shares</span>
@@ -2674,7 +2668,7 @@ const Admin = () => {
 														Save multiple shares to {selectedMember?.husbandFirstName} {selectedMember?.husbandLastName}
 													</div>
 												</div>
-												<ul className="list-unstyled text-gray-800 px-2 opacity-75 smaller">
+												<ul className="list-unstyled text-gray-700 px-2 opacity-75 smaller">
 													<li className="py-1 w-100">
 														<span className="flex-align-center">
 															<b className='fs-5'>{selectedMember?.shares} Shares</b>
@@ -2901,14 +2895,14 @@ const Admin = () => {
 						<table className="table table-hover h-100">
 							<thead className='table-success position-sticky top-0 inx-1 1 text-uppercase small'>
 								<tr>
-									<th className='py-3 text-nowrap text-gray-800 fw-normal'>N°</th>
-									<th className='py-3 text-nowrap text-gray-800 fw-normal'>Member</th>
-									<th className='py-3 text-nowrap text-gray-800 fw-normal'>Shares <sub className='fs-60'>/Active</sub></th>
-									<th className='py-3 text-nowrap text-gray-800 fw-normal'>Share % <sub className='fs-60'>to <b>{totalActiveShares}</b></sub></th>
-									<th className='py-3 text-nowrap text-gray-800 fw-normal'>Interest <sub className='fs-60'>/RWF</sub></th>
-									<th className='py-3 text-nowrap text-gray-800 fw-normal'>Receivable<sub className='fs-60'>/RWF</sub></th>
-									<th className='py-3 text-nowrap text-gray-800 fw-normal'>Receivable<sub className='fs-60'>/Shares</sub></th>
-									<th className='py-3 text-nowrap text-gray-800 fw-normal'>Remains<sub className='fs-60'>/RWF</sub></th>
+									<th className='py-3 text-nowrap text-gray-700 fw-normal'>N°</th>
+									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Member</th>
+									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Shares <sub className='fs-60'>/Active</sub></th>
+									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Share % <sub className='fs-60'>to <b>{totalActiveShares}</b></sub></th>
+									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Interest <sub className='fs-60'>/RWF</sub></th>
+									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Receivable<sub className='fs-60'>/RWF</sub></th>
+									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Receivable<sub className='fs-60'>/Shares</sub></th>
+									<th className='py-3 text-nowrap text-gray-700 fw-normal'>Remains<sub className='fs-60'>/RWF</sub></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -2937,7 +2931,7 @@ const Admin = () => {
 											<td className='text-nowrap'>{memberNames}</td>
 											<td>{activeShares}</td>
 											<td className="text-nowrap">{sharesPercentage} %</td>
-											<td className="text-nowrap text-gray-800">
+											<td className="text-nowrap text-gray-700">
 												<CurrencyText amount={interest} smallCurrency />
 											</td>
 											<td className="text-nowrap text-success">
@@ -2946,7 +2940,7 @@ const Admin = () => {
 											<td className="text-success">
 												{sharesReceivable}
 											</td>
-											<td className="text-nowrap text-gray-800">
+											<td className="text-nowrap text-gray-700">
 												<CurrencyText amount={interestRemains} smallCurrency />
 											</td>
 										</tr>
@@ -3101,8 +3095,8 @@ const Admin = () => {
 							<>
 								<div className='position-fixed fixed-top inset-0 bg-white3 inx-high'>
 									<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-										<div className="container h-100 overflow-auto px-3 bg-light text-gray-800">
-											<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
+										<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
+											<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
 												<div className='flex-align-center'>
 													<Coins weight='fill' className="me-1" />
 													<span style={{ lineHeight: 1 }}> {selectedAnnualInterestRecord?.year} interest partition </span>
@@ -3115,11 +3109,11 @@ const Admin = () => {
 												<table className="table table-hover h-100">
 													<thead className='table-success position-sticky top-0 inx-1 1 text-uppercase small'>
 														<tr>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal'>N°</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal'>Member</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal'>Annual shares</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal'>Interest received<sub className='fs-60'>/RWF</sub></th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal'>Interest remains<sub className='fs-60'>/RWF</sub></th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>N°</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Member</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Annual shares</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Interest received<sub className='fs-60'>/RWF</sub></th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Interest remains<sub className='fs-60'>/RWF</sub></th>
 														</tr>
 													</thead>
 													<tbody>
@@ -3160,7 +3154,7 @@ const Admin = () => {
 																						<td className="text-nowrap fw-bold text-success">
 																							<CurrencyText amount={member.interestReceived} smallCurrency />
 																						</td>
-																						<td className="text-nowrap text-gray-800">
+																						<td className="text-nowrap text-gray-700">
 																							<CurrencyText amount={member.interestRemains} smallCurrency />
 																						</td>
 																					</tr>
@@ -3541,8 +3535,8 @@ const Admin = () => {
 							<>
 								<div className='position-fixed fixed-top inset-0 bg-white3 inx-high'>
 									<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-										<div className="container h-100 overflow-auto px-3 bg-light text-gray-800">
-											<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom">
+										<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
+											<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-700 border-bottom">
 												<div className='flex-align-center'>
 													<ListChecks
 														className="flex-shrink-0 w-3rem h-3rem p-2 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
@@ -3562,12 +3556,12 @@ const Admin = () => {
 													<table className="table table-striped table-hover h-100">
 														<thead className='table-secondary position-sticky top-0 inx-1 1 text-uppercase small'>
 															<tr>
-																<th className='ps-sm-3 py-3 text-nowrap text-gray-800'>N°</th>
-																<th className='py-3 text-nowrap text-gray-800 fw-normal'>Member</th>
-																<th className='py-3 text-nowrap text-gray-800 fw-normal'>Loan paid  <sub className='fs-60'>/RWF</sub></th>
-																<th className='py-3 text-nowrap text-gray-800 fw-normal'>Interest Paid <sub className='fs-60'>/RWF</sub></th>
-																<th className='py-3 text-nowrap text-gray-800 fw-normal'>Tranches Paid</th>
-																<th className='py-3 text-nowrap text-gray-800 fw-normal'>Date</th>
+																<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+																<th className='py-3 text-nowrap text-gray-700 fw-normal'>Member</th>
+																<th className='py-3 text-nowrap text-gray-700 fw-normal'>Loan paid  <sub className='fs-60'>/RWF</sub></th>
+																<th className='py-3 text-nowrap text-gray-700 fw-normal'>Interest Paid <sub className='fs-60'>/RWF</sub></th>
+																<th className='py-3 text-nowrap text-gray-700 fw-normal'>Tranches Paid</th>
+																<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date</th>
 															</tr>
 														</thead>
 														<tbody>
@@ -3637,8 +3631,8 @@ const Admin = () => {
 							<>
 								<div className='position-fixed fixed-top inset-0 bg-white3 inx-high'>
 									<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-										<div className="container h-100 overflow-auto px-3 bg-light text-gray-800">
-											<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom">
+										<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
+											<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-700 border-bottom">
 												<div className='flex-align-center'>
 													<img src={selectedMember?.husbandAvatar ? selectedMember?.husbandAvatar : '/images/man_avatar_image.jpg'}
 														alt={`${selectedMember?.husbandFirstName.slice(0, 1)}.${selectedMember?.husbandLastName}`}
@@ -3669,10 +3663,10 @@ const Admin = () => {
 																				<table className="table table-hover h-100">
 																					<thead className='table-secondary position-sticky top-0 inx-1 text-uppercase small'>
 																						<tr>
-																							<th className='py-3 text-nowrap text-gray-800 fw-normal'>Title</th>
-																							<th className='py-3 text-nowrap text-gray-800 fw-normal'>Taken  <sub className='fs-60'>/RWF</sub></th>
-																							<th className='py-3 text-nowrap text-gray-800 fw-normal'>Paid  <sub className='fs-60'>/RWF</sub></th>
-																							<th className='py-3 text-nowrap text-gray-800 fw-normal'>Pending  <sub className='fs-60'>/RWF</sub></th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Title</th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Taken  <sub className='fs-60'>/RWF</sub></th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Paid  <sub className='fs-60'>/RWF</sub></th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Pending  <sub className='fs-60'>/RWF</sub></th>
 																						</tr>
 																					</thead>
 																					<tbody>
@@ -3855,7 +3849,7 @@ const Admin = () => {
 																			) : (
 																				<div className="grid-center fs-5 py-5">
 																					<CheckCircle size={40} weight='fill' className="w-4rem h-4rem d-block mx-auto mb-2 text-success" />
-																					<p className="text-center text-gray-800 fw-light small">Requested loan is fully paid.</p>
+																					<p className="text-center text-gray-700 fw-light small">Requested loan is fully paid.</p>
 																				</div>
 																			)}
 																		</div>
@@ -3877,12 +3871,12 @@ const Admin = () => {
 																				<table className="table table-hover h-100">
 																					<thead className='table-success position-sticky top-0 inx-1 1 text-uppercase small'>
 																						<tr>
-																							<th className='ps-sm-3 py-3 text-nowrap text-gray-800'>N°</th>
-																							<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
-																							<th className='py-3 text-nowrap text-gray-800 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
-																							<th className='py-3 text-nowrap text-gray-800 fw-normal'>Date & Interval</th>
-																							<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
-																							<th className='py-3 text-nowrap text-gray-800 fw-normal'>Credit Status</th>
+																							<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date & Interval</th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Credit Status</th>
 																						</tr>
 																					</thead>
 																					<tbody>
@@ -4003,7 +3997,7 @@ const Admin = () => {
 					</>
 				)}
 
-				<div className='text-gray-800 selective-options' style={{ backgroundColor: activeLoanSectionColor }}>
+				<div className='text-gray-700 selective-options' style={{ backgroundColor: activeLoanSectionColor }}>
 					{/* <h4 className='h6 mb-2 text-center fw-bold text-decoration-underline' style={{ textUnderlineOffset: '3px' }}>Loan requests</h4> */}
 					{loadingCredits && (<LoadingIndicator text="Loading credits..." />)}
 					{!loadingCredits && errorLoadingCredits && (
@@ -4060,12 +4054,12 @@ const Admin = () => {
 												<table className="table table-hover h-100">
 													<thead className='table-warning position-sticky top-0 inx-1 1 text-uppercase small'>
 														<tr>
-															<th className='ps-sm-3 py-3 text-nowrap text-gray-800'>N°</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal'>Date & Interval</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal'>Action</th>
+															<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date & Interval</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Action</th>
 														</tr>
 													</thead>
 													<tbody>
@@ -4192,12 +4186,12 @@ const Admin = () => {
 												<table className="table table-hover h-100">
 													<thead className='table-success position-sticky top-0 inx-1 1 text-uppercase small'>
 														<tr>
-															<th className='ps-sm-3 py-3 text-nowrap text-gray-800'>N°</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal'>Date & Interval</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal'>Credit Status</th>
+															<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date & Interval</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Credit Status</th>
 														</tr>
 													</thead>
 													<tbody>
@@ -4272,13 +4266,13 @@ const Admin = () => {
 												<table className="table table-hover h-100">
 													<thead className='table-danger position-sticky top-0 inx-1 1 text-uppercase small'>
 														<tr>
-															<th className='ps-sm-3 py-3 text-nowrap text-gray-800'>N°</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal'>Date & Interval</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ maxWidth: '13rem' }} >Rejection</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal'>Action</th>
+															<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date & Interval</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Rejection</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Action</th>
 														</tr>
 													</thead>
 													<tbody>
@@ -4380,8 +4374,8 @@ const Admin = () => {
 									<>
 										<div className='position-fixed fixed-top inset-0 bg-white3 inx-high'>
 											<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-												<div className="px-3 bg-light text-gray-800">
-													<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
+												<div className="px-3 bg-light text-gray-700">
+													<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
 														<div className='flex-align-center text-primaryColor'>
 															<Receipt weight='fill' className="me-1" />
 															<span style={{ lineHeight: 1 }}>Tableau d'amortissement</span>
@@ -4457,9 +4451,9 @@ const Admin = () => {
 															<table className="table table-hover h-100">
 																<thead className='table-secondary position-sticky top-0 inx-1 text-uppercase small'>
 																	<tr>
-																		<th className='ps-sm-3 py-3 text-nowrap text-gray-800 fw-normal'>Tranche</th>
-																		<th className='py-3 text-nowrap text-gray-800 fw-normal fw-normal'>Backfill amount</th>
-																		<th className='py-3 text-nowrap text-gray-800 fw-normal fw-normal'>Backfill date</th>
+																		<th className='ps-sm-3 py-3 text-nowrap text-gray-700 fw-normal'>Tranche</th>
+																		<th className='py-3 text-nowrap text-gray-700 fw-normal fw-normal'>Backfill amount</th>
+																		<th className='py-3 text-nowrap text-gray-700 fw-normal fw-normal'>Backfill date</th>
 																	</tr>
 																</thead>
 																<tbody>
@@ -4765,7 +4759,7 @@ const Admin = () => {
 					</div>
 				</div>
 				<hr className='mb-4 d-lg-none' />
-				<div className='text-gray-800 selective-options' style={{ backgroundColor: activeTransactionSectionColor }}>
+				<div className='text-gray-700 selective-options' style={{ backgroundColor: activeTransactionSectionColor }}>
 					{/* Selectors */}
 					<div className="d-flex flex-wrap justify-content-center">
 						<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-warning border-opacity-25 tab-selector ${activeTransactionSection === 'withdrawals' ? 'active' : ''} user-select-none ptr clickDown`}
@@ -4817,11 +4811,11 @@ const Admin = () => {
 										<table className="table table-striped table-hover h-100">
 											<thead className='table-warning position-sticky top-0 inx-1 1 text-uppercase small'>
 												<tr>
-													<th className='ps-sm-3 py-3 text-nowrap text-gray-800'>N°</th>
-													<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ minWidth: '10rem' }}>Type</th>
-													<th className='py-3 text-nowrap text-gray-800 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
-													<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
-													<th className='py-3 text-nowrap text-gray-800 fw-normal'>Date</th>
+													<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Type</th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date</th>
 												</tr>
 											</thead>
 											<tbody>
@@ -4861,8 +4855,8 @@ const Admin = () => {
 										<>
 											<div className='position-fixed fixed-top inset-0 bg-black3 py-3 inx-high'>
 												<div className="container col-md-6 col-lg-5 col-xl-4 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-													<div className="h-100 px-3 bg-light text-gray-800">
-														<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
+													<div className="h-100 px-3 bg-light text-gray-700">
+														<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
 															<div className='flex-align-center'>
 																<CashRegister weight='fill' className="me-1" />
 																<span style={{ lineHeight: 1 }}>Record an expense</span>
@@ -4927,12 +4921,12 @@ const Admin = () => {
 									<table className="table table-striped table-hover h-100">
 										<thead className='table-success position-sticky top-0 inx-1 1 text-uppercase small'>
 											<tr>
-												<th className='ps-sm-3 py-3 text-nowrap text-gray-800'>N°</th>
-												<th className='py-3 text-nowrap text-gray-800 fw-normal'>Member</th>
-												<th className='py-3 text-nowrap text-gray-800 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
-												<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
-												<th className='py-3 text-nowrap text-gray-800 fw-normal'>Date</th>
-												<th className='py-3 text-center text-nowrap text-gray-800 fw-normal'>Actions</th>
+												<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+												<th className='py-3 text-nowrap text-gray-700 fw-normal'>Member</th>
+												<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
+												<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
+												<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date</th>
+												<th className='py-3 text-center text-nowrap text-gray-700 fw-normal'>Actions</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -5075,11 +5069,11 @@ const Admin = () => {
 									<table className="table table-striped table-hover h-100">
 										<thead className='table-primary position-sticky top-0 inx-1 text-uppercase small'>
 											<tr>
-												<th className='ps-sm-3 py-3 text-nowrap text-gray-800'>N°</th>
-												<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
-												<th className='py-3 text-nowrap text-gray-800 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
-												<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
-												<th className='py-3 text-nowrap text-gray-800 fw-normal'>Date</th>
+												<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+												<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
+												<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
+												<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
+												<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -5208,7 +5202,7 @@ const Admin = () => {
 						</p>
 						<Calendar size={25} className='me-2' /> <FormatedDate date={new Date()} monthFormat='numeric' hour12Format={true} />
 					</div>
-					<div className='text-gray-800 selective-options' style={{ backgroundColor: '#a3d5bb75' }}>
+					<div className='text-gray-700 selective-options' style={{ backgroundColor: '#a3d5bb75' }}>
 						{/* Selectors */}
 						<div className="d-flex flex-wrap justify-content-center">
 							<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-success border-opacity-25 tab-selector ${activeReportSection === 'incomeExpenses' ? 'active' : ''} user-select-none ptr clickDown`}
@@ -5233,9 +5227,9 @@ const Admin = () => {
 										<table className="table table-hover h-100">
 											<thead className='table-success position-sticky top-0 inx-1 1 text-uppercase small'>
 												<tr>
-													<th className='ps-sm-3 py-3 text-nowrap text-gray-800'>N°</th>
-													<th className='py-3 text-nowrap text-gray-800 fw-normal'>Libelle</th>
-													<th className='py-3 text-nowrap text-gray-800 fw-normal'>Montant <sub className='fs-60'>/RWF</sub></th>
+													<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Libelle</th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Montant <sub className='fs-60'>/RWF</sub></th>
 												</tr>
 											</thead>
 											<tbody>
@@ -5274,10 +5268,10 @@ const Admin = () => {
 										<table className="table table-hover h-100">
 											<thead className='table-success position-sticky top-0 inx-1 1 text-uppercase small'>
 												<tr>
-													<th className='py-3 text-nowrap text-gray-800 fw-normal'>Actif</th>
-													<th className='py-3 text-nowrap text-gray-800 fw-normal'>Montant <sub className='fs-60'>/RWF</sub></th>
-													<th className='py-3 text-nowrap text-gray-800 fw-normal'>Passif</th>
-													<th className='py-3 text-nowrap text-gray-800 fw-normal'>Montant <sub className='fs-60'>/RWF</sub></th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Actif</th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Montant <sub className='fs-60'>/RWF</sub></th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Passif</th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Montant <sub className='fs-60'>/RWF</sub></th>
 												</tr>
 											</thead>
 											<tbody>
@@ -5312,13 +5306,13 @@ const Admin = () => {
 																	<b>{index + 1}</b>. {memberNames}
 																</td>
 																<td className="text-nowrap">
-																	Credit: <CurrencyText amount={pendingCredit + pendingInterest} boldAmount smallCurrency className='text-gray-800' />
+																	Credit: <CurrencyText amount={pendingCredit + pendingInterest} boldAmount smallCurrency className='text-gray-700' />
 																</td>
 																<td>
 																	{memberNames}
 																</td>
 																<td className='text-nowrap'>
-																	Part: <CurrencyText amount={memberCostisation} boldAmount smallCurrency className='text-gray-800' /> | Social: <CurrencyText amount={Number(memberSocial)} boldAmount smallCurrency className='text-gray-800' />
+																	Part: <CurrencyText amount={memberCostisation} boldAmount smallCurrency className='text-gray-700' /> | Social: <CurrencyText amount={Number(memberSocial)} boldAmount smallCurrency className='text-gray-700' />
 																</td>
 															</tr>
 														)
@@ -5567,14 +5561,14 @@ const Admin = () => {
 					<div className="me-3 ms-auto navbar-nav">
 						<div className="nav-item d-flex gap-2 text-nowrap small" style={{ '--_activeColor': 'var(--primaryColor)' }}>
 							<Popover content="Refresh data" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='1.9rem'>
-								<button className={`nav-link px-2 text-gray-600 rounded-pill clickDown`}
+								<button className={`nav-link px-2 text-gray-700 rounded-pill clickDown`}
 									onClick={refreshAllData}
 								>
 									<ArrowsClockwise size={20} />
 								</button>
 							</Popover>
 							<Popover content="Notifications" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='1.9rem'>
-								<button className={`nav-link px-2 ${hasNewNotifications ? 'bg-gray-300 text-primaryColor active-with-dot' : 'text-gray-600'} rounded-pill clickDown`}
+								<button className={`nav-link px-2 ${hasNewNotifications ? 'bg-gray-300 text-primaryColor active-with-dot' : 'text-gray-700'} rounded-pill clickDown`}
 									onClick={() => setShowNotifications(true)}
 								>
 									<BellSimple weight={hasNewNotifications ? 'fill' : undefined} size={20}
@@ -5613,7 +5607,7 @@ const Admin = () => {
 					show={showNotifications}
 					onClose={() => setShowNotifications(false)}
 					title="Notifications"
-					icon={<BellSimple size={20} weight="fill" className='text-gray-800' />}
+					icon={<BellSimple size={20} weight="fill" className='text-gray-700' />}
 					content={
 						<>
 							{!allCredits.filter(cr => cr.status === 'pending').length ? (

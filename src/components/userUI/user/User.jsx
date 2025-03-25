@@ -591,7 +591,7 @@ const UserUI = () => {
 								<div className="col-md-6 col-lg-4" key={index}>
 									<div className="card py-3 h-100 bg-transparent border-0 border-4 border-end rounded-0 border-primaryColor">
 										<div className="card-body">
-											<h6 className="card-title mb-4 fs-5 text-uppercase fw-bold text-gray-800">
+											<h6 className="card-title mb-4 fs-5 text-uppercase fw-bold text-gray-700">
 												{item.label}
 											</h6>
 											<p className="card-text text-primaryColor">
@@ -870,7 +870,7 @@ const UserUI = () => {
 							{membersToShow
 								.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
 								.map((member, index) => (
-									<div className="position-relative mb-3 my-5 px-2 pt-5 border-top border-3 border-secondary border-opacity-25 text-gray-800 member-element"
+									<div className="position-relative mb-3 my-5 px-2 pt-5 border-top border-3 border-secondary border-opacity-25 text-gray-700 member-element"
 										key={index}
 									>
 										<div className="position-absolute top-0 me-3 d-flex gap-3"
@@ -902,7 +902,7 @@ const UserUI = () => {
 													<h6 className="flex-align-center px-2 py-1 border-bottom border-2 text-primaryColor fw-bolder">
 														<User className="me-1" /> Husband
 													</h6>
-													<ul className="list-unstyled text-gray-800 px-2 smaller">
+													<ul className="list-unstyled text-gray-700 px-2 smaller">
 														<li className="py-1">
 															<b>Names:</b> {`${member.husbandFirstName} ${member.husbandLastName}`}
 														</li>
@@ -919,7 +919,7 @@ const UserUI = () => {
 														<h6 className="flex-align-center px-2 py-1 border-bottom border-2 text-primaryColor fw-bolder">
 															<User className="me-1" /> Wife
 														</h6>
-														<ul className="list-unstyled text-gray-800 px-2 smaller">
+														<ul className="list-unstyled text-gray-700 px-2 smaller">
 															<li className="py-1">
 																<b>Names:</b> {`${member.wifeFirstName} ${member.wifeLastName}`}
 															</li>
@@ -948,7 +948,7 @@ const UserUI = () => {
 								show={showMemberInfo}
 								onClose={() => setShowMemberInfo(false)}
 								title="Personal information"
-								icon={<UserRectangle size={20} weight="fill" className='text-gray-800' />}
+								icon={<UserRectangle size={20} weight="fill" className='text-gray-700' />}
 								content={
 									<>
 										<div>
@@ -958,7 +958,7 @@ const UserUI = () => {
 													className="ratio-1-1 object-fit-cover rounded-3"
 													style={{ maxWidth: '20rem', objectPosition: 'center 25%' }}
 												/>
-												<div className="position-absolute start-50 top-100 translate-middle bg-light text-gray-600 py-1 px-3 rounded-2 text-nowrap smaller shadow-sm">
+												<div className="position-absolute start-50 top-100 translate-middle bg-light text-gray-700 py-1 px-3 rounded-2 text-nowrap smaller shadow-sm">
 													{showPrimaryMemberInfo ? `${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName} ` : `${selectedMember?.wifeFirstName} ${selectedMember?.wifeLastName}`}
 												</div>
 											</div>
@@ -972,7 +972,7 @@ const UserUI = () => {
 											</div>
 
 											{showPrimaryMemberInfo ? (
-												<ul className="list-unstyled text-gray-800 px-2 small">
+												<ul className="list-unstyled text-gray-700 px-2 small">
 													<li className="py-1">
 														<b>Phone:</b> <span>{selectedMember?.husbandPhone}</span>
 													</li>
@@ -981,7 +981,7 @@ const UserUI = () => {
 													</li>
 												</ul>
 											) : (
-												<ul className="list-unstyled text-gray-800 px-2 small">
+												<ul className="list-unstyled text-gray-700 px-2 small">
 													<li className="py-1">
 														<b>Phone:</b> {selectedMember?.wifePhone ? (
 															<span>{selectedMember?.wifePhone}</span>
@@ -1259,7 +1259,7 @@ const UserUI = () => {
 
 										return (
 											<div key={index} className='col-lg-6 px-lg-3'>
-												<div className="position-relative mb-3 my-5 px-2 pt-5 border-top border-3 border-secondary border-opacity-25 text-gray-800 member-element"
+												<div className="position-relative mb-3 my-5 px-2 pt-5 border-top border-3 border-secondary border-opacity-25 text-gray-700 member-element"
 												>
 													<div className="position-absolute top-0 me-3 d-flex gap-3"
 														style={{ right: 0, translate: "0 -50%" }}
@@ -1271,7 +1271,7 @@ const UserUI = () => {
 													</div>
 													<div className="px-lg-2">
 														<h5 className="mb-3 fs-4">{`${husbandFirstName} ${husbandLastName}`}</h5>
-														<ul className="list-unstyled text-gray-800 px-2 smaller">
+														<ul className="list-unstyled text-gray-700 px-2 smaller">
 															<li className="py-1 w-100">
 																<span className="flex-align-center">
 																	<b className='fs-5'>{shares} Shares</b>
@@ -1300,8 +1300,8 @@ const UserUI = () => {
 								<>
 									<div className='position-fixed fixed-top inset-0 flex-center py-3 bg-black2 inx-high'>
 										<div className="container col-md-6 col-lg-5 col-xl-4 my-auto peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-											<div className="px-3 bg-light text-gray-800">
-												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
+											<div className="px-3 bg-light text-gray-700">
+												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
 													<div className='flex-align-center'>
 														<CashRegister weight='fill' className="me-1" />
 														<span style={{ lineHeight: 1 }}>Add monthly savings</span>
@@ -1450,8 +1450,8 @@ const UserUI = () => {
 								<>
 									<div className='position-fixed fixed-top inset-0 flex-center py-3 bg-white3 inx-high'>
 										<div className="container col-md-6 col-lg-5 col-xl-4 my-auto peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-											<div className="px-3 bg-light text-gray-800">
-												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
+											<div className="px-3 bg-light text-gray-700">
+												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
 													<div className='flex-align-center'>
 														<CashRegister weight='fill' className="me-1" />
 														<span style={{ lineHeight: 1 }}>Add multiple shares</span>
@@ -1469,7 +1469,7 @@ const UserUI = () => {
 														Save multiple shares to {selectedMember?.husbandFirstName} {selectedMember?.husbandLastName}
 													</div>
 												</div>
-												<ul className="list-unstyled text-gray-800 px-2 opacity-75 smaller">
+												<ul className="list-unstyled text-gray-700 px-2 opacity-75 smaller">
 													<li className="py-1 w-100">
 														<span className="flex-align-center">
 															<b className='fs-5'>{selectedMember?.shares} Shares</b>
@@ -1617,14 +1617,14 @@ const UserUI = () => {
 					<table className="table table-hover h-100">
 						<thead className='table-success position-sticky top-0 inx-1 1 text-uppercase small'>
 							<tr>
-								<th className='py-3 text-nowrap text-gray-800 fw-normal'>N°</th>
-								<th className='py-3 text-nowrap text-gray-800 fw-normal'>Member</th>
-								<th className='py-3 text-nowrap text-gray-800 fw-normal'>Shares <sub className='fs-60'>/Active</sub></th>
-								<th className='py-3 text-nowrap text-gray-800 fw-normal'>Share % <sub className='fs-60'>to <b>{totalActiveShares}</b></sub></th>
-								<th className='py-3 text-nowrap text-gray-800 fw-normal'>Interest <sub className='fs-60'>/RWF</sub></th>
-								<th className='py-3 text-nowrap text-gray-800 fw-normal'>Receivable<sub className='fs-60'>/RWF</sub></th>
-								<th className='py-3 text-nowrap text-gray-800 fw-normal'>Receivable<sub className='fs-60'>/Shares</sub></th>
-								<th className='py-3 text-nowrap text-gray-800 fw-normal'>Remains<sub className='fs-60'>/RWF</sub></th>
+								<th className='py-3 text-nowrap text-gray-700 fw-normal'>N°</th>
+								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Member</th>
+								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Shares <sub className='fs-60'>/Active</sub></th>
+								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Share % <sub className='fs-60'>to <b>{totalActiveShares}</b></sub></th>
+								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Interest <sub className='fs-60'>/RWF</sub></th>
+								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Receivable<sub className='fs-60'>/RWF</sub></th>
+								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Receivable<sub className='fs-60'>/Shares</sub></th>
+								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Remains<sub className='fs-60'>/RWF</sub></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -1653,7 +1653,7 @@ const UserUI = () => {
 										<td className='text-nowrap'>{memberNames}</td>
 										<td>{activeShares}</td>
 										<td className="text-nowrap">{sharesPercentage} %</td>
-										<td className="text-nowrap text-gray-800">
+										<td className="text-nowrap text-gray-700">
 											<CurrencyText amount={interest} smallCurrency />
 										</td>
 										<td className="text-nowrap text-success">
@@ -1662,7 +1662,7 @@ const UserUI = () => {
 										<td className="text-success">
 											{sharesReceivable}
 										</td>
-										<td className="text-nowrap text-gray-800">
+										<td className="text-nowrap text-gray-700">
 											<CurrencyText amount={interestRemains} smallCurrency />
 										</td>
 									</tr>
@@ -1949,8 +1949,8 @@ const UserUI = () => {
 							<>
 								<div className='position-fixed fixed-top inset-0 bg-white3 inx-high'>
 									<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-										<div className="container h-100 overflow-auto px-3 bg-light text-gray-800">
-											<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom">
+										<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
+											<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-700 border-bottom">
 												<div className='flex-align-center'>
 													<img src={selectedMember?.husbandAvatar ? selectedMember?.husbandAvatar : '/images/man_avatar_image.jpg'}
 														alt={`${selectedMember?.husbandFirstName.slice(0, 1)}.${selectedMember?.husbandLastName}`}
@@ -1980,10 +1980,10 @@ const UserUI = () => {
 																				<table className="table table-hover h-100">
 																					<thead className='table-secondary position-sticky top-0 inx-1 text-uppercase small'>
 																						<tr>
-																							<th className='py-3 text-nowrap text-gray-800 fw-normal'>Title</th>
-																							<th className='py-3 text-nowrap text-gray-800 fw-normal'>Taken  <sub className='fs-60'>/RWF</sub></th>
-																							<th className='py-3 text-nowrap text-gray-800 fw-normal'>Paid  <sub className='fs-60'>/RWF</sub></th>
-																							<th className='py-3 text-nowrap text-gray-800 fw-normal'>Pending  <sub className='fs-60'>/RWF</sub></th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Title</th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Taken  <sub className='fs-60'>/RWF</sub></th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Paid  <sub className='fs-60'>/RWF</sub></th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Pending  <sub className='fs-60'>/RWF</sub></th>
 																						</tr>
 																					</thead>
 																					<tbody>
@@ -2075,12 +2075,12 @@ const UserUI = () => {
 																				<table className="table table-hover h-100">
 																					<thead className='table-success position-sticky top-0 inx-1 text-uppercase small'>
 																						<tr>
-																							<th className='ps-sm-3 py-3 text-nowrap text-gray-800'>N°</th>
-																							<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
-																							<th className='py-3 text-nowrap text-gray-800 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
-																							<th className='py-3 text-nowrap text-gray-800 fw-normal'>Date & Interval</th>
-																							<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
-																							<th className='py-3 text-nowrap text-gray-800 fw-normal'>Credit Status</th>
+																							<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date & Interval</th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
+																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Credit Status</th>
 																						</tr>
 																					</thead>
 																					<tbody>
@@ -2154,12 +2154,12 @@ const UserUI = () => {
 																					<table className="table table-striped table-hover h-100">
 																						<thead className='table-secondary position-sticky top-0 inx-1 1 text-uppercase small'>
 																							<tr>
-																								<th className='ps-sm-3 py-3 text-nowrap text-gray-800'>N°</th>
-																								<th className='py-3 text-nowrap text-gray-800 fw-normal'>Member</th>
-																								<th className='py-3 text-nowrap text-gray-800 fw-normal'>Loan paid  <sub className='fs-60'>/RWF</sub></th>
-																								<th className='py-3 text-nowrap text-gray-800 fw-normal'>Interest Paid <sub className='fs-60'>/RWF</sub></th>
-																								<th className='py-3 text-nowrap text-gray-800 fw-normal'>Tranches Paid</th>
-																								<th className='py-3 text-nowrap text-gray-800 fw-normal'>Date</th>
+																								<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Member</th>
+																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Loan paid  <sub className='fs-60'>/RWF</sub></th>
+																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Interest Paid <sub className='fs-60'>/RWF</sub></th>
+																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Tranches Paid</th>
+																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date</th>
 																							</tr>
 																						</thead>
 																						<tbody>
@@ -2235,7 +2235,7 @@ const UserUI = () => {
 					</>
 				)}
 
-				<div className='text-gray-800 selective-options' style={{ backgroundColor: activeLoanSectionColor }}>
+				<div className='text-gray-700 selective-options' style={{ backgroundColor: activeLoanSectionColor }}>
 					{/* <h4 className='h6 mb-2 text-center fw-bold text-decoration-underline' style={{ textUnderlineOffset: '3px' }}>Loan requests</h4> */}
 					{loadingCredits && (<LoadingIndicator text="Loading credits..." />)}
 					{!loadingCredits && errorLoadingCredits && (
@@ -2292,11 +2292,11 @@ const UserUI = () => {
 												<table className="table table-hover h-100">
 													<thead className='table-warning position-sticky top-0 inx-1 text-uppercase small'>
 														<tr>
-															<th className='ps-sm-3 py-3 text-nowrap text-gray-800'>N°</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal'>Date & Interval</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
+															<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date & Interval</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
 														</tr>
 													</thead>
 													<tbody>
@@ -2367,12 +2367,12 @@ const UserUI = () => {
 												<table className="table table-hover h-100">
 													<thead className='table-success position-sticky top-0 inx-1 text-uppercase small'>
 														<tr>
-															<th className='ps-sm-3 py-3 text-nowrap text-gray-800'>N°</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal'>Date & Interval</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal'>Credit Status</th>
+															<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date & Interval</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Credit Status</th>
 														</tr>
 													</thead>
 													<tbody>
@@ -2445,13 +2445,13 @@ const UserUI = () => {
 												<table className="table table-hover h-100">
 													<thead className='table-danger position-sticky top-0 inx-1 text-uppercase small'>
 														<tr>
-															<th className='ps-sm-3 py-3 text-nowrap text-gray-800'>N°</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal'>Date & Interval</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ maxWidth: '13rem' }} >Rejection</th>
-															<th className='py-3 text-nowrap text-gray-800 fw-normal'>Action</th>
+															<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date & Interval</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Rejection</th>
+															<th className='py-3 text-nowrap text-gray-700 fw-normal'>Action</th>
 														</tr>
 													</thead>
 													<tbody>
@@ -2545,8 +2545,8 @@ const UserUI = () => {
 									<>
 										<div className='position-fixed fixed-top inset-0 bg-white3 inx-high'>
 											<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-												<div className="px-3 bg-light text-gray-800">
-													<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
+												<div className="px-3 bg-light text-gray-700">
+													<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
 														<div className='flex-align-center text-primaryColor'>
 															<Receipt weight='fill' className="me-1" />
 															<span style={{ lineHeight: 1 }}>Tableau d'amortissement</span>
@@ -2622,9 +2622,9 @@ const UserUI = () => {
 															<table className="table table-hover h-100">
 																<thead className='table-primary position-sticky top-0 inx-1 text-uppercase small'>
 																	<tr>
-																		<th className='ps-sm-3 py-3 text-nowrap text-gray-800 fw-normal'>Tranche</th>
-																		<th className='py-3 text-nowrap text-gray-800 fw-normal fw-normal'>Backfill amount</th>
-																		<th className='py-3 text-nowrap text-gray-800 fw-normal fw-normal'>Backfill date</th>
+																		<th className='ps-sm-3 py-3 text-nowrap text-gray-700 fw-normal'>Tranche</th>
+																		<th className='py-3 text-nowrap text-gray-700 fw-normal fw-normal'>Backfill amount</th>
+																		<th className='py-3 text-nowrap text-gray-700 fw-normal fw-normal'>Backfill date</th>
 																	</tr>
 																</thead>
 																<tbody>
@@ -2661,9 +2661,9 @@ const UserUI = () => {
 				{showRequestCreditForm && (
 					<div className="position-fixed fixed-top inset-0 bg-black3 py-3 inx-high add-credit-form">
 						<div className="container col-md-9 col-lg-8 col-xl-6 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-							<div className="px-3 bg-light text-gray-800">
+							<div className="px-3 bg-light text-gray-700">
 								{/* Header */}
-								<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
+								<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
 									<div className="flex-align-center">
 										<span style={{ lineHeight: 1 }}>Request a New Credit</span>
 									</div>
@@ -2926,7 +2926,7 @@ const UserUI = () => {
 					</div>
 				</div>
 				<hr className='mb-4 d-lg-none' />
-				<div className='text-gray-800 selective-options' style={{ backgroundColor: activeTransactionSectionColor }}>
+				<div className='text-gray-700 selective-options' style={{ backgroundColor: activeTransactionSectionColor }}>
 					{/* Selectors */}
 					<div className="d-flex flex-wrap justify-content-center">
 						<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-warning border-opacity-25 tab-selector ${activeTransactionSection === 'withdrawals' ? 'active' : ''} user-select-none ptr clickDown`}
@@ -2964,11 +2964,11 @@ const UserUI = () => {
 										<table className="table table-striped table-hover h-100">
 											<thead className='table-warning position-sticky top-0 inx-1 text-uppercase small'>
 												<tr>
-													<th className='ps-sm-3 py-3 text-nowrap text-gray-800'>N°</th>
-													<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ minWidth: '10rem' }}>Type</th>
-													<th className='py-3 text-nowrap text-gray-800 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
-													<th className='py-3 text-nowrap text-gray-800 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
-													<th className='py-3 text-nowrap text-gray-800 fw-normal'>Date</th>
+													<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Type</th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date</th>
 												</tr>
 											</thead>
 											<tbody>
@@ -3008,8 +3008,8 @@ const UserUI = () => {
 										<>
 											<div className='position-fixed fixed-top inset-0 bg-white3 py-3 py-md-5 inx-high'>
 												<div className="container col-md-6 col-lg-5 col-xl-4 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-													<div className="h-100 px-3 bg-light text-gray-800">
-														<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-600 border-bottom text-uppercase">
+													<div className="h-100 px-3 bg-light text-gray-700">
+														<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
 															<div className='flex-align-center'>
 																<CashRegister weight='fill' className="me-1" />
 																<span style={{ lineHeight: 1 }}>Record an expense</span>
@@ -3148,7 +3148,7 @@ const UserUI = () => {
 						</p>
 						<Calendar size={25} className='me-2' /> <FormatedDate date={new Date()} monthFormat='numeric' hour12Format={true} />
 					</div>
-					<div className='text-gray-800 selective-options' style={{ backgroundColor: '#a3d5bb75' }}>
+					<div className='text-gray-700 selective-options' style={{ backgroundColor: '#a3d5bb75' }}>
 						{/* Selectors */}
 						<div className="d-flex flex-wrap justify-content-center">
 							<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-success border-opacity-25 tab-selector ${activeReportSection === 'incomeExpenses' ? 'active' : ''} user-select-none ptr clickDown`}
@@ -3173,9 +3173,9 @@ const UserUI = () => {
 										<table className="table table-hover h-100">
 											<thead className='table-success position-sticky top-0 inx-1 1 text-uppercase small'>
 												<tr>
-													<th className='ps-sm-3 py-3 text-nowrap text-gray-800'>N°</th>
-													<th className='py-3 text-nowrap text-gray-800 fw-normal'>Libelle</th>
-													<th className='py-3 text-nowrap text-gray-800 fw-normal'>Montant <sub className='fs-60'>/RWF</sub></th>
+													<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Libelle</th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Montant <sub className='fs-60'>/RWF</sub></th>
 												</tr>
 											</thead>
 											<tbody>
@@ -3214,10 +3214,10 @@ const UserUI = () => {
 										<table className="table table-hover h-100">
 											<thead className='table-success position-sticky top-0 inx-1 1 text-uppercase small'>
 												<tr>
-													<th className='py-3 text-nowrap text-gray-800 fw-normal'>Actif</th>
-													<th className='py-3 text-nowrap text-gray-800 fw-normal'>Montant <sub className='fs-60'>/RWF</sub></th>
-													<th className='py-3 text-nowrap text-gray-800 fw-normal'>Passif</th>
-													<th className='py-3 text-nowrap text-gray-800 fw-normal'>Montant <sub className='fs-60'>/RWF</sub></th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Actif</th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Montant <sub className='fs-60'>/RWF</sub></th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Passif</th>
+													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Montant <sub className='fs-60'>/RWF</sub></th>
 												</tr>
 											</thead>
 											<tbody>
@@ -3252,13 +3252,13 @@ const UserUI = () => {
 																	<b>{index + 1}</b>. {memberNames}
 																</td>
 																<td className="text-nowrap">
-																	Credit: <CurrencyText amount={pendingCredit + pendingInterest} boldAmount smallCurrency className='text-gray-800' />
+																	Credit: <CurrencyText amount={pendingCredit + pendingInterest} boldAmount smallCurrency className='text-gray-700' />
 																</td>
 																<td>
 																	{memberNames}
 																</td>
 																<td className='text-nowrap'>
-																	Part: <CurrencyText amount={memberCostisation} boldAmount smallCurrency className='text-gray-800' /> | Social: <CurrencyText amount={Number(memberSocial)} boldAmount smallCurrency className='text-gray-800' />
+																	Part: <CurrencyText amount={memberCostisation} boldAmount smallCurrency className='text-gray-700' /> | Social: <CurrencyText amount={Number(memberSocial)} boldAmount smallCurrency className='text-gray-700' />
 																</td>
 															</tr>
 														)
@@ -3469,14 +3469,14 @@ const UserUI = () => {
 					<div className="me-3 ms-auto navbar-nav">
 						<div className="nav-item d-flex gap-2 text-nowrap small" style={{ '--_activeColor': 'var(--primaryColor)' }}>
 							<Popover content="Refresh data" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='1.9rem'>
-								<button className={`nav-link px-2 text-gray-600 rounded-pill clickDown`} title='Refresh data'
+								<button className={`nav-link px-2 text-gray-700 rounded-pill clickDown`} title='Refresh data'
 									onClick={refreshAllData}
 								>
 									<ArrowsClockwise size={20} />
 								</button>
 							</Popover>
 							<Popover content="Notifications" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='1.9rem'>
-								<button className={`nav-link px-2 ${adminHasNewNotifications ? 'bg-gray-300 text-primaryColor active-with-dot' : 'text-gray-600'} rounded-pill clickDown`} title='Notifications'>
+								<button className={`nav-link px-2 ${adminHasNewNotifications ? 'bg-gray-300 text-primaryColor active-with-dot' : 'text-gray-700'} rounded-pill clickDown`} title='Notifications'>
 									<BellSimple weight={adminHasNewNotifications ? 'fill' : undefined} size={20}
 										style={{ animation: adminHasNewNotifications ? 'shakeX 10s infinite' : 'unset' }}
 									/>
