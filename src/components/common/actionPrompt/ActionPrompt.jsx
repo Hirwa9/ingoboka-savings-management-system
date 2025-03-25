@@ -83,7 +83,7 @@ const ActionPrompt = ({ show, isStatic, message, type, inputType, selectInputOpt
                 <div className={`${!isStatic ? 'position-fixed fixed-top inx-max inset-0' : ''} bg-white3`}>
                     <div
                         ref={cardRef}
-                        className={`position-sticky top-0 mx-auto blur-bg-3px bg-${type} text-${textColor} overflow-auto rounded-4 top-fixed-prompt`}
+                        className={`position-sticky top-0 mx-auto blur-bg-3px bg-${type} text-${textColor} overflow-auto top-fixed-prompt`}
                     >
                         <div className="fs-80">{message}</div>
                         <div className='my-3'>
