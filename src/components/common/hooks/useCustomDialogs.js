@@ -43,7 +43,7 @@ const useCustomDialogs = () => {
         });
     }
 
-    const messageToast = ({ message, type = 'gray-700', selfClose = true, selfCloseTimeout = 4000 }) => {
+    const messageToast = ({ message, type = 'gray-800', selfClose = true, selfCloseTimeout = 4000 }) => {
         return toast({
             message: <><ChatTeardropText size={22} weight='fill' className='me-2 flex-shrink-0 opacity-50' /> {message}</>,
             type,
@@ -59,7 +59,7 @@ const useCustomDialogs = () => {
     const [confirmDialogActionText, setConfirmDialogActionText] = useState('Yes, continue');
     const [confirmDialogCloseText, setConfirmDialogCloseText] = useState('Cancel');
     const [confirmDialogCloseCallback, setConfirmDialogCloseCallback] = useState(null);
-    const [confirmDialogType, setConfirmDialogType] = useState('gray-700');
+    const [confirmDialogType, setConfirmDialogType] = useState('gray-800');
     const [confirmDialogActionWaiting, setConfirmDialogActionWaiting] = useState(false);
 
     const customConfirmDialog = ({ message, action, actionText, closeText, closeCallback, type }) => {
@@ -69,7 +69,7 @@ const useCustomDialogs = () => {
         setConfirmDialogActionText(actionText || 'Yes, continue');
         setConfirmDialogCloseText(closeText || 'Cancel');
         setConfirmDialogCloseCallback(() => closeCallback);
-        setConfirmDialogType(type || 'gray-700');
+        setConfirmDialogType(type || 'gray-800');
     };
 
     const resetConfirmDialog = () => {
@@ -78,7 +78,7 @@ const useCustomDialogs = () => {
         setConfirmDialogActionText('Yes, continue');
         setConfirmDialogCloseText('Cancel');
         setConfirmDialogCloseCallback(null);
-        setConfirmDialogType('gray-700');
+        setConfirmDialogType('gray-800');
         setConfirmDialogAction(null);
         setConfirmDialogActionWaiting(false);
     };
@@ -86,7 +86,7 @@ const useCustomDialogs = () => {
     // Prompt
     const [showPrompt, setShowPrompt] = useState(false);
     const [promptMessage, setPromptMessage] = useState('');
-    const [promptType, setPromptType] = useState('gray-700');
+    const [promptType, setPromptType] = useState('gray-800');
     const [promptInputType, setPromptInputType] = useState('text');
     const [promptSelectInputOptions, setPromptSelectInputOptions] = useState([]);
     const promptInputValue = useRef('');
@@ -101,13 +101,13 @@ const useCustomDialogs = () => {
         setPromptSelectInputOptions(selectOptions || []);
         setPromptAction(() => action);
         setPromptInputPlaceholder(placeholder || 'Enter value');
-        setPromptType(type || 'gray-700');
+        setPromptType(type || 'gray-800');
     };
 
     const resetPrompt = () => {
         setShowPrompt(false);
         setPromptMessage('');
-        setPromptType('gray-700');
+        setPromptType('gray-800');
         setPromptInputType('text');
         setPromptSelectInputOptions([]);
         promptInputValue.current = '';
