@@ -1,7 +1,7 @@
 .top-fixed-prompt {
     left: 0;
     right: 0;
-    width: calc(100% - 1rem);
+    width: calc(100% - 1.5rem);
     max-width: 23rem;
     max-height: calc(100vh - 3rem);
     max-height: calc(100dvh - 3rem);
