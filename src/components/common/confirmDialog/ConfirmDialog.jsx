@@ -63,7 +63,7 @@ const ConfirmDialog = ({ show, message, type, action, actionText, actionIsWaitin
                 <div ref={cardContainerRef} className={`position-fixed fixed-top inx-max inset-0 bg-white3`}>
                     <div
                         ref={cardRef}
-                        className={`position-sticky top-0 mx-auto blur-bg-3px bg-${type} text-${textColor} overflow-auto peak-borders-b top-fixed-confirm-dialog`}
+                        className={`position-sticky top-0 mx-auto blur-bg-3px bg-${type} text-${textColor} overflow-auto rounded-4 top-fixed-confirm-dialog`}
                     >
                         <div className="fs-80">{message}</div>
                         <div className="modal-footer mt-3">

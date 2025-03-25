@@ -83,7 +83,7 @@ const ActionPrompt = ({ show, isStatic, message, type, inputType, selectInputOpt
                 <div className={`${!isStatic ? 'position-fixed fixed-top inx-max inset-0' : ''} bg-white3`}>
                     <div
                         ref={cardRef}
-                        className={`position-sticky top-0 mx-auto blur-bg-3px bg-${type} text-${textColor} overflow-auto peak-borders-b top-fixed-prompt`}
+                        className={`position-sticky top-0 mx-auto blur-bg-3px bg-${type} text-${textColor} overflow-auto rounded-4 top-fixed-prompt`}
                     >
                         <div className="fs-80">{message}</div>
                         <div className='my-3'>
@@ -106,7 +106,7 @@ const ActionPrompt = ({ show, isStatic, message, type, inputType, selectInputOpt
                                 </select>
                             ) : inputType === "textarea" ? (
                                 <textarea name="promptTextares" id="promptTextares"
-                                    className={`form-control border-bottom border-${textColor} border-opacity-25 text-gray-700  border-opacity-25 rounded-0`} placeholder={inputPlaceholder}
+                                    className={`form-control border-bottom border-${textColor} border-opacity-25 text-gray-700 border-opacity-25 rounded-0`} placeholder={inputPlaceholder}
                                     cols="30" rows="5"
                                     value={promptValue}
                                     onChange={(e) => setPromptValue(e.target.value)}
