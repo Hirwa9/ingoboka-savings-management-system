@@ -14,6 +14,11 @@
     animation: fallInTop .5s 1 ease-out;
 }
 
+.top-fixed-prompt textarea::placeholder,
+.top-fixed-prompt input::placeholder {
+    font-size: .9rem;
+}
+
 :has(> .top-fixed-prompt) {
     perspective: 1000px;
 }
