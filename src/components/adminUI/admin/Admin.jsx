@@ -4600,6 +4600,89 @@ const Admin = () => {
 			}
 		};
 
+		// Handle edit expense
+		const handleEditExpense = async (values) => {
+			if (!values || typeof values !== 'object') {
+				return warningToast({ message: "Invalid record values" });
+			}
+
+			const { id, newExpenseAmount } = values;
+
+			if (!id || !newExpenseAmount) {
+				return warningToast({ message: "Missing required edit parameter" });
+			}
+
+			try {
+				setIsWaitingFetchAction(true);
+
+				const payload = values;
+
+				const response = await fetch(`${BASE_URL}/record/edit`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(payload),
+				});
+
+				if (!response.ok) {
+					const errorData = await response.json();
+					throw new Error(errorData.message || errorData.error || 'Error updating expense record');
+				}
+
+				const data = await response.json();
+				successToast({ message: data.message });
+				setErrorWithFetchAction(null);
+				resetPrompt();
+				fetchMembers();
+				fetchFigures();
+				fetchRecords();
+			} catch (error) {
+				setErrorWithFetchAction(error.message);
+				cError("Error updating expense record:", error);
+				warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
+			} finally {
+				setIsWaitingFetchAction(false);
+			}
+		};
+
+		// Handle delete expense
+		const handleDeleteExpense = async (recordId) => {
+			if (!recordId || (recordId && typeof recordId !== 'number')) {
+				return warningToast({ message: "Invalid record ID" });
+			}
+
+			try {
+				setIsWaitingFetchAction(true);
+
+				// return console.log(recordId);
+
+				const response = await fetch(`${BASE_URL}/record/delete`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ id: recordId }),
+				});
+
+				if (!response.ok) {
+					const errorData = await response.json();
+					throw new Error(errorData.message || errorData.error || 'Error deleting expense record');
+				}
+
+				const data = await response.json();
+				successToast({ message: data.message });
+				setErrorWithFetchAction(null);
+				resetConfirmDialog();
+				fetchMembers();
+				fetchFigures();
+				fetchRecords();
+			} catch (error) {
+				setErrorWithFetchAction(error.message);
+				cError("Error deleting expense record:", error);
+				warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
+			} finally {
+				setIsWaitingFetchAction(false);
+				resetConfirmDialog();
+			}
+		};
+
 		useEffect(() => {
 			if (activeTransactionSection === 'withdrawals') {
 				setActiveTransactionSectionColor('#f4e4b675');
@@ -4640,8 +4723,8 @@ const Admin = () => {
 				// Successful fetch
 				const data = await response.json();
 				successToast({ message: data.message });
-				resetConfirmDialog();
 				setErrorWithFetchAction(null);
+				resetConfirmDialog();
 				fetchMembers();
 				fetchFigures();
 				fetchRecords();
@@ -4651,6 +4734,7 @@ const Admin = () => {
 				warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
 			} finally {
 				setIsWaitingFetchAction(false);
+				resetConfirmDialog();
 			}
 		};
 
@@ -4816,6 +4900,7 @@ const Admin = () => {
 													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
 													<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
 													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date</th>
+													<th className='py-3 text-center text-nowrap text-gray-700 fw-normal'>Actions</th>
 												</tr>
 											</thead>
 											<tbody>
@@ -4836,12 +4921,70 @@ const Admin = () => {
 																	<CurrencyText amount={Number(record.recordAmount)} />
 																</td>
 																<td>
-																	{record.comment}
+																	{(record.comment.indexOf('(') > -1 && record.comment.indexOf(')') > -1) ?
+																		record.comment.slice(0, record.comment.indexOf('('))
+																		:
+																		record.comment
+																	}
 																</td>
 																<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
 																	<Popover content={<><Watch size={15} /> {getDateHoursMinutes(record.createdAt)}</>} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
 																		<FormatedDate date={record.createdAt} />
 																	</Popover>
+																</td>
+																<td className='text-center'>
+																	<Menu menuButton={
+																		<MenuButton className="border-0 p-0">
+																			<DotsThreeVertical size={20} weight='bold' />
+																		</MenuButton>
+																	} transition>
+																		{(record.recordType.toLowerCase() === 'expense') && (
+																			<>
+																				<MenuItem onClick={() => {
+																					customPrompt({
+																						message: (
+																							<>
+																								<h5 className='h6 border-bottom mb-3 pb-2'><ReceiptX size={25} weight='fill' className='opacity-50' /> Edit/update Expense record</h5>
+																								<p>
+																									Current amount: <CurrencyText amount={Number(record.recordAmount)} /><br /><br />
+																									Enter new expense amount for this record.
+																								</p>
+																							</>
+																						),
+																						inputType: 'number',
+																						action: () => handleEditExpense({
+																							id: record.id,
+																							newExpenseAmount: promptInputValue.current
+																						}),
+																						placeholder: 'Updated amount',
+																					})
+																				}}>
+																					<Pen weight='fill' className="me-2 opacity-50" /> Update
+																				</MenuItem>
+																				<MenuItem onClick={() => {
+																					customConfirmDialog({
+																						message: (
+																							<>
+																								<h5 className='h6 border-bottom mb-3 pb-2'><Trash size={25} weight='fill' className='opacity-50' /> Delete expense</h5>
+																								<p>
+																									This action will undo all transactions associated with this record and permanently remove it from the transaction history.<br /><br />
+																									<span className='d-block alert alert-dark'>
+																										<b>Expense amount:</b> <CurrencyText amount={Number(record.recordAmount)} /><br />
+																										<b>Recorded on:</b> <FormatedDate date={record.createdAt} />.
+																									</span>
+																								</p>
+																							</>
+																						),
+																						type: 'warning',
+																						action: () => handleDeleteExpense(record.id),
+																						actionText: "Delete record"
+																					});
+																				}}>
+																					<Trash weight='fill' className="me-2 opacity-50" /> Delete
+																				</MenuItem>
+																			</>
+																		)}
+																	</Menu>
 																</td>
 															</tr>
 														)
@@ -5035,7 +5178,7 @@ const Admin = () => {
 																								This action will undo all transactions associated with this record and permanently remove it from the transaction history.<br /><br />
 																								<span className='d-block alert alert-dark'>
 																									<b>Member:</b> {memberNames}<br />
-																									<b>Social saving amount:</b>  <CurrencyText amount={Number(record.recordAmount)} /><br />
+																									<b>Social saving amount:</b> <CurrencyText amount={Number(record.recordAmount)} /><br />
 																									<b>Recorded on:</b> <FormatedDate date={record.createdAt} />.
 																								</span>
 																							</p>
