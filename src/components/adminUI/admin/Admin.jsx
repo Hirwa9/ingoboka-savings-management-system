@@ -3387,17 +3387,17 @@ const Admin = () => {
 		const [showSelectedMemberPaymentHistory, setShowSelectedMemberPaymentHistory] = useState(false);
 
 		const [payLoanAmount, setPayLoanAmount] = useState('');
-		const [payInterestAmount, setPayInterestAmount] = useState('');
-		const [payTranchesAmount, setPayTranchesAmount] = useState('');
+		const [payInterestAmount, setPayInterestAmount] = useState(0);
+		const [payTranchesAmount, setPayTranchesAmount] = useState(0);
 
 		const resetPaymentinputs = () => {
 			setPayLoanAmount('');
-			setPayInterestAmount('');
-			setPayTranchesAmount('');
+			setPayInterestAmount(0);
+			setPayTranchesAmount(0);
 		}
 
 		const handeLoanPaymemnt = async (id) => {
-			if (payLoanAmount <= 0 || payTranchesAmount <= 0) {
+			if (payLoanAmount <= 0) {
 				return warningToast({ message: 'Enter payment amount to continue' })
 			}
 
