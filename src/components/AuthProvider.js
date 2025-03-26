@@ -103,6 +103,7 @@ export const AuthProvider = ({ children }) => {
     // Logout function
     const logout = async () => {
         try {
+            setLoading(true);
             await Axios.post('/logout', {}, {
                 withCredentials: true // Include cookies
             });
@@ -113,6 +114,8 @@ export const AuthProvider = ({ children }) => {
             <Navigate to="/login" replace />;
         } catch (error) {
             console.error("Logout failed:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
