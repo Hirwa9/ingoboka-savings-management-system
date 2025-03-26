@@ -116,17 +116,9 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // Check authentication status when the component mounts
-    useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
-        setLoading(false); // Authentication check is complete
-    }, []);
-
     // Context value
     const value = {
+        loading,
         user,
         login,
         logout,
