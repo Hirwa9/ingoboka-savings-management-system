@@ -1097,7 +1097,6 @@ const Admin = () => {
 				const data = response.data;
 				successToast({ message: data.message, selfClose: false });
 				hideMemberFinances();
-				resetConfirmDialog();
 				setErrorWithFetchAction(null);
 				fetchMembers();
 				fetchLoans();
@@ -3303,7 +3302,6 @@ const Admin = () => {
 				// Successful fetch
 				const data = await response.json();
 				successToast({ message: data.message });
-				resetConfirmDialog();
 				setErrorWithFetchAction(null);
 				fetchCredits();
 				fetchLoans();
@@ -3336,7 +3334,6 @@ const Admin = () => {
 				// Successfull fetch
 				const data = await response.json();
 				successToast({ message: data.message });
-				resetPrompt();
 				setErrorWithFetchAction(null);
 				fetchCredits();
 			} catch (error) {
@@ -3345,6 +3342,7 @@ const Admin = () => {
 				warningToast({ message: error.message });
 			} finally {
 				setIsWaitingFetchAction(false);
+				resetPrompt();
 			}
 		}
 
@@ -3366,7 +3364,6 @@ const Admin = () => {
 				// Successfull fetch
 				const data = await response.json();
 				successToast({ message: data.message });
-				resetConfirmDialog();
 				setErrorWithFetchAction(null);
 				fetchCredits();
 			} catch (error) {
@@ -3499,17 +3496,16 @@ const Admin = () => {
 				const data = await response.json();
 				successToast({ message: data.message });
 				setErrorWithFetchAction(null);
-				resetConfirmDialog();
 				fetchLoans();
 				fetchFigures();
 				fetchRecords();
 			} catch (error) {
-				resetConfirmDialog();
 				setErrorWithFetchAction(error.message || error.error);
 				cError("Error deleting credit payment record:", error);
 				warningToast({ message: error.message || error.error || "An unknown error occurred", type: "danger" });
 			} finally {
 				setIsWaitingFetchAction(false);
+				resetConfirmDialog();
 			}
 		};
 
@@ -4712,7 +4708,6 @@ const Admin = () => {
 				const data = await response.json();
 				successToast({ message: data.message });
 				setErrorWithFetchAction(null);
-				resetPrompt();
 				fetchMembers();
 				fetchFigures();
 				fetchRecords();
@@ -4722,6 +4717,7 @@ const Admin = () => {
 				warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
 			} finally {
 				setIsWaitingFetchAction(false);
+				resetPrompt();
 			}
 		};
 
@@ -4750,7 +4746,6 @@ const Admin = () => {
 				const data = await response.json();
 				successToast({ message: data.message });
 				setErrorWithFetchAction(null);
-				resetConfirmDialog();
 				fetchMembers();
 				fetchFigures();
 				fetchRecords();
@@ -4795,7 +4790,6 @@ const Admin = () => {
 				const data = await response.json();
 				successToast({ message: data.message });
 				setErrorWithFetchAction(null);
-				resetPrompt();
 				fetchMembers();
 				fetchFigures();
 				fetchRecords();
@@ -4805,6 +4799,7 @@ const Admin = () => {
 				warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
 			} finally {
 				setIsWaitingFetchAction(false);
+				resetPrompt();
 			}
 		};
 
@@ -4833,7 +4828,6 @@ const Admin = () => {
 				const data = await response.json();
 				successToast({ message: data.message });
 				setErrorWithFetchAction(null);
-				resetConfirmDialog();
 				fetchMembers();
 				fetchFigures();
 				fetchRecords();
@@ -4888,7 +4882,6 @@ const Admin = () => {
 				const data = await response.json();
 				successToast({ message: data.message });
 				setErrorWithFetchAction(null);
-				resetConfirmDialog();
 				fetchMembers();
 				fetchFigures();
 				fetchRecords();
@@ -4933,7 +4926,6 @@ const Admin = () => {
 				const data = await response.json();
 				successToast({ message: data.message });
 				setErrorWithFetchAction(null);
-				resetPrompt();
 				fetchMembers();
 				fetchFigures();
 				fetchRecords();
@@ -4943,6 +4935,7 @@ const Admin = () => {
 				warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
 			} finally {
 				setIsWaitingFetchAction(false);
+				resetPrompt();
 			}
 		};
 
@@ -4977,7 +4970,6 @@ const Admin = () => {
 				const data = await response.json();
 				successToast({ message: data.message });
 				setErrorWithFetchAction(null);
-				resetConfirmDialog();
 				fetchMembers();
 				fetchFigures();
 				fetchRecords();
@@ -4987,6 +4979,7 @@ const Admin = () => {
 				warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
 			} finally {
 				setIsWaitingFetchAction(false);
+				resetConfirmDialog();
 			}
 		};
 
