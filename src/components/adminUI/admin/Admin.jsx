@@ -2098,7 +2098,7 @@ const Admin = () => {
 																											customConfirmDialog({
 																												message: (
 																													<>
-																														<h5 className='h6 border-bottom mb-3 pb-2'><UserMinus size={25} weight='fill' className='opacity-50' /> Removing a group member</h5>
+																														<h5 className='h6 border-bottom mb-3 pb-2 text-uppercase'><UserMinus size={25} weight='fill' className='opacity-50' /> Removing a group member</h5>
 																														<p className='fw-semibold'>
 																															Are you sure to remove {`${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName}`} from the system ?
 																														</p>
@@ -2140,7 +2140,7 @@ const Admin = () => {
 																						customConfirmDialog({
 																							message: (
 																								<>
-																									<h5 className='h6 border-bottom mb-3 pb-2'><UserMinus size={25} weight='fill' className='opacity-50' /> Removing a group member</h5>
+																									<h5 className='h6 border-bottom mb-3 pb-2 text-uppercase'><UserMinus size={25} weight='fill' className='opacity-50' /> Removing a group member</h5>
 																									<p className='fw-semibold'>
 																										Are you sure to remove {`${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName}`} from the system ?
 																									</p>
@@ -3468,6 +3468,51 @@ const Admin = () => {
 			}
 		};
 
+		// Handle delete credit payment record
+		const handleDeleteCreditPaymentRecord = async (values) => {
+			if (!values || typeof values !== 'object') {
+				return warningToast({ message: "Invalid record paramenters" });
+			}
+
+			if (!values.memberId || !values.recordId) {
+				return warningToast({ message: "Missing require paramenters" });
+			}
+
+			try {
+				setIsWaitingFetchAction(true);
+
+				const payload = values;
+
+				const response = await fetch(`${BASE_URL}/credit-payment/delete`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(payload),
+				});
+
+				// Fetch error
+				if (!response.ok) {
+					const errorData = await response.json();
+					throw new Error(errorData.message || errorData.error || 'Error deleting credit payment record');
+				}
+
+				// Successful fetch
+				const data = await response.json();
+				successToast({ message: data.message });
+				setErrorWithFetchAction(null);
+				resetConfirmDialog();
+				fetchLoans();
+				fetchFigures();
+				fetchRecords();
+			} catch (error) {
+				resetConfirmDialog();
+				setErrorWithFetchAction(error.message || error.error);
+				cError("Error deleting credit payment record:", error);
+				warningToast({ message: error.message || error.error || "An unknown error occurred", type: "danger" });
+			} finally {
+				setIsWaitingFetchAction(false);
+			}
+		};
+
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<h2 className='text-appColor'><Blueprint weight='fill' className="me-1 opacity-50" /> Credit panel</h2>
@@ -3562,6 +3607,7 @@ const Admin = () => {
 																<th className='py-3 text-nowrap text-gray-700 fw-normal'>Interest Paid <sub className='fs-60'>/RWF</sub></th>
 																<th className='py-3 text-nowrap text-gray-700 fw-normal'>Tranches Paid</th>
 																<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date</th>
+																<th className='py-3 text-nowrap text-gray-700 fw-normal'>Actions</th>
 															</tr>
 														</thead>
 														<tbody>
@@ -3598,6 +3644,41 @@ const Admin = () => {
 																				<Popover content={<><Watch size={15} /> {getDateHoursMinutes(record.createdAt)}</>} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
 																					<FormatedDate date={record.createdAt} />
 																				</Popover>
+																			</td>
+																			<td className='text-center'>
+																				<Menu menuButton={
+																					<MenuButton className="border-0 p-0">
+																						<DotsThreeVertical size={20} weight='bold' />
+																					</MenuButton>
+																				} transition>
+																					<MenuItem onClick={() => {
+																						customConfirmDialog({
+																							message: (
+																								<>
+																									<h5 className='h6 border-bottom mb-3 pb-2 text-uppercase'><Trash size={25} weight='fill' className='opacity-50' /> Reverse credit payment record</h5>
+																									<p>
+																										This action will undo all credit payment transactions associated with this record and permanently remove it from the transaction history.<br /><br />
+																										<span className='d-block alert alert-dark'>
+																											<b>Member:</b> {memberNames}<br />
+																											<b>Amount paid:</b> <CurrencyText amount={Number(JSON.parse(record.comment)?.loanPaid)} /><br />
+																											<b>Interest paid:</b> <CurrencyText amount={Number(JSON.parse(record.comment)?.interestPaid)} /><br />
+																											<b>Tranches paid:</b> {JSON.parse(record.comment)?.tranchesPaid}<br />
+																											<b>Recorded on:</b> <FormatedDate date={record.createdAt} />.
+																										</span>
+																									</p>
+																								</>
+																							),
+																							type: 'warning',
+																							action: () => handleDeleteCreditPaymentRecord({
+																								memberId: record.memberId,
+																								recordId: record.id
+																							}),
+																							actionText: "Reverse record"
+																						});
+																					}}>
+																						<ArrowsLeftRight weight='fill' className="me-2 opacity-50" /> Reverse record
+																					</MenuItem>
+																				</Menu>
 																			</td>
 																		</tr>
 																	)
@@ -4328,7 +4409,7 @@ const Admin = () => {
 																							customConfirmDialog({
 																								message: (
 																									<>
-																										<h5 className='h6 border-bottom mb-3 pb-2'><Receipt size={25} weight='fill' className='opacity-50' /> Restore Credit Request</h5>
+																										<h5 className='h6 border-bottom mb-3 pb-2 text-uppercase'><Receipt size={25} weight='fill' className='opacity-50' /> Restore Credit Request</h5>
 																										<p>
 																											A credit request of <CurrencyText amount={Number(credit.creditAmount)} /> submitted by {memberNames} will be restored and marked as pending for further actions.
 																										</p>
@@ -4485,7 +4566,7 @@ const Admin = () => {
 																			customPrompt({
 																				message: (
 																					<>
-																						<h5 className='h6 border-bottom mb-3 pb-2'><ReceiptX size={25} weight='fill' className='opacity-50' /> Reject Credit Request</h5>
+																						<h5 className='h6 border-bottom mb-3 pb-2 text-uppercase'><ReceiptX size={25} weight='fill' className='opacity-50' /> Reject Credit Request</h5>
 																						<p>
 																							Provide a reason for rejecting this request and any helpful feedback.
 																						</p>
@@ -4617,7 +4698,7 @@ const Admin = () => {
 
 				const payload = values;
 
-				const response = await fetch(`${BASE_URL}/record/edit`, {
+				const response = await fetch(`${BASE_URL}/expense-record/edit`, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify(payload),
@@ -4655,7 +4736,7 @@ const Admin = () => {
 
 				// return console.log(recordId);
 
-				const response = await fetch(`${BASE_URL}/record/delete`, {
+				const response = await fetch(`${BASE_URL}/expense-record/delete`, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({ id: recordId }),
@@ -4676,6 +4757,89 @@ const Admin = () => {
 			} catch (error) {
 				setErrorWithFetchAction(error.message);
 				cError("Error deleting expense record:", error);
+				warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
+			} finally {
+				setIsWaitingFetchAction(false);
+				resetConfirmDialog();
+			}
+		};
+
+		// Handle edit penalty
+		const handleEditPenalty = async (values) => {
+			if (!values || typeof values !== 'object') {
+				return warningToast({ message: "Invalid record values" });
+			}
+
+			const { id, newPenaltyAmount } = values;
+
+			if (!id || !newPenaltyAmount) {
+				return warningToast({ message: "Missing required edit parameter" });
+			}
+
+			try {
+				setIsWaitingFetchAction(true);
+
+				const payload = values;
+
+				const response = await fetch(`${BASE_URL}/penalty-record/edit`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(payload),
+				});
+
+				if (!response.ok) {
+					const errorData = await response.json();
+					throw new Error(errorData.message || errorData.error || 'Error updating penalty record');
+				}
+
+				const data = await response.json();
+				successToast({ message: data.message });
+				setErrorWithFetchAction(null);
+				resetPrompt();
+				fetchMembers();
+				fetchFigures();
+				fetchRecords();
+			} catch (error) {
+				setErrorWithFetchAction(error.message);
+				cError("Error updating penalty record:", error);
+				warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
+			} finally {
+				setIsWaitingFetchAction(false);
+			}
+		};
+
+		// Handle delete penalty
+		const handleDeletePenalty = async (recordId) => {
+			if (!recordId || (recordId && typeof recordId !== 'number')) {
+				return warningToast({ message: "Invalid record ID" });
+			}
+
+			try {
+				setIsWaitingFetchAction(true);
+
+				// return console.log(recordId);
+
+				const response = await fetch(`${BASE_URL}/penalty-record/delete`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ id: recordId }),
+				});
+
+				if (!response.ok) {
+					const errorData = await response.json();
+					throw new Error(errorData.message || errorData.error || 'Error deleting penalty record');
+				}
+
+				const data = await response.json();
+				successToast({ message: data.message });
+				setErrorWithFetchAction(null);
+				resetConfirmDialog();
+				fetchMembers();
+				fetchFigures();
+				fetchRecords();
+			} catch (error) {
+				setErrorWithFetchAction(error.message);
+				cError("Error deleting penalty record:", error);
 				warningToast({ message: error.message || "An unknown error occurred", type: "danger" });
 			} finally {
 				setIsWaitingFetchAction(false);
@@ -4744,13 +4908,13 @@ const Admin = () => {
 				return warningToast({ message: "Invalid record values" });
 			}
 
-			const { id, recordId, savingAmount } = values;
+			const { id, recordId, newSavingAmount } = values;
 
 			try {
 				setIsWaitingFetchAction(true);
 
 				const payload = {
-					savingAmount, recordId
+					newSavingAmount, recordId
 				}
 
 				const response = await fetch(`${BASE_URL}/member/${id}/social/edit`, {
@@ -4944,7 +5108,7 @@ const Admin = () => {
 																					customPrompt({
 																						message: (
 																							<>
-																								<h5 className='h6 border-bottom mb-3 pb-2'><ReceiptX size={25} weight='fill' className='opacity-50' /> Edit/update Expense record</h5>
+																								<h5 className='h6 border-bottom mb-3 pb-2 text-uppercase'><ReceiptX size={25} weight='fill' className='opacity-50' /> Edit/update expense record</h5>
 																								<p>
 																									Current amount: <CurrencyText amount={Number(record.recordAmount)} /><br /><br />
 																									Enter new expense amount for this record.
@@ -4965,7 +5129,7 @@ const Admin = () => {
 																					customConfirmDialog({
 																						message: (
 																							<>
-																								<h5 className='h6 border-bottom mb-3 pb-2'><Trash size={25} weight='fill' className='opacity-50' /> Delete expense</h5>
+																								<h5 className='h6 border-bottom mb-3 pb-2 text-uppercase'><Trash size={25} weight='fill' className='opacity-50' /> Delete expense</h5>
 																								<p>
 																									This action will undo all transactions associated with this record and permanently remove it from the transaction history.<br /><br />
 																									<span className='d-block alert alert-dark'>
@@ -5118,7 +5282,7 @@ const Admin = () => {
 																					customConfirmDialog({
 																						message: (
 																							<>
-																								<h5 className='h6 border-bottom mb-3 pb-2'><ArrowsLeftRight size={25} weight='fill' className='opacity-50' /> Reversing member cotisations</h5>
+																								<h5 className='h6 border-bottom mb-3 pb-2 text-uppercase'><ArrowsLeftRight size={25} weight='fill' className='opacity-50' /> Reversing member cotisations</h5>
 																								<p>
 																									This action will reverse the cotisation record, covering the months listed in the transaction, for the associated member.<br /><br />
 																									<span className='d-block alert alert-dark'>
@@ -5151,7 +5315,7 @@ const Admin = () => {
 																				customPrompt({
 																					message: (
 																						<>
-																							<h5 className='h6 border-bottom mb-3 pb-2'><ReceiptX size={25} weight='fill' className='opacity-50' /> Edit/update social savings for {memberNames}</h5>
+																							<h5 className='h6 border-bottom mb-3 pb-2 text-uppercase'><ReceiptX size={25} weight='fill' className='opacity-50' /> Edit/update social savings for {memberNames}</h5>
 																							<p>
 																								Current amount: <CurrencyText amount={Number(record.recordAmount)} /><br /><br />
 																								Enter new social amount for this record.
@@ -5162,7 +5326,7 @@ const Admin = () => {
 																					action: () => handleEditSocalSavings({
 																						id: record.memberId,
 																						recordId: record.id,
-																						savingAmount: promptInputValue.current,
+																						newSavingAmount: promptInputValue.current,
 																					}),
 																					placeholder: 'Updated amount',
 																				})
@@ -5173,7 +5337,7 @@ const Admin = () => {
 																				customConfirmDialog({
 																					message: (
 																						<>
-																							<h5 className='h6 border-bottom mb-3 pb-2'><Trash size={25} weight='fill' className='opacity-50' /> Delete member social savings</h5>
+																							<h5 className='h6 border-bottom mb-3 pb-2 text-uppercase'><Trash size={25} weight='fill' className='opacity-50' /> Delete member social savings</h5>
 																							<p>
 																								This action will undo all transactions associated with this record and permanently remove it from the transaction history.<br /><br />
 																								<span className='d-block alert alert-dark'>
@@ -5217,6 +5381,7 @@ const Admin = () => {
 												<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
 												<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
 												<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date</th>
+												<th className='py-3 text-center text-nowrap text-gray-700 fw-normal'>Actions</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -5245,6 +5410,60 @@ const Admin = () => {
 																<Popover content={<><Watch size={15} /> {getDateHoursMinutes(record.createdAt)}</>} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
 																	<FormatedDate date={record.createdAt} />
 																</Popover>
+															</td>
+															<td className='text-center'>
+																<Menu menuButton={
+																	<MenuButton className="border-0 p-0">
+																		<DotsThreeVertical size={20} weight='bold' />
+																	</MenuButton>
+																} transition>
+																	{(record.recordType.toLowerCase() === 'penalty') && (
+																		<>
+																			<MenuItem onClick={() => {
+																				customPrompt({
+																					message: (
+																						<>
+																							<h5 className='h6 border-bottom mb-3 pb-2 text-uppercase'><ReceiptX size={25} weight='fill' className='opacity-50' /> Edit/update penalty record</h5>
+																							<p>
+																								Current amount: <CurrencyText amount={Number(record.recordAmount)} /><br /><br />
+																								Enter new penalty amount for this record.
+																							</p>
+																						</>
+																					),
+																					inputType: 'number',
+																					action: () => handleEditPenalty({
+																						id: record.id,
+																						newPenaltyAmount: promptInputValue.current
+																					}),
+																					placeholder: 'Updated amount',
+																				})
+																			}}>
+																				<Pen weight='fill' className="me-2 opacity-50" /> Update
+																			</MenuItem>
+																			<MenuItem onClick={() => {
+																				customConfirmDialog({
+																					message: (
+																						<>
+																							<h5 className='h6 border-bottom mb-3 pb-2 text-uppercase'><Trash size={25} weight='fill' className='opacity-50' /> Delete penalty</h5>
+																							<p>
+																								This action will undo all transactions associated with this record and permanently remove it from the transaction history.<br /><br />
+																								<span className='d-block alert alert-dark'>
+																									<b>Penalty amount:</b> <CurrencyText amount={Number(record.recordAmount)} /><br />
+																									<b>Recorded on:</b> <FormatedDate date={record.createdAt} />.
+																								</span>
+																							</p>
+																						</>
+																					),
+																					type: 'warning',
+																					action: () => handleDeletePenalty(record.id),
+																					actionText: "Delete record"
+																				});
+																			}}>
+																				<Trash weight='fill' className="me-2 opacity-50" /> Delete
+																			</MenuItem>
+																		</>
+																	)}
+																</Menu>
 															</td>
 														</tr>
 													)
