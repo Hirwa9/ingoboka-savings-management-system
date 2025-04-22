@@ -88,12 +88,13 @@ export const getNumberWithSuffix = (num) => {
     }
 };
 
+// Set input max boundaries
 export const maxInputNumber = (e, val) => {
-        const inputValue = e.target.value;
-        const numericValue = Math.max(0, Number(inputValue)); // Avoid negative values
-        const newValue = numericValue > val ? val : numericValue;
-        return newValue;
-    }
+    const inputValue = e.target.value;
+    const numericValue = Math.max(0, Number(inputValue)); // Avoid negative values
+    const newValue = numericValue > val ? val : numericValue;
+    return newValue;
+}
 
 // Date intervals
 export const printDatesInterval = (startDate, endDate) => {
