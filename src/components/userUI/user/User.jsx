@@ -4,7 +4,6 @@ import './user.css';
 import '../../header/header.css';
 import MyToast from '../../common/Toast';
 import { ArrowClockwise, ArrowsClockwise, ArrowsHorizontal, ArrowsVertical, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, EnvelopeSimple, Files, FloppyDisk, Gavel, Gear, List, ListChecks, Pen, Phone, Plus, Receipt, SignOut, User, UserRectangle, Users, Wallet, WarningCircle, Watch, X } from '@phosphor-icons/react';
-import { expensesTypes } from '../../../data/data';
 import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
 import LoadingIndicator from '../../LoadingIndicator';
@@ -3028,7 +3027,7 @@ const UserUI = () => {
 																	onChange={(e) => setExpenseRecordType(e.target.value)}
 																	required>
 																	<option value="" disabled className='p-2 px-3 small text-gray-500'>Select type</option>
-																	{expensesTypes
+																	{expenseTypes
 																		.map((val, index) => (
 																			<option key={index} value={val} className='p-2 px-3 small'>
 																				{val}
@@ -3136,7 +3135,7 @@ const UserUI = () => {
 				<hr className='mb-4 d-lg-none' />
 
 				<div ref={reportViewRef} className='mb-3 bg-bodi'>
-					<div className="alert alert-success smaller">
+					<div className="alert alert-secondary smaller">
 						<p className='display-6'>
 							{
 								activeReportSection === 'incomeExpenses' ?
@@ -3148,17 +3147,17 @@ const UserUI = () => {
 						</p>
 						<Calendar size={25} className='me-2' /> <FormatedDate date={new Date()} monthFormat='numeric' hour12Format={true} />
 					</div>
-					<div className='text-gray-700 selective-options' style={{ backgroundColor: '#a3d5bb75' }}>
+					<div className='text-gray-700 selective-options' style={{ backgroundColor: '#d2d3d375' }}>
 						{/* Selectors */}
 						<div className="d-flex flex-wrap justify-content-center">
-							<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-success border-opacity-25 tab-selector ${activeReportSection === 'incomeExpenses' ? 'active' : ''} user-select-none ptr clickDown`}
-								style={{ '--_activeColor': '#a3d5bb' }}
+							<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-secondary border-opacity-25 tab-selector ${activeReportSection === 'incomeExpenses' ? 'active' : ''} user-select-none ptr clickDown`}
+								style={{ '--_activeColor': '#d2d3d3' }}
 								onClick={() => { setActiveReportSection('incomeExpenses'); }}
 							>
 								<h5 className='mb-0 small'>Income & Expenses</h5>
 							</div>
-							<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-success border-opacity-25 tab-selector ${activeReportSection === 'general' ? 'active' : ''} user-select-none ptr clickDown`}
-								style={{ '--_activeColor': '#a3d5bb' }}
+							<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-secondary border-opacity-25 tab-selector ${activeReportSection === 'general' ? 'active' : ''} user-select-none ptr clickDown`}
+								style={{ '--_activeColor': '#d2d3d3' }}
 								onClick={() => { setActiveReportSection('general'); }}
 							>
 								<h5 className='mb-0 small'>General report</h5>
@@ -3171,7 +3170,7 @@ const UserUI = () => {
 								<>
 									<div className='overflow-auto'>
 										<table className="table table-hover h-100">
-											<thead className='table-success position-sticky top-0 inx-1 1 text-uppercase small'>
+											<thead className='table-secondary position-sticky top-0 inx-1 1 text-uppercase small'>
 												<tr>
 													<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
 													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Libelle</th>
@@ -3212,7 +3211,7 @@ const UserUI = () => {
 								<>
 									<div className='overflow-auto'>
 										<table className="table table-hover h-100">
-											<thead className='table-success position-sticky top-0 inx-1 1 text-uppercase small'>
+											<thead className='table-secondary position-sticky top-0 inx-1 1 text-uppercase small'>
 												<tr>
 													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Actif</th>
 													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Montant <sub className='fs-60'>/RWF</sub></th>
