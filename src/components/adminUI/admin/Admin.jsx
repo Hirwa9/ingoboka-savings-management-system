@@ -3,9 +3,8 @@ import { Form } from "react-bootstrap";
 import './admin.css';
 import '../../header/header.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowsLeftRight, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CreditCard, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, EnvelopeSimple, EscalatorUp, Files, FloppyDisk, Gavel, Gear, GreaterThan, HandCoins, Info, LessThan, List, ListChecks, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, TextStrikethrough, Trash, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, Watch, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowsLeftRight, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, EnvelopeSimple, EscalatorUp, Files, FloppyDisk, Gavel, Gear, GreaterThan, HandCoins, Info, LessThan, List, ListChecks, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, TextStrikethrough, Trash, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, Watch, X } from '@phosphor-icons/react';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
-import DateLocaleFormat from '../../common/dateLocaleFormats/DateLocaleFormat';
 import CurrencyText from '../../common/CurrencyText';
 import LoadingIndicator from '../../LoadingIndicator';
 import { cError, fncPlaceholder, formatDate, getDateHoursMinutes, normalizedLowercaseString, printDatesInterval } from '../../../scripts/myScripts';
@@ -17,9 +16,7 @@ import ConfirmDialog from '../../common/confirmDialog/ConfirmDialog';
 import NotFound from '../../common/NotFound';
 import JsonJsFormatter from '../../common/JsonJsFormatter';
 import EmptyBox from '../../common/EmptyBox';
-import LineGraph from '../../chartJS/LineGraph';
 import BarGraph from '../../chartJS/BarGraph';
-import PieGraph from '../../chartJS/PieGraph';
 import CountUp from 'react-countup'
 import SystemSettings from '../../systemSettings/SystemSettings';
 import '@szhsin/react-menu/dist/index.css';
@@ -6219,13 +6216,13 @@ const Admin = () => {
 
 								<hr />
 
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'auditLogs' ? 'active blur-bg-2px' : ''}`}
+								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'auditLogs' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("auditLogs"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Notebook size={20} weight='fill' className="me-2" /> Audit Logs
 									</button>
-								</li>
+								</li> */}
 
 								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'settings' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("settings"); hideSideNavbar() }}
