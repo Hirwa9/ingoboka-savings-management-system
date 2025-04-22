@@ -4634,6 +4634,8 @@ const Admin = () => {
 		const [expenseRecordAmount, setExpenseRecordAmount] = useState('');
 		const [expenseComment, setExpenseComment] = useState('');
 
+		const [transactions, setTransactions] = useState(recordsToShow);
+
 		// Handle add expense
 		const handleAddExpense = async (e) => {
 			e.preventDefault();
@@ -5003,23 +5005,113 @@ const Admin = () => {
 				<div className='text-gray-700 selective-options' style={{ backgroundColor: activeTransactionSectionColor }}>
 					{/* Selectors */}
 					<div className="d-flex flex-wrap justify-content-center">
-						<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-warning border-opacity-25 tab-selector ${activeTransactionSection === 'withdrawals' ? 'active' : ''} user-select-none ptr clickDown`}
+						<div className={`position-relative col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-warning border-opacity-25 tab-selector ${activeTransactionSection === 'withdrawals' ? 'active' : ''} user-select-none ptr`}
 							style={{ '--_activeColor': '#f4e4b6' }}
-							onClick={() => { setActiveTransactionSection('withdrawals'); }}
+							onClick={() => {
+								setActiveTransactionSection('withdrawals');
+								setTransactions(
+									recordsToShow
+										.filter(cr => cr.recordType === 'expense')
+										.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+								);
+							}}
 						>
 							<h5 className='mb-0 small'>Expenses</h5>
 							<p className='mb-0 fs-75'>( {recordsToShow.filter(cr => cr.recordType === 'expense').length} )</p>
+							<Menu menuButton={
+								<MenuButton className="border-0 p-0">
+									<CaretDown size={35} weight='light' className='p-2 position-absolute end-0 top-50 translate-middle-y' />
+								</MenuButton>
+							} transition>
+								{expenseTypes.map((item, index) => (
+									<MenuItem key={index} onClick={() => {
+										setTimeout(() => {
+											setTransactions(
+												recordsToShow
+													.filter(cr => cr.recordType === 'expense' && cr.recordSecondaryType.toLowerCase().includes(item.trim().toLowerCase()))
+													.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+											)
+										}, 500)
+									}} className="small">
+										{item}
+									</MenuItem>
+								))}
+							</Menu>
 						</div>
-						<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-success border-opacity-25 tab-selector ${activeTransactionSection === 'deposits' ? 'active' : ''} user-select-none ptr clickDown`}
+						<div className={`position-relative col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-success border-opacity-25 tab-selector ${activeTransactionSection === 'deposits' ? 'active' : ''} user-select-none ptr`}
 							style={{ '--_activeColor': '#a3d5bb' }}
-							onClick={() => { setActiveTransactionSection('deposits'); }}
+							onClick={() => {
+								setActiveTransactionSection('deposits');
+								setTransactions(
+									recordsToShow
+										.filter(rc => (rc.recordType === 'deposit' || (rc.recordType === 'loan' && rc.recordSecondaryType === 'payment')))
+										.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+								);
+							}}
 						>
 							<h5 className='mb-0 small'>Deposits</h5>
-							<p className='mb-0 fs-75'>( {recordsToShow.filter(cr => cr.recordType === 'deposit').length} )</p>
+							<p className='mb-0 fs-75'>
+								( {
+									recordsToShow.filter(rc => rc.recordType === 'deposit').length +
+									recordsToShow.filter(rc => rc.recordType === 'loan' && rc.recordSecondaryType === 'payment').length
+								} )
+							</p>
+							<Menu menuButton={
+								<MenuButton className="border-0 p-0">
+									<CaretDown size={35} weight='light' className='p-2 position-absolute end-0 top-50 translate-middle-y' />
+								</MenuButton>
+							} transition>
+								<MenuItem onClick={() => {
+									setTimeout(() => {
+										setTransactions(
+											recordsToShow
+												.filter(rc =>
+													(rc.recordType === 'deposit' && rc.comment.toLowerCase().indexOf('cotisation') !== -1)
+													|| (rc.recordType === 'deposit' && rc.comment.toLowerCase().indexOf('umuhigo') !== -1)
+												)
+												.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+										)
+									}, 500)
+								}} className="small">
+									Shares
+								</MenuItem>
+								<MenuItem onClick={() => {
+									setTimeout(() => {
+										setTransactions(
+											recordsToShow
+												.filter(rc => rc.recordType === 'deposit' && rc.comment.toLowerCase() === 'social')
+												.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+										)
+									}, 500)
+								}} className="small">
+									Social
+								</MenuItem>
+								<MenuItem onClick={() => {
+									setTimeout(() => {
+										setTransactions(
+											recordsToShow.filter(rc => rc.recordType === 'loan' && rc.recordSecondaryType === 'payment')
+										)
+									}, 500)
+								}} className="small">
+									Loan payment
+								</MenuItem>
+								{recordsToShow.filter(rc => rc.recordType === 'deposit').length + recordsToShow.filter(rc => rc.recordType === 'loan' && rc.recordSecondaryType === 'payment').length > 0 && (
+									<MenuItem onClick={() => { setTransactions(recordsToShow); }} className="small">
+										All
+									</MenuItem>
+								)}
+							</Menu>
 						</div>
-						<div className={`col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-primary border-opacity-25 tab-selector ${activeTransactionSection === 'penalties' ? 'active' : ''} user-select-none ptr clickDown`}
+						<div className={`position-relative col d-flex flex-column flex-sm-row column-gap-2 p-2 border-top border-bottom border-2 border-primary border-opacity-25 tab-selector ${activeTransactionSection === 'penalties' ? 'active' : ''} user-select-none ptr`}
 							style={{ '--_activeColor': '#c1c9eb' }}
-							onClick={() => { setActiveTransactionSection('penalties'); }}
+							onClick={() => {
+								setActiveTransactionSection('penalties');
+								setTransactions(
+									recordsToShow
+										.filter(cr => cr.recordType === 'penalty')
+										.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+								);
+							}}
 						>
 							<h5 className='mb-0 small'>Penalties</h5>
 							<p className='mb-0 fs-75'>( {recordsToShow.filter(cr => cr.recordType === 'penalty').length} )</p>
@@ -5061,9 +5153,7 @@ const Admin = () => {
 												</tr>
 											</thead>
 											<tbody>
-												{recordsToShow
-													.filter(cr => cr.recordType === 'expense')
-													.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+												{transactions.length > 0 ? (transactions
 													.map((record, index) => {
 
 														return (
@@ -5146,7 +5236,13 @@ const Admin = () => {
 															</tr>
 														)
 													})
-												}
+												) : (
+													<tr>
+														<td colSpan={6} className="text-center">
+															No expense records found.
+														</td>
+													</tr>
+												)}
 											</tbody>
 										</table>
 									</div>
@@ -5230,12 +5326,17 @@ const Admin = () => {
 											</tr>
 										</thead>
 										<tbody>
-											{recordsToShow
-												.filter(cr => cr.recordType === 'deposit')
-												.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+											{transactions.length > 0 ? (transactions
 												.map((record, index) => {
 													const associatedMember = allMembers.find(m => m.id === record.memberId);
 													const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+													let interestAmount = null;
+													if (record.recordType === 'loan' && record.recordSecondaryType === 'payment') {
+														interestAmount = Number(JSON.parse(record.comment)?.interestPaid > 0
+															? JSON.parse(record.comment)?.interestPaid
+															: 0
+														);
+													}
 
 													return (
 														<tr key={index} className="small cursor-default">
@@ -5249,7 +5350,11 @@ const Admin = () => {
 																<CurrencyText amount={Number(record.recordAmount)} />
 															</td>
 															<td>
-																{record.comment}
+																{
+																	interestAmount !== null
+																		? <>Loan payment (with <CurrencyText amount={interestAmount} /> interest)</>
+																		: record.comment
+																}
 															</td>
 															<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
 																<Popover content={<><Watch size={15} /> {getDateHoursMinutes(record.createdAt)}</>} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
@@ -5353,12 +5458,27 @@ const Admin = () => {
 																			</MenuItem>
 																		</>
 																	)}
+																	{(record.recordType.toLowerCase() === 'loan' && record.recordSecondaryType.toLowerCase() === 'payment') && (
+																		<>
+																			<MenuItem onClick={() => {
+																				setActiveSection('credits');
+																			}}>
+																				<Blueprint weight='fill' className="me-2 opacity-50" /> Check payment history
+																			</MenuItem>
+																		</>
+																	)}
 																</Menu>
 															</td>
 														</tr>
 													)
 												})
-											}
+											) : (
+												<tr>
+													<td colSpan={6} className="text-center">
+														No deposit records found.
+													</td>
+												</tr>
+											)}
 										</tbody>
 									</table>
 								</div>
@@ -5378,9 +5498,7 @@ const Admin = () => {
 											</tr>
 										</thead>
 										<tbody>
-											{recordsToShow
-												.filter(cr => cr.recordType === 'penalty')
-												.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+											{transactions.length > 0 ? (transactions
 												.map((record, index) => {
 													const associatedMember = allMembers.find(m => m.id === record.memberId);
 													const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
@@ -5461,7 +5579,13 @@ const Admin = () => {
 														</tr>
 													)
 												})
-											}
+											) : (
+												<tr>
+													<td colSpan={6} className="text-center">
+														No penalty records found.
+													</td>
+												</tr>
+											)}
 										</tbody>
 									</table>
 								</div>
@@ -6095,13 +6219,13 @@ const Admin = () => {
 
 								<hr />
 
-								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'auditLogs' ? 'active blur-bg-2px' : ''}`}
+								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'auditLogs' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("auditLogs"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
 										<Notebook size={20} weight='fill' className="me-2" /> Audit Logs
 									</button>
-								</li> */}
+								</li>
 
 								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'settings' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("settings"); hideSideNavbar() }}
