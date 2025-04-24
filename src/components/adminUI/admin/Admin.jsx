@@ -1,9 +1,10 @@
 import React, { Fragment, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { Form } from "react-bootstrap";
 import './admin.css';
 import '../../header/header.css';
 import MyToast from '../../common/Toast';
-import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowsLeftRight, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, EnvelopeSimple, EscalatorUp, Files, FloppyDisk, Gavel, Gear, GreaterThan, HandCoins, Info, LessThan, List, ListChecks, Notebook, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, TextStrikethrough, Trash, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, Watch, X } from '@phosphor-icons/react';
+import { ArrowArcLeft, ArrowClockwise, ArrowsClockwise, ArrowsLeftRight, ArrowSquareOut, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, CheckCircle, Coin, Coins, CurrencyDollarSimple, DotsThreeOutline, DotsThreeVertical, EnvelopeSimple, EscalatorUp, Files, FloppyDisk, Gavel, Gear, GreaterThan, HandCoins, Info, LessThan, List, ListChecks, Pen, Phone, Plus, Receipt, ReceiptX, SignOut, TextStrikethrough, Trash, User, UserCirclePlus, UserFocus, UserMinus, UserRectangle, Users, Wallet, Warning, WarningCircle, Watch, X } from '@phosphor-icons/react';
 import ExportDomAsFile from '../../common/exportDomAsFile/ExportDomAsFile';
 import CurrencyText from '../../common/CurrencyText';
 import LoadingIndicator from '../../LoadingIndicator';
@@ -34,6 +35,8 @@ import AbsoluteCloseButton from '../../common/AbsoluteCloseButton';
 import ToogleButton from '../../common/ToogleButton';
 
 const Admin = () => {
+
+	const navigate = useNavigate();
 
 	// Custom hooks
 	const {
@@ -77,7 +80,7 @@ const Admin = () => {
 		resetPrompt,
 	} = useCustomDialogs();
 
-	const { logout } = useContext(AuthContext);
+	const { loading, userType, logout } = useContext(AuthContext);
 
 	const sideNavbarRef = useRef();
 	const sideNavbarTogglerRef = useRef();
@@ -5889,7 +5892,7 @@ const Admin = () => {
 	const Settings = () => {
 		return (
 			<SystemSettings data={allSettings}
-				userType='admin'
+				userType={userType}
 				refresh={() => refreshAllData()}
 				startLoading={() => setIsWaitingFetchAction(true)}
 				stopLoading={() => setIsWaitingFetchAction(false)}
@@ -6005,203 +6008,218 @@ const Admin = () => {
 				</div>
 			)}
 
-			<header className="navbar navbar-light sticky-top flex-md-nowrap py-0 admin-header">
-				<div className='nav-item navbar-brand position-relative col-12 col-md-3 col-xl-2 d-flex align-items-center me-0 px-2'>
-					<div className="me-2 logo">
-						<img src='/logo.jpg' alt="" className="rounded-circle logo p-2"></img>
-					</div>
-					<small className='fs-70 org-name'>
-						INGOBOKA
-					</small>
-					<div className="d-flex gap-2 d-md-none ms-auto me-2 nav-actions" style={{ '--_activeColor': 'var(--bs-gray-500)' }}>
-						<button className={`nav-link px-2 ${hasNewNotifications ? 'active-with-dot' : ''} rounded-0 clickDown`} title='Notifications'
-							onClick={() => setShowNotifications(true)}
+			{(!loading && (!userType || userType !== 'admin')) ? (
+				<div className="container my-5">
+					<h1 className="text-center text-secondary mb-5">Access forbidden</h1>
+					<div className='text-center'>
+						<p>
+							The page you are trying to reach either does not exist or you have limited access on its content.
+						</p>
+						<button
+							className="btn text-primary rounded-0 col-12 col-sm-8 col-md-6"
+							onClick={() => { navigate('/login', { replace: true }) }}
 						>
-							<BellSimple weight={hasNewNotifications ? 'fill' : undefined} size={20}
-								style={{ animation: hasNewNotifications ? 'shakeX 10s infinite' : 'unset' }}
-							/>
-						</button>
-						<button ref={sideNavbarTogglerRef} className="rounded-0 shadow-none bounceClick navbar-toggler" type="button" aria-controls="sidebarMenu" aria-label="Toggle navigation" onClick={() => setSideNavbarIsFloated(!sideNavbarIsFloated)}>
-							<List />
+							Login <CaretRight />
 						</button>
 					</div>
-					<Popover content="Balance" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none bg-appColor text-gray-200 border border-secondary border-opacity-25' arrowColor='var(--appColor)' height='1.9rem'>
-						<div className="position-absolute start-50 top-100 translate-middle flex-align-center gap-1  px-3 py-1 border border-secondary border-opacity-50 rounded-pill fs-50 shadow-sm ptr clickDown balance-indicator"
-							onClick={() => { setActiveSection("dashboard"); }}
-						>
-							<Wallet size={14} weight='fill' /><CurrencyText amount={Number(allFigures?.balance)} />
-						</div>
-					</Popover>
 				</div>
-				<div className='d-none d-md-flex flex-grow-1 border-bottom py-1'>
-					<div className="me-3 ms-auto navbar-nav">
-						<div className="nav-item d-flex gap-2 text-nowrap small" style={{ '--_activeColor': 'var(--primaryColor)' }}>
-							<Popover content="Refresh data" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='1.9rem'>
-								<button className={`nav-link px-2 text-gray-700 rounded-pill clickDown`}
-									onClick={refreshAllData}
-								>
-									<ArrowsClockwise size={20} />
-								</button>
-							</Popover>
-							<Popover content="Notifications" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='1.9rem'>
-								<button className={`nav-link px-2 ${hasNewNotifications ? 'bg-gray-300 text-primaryColor active-with-dot' : 'text-gray-700'} rounded-pill clickDown`}
+			) : (
+				<>
+					<header className="navbar navbar-light sticky-top flex-md-nowrap py-0 admin-header">
+						<div className='nav-item navbar-brand position-relative col-12 col-md-3 col-xl-2 d-flex align-items-center me-0 px-2'>
+							<div className="me-2 logo">
+								<img src='/logo.jpg' alt="" className="rounded-circle logo p-2"></img>
+							</div>
+							<small className='fs-70 org-name'>
+								INGOBOKA
+							</small>
+							<div className="d-flex gap-2 d-md-none ms-auto me-2 nav-actions" style={{ '--_activeColor': 'var(--bs-gray-500)' }}>
+								<button className={`nav-link px-2 ${hasNewNotifications ? 'active-with-dot' : ''} rounded-0 clickDown`} title='Notifications'
 									onClick={() => setShowNotifications(true)}
 								>
 									<BellSimple weight={hasNewNotifications ? 'fill' : undefined} size={20}
 										style={{ animation: hasNewNotifications ? 'shakeX 10s infinite' : 'unset' }}
 									/>
 								</button>
+								<button ref={sideNavbarTogglerRef} className="rounded-0 shadow-none bounceClick navbar-toggler" type="button" aria-controls="sidebarMenu" aria-label="Toggle navigation" onClick={() => setSideNavbarIsFloated(!sideNavbarIsFloated)}>
+									<List />
+								</button>
+							</div>
+							<Popover content="Balance" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none bg-appColor text-gray-200 border border-secondary border-opacity-25' arrowColor='var(--appColor)' height='1.9rem'>
+								<div className="position-absolute start-50 top-100 translate-middle flex-align-center gap-1  px-3 py-1 border border-secondary border-opacity-50 rounded-pill fs-50 shadow-sm ptr clickDown balance-indicator"
+									onClick={() => { setActiveSection("dashboard"); }}
+								>
+									<Wallet size={14} weight='fill' /><CurrencyText amount={Number(allFigures?.balance)} />
+								</div>
 							</Popover>
 						</div>
-					</div>
-					<div className="d-flex align-items-center me-3 border-light border-opacity-25">
-						<div className='d-grid pb-1'>
-							<span className='ms-auto smaller'>{accountantNames}</span>
-							<span className='ms-auto fs-70 opacity-75' style={{ lineHeight: 1 }}>Accountant</span>
-						</div>
-						<Menu menuButton={
-							<MenuButton className="border-0 p-0">
-								<img src='/images/man_avatar_image.jpg' alt="" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 d-none d-md-block border border-3 border-light bg-light rounded-circle ptr' />
-							</MenuButton>
-						} transition>
-							<MenuItem onClick={() => { setActiveSection('settings') }}>
-								<Gear weight='fill' className="me-2 opacity-50" /> Settings
-							</MenuItem>
-							<MenuDivider />
-							<MenuItem onClick={() => { logout() }}>
-								<SignOut weight='fill' className="me-2 opacity-50" /> Sign out
-							</MenuItem>
-						</Menu>
-					</div>
-				</div>
-			</header>
-
-			<main className="container-fluid">
-
-				{/* Member primary info preview */}
-				<RightFixedCard
-					show={showNotifications}
-					onClose={() => setShowNotifications(false)}
-					title="Notifications"
-					icon={<BellSimple size={20} weight="fill" className='text-gray-700' />}
-					content={
-						<>
-							{!allCredits.filter(cr => cr.status === 'pending').length ? (
-								<EmptyBox
-									notFoundMessage="All clear. Any new notifications will show up here."
-									fluid
-									className="mt-5"
-								/>
-							) : (
-								<>
-									{allCredits
-										.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate))
-										.filter(cr => cr.status === 'pending')
-										.map((cr, index) => {
-											const associatedMember = allMembers.find(m => m.id === cr.memberId);
-											const names = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
-
-											return (
-												<div key={index} className="d-flex mb-2 py-2 border-bottom">
-													<img src={associatedMember.husbandAvatar ? associatedMember.husbandAvatar : '/images/man_avatar_image.jpg'} alt="" className='w-2rem h-2rem flex-grow-0 flex-shrink-0 me-2 object-fit-cover bg-light rounded-circle' />
-													<div>
-														<div className="d-flex align-items-center justify-content-between mb-1 pb-1 border-bottom text-primaryColor small">
-															<span>Loan request</span>
-															<small className='text-gray-600'>
-																{formatDate(cr.updatedAt, { todayKeyword: true })}
-															</small>
-														</div>
-														<p className='mb-1 fs-75 text-gray-600'>
-															{names} is requesting a loan of <CurrencyText amount={Number(cr.creditAmount)} />
-														</p>
-														<button className='btn btn-sm pe-1 fs-60 rounded-pill bg-primaryColor text-light clickDown' style={{ paddingBlock: '.125rem' }}
-															onClick={() => { setActiveSection('credits'); setShowNotifications(false); }}
-														>Respond <CaretRight /></button>
-													</div>
-												</div>
-											)
-										})
-									}
-								</>
-							)}
-						</>
-					}
-					fitWidth={true}
-				/>
-
-				<div className="row">
-					{/* Sidebar Navigation */}
-					<nav className={`col-12 col-md-3 col-xl-2 px-3 px-sm-5 px-md-0 d-md-block border-end overflow-y-auto sidebar ${sideNavbarIsFloated ? 'floated' : ''}`} id="sidebarMenu">
-						<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit my-3 my-md-0 py-3 pt-md-4 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded-4' : ''}`}>
-							<div className="d-flex align-items-center justify-content-between d-md-none mb-3 px-3 pb-2">
-								<div className="d-flex align-items-center">
-									<img src='/images/man_avatar_image.jpg' alt="" className='w-2_5rem ratio-1-1 object-fit-cover me-2 border border-3 border-secondary bg-gray-600 rounded-circle' />
-									<div className='d-grid pb-1'>
-										<span className='smaller'>{accountantNames}</span>
-										<span className='fs-70 opacity-75' style={{ lineHeight: 1 }}>Accountant</span>
-									</div>
+						<div className='d-none d-md-flex flex-grow-1 border-bottom py-1'>
+							<div className="me-3 ms-auto navbar-nav">
+								<div className="nav-item d-flex gap-2 text-nowrap small" style={{ '--_activeColor': 'var(--primaryColor)' }}>
+									<Popover content="Refresh data" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='1.9rem'>
+										<button className={`nav-link px-2 text-gray-700 rounded-pill clickDown`}
+											onClick={refreshAllData}
+										>
+											<ArrowsClockwise size={20} />
+										</button>
+									</Popover>
+									<Popover content="Notifications" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='1.9rem'>
+										<button className={`nav-link px-2 ${hasNewNotifications ? 'bg-gray-300 text-primaryColor active-with-dot' : 'text-gray-700'} rounded-pill clickDown`}
+											onClick={() => setShowNotifications(true)}
+										>
+											<BellSimple weight={hasNewNotifications ? 'fill' : undefined} size={20}
+												style={{ animation: hasNewNotifications ? 'shakeX 10s infinite' : 'unset' }}
+											/>
+										</button>
+									</Popover>
 								</div>
-								<button type="button" className='btn text-light' onClick={() => setSideNavbarIsFloated(false)}><X size={25} /></button>
 							</div>
+							<div className="d-flex align-items-center me-3 border-light border-opacity-25">
+								<div className='d-grid pb-1'>
+									<span className='ms-auto smaller'>{accountantNames}</span>
+									<span className='ms-auto fs-70 opacity-75' style={{ lineHeight: 1 }}>Accountant</span>
+								</div>
+								<Menu menuButton={
+									<MenuButton className="border-0 p-0">
+										<img src='/images/man_avatar_image.jpg' alt="" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 d-none d-md-block border border-3 border-light bg-light rounded-circle ptr' />
+									</MenuButton>
+								} transition>
+									<MenuItem onClick={() => { setActiveSection('settings') }}>
+										<Gear weight='fill' className="me-2 opacity-50" /> Settings
+									</MenuItem>
+									<MenuDivider />
+									<MenuItem onClick={() => { logout() }}>
+										<SignOut weight='fill' className="me-2 opacity-50" /> Sign out
+									</MenuItem>
+								</Menu>
+							</div>
+						</div>
+					</header>
+					<main className="container-fluid">
+						{/* Member primary info preview */}
+						<RightFixedCard
+							show={showNotifications}
+							onClose={() => setShowNotifications(false)}
+							title="Notifications"
+							icon={<BellSimple size={20} weight="fill" className='text-gray-700' />}
+							content={
+								<>
+									{!allCredits.filter(cr => cr.status === 'pending').length ? (
+										<EmptyBox
+											notFoundMessage="All clear. Any new notifications will show up here."
+											fluid
+											className="mt-5"
+										/>
+									) : (
+										<>
+											{allCredits
+												.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate))
+												.filter(cr => cr.status === 'pending')
+												.map((cr, index) => {
+													const associatedMember = allMembers.find(m => m.id === cr.memberId);
+													const names = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
 
-							<ul className="nav flex-column">
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'dashboard' ? 'active blur-bg-2px' : ''}`}
-									onClick={() => { setActiveSection("dashboard"); hideSideNavbar() }}
-								>
-									<button className="nav-link w-100">
-										<ChartPieSlice size={20} weight='fill' className="me-2" /> Dashboard
-									</button>
-								</li>
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'members' ? 'active blur-bg-2px' : ''}`}
-									onClick={() => { setActiveSection("members"); hideSideNavbar() }}
-								>
-									<button className="nav-link w-100">
-										<Users size={20} weight='fill' className="me-2" /> Members
-									</button>
-								</li>
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'savings' ? 'active blur-bg-2px' : ''}`}
-									onClick={() => { setActiveSection("savings"); hideSideNavbar() }}
-								>
-									<button className="nav-link w-100">
-										<Coin size={20} weight='fill' className="me-2" /> Savings
-									</button>
-								</li>
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'interest' ? 'active blur-bg-2px' : ''}`}
-									onClick={() => { setActiveSection("interest"); hideSideNavbar() }}
-								>
-									<button className="nav-link w-100">
-										<Coins size={20} weight='fill' className="me-2" /> Interest
-									</button>
-								</li>
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'credits' ? 'active blur-bg-2px' : ''}`}
-									onClick={() => { setActiveSection("credits"); hideSideNavbar() }}
-								>
-									<button className="nav-link w-100">
-										<Blueprint size={20} weight='fill' className="me-2" /> Credits
-									</button>
-									{hasNewNotifications && (
-										<span
-											className='r-middle-m h-1rem flex-center me-3 px-2 bg-gray-300 text-gray-900 fs-60 fw-medium rounded-pill'
-											style={{ lineHeight: 1 }}>
-											{allCredits.filter(cr => cr.status === 'pending').length}
-										</span>
+													return (
+														<div key={index} className="d-flex mb-2 py-2 border-bottom">
+															<img src={associatedMember.husbandAvatar ? associatedMember.husbandAvatar : '/images/man_avatar_image.jpg'} alt="" className='w-2rem h-2rem flex-grow-0 flex-shrink-0 me-2 object-fit-cover bg-light rounded-circle' />
+															<div>
+																<div className="d-flex align-items-center justify-content-between mb-1 pb-1 border-bottom text-primaryColor small">
+																	<span>Loan request</span>
+																	<small className='text-gray-600'>
+																		{formatDate(cr.updatedAt, { todayKeyword: true })}
+																	</small>
+																</div>
+																<p className='mb-1 fs-75 text-gray-600'>
+																	{names} is requesting a loan of <CurrencyText amount={Number(cr.creditAmount)} />
+																</p>
+																<button className='btn btn-sm pe-1 fs-60 rounded-pill bg-primaryColor text-light clickDown' style={{ paddingBlock: '.125rem' }}
+																	onClick={() => { setActiveSection('credits'); setShowNotifications(false); }}
+																>Respond <CaretRight /></button>
+															</div>
+														</div>
+													)
+												})
+											}
+										</>
 									)}
-								</li>
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'transactions' ? 'active blur-bg-2px' : ''}`}
-									onClick={() => { setActiveSection("transactions"); hideSideNavbar() }}
-								>
-									<button className="nav-link w-100">
-										<CashRegister size={20} weight='fill' className="me-2" /> Transactions
-									</button>
-								</li>
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 ${activeSection === 'reports' ? 'active blur-bg-2px' : ''}`}
-									onClick={() => { setActiveSection("reports"); hideSideNavbar() }}
-								>
-									<button className="nav-link w-100">
-										<Files size={20} weight='fill' className="me-2" /> Reports
-									</button>
-								</li>
-								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'messages' ? 'active blur-bg-2px' : ''}`}
+								</>
+							}
+							fitWidth={true}
+						/>
+
+						<div className="row">
+							{/* Sidebar Navigation */}
+							<nav className={`col-12 col-md-3 col-xl-2 px-3 px-sm-5 px-md-0 d-md-block border-end overflow-y-auto sidebar ${sideNavbarIsFloated ? 'floated' : ''}`} id="sidebarMenu">
+								<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit my-3 my-md-0 py-3 pt-md-4 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded-4' : ''}`}>
+									<div className="d-flex align-items-center justify-content-between d-md-none mb-3 px-3 pb-2">
+										<div className="d-flex align-items-center">
+											<img src='/images/man_avatar_image.jpg' alt="" className='w-2_5rem ratio-1-1 object-fit-cover me-2 border border-3 border-secondary bg-gray-600 rounded-circle' />
+											<div className='d-grid pb-1'>
+												<span className='smaller'>{accountantNames}</span>
+												<span className='fs-70 opacity-75' style={{ lineHeight: 1 }}>Accountant</span>
+											</div>
+										</div>
+										<button type="button" className='btn text-light' onClick={() => setSideNavbarIsFloated(false)}><X size={25} /></button>
+									</div>
+
+									<ul className="nav flex-column">
+										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'dashboard' ? 'active blur-bg-2px' : ''}`}
+											onClick={() => { setActiveSection("dashboard"); hideSideNavbar() }}
+										>
+											<button className="nav-link w-100">
+												<ChartPieSlice size={20} weight='fill' className="me-2" /> Dashboard
+											</button>
+										</li>
+										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'members' ? 'active blur-bg-2px' : ''}`}
+											onClick={() => { setActiveSection("members"); hideSideNavbar() }}
+										>
+											<button className="nav-link w-100">
+												<Users size={20} weight='fill' className="me-2" /> Members
+											</button>
+										</li>
+										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'savings' ? 'active blur-bg-2px' : ''}`}
+											onClick={() => { setActiveSection("savings"); hideSideNavbar() }}
+										>
+											<button className="nav-link w-100">
+												<Coin size={20} weight='fill' className="me-2" /> Savings
+											</button>
+										</li>
+										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'interest' ? 'active blur-bg-2px' : ''}`}
+											onClick={() => { setActiveSection("interest"); hideSideNavbar() }}
+										>
+											<button className="nav-link w-100">
+												<Coins size={20} weight='fill' className="me-2" /> Interest
+											</button>
+										</li>
+										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'credits' ? 'active blur-bg-2px' : ''}`}
+											onClick={() => { setActiveSection("credits"); hideSideNavbar() }}
+										>
+											<button className="nav-link w-100">
+												<Blueprint size={20} weight='fill' className="me-2" /> Credits
+											</button>
+											{hasNewNotifications && (
+												<span
+													className='r-middle-m h-1rem flex-center me-3 px-2 bg-gray-300 text-gray-900 fs-60 fw-medium rounded-pill'
+													style={{ lineHeight: 1 }}>
+													{allCredits.filter(cr => cr.status === 'pending').length}
+												</span>
+											)}
+										</li>
+										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'transactions' ? 'active blur-bg-2px' : ''}`}
+											onClick={() => { setActiveSection("transactions"); hideSideNavbar() }}
+										>
+											<button className="nav-link w-100">
+												<CashRegister size={20} weight='fill' className="me-2" /> Transactions
+											</button>
+										</li>
+										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 ${activeSection === 'reports' ? 'active blur-bg-2px' : ''}`}
+											onClick={() => { setActiveSection("reports"); hideSideNavbar() }}
+										>
+											<button className="nav-link w-100">
+												<Files size={20} weight='fill' className="me-2" /> Reports
+											</button>
+										</li>
+										{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'messages' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("messages"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
@@ -6214,9 +6232,9 @@ const Admin = () => {
 									</span>
 								</li> */}
 
-								<hr />
+										<hr />
 
-								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'auditLogs' ? 'active blur-bg-2px' : ''}`}
+										{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'auditLogs' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("auditLogs"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
@@ -6224,31 +6242,31 @@ const Admin = () => {
 									</button>
 								</li> */}
 
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'settings' ? 'active blur-bg-2px' : ''}`}
-									onClick={() => { setActiveSection("settings"); hideSideNavbar() }}
-								>
-									<button className="nav-link w-100">
-										<Gear size={20} weight='fill' className="me-2" /> Settings
-									</button>
-								</li>
+										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'settings' ? 'active blur-bg-2px' : ''}`}
+											onClick={() => { setActiveSection("settings"); hideSideNavbar() }}
+										>
+											<button className="nav-link w-100">
+												<Gear size={20} weight='fill' className="me-2" /> Settings
+											</button>
+										</li>
 
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-3 d-md-none clickDown`} onClick={() => { logout() }}>
-									<button className="nav-link w-100">
-										<SignOut size={20} weight='fill' className="me-2" /> Sign out
-									</button>
-								</li>
-							</ul>
+										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-3 d-md-none clickDown`} onClick={() => { logout() }}>
+											<button className="nav-link w-100">
+												<SignOut size={20} weight='fill' className="me-2" /> Sign out
+											</button>
+										</li>
+									</ul>
+								</div>
+							</nav>
+
+							{/* Content Area */}
+							<div className="col-md-9 col-xl-10 ms-sm-auto px-md-4 pt-4 pt-md-2 pb-2">
+								{renderContent()}
+							</div>
 						</div>
-					</nav>
-
-					{/* Content Area */}
-					<div className="col-md-9 col-xl-10 ms-sm-auto px-md-4 pt-4 pt-md-2 pb-2">
-						{renderContent()}
-					</div>
-				</div>
-
-				{/* Fixed components */}
-			</main>
+					</main>
+				</>
+			)}
 		</>
 	)
 }
