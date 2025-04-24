@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import './systemSettings.css';
 import axios from 'axios';
-import { CaretDown, DotsThreeVertical, FloppyDisk, Gear, Plus, Trash } from '@phosphor-icons/react';
-
-import { Menu, MenuItem, MenuButton, MenuDivider } from '@szhsin/react-menu';
+import { CaretDown, CaretLeft, DotsThreeVertical, Envelope, FloppyDisk, Gear, MapPinArea, Phone, Plus } from '@phosphor-icons/react';
+import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu';
 import useCustomDialogs from '../common/hooks/useCustomDialogs';
 import MyToast from '../common/Toast';
 import { Axios, BASE_URL } from '../../api/api';
-import { cLog, fncPlaceholder, getNumberWithSuffix, maxInputNumber } from '../../scripts/myScripts';
+import { fncPlaceholder, getNumberWithSuffix, maxInputNumber } from '../../scripts/myScripts';
 import CurrencyText from '../common/CurrencyText';
 
 const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stopLoading }) => {
@@ -88,7 +88,7 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
         retrievedData?.credits
     ), [retrievedData])
 
-    // console.log(retrievedData);
+    // console.log('retrievedData: ', retrievedData);
     // console.log(membersSettings);
 
     // const [allSettings, setAllSettings] = useState([]);
@@ -122,22 +122,17 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
 
     // Organisation
     const systemSettingsInitialValue = useMemo(() => ({
-        logo: null,
-        stamp: null,
+        // logo: null,
+        // stamp: null,
         name: sysSettings?.name || '',
         email: sysSettings?.email || '',
         phone: sysSettings?.phone || '',
-        POBox: sysSettings?.POBox || '',
+        pobox: sysSettings?.pobox || '',
         motto: sysSettings?.motto || '',
         website: sysSettings?.website || '',
         izinaRyUbutore: sysSettings?.izinaRyUbutore || '',
         manager: sysSettings?.manager || '',
-        location: {
-            country: 'Rwanda',
-            district: 'Kigali',
-            sector: 'Kigali',
-            cell: 'Nyabugogo',
-        },
+        address: sysSettings?.address,
     }), [sysSettings]);
 
     // Credits
@@ -145,8 +140,17 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
     const memberRoles = useMemo(() => membersSettings?.roles || [], [membersSettings]);
     const expenseTypes = useMemo(() => expensesSettings?.types || [], [expensesSettings]);
 
-
     const [systemSettings, setSystemSettings] = useState(systemSettingsInitialValue);
+
+    useEffect(() => {
+        if (systemSettingsInitialValue) {
+            setSystemSettings(systemSettingsInitialValue)
+        }
+    }, [systemSettingsInitialValue]);
+
+    // console.log('systemSettings: ', systemSettings);
+    // console.log('sysSettings: ', sysSettings);
+    // console.log('systemSettingsInitialValue: ', systemSettingsInitialValue);
 
     const [roleSettings, setRoleSettings] = useState(memberRoles || []);
     // console.log(memberRoles);
@@ -243,7 +247,7 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
         }
         setRoleSettings([...memberRoles, trimmedValue.toLowerCase()]);
 
-        console.log(roleSettings);
+        // console.log(roleSettings);
 
         // Save roles
         try {
@@ -281,11 +285,20 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
 
     const handleSaveShares = async () => {
         try {
-            await axios.post(`${BASE_URL}/api/settings/shares`, shareSettings);
+            // return console.log(shareSettings);
+            if (!shareSettings.valuePerShare) {
+                return toast({ message: 'Enter a share value to continue!', type: "danger" });
+            }
+            const payload = {
+                amount: shareSettings.valuePerShare,
+            };
+
+            await Axios.put(`/api/settings/savings/cotisation/amount`, payload);
             toast({ message: 'Share settings saved successfully!', type: "dark" });
         } catch (error) {
-            console.error(error);
-            toast({ message: 'Failed to save share settings!', type: "danger" });
+            const errorMessage = error.response?.data?.error || error.response?.data?.message || "Failed to load settings. Please try again.";
+            warningToast({ message: errorMessage });
+            console.error("Error fetching settings:", error);
         }
     };
 
@@ -336,24 +349,225 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                         <div className="mb-3">
                             <h2 className='text-appColor'><Gear weight='fill' className="me-1 opacity-50" /> Settings</h2>
                             <div className="d-lg-flex align-items-center">
-                                <img src="/images/interests_visual.png" alt="" className='d-none d-lg-block col-md-5' />
+                                <img src="/images/settings_visual.png" alt="" className='d-none d-lg-block col-md-5' />
                                 <div className='alert mb-4 rounded-0 smaller fw-light'>
-                                    This panel provides an organized summary of interest earnings distributed to each member or family, based on their ownership shares. It ensures transparency by displaying individual share percentages, monetary interest amounts, and overall totals, offering members a clear understanding of their returns and fostering accountability.
+                                    This panel provides an organized structure for the system settings, from business preferences and security configurations to application behavior customization. <span className='d-none d-md-inline'>Easily adjust features and certain information to suit your workflow while ensuring optimal performance and accessibility.</span>
                                 </div>
                             </div>
                         </div>
                         <hr className='mb-4 d-lg-none' />
                         <div>
-
                             {/* System Settings */}
-                            <div>
+                            <div className="mb-4 p-3 p-xl-4 border-bottom border-secondary text-gray-700">
                                 <h3>System Settings</h3>
-                                <input type="file" name="logo" onChange={handleSystemSettingsChange} />
+                                <div className='d-flex flex-column-reverse flex-xl-row py-3 py-xl-5'>
+                                    <div className='col-xl-8'>
+                                        <div className='d-flex align-items-center justify-content-xl-center mb-2 px-2 px-sm-3'>
+                                            <label htmlFor="sysName" className='col-3 text-end pe-3'>Name</label>
+                                            <input type="text"
+                                                id="sysName"
+                                                name="name"
+                                                readOnly
+                                                // readOnly={!isAdminUser}
+                                                placeholder="Name"
+                                                value={systemSettings?.name}
+                                                onChange={handleSystemSettingsChange}
+                                                className='flex-grow-1 form-control border border-secondary border-opacity-25 rounded-0'
+                                            />
+                                        </div>
+
+                                        <div className='d-flex align-items-center justify-content-xl-center mb-2 px-2 px-sm-3'>
+                                            <label htmlFor="sysCountry" className='col-3 text-end pe-3'>Country</label>
+                                            <input type="text"
+                                                id="sysCountry"
+                                                name="country"
+                                                readOnly
+                                                // readOnly={!isAdminUser}
+                                                placeholder="Country"
+                                                value={systemSettings?.address?.country}
+                                                onChange={handleSystemSettingsChange}
+                                                className='flex-grow-1 form-control border border-secondary border-opacity-25 rounded-0'
+                                            />
+                                        </div>
+
+                                        <div className='d-flex align-items-center justify-content-xl-center mb-2 px-2 px-sm-3'>
+                                            <label htmlFor="sysDistrict" className='col-3 text-end pe-3'>District</label>
+                                            <input type="text"
+                                                id="sysDistrict"
+                                                name="district"
+                                                readOnly
+                                                // readOnly={!isAdminUser}
+                                                placeholder="District"
+                                                value={systemSettings?.address?.district}
+                                                onChange={handleSystemSettingsChange}
+                                                className='flex-grow-1 form-control border border-secondary border-opacity-25 rounded-0'
+                                            />
+                                        </div>
+
+                                        <div className='d-flex align-items-center justify-content-xl-center mb-2 px-2 px-sm-3'>
+                                            <label htmlFor="sysSector" className='col-3 text-end pe-3'>Sector</label>
+                                            <input type="text"
+                                                id="sysSector"
+                                                name="sector"
+                                                readOnly
+                                                // readOnly={!isAdminUser}
+                                                placeholder="Sector"
+                                                value={systemSettings?.address?.sector}
+                                                onChange={handleSystemSettingsChange}
+                                                className='flex-grow-1 form-control border border-secondary border-opacity-25 rounded-0'
+                                            />
+                                        </div>
+
+                                        <div className='d-flex align-items-center justify-content-xl-center mb-2 px-2 px-sm-3'>
+                                            <label htmlFor="sysCell" className='col-3 text-end pe-3'>Cell</label>
+                                            <input type="text"
+                                                id="sysCell"
+                                                name="cell"
+                                                readOnly
+                                                // readOnly={!isAdminUser}
+                                                placeholder="Cell"
+                                                value={systemSettings?.address?.cell}
+                                                onChange={handleSystemSettingsChange}
+                                                className='flex-grow-1 form-control border border-secondary border-opacity-25 rounded-0'
+                                            />
+                                        </div>
+
+                                        <div className='d-flex align-items-center justify-content-xl-center mb-2 px-2 px-sm-3'>
+                                            <label htmlFor="sysIzinaRyUbutore" className='col-3 text-end pe-3'>Izina ry'ubutore</label>
+                                            <input type="text"
+                                                id="sysIzinaRyUbutore"
+                                                name="izinaRyUbutore"
+                                                readOnly
+                                                // readOnly={!isAdminUser}
+                                                placeholder="Izina ry'ubutore"
+                                                value={systemSettings?.izinaRyUbutore}
+                                                onChange={handleSystemSettingsChange}
+                                                className='flex-grow-1 form-control border border-secondary border-opacity-25 rounded-0'
+                                            />
+                                        </div>
+
+                                        <div className='d-flex align-items-center justify-content-xl-center mb-2 px-2 px-sm-3'>
+                                            <label htmlFor="sysMotto" className='col-3 text-end pe-3'>Motto</label>
+                                            <input type="text"
+                                                id="sysMotto"
+                                                name="motto"
+                                                readOnly
+                                                // readOnly={!isAdminUser}
+                                                placeholder="Motto"
+                                                value={systemSettings?.motto}
+                                                onChange={handleSystemSettingsChange}
+                                                className='flex-grow-1 form-control border border-secondary border-opacity-25 rounded-0'
+                                            />
+                                        </div>
+
+                                        <div className='d-flex align-items-center justify-content-xl-center mb-2 px-2 px-sm-3'>
+                                            <label htmlFor="sysEmail" className='col-3 text-end pe-3'>Email</label>
+                                            <input type="text"
+                                                id="sysEmail"
+                                                name="email"
+                                                readOnly
+                                                // readOnly={!isAdminUser}
+                                                placeholder="Email"
+                                                value={systemSettings?.email}
+                                                onChange={handleSystemSettingsChange}
+                                                className='flex-grow-1 form-control border border-secondary border-opacity-25 rounded-0'
+                                            />
+                                        </div>
+
+                                        <div className='d-flex align-items-center justify-content-xl-center mb-2 px-2 px-sm-3'>
+                                            <label htmlFor="sysPhone" className='col-3 text-end pe-3'>Phone</label>
+                                            <input type="number"
+                                                id="sysPhone"
+                                                name="phone"
+                                                readOnly
+                                                // readOnly={!isAdminUser}
+                                                placeholder="Phone"
+                                                value={systemSettings?.phone}
+                                                onChange={handleSystemSettingsChange}
+                                                className='flex-grow-1 form-control border border-secondary border-opacity-25 rounded-0'
+                                            />
+                                        </div>
+
+                                        <div className='d-flex align-items-center justify-content-xl-center mb-2 px-2 px-sm-3'>
+                                            <label htmlFor="sysPhone" className='col-3 text-end pe-3'>PO Box</label>
+                                            <input type="text"
+                                                id="sysPobox"
+                                                name="pobox"
+                                                readOnly
+                                                // readOnly={!isAdminUser}
+                                                placeholder="PO Box"
+                                                value={systemSettings?.pobox}
+                                                onChange={handleSystemSettingsChange}
+                                                className='flex-grow-1 form-control border border-secondary border-opacity-25 rounded-0'
+                                            />
+                                        </div>
+
+                                        <div className='d-flex align-items-center justify-content-xl-center mb-2 px-2 px-sm-3'>
+                                            <label htmlFor="sysManager" className='col-3 text-end pe-3'>Manager</label>
+                                            <input type="text"
+                                                id="sysManager"
+                                                name="manager"
+                                                readOnly
+                                                // readOnly={!isAdminUser}
+                                                placeholder="Manager"
+                                                value={systemSettings?.manager}
+                                                onChange={handleSystemSettingsChange}
+                                                className='flex-grow-1 form-control border border-secondary border-opacity-25 rounded-0'
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="d-flex flex-column flex-xl-row-reverse align-items-center gap-3 h-fit mb-5 px-xl-3 sticky-info">
+                                        <div>
+                                            <p className='small'>
+                                                {isAdminUser ? (
+                                                    <>
+                                                        Update and manage your organization's details, including the name, address, contact information, and management details.
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        Access your organization's details,  all in one place. Stay connected with essential business information and ensure you have quick access when needed.
+                                                    </>
+                                                )}
+                                            </p>
+                                            <div class="w-100 d-flex align-items-center mb-2">
+                                                <div class="p-2 d-flex align-items-center justify-content-center rounded-circle me-2 me-sm-3 bg-gray-300">
+                                                    <Phone size={20} fill='var(--bs-gray-700)' />
+                                                </div>
+                                                <div class="small d-grid">
+                                                    <span class="me-2 fw-bold"> Phone:</span> <span>{systemSettingsInitialValue?.phone}</span>
+                                                </div>
+                                            </div>
+                                            <div class="w-100 d-flex align-items-center mb-2">
+                                                <div class="p-2 d-flex align-items-center justify-content-center rounded-circle me-2 me-sm-3 bg-gray-300">
+                                                    <Envelope size={20} fill='var(--bs-gray-700)' />
+                                                </div>
+                                                <div class="small d-grid">
+                                                    <span class="me-2 fw-bold"> Email:</span> <span>{systemSettingsInitialValue?.email}</span>
+                                                </div>
+                                            </div>
+                                            <div class="w-100 d-flex align-items-center mb-2">
+                                                <div class="p-2 d-flex align-items-center justify-content-center rounded-circle me-2 me-sm-3 bg-gray-300">
+                                                    <MapPinArea size={20} fill='var(--bs-gray-700)' />
+                                                </div>
+                                                <div class="small d-grid">
+                                                    <span class="me-2 fw-bold"> Location:</span> <span>
+                                                        <span className="text-capitalize-first-letter">{systemSettingsInitialValue?.address?.district}</span>, <span className="text-capitalize-first-letter">{systemSettingsInitialValue?.address?.country}</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <CaretLeft size={30} className='flex-shrink-0 opacity-50 d-none d-xl-inline' />
+                                        <CaretDown size={30} className='flex-shrink-0 opacity-50 d-xl-none' />
+                                    </div>
+                                </div>
+
+                                {/* <input type="file" name="logo" onChange={handleSystemSettingsChange} />
                                 <input type="file" name="stamp" onChange={handleSystemSettingsChange} />
                                 <input type="text" name="name" placeholder="Name" value={systemSettings.name} onChange={handleSystemSettingsChange} />
-                                <input type="email" name="email" placeholder="Email" value={systemSettings.email} onChange={handleSystemSettingsChange} />
+                                <input type="email" name="email" placeholder="Email" value={systemSettings.email} onChange={handleSystemSettingsChange} /> */}
+
                                 {/* Add the rest of the fields */}
-                                <button onClick={handleSaveSystemSettings}>Save System Settings</button>
+                                {/* <button onClick={handleSaveSystemSettings}>Save System Settings</button> */}
                             </div>
 
                             {/* Role Settings */}
@@ -362,7 +576,7 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                 <div className={`${isAdminUser ? 'd-lg-flex' : ''} align-items-start gap-3`}>
                                     <ul className={`list-unstyled d-flex align-items-start gap-2 flex-wrap ${isAdminUser ? 'col-lg-7 col-xl-8' : ''}`}>
                                         {memberRoles.map((role, index) => (
-                                            <li key={index} className='flex-align-center gap-2 ps-3 pe-2 py-1 border border-secondary border-opacity-50'>
+                                            <li key={index} className='flex-align-center gap-2 ps-3 pe-2 py-1 border border-secondary border-opacity-50 rounded-3'>
                                                 <span className='text-capitalize'>{role}</span> {isAdminUser &&
                                                     <Menu menuButton={
                                                         <MenuButton className="border-0 p-0 bg-transparent">
@@ -386,6 +600,7 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                             <input
                                                 type="text"
                                                 placeholder='Enter new role'
+                                                readOnly
                                                 className='form-control border border-secondary rounded-0'
                                                 value={newRole}
                                                 onChange={e => setNewRole(e.target.value)}
@@ -418,6 +633,7 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                             <input
                                                 type="number"
                                                 name="interestPrimary"
+                                                readOnly
                                                 className='form-control border border-secondary rounded-0'
                                                 value={creditSettings.interestPrimary}
                                                 min={1}
@@ -455,6 +671,7 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                             <input
                                                 type="number"
                                                 name="interestPrimary"
+                                                readOnly
                                                 className='form-control border border-secondary rounded-0'
                                                 value={shareSettings.valuePerShare}
                                                 min={1}
@@ -462,6 +679,7 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                                 onChange={(e) => setShareSettings({ valuePerShare: e.target.value })}
                                             />
                                             <button className='btn btn-sm btn-secondary py-1 rounded-0 w-100 flex-center gap-2 bounceClick'
+                                                disabled={!shareSettings.valuePerShare}
                                                 onClick={handleSaveShares}
                                             >
                                                 <FloppyDisk /> Save changes
@@ -478,7 +696,7 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                 <div className={`${isAdminUser ? 'd-lg-flex' : ''} align-items-start gap-3`}>
                                     <ul className={`list-unstyled d-flex align-items-start gap-2 flex-wrap ${isAdminUser ? 'col-lg-7 col-xl-8' : ''}`}>
                                         {expenseTypes.map((type, index) => (
-                                            <li key={index} className='flex-align-center gap-2 ps-3 pe-2 py-1 border border-secondary border-opacity-50'>
+                                            <li key={index} className='flex-align-center gap-2 ps-3 pe-2 py-1 border border-secondary border-opacity-50 rounded-3'>
                                                 <span className='text-capitalize'>{type}</span> {isAdminUser &&
                                                     <Menu menuButton={
                                                         <MenuButton className="border-0 p-0 bg-transparent">
@@ -503,6 +721,7 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                             <input
                                                 type="text"
                                                 placeholder='Enter new type'
+                                                readOnly
                                                 className='form-control border border-secondary rounded-0'
                                                 value={newExpenseType}
                                                 onChange={e => setNewExpenseType(e.target.value)}
@@ -537,6 +756,7 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                                 <input
                                                     type="number"
                                                     name="interestPrimary"
+                                                    readOnly
                                                     className='form-control border border-secondary rounded-0'
                                                     value={savingSettings.dueDate}
                                                     min={1}
@@ -573,6 +793,7 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                                 <input
                                                     type="number"
                                                     name="interestPrimary"
+                                                    readOnly
                                                     className='form-control border border-secondary rounded-0'
                                                     value={savingSettings.delayPenalty}
                                                     min={1}
