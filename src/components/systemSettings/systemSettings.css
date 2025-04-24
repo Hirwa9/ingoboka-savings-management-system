@@ -1,0 +1,6 @@
+@media (min-width: 1200px) {
+    .sticky-info {
+        position: sticky;
+        top: 4.5rem;
+    }
+}
