@@ -1,4 +1,5 @@
 import React, { Fragment, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
 import { Button, Card, Container, Form } from "react-bootstrap";
 import './user.css';
 import '../../header/header.css';
@@ -14,7 +15,6 @@ import ActionPrompt from '../../common/actionPrompt/ActionPrompt';
 import ConfirmDialog from '../../common/confirmDialog/ConfirmDialog';
 import NotFound from '../../common/NotFound';
 import JsonJsFormatter from '../../common/JsonJsFormatter';
-import { useParams } from 'react-router';
 import { Menu, MenuButton, MenuDivider, MenuItem } from '@szhsin/react-menu';
 import CountUp from 'react-countup';
 import BarGraph from '../../chartJS/BarGraph';
@@ -34,14 +34,13 @@ const UserUI = () => {
 
 	// Get user data
 	const { userId } = useParams();
+	const navigate = useNavigate();
+	const paramId = Number(userId);
+
 	const [signedUser, setSignedUser] = useState({});
 
 	const signedUserNames = useMemo(() => (
 		`${signedUser?.husbandFirstName} ${signedUser?.husbandLastName}`
-	), [signedUser]);
-
-	const signedUserType = useMemo(() => (
-		signedUser?.type
 	), [signedUser]);
 
 	// Custom hooks
@@ -86,7 +85,7 @@ const UserUI = () => {
 		resetPrompt,
 	} = useCustomDialogs();
 
-	const { logout } = useContext(AuthContext);
+	const { loading, user, userType, logout } = useContext(AuthContext);
 
 	const sideNavbarRef = useRef();
 	const sideNavbarTogglerRef = useRef();
@@ -274,7 +273,7 @@ const UserUI = () => {
 			const data = response.data;
 			setAllMembers(data);
 			setMembersToShow(data);
-			setSignedUser(data.find(m => m.id === Number(userId)));
+			setSignedUser(data.find(m => m.id === paramId));
 			setErrorLoadingMembers(null);
 		} catch (error) {
 			const errorMessage = error.response?.data?.error || error.response?.data?.message || "Failed to load members. Please try again.";
@@ -3314,7 +3313,7 @@ const UserUI = () => {
 	// Settings
 	const Settings = () => {
 		return (
-			<SystemSettings data={allSettings} userType={signedUserType} />
+			<SystemSettings data={allSettings} userType={userType} />
 		)
 	}
 
@@ -3364,7 +3363,7 @@ const UserUI = () => {
 
 	// User restriction
 	const restrictedStatus = ['inactive', 'removed'];
-	if (!signedUser || !userId) {
+	if (!signedUser || !paramId) {
 		return (
 			<Container className="d-flex justify-content-center align-items-center vh-100">
 				<Card className="text-center p-4 shadow-lg" style={{ maxWidth: "400px" }}>
@@ -3437,139 +3436,156 @@ const UserUI = () => {
 				</div>
 			)}
 
-			<header className="navbar navbar-light sticky-top flex-md-nowrap py-0 admin-header">
-				<div className='nav-item navbar-brand position-relative col-12 col-md-3 col-xl-2 d-flex align-items-center me-0 px-2'>
-					<div className="me-2 logo">
-						<img src='/logo.jpg' alt="" className="rounded-circle logo p-2"></img>
+			{(!loading && (!user || userType !== 'member' || !allMembers?.some(member => member.id === paramId) || paramId !== user.id)) ? (
+				<div className="container my-5">
+					<h1 className="text-center text-secondary mb-5">Access forbidden</h1>
+					<div className='text-center'>
+						<p>
+							The page you are trying to reach either does not exist or you have limited access on its content.
+						</p>
+						<button
+							className="btn text-primary rounded-0 col-12 col-sm-8 col-md-6"
+							onClick={() => { navigate('/login', { replace: true }) }}
+						>
+							Login <CaretRight />
+						</button>
 					</div>
-					<small className='fs-70 org-name'>
-						INGOBOKA
-					</small>
-					<div className="d-flex gap-2 d-md-none ms-auto me-2" style={{ '--_activeColor': 'var(--bs-gray-500)' }}>
-						{/* <button className={`nav-link px-2 ${adminHasNewNotifications ? 'active-with-dot' : ''} rounded-0 clickDown`} title='Notifications'>
+				</div>
+			) : (
+				<>
+					<header className="navbar navbar-light sticky-top flex-md-nowrap py-0 admin-header">
+						<div className='nav-item navbar-brand position-relative col-12 col-md-3 col-xl-2 d-flex align-items-center me-0 px-2'>
+							<div className="me-2 logo">
+								<img src='/logo.jpg' alt="" className="rounded-circle logo p-2"></img>
+							</div>
+							<small className='fs-70 org-name'>
+								INGOBOKA
+							</small>
+							<div className="d-flex gap-2 d-md-none ms-auto me-2" style={{ '--_activeColor': 'var(--bs-gray-500)' }}>
+								{/* <button className={`nav-link px-2 ${adminHasNewNotifications ? 'active-with-dot' : ''} rounded-0 clickDown`} title='Notifications'>
 							<BellSimple weight={adminHasNewNotifications ? 'fill' : undefined} size={20}
 								style={{ animation: adminHasNewNotifications ? 'shakeX 10s infinite' : 'unset' }}
 							/>
 						</button> */}
-						<button ref={sideNavbarTogglerRef} className="rounded-0 shadow-none bounceClick navbar-toggler" type="button" aria-controls="sidebarMenu" aria-label="Toggle navigation" onClick={() => setSideNavbarIsFloated(!sideNavbarIsFloated)}>
-							<List />
-						</button>
-					</div>
-					<Popover content="Balance" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none bg-appColor text-gray-200 border border-secondary border-opacity-25' arrowColor='var(--appColor)' height='1.9rem'>
-						<div className="position-absolute start-50 top-100 translate-middle flex-align-center gap-1  px-3 py-1 border border-secondary border-opacity-50 rounded-pill fs-50 shadow-sm ptr clickDown balance-indicator"
-							onClick={() => { setActiveSection("dashboard"); }}
-						>
-							<Wallet size={14} weight='fill' /><CurrencyText amount={Number(allFigures?.balance)} />
-						</div>
-					</Popover>
-				</div>
-				<div className='d-none d-md-flex flex-grow-1 border-bottom py-1'>
-					<div className="me-3 ms-auto navbar-nav">
-						<div className="nav-item d-flex gap-2 text-nowrap small" style={{ '--_activeColor': 'var(--primaryColor)' }}>
-							<Popover content="Refresh data" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='1.9rem'>
-								<button className={`nav-link px-2 text-gray-700 rounded-pill clickDown`} title='Refresh data'
-									onClick={refreshAllData}
+								<button ref={sideNavbarTogglerRef} className="rounded-0 shadow-none bounceClick navbar-toggler" type="button" aria-controls="sidebarMenu" aria-label="Toggle navigation" onClick={() => setSideNavbarIsFloated(!sideNavbarIsFloated)}>
+									<List />
+								</button>
+							</div>
+							<Popover content="Balance" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none bg-appColor text-gray-200 border border-secondary border-opacity-25' arrowColor='var(--appColor)' height='1.9rem'>
+								<div className="position-absolute start-50 top-100 translate-middle flex-align-center gap-1  px-3 py-1 border border-secondary border-opacity-50 rounded-pill fs-50 shadow-sm ptr clickDown balance-indicator"
+									onClick={() => { setActiveSection("dashboard"); }}
 								>
-									<ArrowsClockwise size={20} />
-								</button>
-							</Popover>
-							<Popover content="Notifications" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='1.9rem'>
-								<button className={`nav-link px-2 ${adminHasNewNotifications ? 'bg-gray-300 text-primaryColor active-with-dot' : 'text-gray-700'} rounded-pill clickDown`} title='Notifications'>
-									<BellSimple weight={adminHasNewNotifications ? 'fill' : undefined} size={20}
-										style={{ animation: adminHasNewNotifications ? 'shakeX 10s infinite' : 'unset' }}
-									/>
-								</button>
+									<Wallet size={14} weight='fill' /><CurrencyText amount={Number(allFigures?.balance)} />
+								</div>
 							</Popover>
 						</div>
-					</div>
-					<div className="d-flex align-items-center me-3 border-light border-opacity-25">
-						<div className='d-grid pb-1'>
-							<span className='ms-auto smaller'>{signedUser?.husbandFirstName}</span>
-							<span className='ms-auto fs-70 opacity-75 text-capitalize' style={{ lineHeight: 1 }}>{signedUser?.role}</span>
-						</div>
-						<Menu menuButton={
-							<MenuButton className="border-0 p-0">
-								<img src={signedUser?.husbandAvatar} alt="" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 d-none d-md-block border border-3 border-light bg-light rounded-circle ptr' />
-							</MenuButton>
-						} transition>
-							{/* <MenuItem onClick={() => { setActiveSection('settings') }}>
+						<div className='d-none d-md-flex flex-grow-1 border-bottom py-1'>
+							<div className="me-3 ms-auto navbar-nav">
+								<div className="nav-item d-flex gap-2 text-nowrap small" style={{ '--_activeColor': 'var(--primaryColor)' }}>
+									<Popover content="Refresh data" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='1.9rem'>
+										<button className={`nav-link px-2 text-gray-700 rounded-pill clickDown`} title='Refresh data'
+											onClick={refreshAllData}
+										>
+											<ArrowsClockwise size={20} />
+										</button>
+									</Popover>
+									<Popover content="Notifications" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='1.9rem'>
+										<button className={`nav-link px-2 ${adminHasNewNotifications ? 'bg-gray-300 text-primaryColor active-with-dot' : 'text-gray-700'} rounded-pill clickDown`} title='Notifications'>
+											<BellSimple weight={adminHasNewNotifications ? 'fill' : undefined} size={20}
+												style={{ animation: adminHasNewNotifications ? 'shakeX 10s infinite' : 'unset' }}
+											/>
+										</button>
+									</Popover>
+								</div>
+							</div>
+							<div className="d-flex align-items-center me-3 border-light border-opacity-25">
+								<div className='d-grid pb-1'>
+									<span className='ms-auto smaller'>{signedUser?.husbandFirstName}</span>
+									<span className='ms-auto fs-70 opacity-75 text-capitalize' style={{ lineHeight: 1 }}>{signedUser?.role}</span>
+								</div>
+								<Menu menuButton={
+									<MenuButton className="border-0 p-0">
+										<img src={signedUser?.husbandAvatar} alt="" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 d-none d-md-block border border-3 border-light bg-light rounded-circle ptr' />
+									</MenuButton>
+								} transition>
+									{/* <MenuItem onClick={() => { setActiveSection('settings') }}>
 								<Gear weight='fill' className="me-2 opacity-50" /> Settings
 							</MenuItem>
 							<MenuDivider /> */}
-							<MenuItem onClick={() => { logout() }}>
-								<SignOut weight='fill' className="me-2 opacity-50" /> Sign out
-							</MenuItem>
-						</Menu>
-					</div>
-				</div>
-			</header>
-			<main className="container-fluid">
-				<div className="row">
-					{/* Sidebar Navigation */}
-					<nav className={`col-12 col-md-3 col-xl-2 px-3 px-sm-5 px-md-0 d-md-block border-end overflow-y-auto sidebar ${sideNavbarIsFloated ? 'floated' : ''}`} id="sidebarMenu">
-						<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit my-3 my-md-0 py-3 pt-md-4 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded-4' : ''}`}>
-							<div className="d-flex align-items-center justify-content-between d-md-none mb-3 px-3 pb-2">
-								<div className="d-flex align-items-center">
-									<img src='/images/man_avatar_image.jpg' alt="" className='w-2_5rem ratio-1-1 object-fit-cover me-2 border border-3 border-secondary bg-gray-600 rounded-circle' />
-									<div className='d-grid pb-1'>
-										<span className='smaller'>{`${signedUser?.husbandFirstName} ${signedUser?.husbandLastName}`}</span>
-										<span className='fs-70 opacity-75' style={{ lineHeight: 1 }}>{signedUser?.role}</span>
-									</div>
-								</div>
-								<button type="button" className='btn text-light' onClick={() => setSideNavbarIsFloated(false)}><X size={25} /></button>
+									<MenuItem onClick={() => { logout() }}>
+										<SignOut weight='fill' className="me-2 opacity-50" /> Sign out
+									</MenuItem>
+								</Menu>
 							</div>
+						</div>
+					</header>
+					<main className="container-fluid">
+						<div className="row">
+							{/* Sidebar Navigation */}
+							<nav className={`col-12 col-md-3 col-xl-2 px-3 px-sm-5 px-md-0 d-md-block border-end overflow-y-auto sidebar ${sideNavbarIsFloated ? 'floated' : ''}`} id="sidebarMenu">
+								<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit my-3 my-md-0 py-3 pt-md-4 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded-4' : ''}`}>
+									<div className="d-flex align-items-center justify-content-between d-md-none mb-3 px-3 pb-2">
+										<div className="d-flex align-items-center">
+											<img src='/images/man_avatar_image.jpg' alt="" className='w-2_5rem ratio-1-1 object-fit-cover me-2 border border-3 border-secondary bg-gray-600 rounded-circle' />
+											<div className='d-grid pb-1'>
+												<span className='smaller'>{`${signedUser?.husbandFirstName} ${signedUser?.husbandLastName}`}</span>
+												<span className='fs-70 opacity-75' style={{ lineHeight: 1 }}>{signedUser?.role}</span>
+											</div>
+										</div>
+										<button type="button" className='btn text-light' onClick={() => setSideNavbarIsFloated(false)}><X size={25} /></button>
+									</div>
 
-							<ul className="nav flex-column">
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'dashboard' ? 'active blur-bg-2px' : ''}`}
-									onClick={() => { setActiveSection("dashboard"); hideSideNavbar() }}
-								>
-									<button className="nav-link w-100">
-										<ChartPieSlice size={20} weight='fill' className="me-2" /> Dashboard
-									</button>
-								</li>
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'members' ? 'active blur-bg-2px' : ''}`}
-									onClick={() => { setActiveSection("members"); hideSideNavbar() }}
-								>
-									<button className="nav-link w-100">
-										<Users size={20} weight='fill' className="me-2" /> Members
-									</button>
-								</li>
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'savings' ? 'active blur-bg-2px' : ''}`}
-									onClick={() => { setActiveSection("savings"); hideSideNavbar() }}
-								>
-									<button className="nav-link w-100">
-										<Coin size={20} weight='fill' className="me-2" /> Savings
-									</button>
-								</li>
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'interest' ? 'active blur-bg-2px' : ''}`}
-									onClick={() => { setActiveSection("interest"); hideSideNavbar() }}
-								>
-									<button className="nav-link w-100">
-										<Coins size={20} weight='fill' className="me-2" /> Interest
-									</button>
-								</li>
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'credits' ? 'active blur-bg-2px' : ''}`}
-									onClick={() => { setActiveSection("credits"); hideSideNavbar() }}
-								>
-									<button className="nav-link w-100">
-										<Blueprint size={20} weight='fill' className="me-2" /> Credits
-									</button>
-								</li>
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'transactions' ? 'active blur-bg-2px' : ''}`}
-									onClick={() => { setActiveSection("transactions"); hideSideNavbar() }}
-								>
-									<button className="nav-link w-100">
-										<CashRegister size={20} weight='fill' className="me-2" /> Expenses
-									</button>
-								</li>
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 ${activeSection === 'reports' ? 'active' : ''}`}
-									onClick={() => { setActiveSection("reports"); hideSideNavbar() }}
-								>
-									<button className="nav-link w-100">
-										<Files size={20} weight='fill' className="me-2" /> Reports
-									</button>
-								</li>
-								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'messages' ? 'active blur-bg-2px' : ''}`}
+									<ul className="nav flex-column">
+										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'dashboard' ? 'active blur-bg-2px' : ''}`}
+											onClick={() => { setActiveSection("dashboard"); hideSideNavbar() }}
+										>
+											<button className="nav-link w-100">
+												<ChartPieSlice size={20} weight='fill' className="me-2" /> Dashboard
+											</button>
+										</li>
+										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'members' ? 'active blur-bg-2px' : ''}`}
+											onClick={() => { setActiveSection("members"); hideSideNavbar() }}
+										>
+											<button className="nav-link w-100">
+												<Users size={20} weight='fill' className="me-2" /> Members
+											</button>
+										</li>
+										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'savings' ? 'active blur-bg-2px' : ''}`}
+											onClick={() => { setActiveSection("savings"); hideSideNavbar() }}
+										>
+											<button className="nav-link w-100">
+												<Coin size={20} weight='fill' className="me-2" /> Savings
+											</button>
+										</li>
+										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'interest' ? 'active blur-bg-2px' : ''}`}
+											onClick={() => { setActiveSection("interest"); hideSideNavbar() }}
+										>
+											<button className="nav-link w-100">
+												<Coins size={20} weight='fill' className="me-2" /> Interest
+											</button>
+										</li>
+										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'credits' ? 'active blur-bg-2px' : ''}`}
+											onClick={() => { setActiveSection("credits"); hideSideNavbar() }}
+										>
+											<button className="nav-link w-100">
+												<Blueprint size={20} weight='fill' className="me-2" /> Credits
+											</button>
+										</li>
+										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'transactions' ? 'active blur-bg-2px' : ''}`}
+											onClick={() => { setActiveSection("transactions"); hideSideNavbar() }}
+										>
+											<button className="nav-link w-100">
+												<CashRegister size={20} weight='fill' className="me-2" /> Expenses
+											</button>
+										</li>
+										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 ${activeSection === 'reports' ? 'active' : ''}`}
+											onClick={() => { setActiveSection("reports"); hideSideNavbar() }}
+										>
+											<button className="nav-link w-100">
+												<Files size={20} weight='fill' className="me-2" /> Reports
+											</button>
+										</li>
+										{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'messages' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("messages"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
@@ -3582,9 +3598,9 @@ const UserUI = () => {
 									</span>
 								</li> */}
 
-								<hr />
+										<hr />
 
-								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'auditLogs' ? 'active blur-bg-2px' : ''}`}
+										{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'auditLogs' ? 'active blur-bg-2px' : ''}`}
 									onClick={() => { setActiveSection("auditLogs"); hideSideNavbar() }}
 								>
 									<button className="nav-link w-100">
@@ -3592,31 +3608,33 @@ const UserUI = () => {
 									</button>
 								</li> */}
 
-								{/* <li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'settings' ? 'active blur-bg-2px' : ''}`}
-									onClick={() => { setActiveSection("settings"); hideSideNavbar() }}
-								>
-									<button className="nav-link w-100">
-										<Gear size={20} weight='fill' className="me-2" /> Settings
-									</button>
-								</li> */}
+										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'settings' ? 'active blur-bg-2px' : ''}`}
+											onClick={() => { setActiveSection("settings"); hideSideNavbar() }}
+										>
+											<button className="nav-link w-100">
+												<Gear size={20} weight='fill' className="me-2" /> Settings
+											</button>
+										</li>
 
-								<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-3 d-md-none clickDown`} onClick={() => { logout() }}>
-									<button className="nav-link w-100">
-										<SignOut size={20} weight='fill' className="me-2" /> Sign out
-									</button>
-								</li>
-							</ul>
+										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-3 d-md-none clickDown`} onClick={() => { logout() }}>
+											<button className="nav-link w-100">
+												<SignOut size={20} weight='fill' className="me-2" /> Sign out
+											</button>
+										</li>
+									</ul>
+								</div>
+							</nav>
+
+							{/* Content Area */}
+							<div className="col-md-9 col-xl-10 ms-sm-auto px-md-4 pt-4 pt-md-2 pb-2">
+								{renderContent()}
+							</div>
 						</div>
-					</nav>
 
-					{/* Content Area */}
-					<div className="col-md-9 col-xl-10 ms-sm-auto px-md-4 pt-4 pt-md-2 pb-2">
-						{renderContent()}
-					</div>
-				</div>
-
-				{/* Fixed components */}
-			</main>
+						{/* Fixed components */}
+					</main>
+				</>
+			)}
 		</>
 	)
 }
