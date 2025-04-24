@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect, useContext } from "react";
 import LoadingIndicator from "./LoadingIndicator";
 import { Bank, CaretDown } from "@phosphor-icons/react";
 import { Axios } from "../api/api";
-import { Navigate, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import MyToast from "./common/Toast";
 import useCustomDialogs from "./common/hooks/useCustomDialogs";
 
@@ -30,24 +30,24 @@ export const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
 
     const [user, setUser] = useState(null); // User object or null
+    const [userType, setUserType] = useState(null); // User type value or null
     const [loading, setLoading] = useState(true); // Loading state for auth checks
     const [isAuthenticated, setIsAuthenticated] = useState(false); // Auth state
 
     // Check authentication
     const checkAuthOnMount = async () => {
         try {
-            const response = await Axios.get(`/verifyToken`, {
-                withCredentials: true,  // Send cookies and auth headers
-                headers: { 'Content-Type': 'application/json' }
-            });
+            const storedUserType = localStorage.getItem("userType") || null;
+
+            const response = await Axios.get(`/verifyToken?userType=${storedUserType}`, { withCredentials: true });
 
             if (response.status !== 200) {
-                const text = response.data;
-                throw new Error(`HTTP error! Status: ${response.status}, Response: ${text}`);
+                throw new Error(`HTTP error! Status: ${response.status}`);
             }
 
             const data = response.data;
             setUser(data.user);
+            setUserType(data.userType);
             setIsAuthenticated(true);
         } catch (error) {
             setUser(null);
@@ -64,26 +64,23 @@ export const AuthProvider = ({ children }) => {
 
     // Login function
     const login = async (emailOrUsername, password) => {
-
         try {
-            const response = await Axios.post(`/login`, {
-                emailOrUsername,
-                password
-            }, {
-                withCredentials: true
-            });
+            const response = await Axios.post(`/login`, { emailOrUsername, password }, { withCredentials: true });
 
             const data = response.data;
-
-            // Authentication handling
             if (data.accessToken) {
                 const { id, type } = data.user;
                 setUser(data.user);
                 setIsAuthenticated(true);
 
+                // Store user type in localStorage
+                localStorage.setItem("userType", type);
+
                 if (type === "admin") {
+                    setUserType("admin");
                     navigate("/admin");
                 } else if (type === "member") {
+                    setUserType("member");
                     navigate(`/user/${id}`);
                 } else {
                     warningToast({ message: 'Unable to login. Please contact support.' });
@@ -92,11 +89,9 @@ export const AuthProvider = ({ children }) => {
                 warningToast({ message: 'Invalid credentials. Please try again.' });
             }
         } catch (error) {
-            const errorMessage = error.response?.data?.message || "Login failed";
-            warningToast({ message: errorMessage });
+            warningToast({ message: "Login failed" });
             setUser(null);
             setIsAuthenticated(false);
-            console.error("Login failed:", error);
         }
     };
 
@@ -108,10 +103,16 @@ export const AuthProvider = ({ children }) => {
                 withCredentials: true // Include cookies
             });
 
-            // Clear user state and redirect to login
+            // Clear stored user data
+            localStorage.removeItem("userType");
+
+            // Reset state
             setUser(null);
+            setUserType(null);
             setIsAuthenticated(false);
-            <Navigate to="/login" replace />;
+
+            // Redirect after logout
+            navigate("/login", { replace: true });
         } catch (error) {
             console.error("Logout failed:", error);
         } finally {
@@ -123,6 +124,7 @@ export const AuthProvider = ({ children }) => {
     const value = {
         loading,
         user,
+        userType,
         login,
         logout,
         isAuthenticated,
