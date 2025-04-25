@@ -1761,7 +1761,7 @@ const Admin = () => {
 															required
 														/>
 													</div>
-													<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
+													<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
 														onClick={() => handleEditMemberInfo(selectedMember?.id, editHeadOfFamily ? 'husband' : 'wife')}
 													>
 														{!isWaitingFetchAction ?
@@ -2623,9 +2623,9 @@ const Admin = () => {
 															</ul>
 														</div>
 													)}
-													<div className="mb-3 p-2 form-text bg-dark-subtle rounded">
-														<p className='mb-2 small text-dark-emphasis'>
-															Please verify the details before saving. This action is final and cannot be reversed.
+													<div className="mt-4 p-2 form-text rounded">
+														<p className='mb-2 small text-dark-emphasis text-center'>
+															Please verify the details before saving
 														</p>
 														<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
 															onClick={() => handleAddSaving(selectedMember?.id)}
@@ -2743,9 +2743,9 @@ const Admin = () => {
 															</div>
 														</>
 													)}
-													<div className="mb-3 p-2 form-text bg-dark-subtle rounded">
-														<p className='mb-2 small text-dark-emphasis'>
-															Please verify the details before saving. This action is final and cannot be reversed.
+													<div className="mt-4 p-2 form-text rounded">
+														<p className='mb-2 small text-dark-emphasis text-center'>
+															Please verify the details before saving
 														</p>
 														<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
 															onClick={() => handleAddMultipleShares(selectedMember?.id)}
@@ -4054,7 +4054,7 @@ const Admin = () => {
 																></textarea>
 															</div>
 
-															<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="applyPenaltyBtn"
+															<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 py-2 px-4 rounded-pill clickDown" id="applyPenaltyBtn"
 																onClick={() => handleApplyCreditPenalty(selectedMember?.id)}
 															>
 																{!isWaitingFetchAction ?
@@ -4634,7 +4634,11 @@ const Admin = () => {
 		const [expenseRecordAmount, setExpenseRecordAmount] = useState('');
 		const [expenseComment, setExpenseComment] = useState('');
 
-		const [transactions, setTransactions] = useState(recordsToShow);
+		const [transactions, setTransactions] = useState(
+			recordsToShow
+				.filter(cr => cr.recordType === 'expense')
+				.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+		);
 
 		// Handle add expense
 		const handleAddExpense = async (e) => {
