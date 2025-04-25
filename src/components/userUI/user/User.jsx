@@ -3561,13 +3561,6 @@ const UserUI = () => {
 												<Coin size={20} weight='fill' className="me-2" /> Savings
 											</button>
 										</li>
-										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'interest' ? 'active blur-bg-2px' : ''}`}
-											onClick={() => { setActiveSection("interest"); hideSideNavbar() }}
-										>
-											<button className="nav-link w-100">
-												<Coins size={20} weight='fill' className="me-2" /> Interest
-											</button>
-										</li>
 										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'credits' ? 'active blur-bg-2px' : ''}`}
 											onClick={() => { setActiveSection("credits"); hideSideNavbar() }}
 										>
@@ -3580,6 +3573,13 @@ const UserUI = () => {
 										>
 											<button className="nav-link w-100">
 												<CashRegister size={20} weight='fill' className="me-2" /> Expenses
+											</button>
+										</li>
+										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'interest' ? 'active blur-bg-2px' : ''}`}
+											onClick={() => { setActiveSection("interest"); hideSideNavbar() }}
+										>
+											<button className="nav-link w-100">
+												<Coins size={20} weight='fill' className="me-2" /> Interest
 											</button>
 										</li>
 										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 ${activeSection === 'reports' ? 'active' : ''}`}
