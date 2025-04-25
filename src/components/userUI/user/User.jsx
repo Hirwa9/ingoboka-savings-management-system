@@ -1422,9 +1422,9 @@ const UserUI = () => {
 															</ul>
 														</div>
 													)}
-													<div className="mb-3 p-2 form-text bg-dark-subtle rounded">
-														<p className='mb-2 small text-dark-emphasis'>
-															Please verify the details before saving. This action is final and cannot be reversed.
+													<div className="mt-4 p-2 form-text rounded">
+														<p className='mb-2 small text-dark-emphasis text-center'>
+															Please verify the details before saving.
 														</p>
 														<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
 															onClick={() => handleAddSaving(selectedMember?.id)}
@@ -1506,8 +1506,8 @@ const UserUI = () => {
 														/>
 														<div className="form-text text-info-emphasis fw-bold">Unit share value is <CurrencyText amount={unitShareValue} /> </div>
 													</div>
-													<div className="mb-3 p-2 form-text bg-dark-subtle rounded">
-														<p className='mb-2 small text-dark-emphasis'>
+													<div className="mt-4 p-2 form-text rounded">
+														<p className='mb-2 small text-dark-emphasis text-center'>
 															Please verify the details before saving. This action is final and cannot be reversed.
 														</p>
 														<button type="submit" className="btn btn-sm btn-outline-dark flex-center w-100 py-2 px-4 rounded-pill clickDown" id="addSavingBtn"
@@ -2986,7 +2986,11 @@ const UserUI = () => {
 																	<CurrencyText amount={Number(record.recordAmount)} />
 																</td>
 																<td>
-																	{record.comment}
+																	{(record.comment.indexOf('(') > -1 && record.comment.indexOf(')') > -1) ?
+																		record.comment.slice(0, record.comment.indexOf('('))
+																		:
+																		record.comment
+																	}
 																</td>
 																<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
 																	<Popover content={<><Watch size={15} /> {getDateHoursMinutes(record.createdAt)}</>} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
