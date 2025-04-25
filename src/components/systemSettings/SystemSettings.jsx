@@ -576,7 +576,7 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                 <div className={`${isAdminUser ? 'd-lg-flex' : ''} align-items-start gap-3`}>
                                     <ul className={`list-unstyled d-flex align-items-start gap-2 flex-wrap ${isAdminUser ? 'col-lg-7 col-xl-8' : ''}`}>
                                         {memberRoles.map((role, index) => (
-                                            <li key={index} className='flex-align-center gap-2 ps-3 pe-2 py-1 border border-secondary border-opacity-50 rounded-3'>
+                                            <li key={index} className={`flex-align-center gap-2 ${isAdminUser ? 'ps-3 pe-2' : 'px-3'} py-1 border border-secondary border-opacity-50 rounded-3`}>
                                                 <span className='text-capitalize'>{role}</span> {isAdminUser &&
                                                     <Menu menuButton={
                                                         <MenuButton className="border-0 p-0 bg-transparent">
@@ -696,7 +696,7 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                 <div className={`${isAdminUser ? 'd-lg-flex' : ''} align-items-start gap-3`}>
                                     <ul className={`list-unstyled d-flex align-items-start gap-2 flex-wrap ${isAdminUser ? 'col-lg-7 col-xl-8' : ''}`}>
                                         {expenseTypes.map((type, index) => (
-                                            <li key={index} className='flex-align-center gap-2 ps-3 pe-2 py-1 border border-secondary border-opacity-50 rounded-3'>
+                                            <li key={index} className={`flex-align-center gap-2 ${isAdminUser ? 'ps-3 pe-2' : 'px-3'} py-1 border border-secondary border-opacity-50 rounded-3`}>
                                                 <span className='text-capitalize'>{type}</span> {isAdminUser &&
                                                     <Menu menuButton={
                                                         <MenuButton className="border-0 p-0 bg-transparent">
