@@ -655,7 +655,7 @@ const Admin = () => {
 	};
 
 	// Active UI section
-	// const [activeSection, setActiveSection] = useState("dashboard");
+	const [activeSection, setActiveSection] = useState("dashboard");
 	// const [activeSection, setActiveSection] = useState("messages");
 	// const [activeSection, setActiveSection] = useState("members");
 	// const [activeSection, setActiveSection] = useState("savings");
@@ -663,7 +663,7 @@ const Admin = () => {
 	// const [activeSection, setActiveSection] = useState("interest");
 	// const [activeSection, setActiveSection] = useState("transactions");
 	// const [activeSection, setActiveSection] = useState("reports");
-	const [activeSection, setActiveSection] = useState("settings");
+	// const [activeSection, setActiveSection] = useState("settings");
 	// const [activeSection, setActiveSection] = useState("auditLogs");
 
 	const [isWaitingFetchAction, setIsWaitingFetchAction] = useState(false);
