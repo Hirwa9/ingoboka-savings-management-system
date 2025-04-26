@@ -590,10 +590,10 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                                             </MenuButton>
                                                         } transition>
                                                             <MenuItem className="smaller" onClick={() => { fncPlaceholder() }}>
-                                                                Edit/rename role
+                                                                Edit
                                                             </MenuItem>
                                                             <MenuItem className="smaller text-danger" onClick={() => { fncPlaceholder() }}>
-                                                                Remove role
+                                                                Remove
                                                             </MenuItem>
                                                         </Menu>
                                                     ) : null
@@ -718,10 +718,10 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                                             </MenuButton>
                                                         } transition>
                                                             <MenuItem className="smaller" onClick={() => { fncPlaceholder() }}>
-                                                                Edit/rename type
+                                                                Edit
                                                             </MenuItem>
                                                             <MenuItem className="smaller text-danger" onClick={() => { fncPlaceholder() }}>
-                                                                Remove type
+                                                                Remove
                                                             </MenuItem>
                                                         </Menu>
                                                     ) : null
