@@ -359,7 +359,7 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                         <hr className='mb-4 d-lg-none' />
                         <div>
                             {/* System Settings */}
-                            <div className="mb-4 p-3 p-xl-4 border-bottom border-secondary text-gray-700">
+                            <div className="mb-4 p-3 p-xl-4 border-bottom border-secondary border-opacity-25 text-gray-700">
                                 <h3>System Settings</h3>
                                 <div className='d-flex flex-column-reverse flex-xl-row py-3 py-xl-5'>
                                     <div className='col-xl-8'>
@@ -572,10 +572,13 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                             </div>
 
                             {/* Role Settings */}
-                            <div className="mb-4 p-3 p-xl-4 border-bottom border-secondary text-gray-700">
+                            <div className="mb-4 p-3 p-xl-4 border-bottom border-secondary border-opacity-25 text-gray-700">
                                 <h3>Role Settings</h3>
                                 <div className={`${isAdminUser ? 'd-lg-flex' : ''} align-items-start gap-3`}>
                                     <div className={`${isAdminUser ? 'col-lg-7 col-xl-8' : ''}`}>
+                                        <p className='d-list-item list-style-square ms-4'>
+                                            Group membership roles used to categorize team members based on their responsibilities and permissions in the organization.
+                                        </p>
                                         <FlexibleList
                                             list={memberRoles.map(role => (
                                                 {
@@ -605,7 +608,7 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                                 type="text"
                                                 placeholder='Enter new role'
                                                 readOnly
-                                                className='form-control border border-secondary rounded-0'
+                                                className='form-control border border-secondary border-opacity-10 rounded-0'
                                                 value={newRole}
                                                 onChange={e => setNewRole(e.target.value)}
                                             />
@@ -620,14 +623,14 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                             </div>
 
                             {/* Credit Settings */}
-                            <div className="mb-4 p-3 p-xl-4 border-bottom border-secondary text-gray-700">
+                            <div className="mb-4 p-3 p-xl-4 border-bottom border-secondary border-opacity-25 text-gray-700">
                                 <h3>Credit Settings</h3>
                                 <div className={`${isAdminUser ? 'd-lg-flex' : ''} align-items-start gap-3`}>
                                     <div className={`mb-2 ${isAdminUser ? 'col-lg-7 col-xl-8' : ''}`}>
-                                        <p>
+                                        <p className='d-list-item list-style-square ms-4'>
                                             Interest rate per approved credit is <b className='text-nowrap'>{creditPrimaryInterest} %</b>.
                                         </p>
-                                        <p className='p-3 border border-secondary smaller'>
+                                        <p className='p-3 border border-secondary border-opacity-10 smaller'>
                                             For every approved credit, the borrower is required to repay the full amount along with an interest of <span className='text-nowrap'>{creditPrimaryInterest}%</span> of the initially requested sum.
                                         </p>
                                     </div>
@@ -638,7 +641,7 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                                 type="number"
                                                 name="interestPrimary"
                                                 readOnly
-                                                className='form-control border border-secondary rounded-0'
+                                                className='form-control border border-secondary border-opacity-10 rounded-0'
                                                 value={creditSettings.interestPrimary}
                                                 min={1}
                                                 max={100}
@@ -657,14 +660,14 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                             </div>
 
                             {/* Shares Settings */}
-                            <div className="mb-4 p-3 p-xl-4 border-bottom border-secondary text-gray-700">
+                            <div className="mb-4 p-3 p-xl-4 border-bottom border-secondary border-opacity-25 text-gray-700">
                                 <h3>Shares Settings</h3>
                                 <div className={`${isAdminUser ? 'd-lg-flex' : ''} align-items-start gap-3`}>
                                     <div className={`mb-2 ${isAdminUser ? 'col-lg-7 col-xl-8' : ''}`}>
-                                        <p>
+                                        <p className='d-list-item list-style-square ms-4'>
                                             Unit share price is <CurrencyText amount={Number(unitShareValue)} className="fw-bold" />.
                                         </p>
-                                        <p className='p-3 border border-secondary smaller'>
+                                        <p className='p-3 border border-secondary border-opacity-10 smaller'>
                                             The value of one share is <CurrencyText amount={Number(unitShareValue)} />. Only multiples of this value are elligible for withdrawal or distribution at the end of the year.
                                         </p>
                                     </div>
@@ -676,7 +679,7 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                                 type="number"
                                                 name="interestPrimary"
                                                 readOnly
-                                                className='form-control border border-secondary rounded-0'
+                                                className='form-control border border-secondary border-opacity-10 rounded-0'
                                                 value={shareSettings.valuePerShare}
                                                 min={1}
                                                 placeholder="Enter share value"
@@ -695,10 +698,13 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                             </div>
 
                             {/* Expense Types */}
-                            <div className="mb-4 p-3 p-xl-4 border-bottom border-secondary text-gray-700">
+                            <div className="mb-4 p-3 p-xl-4 border-bottom border-secondary border-opacity-25 text-gray-700">
                                 <h3>Expense Types</h3>
                                 <div className={`${isAdminUser ? 'd-lg-flex' : ''} align-items-start gap-3`}>
                                     <div className={`${isAdminUser ? 'col-lg-7 col-xl-8' : ''}`}>
+                                        <p className='d-list-item list-style-square ms-4'>
+                                            The following expense types are available:
+                                        </p>
                                         <FlexibleList
                                             list={expenseTypes.map(type => (
                                                 {
@@ -729,7 +735,7 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                                 type="text"
                                                 placeholder='Enter new type'
                                                 readOnly
-                                                className='form-control border border-secondary rounded-0'
+                                                className='form-control border border-secondary border-opacity-10 rounded-0'
                                                 value={newExpenseType}
                                                 onChange={e => setNewExpenseType(e.target.value)}
                                             />
@@ -744,14 +750,14 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                             </div>
 
                             {/* Shares Settings */}
-                            <div className="mb-4 p-3 p-xl-4 border-bottom border-secondary text-gray-700">
+                            <div className="mb-4 p-3 p-xl-4 border-bottom border-secondary border-opacity-25 text-gray-700">
                                 <h3>Savings Settings</h3>
                                 <div className={`${isAdminUser ? 'd-lg-flex' : ''} align-items-start gap-3`}>
                                     <div className={`mb-2 ${isAdminUser ? 'col-lg-7 col-xl-8' : ''}`}>
                                         <p className='d-list-item list-style-square ms-4'>
                                             Monthly savings due day is on the <b>{getNumberWithSuffix(Number(monthlySavingsDay))}</b>.
                                         </p>
-                                        <p className='p-3 border border-secondary smaller'>
+                                        <p className='p-3 border border-secondary border-opacity-10 smaller'>
                                             Monthly contributions and social savings should be recorded by the {getNumberWithSuffix(Number(monthlySavingsDay))} of each month. Any payments made after this date is considered late and subject to delay penalties.
                                         </p>
                                     </div>
@@ -764,7 +770,7 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                                     type="number"
                                                     name="interestPrimary"
                                                     readOnly
-                                                    className='form-control border border-secondary rounded-0'
+                                                    className='form-control border border-secondary border-opacity-10 rounded-0'
                                                     value={savingSettings.dueDate}
                                                     min={1}
                                                     max={31}
@@ -788,7 +794,7 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                         <p className='d-list-item list-style-square ms-4'>
                                             Cotisation savings delay penalty is <CurrencyText amount={Number(cotisationPenalty)} className="fw-bold" />.
                                         </p>
-                                        <p className='p-3 border border-secondary smaller'>
+                                        <p className='p-3 border border-secondary border-opacity-10 smaller'>
                                             A penalty of <CurrencyText amount={Number(cotisationPenalty)} /> applies to monthly contribution savings recorded after the due date mentioned above.
                                         </p>
                                     </div>
@@ -801,7 +807,7 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                                     type="number"
                                                     name="interestPrimary"
                                                     readOnly
-                                                    className='form-control border border-secondary rounded-0'
+                                                    className='form-control border border-secondary border-opacity-10 rounded-0'
                                                     value={savingSettings.delayPenalty}
                                                     min={1}
                                                     placeholder="Enter penalty amount"
