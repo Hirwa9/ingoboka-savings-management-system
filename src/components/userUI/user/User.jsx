@@ -864,9 +864,10 @@ const UserUI = () => {
 								)}
 							</Form>
 							{/* Content */}
-							{membersToShow
-								.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
-								.map((member, index) => (
+							{membersToShow.filter(m => m.id === signedUser.id)
+								.concat(membersToShow.filter(m => m.id !== signedUser.id)
+									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
+								).map((member, index) => (
 									<div className="position-relative mb-3 my-5 px-2 pt-5 border-top border-3 border-secondary border-opacity-25 text-gray-700 member-element"
 										key={index}
 									>
@@ -1249,9 +1250,10 @@ const UserUI = () => {
 							</Form>
 							{/* Content */}
 							<div className="d-lg-flex flex-wrap pb-5">
-								{savingsToShow
-									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
-									.map((member, index) => {
+								{savingsToShow.filter(m => m.id === signedUser.id)
+									.concat(savingsToShow.filter(m => m.id !== signedUser.id)
+										.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
+									).map((member, index) => {
 										const { husbandFirstName, husbandLastName, husbandAvatar, shares, cotisation, social } = member;
 
 										return (
