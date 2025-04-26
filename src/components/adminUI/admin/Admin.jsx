@@ -655,7 +655,7 @@ const Admin = () => {
 	};
 
 	// Active UI section
-	const [activeSection, setActiveSection] = useState("dashboard");
+	// const [activeSection, setActiveSection] = useState("dashboard");
 	// const [activeSection, setActiveSection] = useState("messages");
 	// const [activeSection, setActiveSection] = useState("members");
 	// const [activeSection, setActiveSection] = useState("savings");
@@ -663,7 +663,7 @@ const Admin = () => {
 	// const [activeSection, setActiveSection] = useState("interest");
 	// const [activeSection, setActiveSection] = useState("transactions");
 	// const [activeSection, setActiveSection] = useState("reports");
-	// const [activeSection, setActiveSection] = useState("settings");
+	const [activeSection, setActiveSection] = useState("settings");
 	// const [activeSection, setActiveSection] = useState("auditLogs");
 
 	const [isWaitingFetchAction, setIsWaitingFetchAction] = useState(false);
@@ -3643,7 +3643,7 @@ const Admin = () => {
 																			</td>
 																			<td className='text-center'>
 																				<Menu menuButton={
-																					<MenuButton className="border-0 p-0">
+																					<MenuButton className="border-0 p-0 bg-transparent">
 																						<DotsThreeVertical size={20} weight='bold' />
 																					</MenuButton>
 																				} transition>
@@ -5023,7 +5023,7 @@ const Admin = () => {
 							<h5 className='mb-0 small'>Expenses</h5>
 							<p className='mb-0 fs-75'>( {recordsToShow.filter(cr => cr.recordType === 'expense').length} )</p>
 							<Menu menuButton={
-								<MenuButton className="border-0 p-0">
+								<MenuButton className="border-0 p-0 bg-transparent">
 									<CaretDown size={35} weight='light' className='p-2 position-absolute end-0 top-50 translate-middle-y' />
 								</MenuButton>
 							} transition>
@@ -5061,7 +5061,7 @@ const Admin = () => {
 								} )
 							</p>
 							<Menu menuButton={
-								<MenuButton className="border-0 p-0">
+								<MenuButton className="border-0 p-0 bg-transparent">
 									<CaretDown size={35} weight='light' className='p-2 position-absolute end-0 top-50 translate-middle-y' />
 								</MenuButton>
 							} transition>
@@ -5185,7 +5185,7 @@ const Admin = () => {
 																</td>
 																<td className='text-center'>
 																	<Menu menuButton={
-																		<MenuButton className="border-0 p-0">
+																		<MenuButton className="border-0 p-0 bg-transparent">
 																			<DotsThreeVertical size={20} weight='bold' />
 																		</MenuButton>
 																	} transition>
@@ -5367,7 +5367,7 @@ const Admin = () => {
 															</td>
 															<td className='text-center'>
 																<Menu menuButton={
-																	<MenuButton className="border-0 p-0">
+																	<MenuButton className="border-0 p-0 bg-transparent">
 																		<DotsThreeVertical size={20} weight='bold' />
 																	</MenuButton>
 																} transition>
@@ -5528,7 +5528,7 @@ const Admin = () => {
 															</td>
 															<td className='text-center'>
 																<Menu menuButton={
-																	<MenuButton className="border-0 p-0">
+																	<MenuButton className="border-0 p-0 bg-transparent">
 																		<DotsThreeVertical size={20} weight='bold' />
 																	</MenuButton>
 																} transition>
@@ -6084,7 +6084,7 @@ const Admin = () => {
 									<span className='ms-auto fs-70 opacity-75' style={{ lineHeight: 1 }}>Accountant</span>
 								</div>
 								<Menu menuButton={
-									<MenuButton className="border-0 p-0">
+									<MenuButton className="border-0 p-0 bg-transparent">
 										<img src='/images/man_avatar_image.jpg' alt="" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 d-none d-md-block border border-3 border-light bg-light rounded-circle ptr' />
 									</MenuButton>
 								} transition>

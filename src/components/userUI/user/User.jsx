@@ -3508,7 +3508,7 @@ const UserUI = () => {
 									<span className='ms-auto fs-70 opacity-75 text-capitalize' style={{ lineHeight: 1 }}>{signedUser?.role}</span>
 								</div>
 								<Menu menuButton={
-									<MenuButton className="border-0 p-0">
+									<MenuButton className="border-0 p-0 bg-transparent">
 										<img src={signedUser?.husbandAvatar} alt="" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 d-none d-md-block border border-3 border-light bg-light rounded-circle ptr' />
 									</MenuButton>
 								} transition>
