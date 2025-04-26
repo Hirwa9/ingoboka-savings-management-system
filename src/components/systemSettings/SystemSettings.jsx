@@ -599,6 +599,8 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                                     ) : null
                                                 }
                                             ))}
+                                            containerBg='transparent'
+                                            listItemClassName='shadow-sm'
                                         />
                                     </div>
                                     {isAdminUser && (
@@ -725,6 +727,8 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                                     ) : null
                                                 }
                                             ))}
+                                            containerBg='transparent'
+                                            listItemClassName='shadow-sm'
                                         />
                                     </div>
 
