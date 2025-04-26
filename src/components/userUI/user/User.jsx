@@ -29,6 +29,7 @@ import SmallLoader from '../../common/SmallLoader';
 import NextStepInformer from '../../common/NextStepInformer';
 import SystemSettings from '../../systemSettings/SystemSettings';
 import ToogleButton from '../../common/ToogleButton';
+import PersonAvatar from '../../common/PersonAvatar';
 
 const UserUI = () => {
 
@@ -874,14 +875,19 @@ const UserUI = () => {
 										<div className="position-absolute top-0 me-3 d-flex gap-3"
 											style={{ right: 0, translate: "0 -50%" }}
 										>
-											<img src={member.husbandAvatar ? member.husbandAvatar : '/images/man_avatar_image.jpg'} alt=""
-												className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle ptr"
+											<PersonAvatar
+												type='man'
+												data={member}
+												size='5rem'
+												className='ptr'
 												onClick={() => { setSelectedMember(member); setShowMemberInfo(true); setShowPrimaryMemberInfo(true) }}
 											/>
 											{member.wifeFirstName && (
-												<img src={member.wifeAvatar ? member.wifeAvatar : '/images/woman_avatar_image.jpg'}
-													alt={member.wifeFirstName ? `${member.wifeFirstName.slice(0, 1)}.${member.wifeLastName}` : 'Partner image'}
-													className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle ptr"
+												<PersonAvatar
+													type='woman'
+													data={member}
+													size='5rem'
+													className='ptr'
 													onClick={() => {
 														if (member?.wifeFirstName === null) {
 															messageToast({ message: "No information available", selfCloseTimeout: 2000 })
@@ -1164,10 +1170,7 @@ const UserUI = () => {
 		// Handle add savings
 		const handleAddMultipleShares = async (id) => {
 			if (!multipleSharesAmount || Number(multipleSharesAmount) <= 0) {
-				return toast({
-					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter valid number of shares to continue</>,
-					type: 'gray-800'
-				});
+				return warningToast({ message: "Enter valid number of shares to continue" });
 			}
 
 			try {
@@ -1254,7 +1257,7 @@ const UserUI = () => {
 									.concat(savingsToShow.filter(m => m.id !== signedUser.id)
 										.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
 									).map((member, index) => {
-										const { husbandFirstName, husbandLastName, husbandAvatar, shares, cotisation, social } = member;
+										const { husbandFirstName, husbandLastName, shares, cotisation, social } = member;
 
 										return (
 											<div key={index} className='col-lg-6 px-lg-3'>
@@ -1263,10 +1266,7 @@ const UserUI = () => {
 													<div className="position-absolute top-0 me-3 d-flex gap-3"
 														style={{ right: 0, translate: "0 -50%" }}
 													>
-														<img src={husbandAvatar ? husbandAvatar : '/images/man_avatar_image.jpg'}
-															alt={`${husbandFirstName.slice(0, 1)}.${husbandLastName}`}
-															className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
-														/>
+														<PersonAvatar type='man' data={member} size='5rem' />
 													</div>
 													<div className="px-lg-2">
 														<h5 className="mb-3 fs-4">{`${husbandFirstName} ${husbandLastName}`}</h5>
@@ -1310,10 +1310,7 @@ const UserUI = () => {
 													</div>
 												</h6>
 												<div className="flex-align-center gap-3 mb-3">
-													<img src={selectedMember?.husbandAvatar ? selectedMember?.husbandAvatar : '/images/man_avatar_image.jpg'}
-														alt={`${selectedMember?.husbandFirstName.slice(0, 1)}.${selectedMember?.husbandLastName}`}
-														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
-													/>
+													<PersonAvatar type='man' data={selectedMember} />
 													<div className='smaller'>
 														Add savings for {selectedMember?.husbandFirstName} {selectedMember?.husbandLastName}
 													</div>
@@ -1460,10 +1457,7 @@ const UserUI = () => {
 													</div>
 												</h6>
 												<div className="flex-align-center gap-3 mb-3">
-													<img src={selectedMember?.husbandAvatar ? selectedMember?.husbandAvatar : '/images/man_avatar_image.jpg'}
-														alt={`${selectedMember?.husbandFirstName.slice(0, 1)}.${selectedMember?.husbandLastName}`}
-														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
-													/>
+													<PersonAvatar type='man' data={selectedMember} />
 													<div className='smaller'>
 														Save multiple shares to {selectedMember?.husbandFirstName} {selectedMember?.husbandLastName}
 													</div>
@@ -1931,9 +1925,7 @@ const UserUI = () => {
 											<div className='w-4rem ms-3 mx-xl-4 ptr clickDown'
 												onClick={() => { setSelectedMember(member); setShowSelectedMemberCredits(true) }}
 											>
-												<img src={member.husbandAvatar ? member.husbandAvatar : '/images/man_avatar_image.jpg'} alt=""
-													className="w-100 ratio-1-1 object-fit-cover p-1 bg-light rounded-circle"
-												/>
+												<PersonAvatar type='man' data={member} size='4rem' bordered={false} showAlt={false} className='w-100 p-1' />
 												<div className="mt-1 fs-70 text-center text-primaryColor fw-semibold">
 													My credits
 												</div>
@@ -1951,10 +1943,7 @@ const UserUI = () => {
 										<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
 											<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-700 border-bottom">
 												<div className='flex-align-center'>
-													<img src={selectedMember?.husbandAvatar ? selectedMember?.husbandAvatar : '/images/man_avatar_image.jpg'}
-														alt={`${selectedMember?.husbandFirstName.slice(0, 1)}.${selectedMember?.husbandLastName}`}
-														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
-													/>
+													<PersonAvatar type='man' data={selectedMember} />
 													<span className='ms-2' style={{ lineHeight: 1 }}>
 														Credits of {`${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName}`}
 													</span>
@@ -2560,10 +2549,7 @@ const UserUI = () => {
 																{associatedMember[0] && (
 																	<>
 																		<div className='d-flex gap-2 mb-2'>
-																			<img src={associatedMember[0].husbandAvatar ? associatedMember[0].husbandAvatar : '/images/man_avatar_image.jpg'}
-																				alt={`${associatedMember[0].husbandFirstName.slice(0, 1)}.${associatedMember[0].husbandLastName}`}
-																				className="w-3rem h-3rem flex-shrink-0 object-fit-cover p-1 border border-3 border-light border-opacity-25 rounded-circle"
-																			/>
+																			<PersonAvatar type='man' data={associatedMember[0]} size='3rem' className='flex-shrink-0' />
 																			<div className='mt-1 fs-4 text-dark' style={{ lineHeight: 1 }}>
 																				Backfill Plan of {
 																					`${associatedMember[0].husbandFirstName} ${associatedMember[0].husbandLastName}`
@@ -2850,57 +2836,6 @@ const UserUI = () => {
 		const [activeTransactionSection, setActiveTransactionSection] = useState('withdrawals');
 		const [activeTransactionSectionColor, setActiveTransactionSectionColor] = useState('#f4e4b675');
 
-		// Adding expense records
-		const [showAddExpenseRecord, setShowAddExpenseRecord] = useState(false);
-		const [expenseRecordType, setExpenseRecordType] = useState('');
-		const [expenseRecordAmount, setExpenseRecordAmount] = useState('');
-		const [expenseComment, setExpenseComment] = useState('');
-
-		// Handle add expense
-		const handleAddExpense = async (e) => {
-			e.preventDefault();
-			if (!expenseRecordAmount || Number(expenseRecordAmount) <= 0) {
-				return toast({
-					message: <><WarningCircle size={22} weight='fill' className='me-1 opacity-50' /> Enter valid expense amount to continue</>,
-					type: 'gray-800'
-				});
-			}
-
-			try {
-				setIsWaitingFetchAction(true);
-
-				const response = await fetch(`${BASE_URL}/records/recordExpense`, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						secondaryType: expenseRecordType,
-						expenseAmount: expenseRecordAmount,
-						comment: expenseComment[0].toUpperCase() + expenseComment.slice(1)
-					}),
-				});
-
-				// Fetch error
-				if (!response.ok) {
-					const errorData = await response.json();
-					throw new Error(errorData.message || 'Error recording the expense');
-				}
-
-				// Successful fetch
-				const data = await response.json();
-				successToast({ message: data.message });
-				setShowAddExpenseRecord(false);
-				setErrorWithFetchAction(null);
-				fetchMembers();
-				fetchRecords();
-			} catch (error) {
-				setErrorWithFetchAction(error.message);
-				cError("Error adding savings:", error);
-				warningToast({ message: error.message || "An unknown error occurred" });
-			} finally {
-				setIsWaitingFetchAction(false);
-			}
-		};
-
 		useEffect(() => {
 			if (activeTransactionSection === 'withdrawals') {
 				setActiveTransactionSectionColor('#f4e4b675');
@@ -2957,119 +2892,53 @@ const UserUI = () => {
 					{!loadingMembers && !errorLoadingMembers && membersToShow.length > 0 && (
 						<div style={{ minHeight: '60vh' }}>
 							{/* Expenses table */}
-							{activeTransactionSection === 'withdrawals' && (
-								<>
-									<div className='overflow-auto'>
-										<table className="table table-striped table-hover h-100">
-											<thead className='table-warning position-sticky top-0 inx-1 text-uppercase small'>
-												<tr>
-													<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
-													<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Type</th>
-													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
-													<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
-													<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date</th>
-												</tr>
-											</thead>
-											<tbody>
-												{recordsToShow
-													.filter(cr => cr.recordType === 'expense')
-													.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-													.map((record, index) => {
+							<div className='overflow-auto'>
+								<table className="table table-striped table-hover h-100">
+									<thead className='table-warning position-sticky top-0 inx-1 text-uppercase small'>
+										<tr>
+											<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+											<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Type</th>
+											<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
+											<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
+											<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date</th>
+										</tr>
+									</thead>
+									<tbody>
+										{recordsToShow
+											.filter(cr => cr.recordType === 'expense')
+											.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+											.map((record, index) => {
 
-														return (
-															<tr key={index} className="small cursor-default expense-row">
-																<td className="ps-sm-3 border-bottom-3 border-end">
-																	{index + 1}
-																</td>
-																<td>
-																	{record.recordSecondaryType}
-																</td>
-																<td>
-																	<CurrencyText amount={Number(record.recordAmount)} />
-																</td>
-																<td>
-																	{(record.comment.indexOf('(') > -1 && record.comment.indexOf(')') > -1) ?
-																		record.comment.slice(0, record.comment.indexOf('('))
-																		:
-																		record.comment
-																	}
-																</td>
-																<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
-																	<Popover content={<><Watch size={15} /> {getDateHoursMinutes(record.createdAt)}</>} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
-																		<FormatedDate date={record.createdAt} />
-																	</Popover>
-																</td>
-															</tr>
-														)
-													})
-												}
-											</tbody>
-										</table>
-									</div>
-
-									{showAddExpenseRecord &&
-										<>
-											<div className='position-fixed fixed-top inset-0 bg-white3 py-3 py-md-5 inx-high'>
-												<div className="container col-md-6 col-lg-5 col-xl-4 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-													<div className="h-100 px-3 bg-light text-gray-700">
-														<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
-															<div className='flex-align-center'>
-																<CashRegister weight='fill' className="me-1" />
-																<span style={{ lineHeight: 1 }}>Record an expense</span>
-															</div>
-															<div title="Cancel" onClick={() => { setShowAddExpenseRecord(false); setExpenseRecordAmount('') }}>
-																<X size={25} className='ptr' />
-															</div>
-														</h6>
-
-														{/* The form */}
-														<form onSubmit={(e) => handleAddExpense(e)} className="px-sm-2 pb-5">
-															<div className="mb-3">
-																<label htmlFor="expenseType" className="form-label fw-bold">Expense type</label>
-																<select id="expenseType" name="expenseType" className="form-select"
-																	value={expenseRecordType}
-																	onChange={(e) => setExpenseRecordType(e.target.value)}
-																	required>
-																	<option value="" disabled className='p-2 px-3 small text-gray-500'>Select type</option>
-																	{expenseTypes
-																		.map((val, index) => (
-																			<option key={index} value={val} className='p-2 px-3 small'>
-																				{val}
-																			</option>
-																		))
-																	}
-																</select>
-															</div>
-															<div className="mb-3">
-																<label htmlFor="expenseAmount" className="form-label fw-bold" required>Expense amount ({expenseRecordAmount !== '' ? Number(expenseRecordAmount).toLocaleString() : ''} RWF )</label>
-																<input type="number" id="expenseAmount" name="expenseAmount" className="form-control" min="1" required placeholder="Enter amount"
-																	value={expenseRecordAmount}
-																	onChange={e => setExpenseRecordAmount(e.target.value)}
-																/>
-															</div>
-															<div className="mb-3">
-																<label htmlFor="expenseComment" className="form-label fw-bold" required>Expense comment</label>
-																<textarea rows={3} id="expenseComment" name="expenseComment" className="form-control" placeholder="Enter comment"
-																	value={expenseComment}
-																	onChange={e => setExpenseComment(e.target.value)}
-																></textarea>
-															</div>
-
-															<button type="submit" className="btn btn-sm btn-dark flex-center w-100 mt-3 py-2 px-4 rounded-pill clickDown" id="addExpenseBtn"
-															>
-																{!isWaitingFetchAction ?
-																	<>Save Record <FloppyDisk size={18} className='ms-2' /></>
-																	: <>Working <SmallLoader color='light' /></>
-																}
-															</button>
-														</form>
-													</div>
-												</div>
-											</div>
-										</>
-									}
-								</>
-							)}
+												return (
+													<tr key={index} className="small cursor-default expense-row">
+														<td className="ps-sm-3 border-bottom-3 border-end">
+															{index + 1}
+														</td>
+														<td>
+															{record.recordSecondaryType}
+														</td>
+														<td>
+															<CurrencyText amount={Number(record.recordAmount)} />
+														</td>
+														<td>
+															{(record.comment.indexOf('(') > -1 && record.comment.indexOf(')') > -1) ?
+																record.comment.slice(0, record.comment.indexOf('('))
+																:
+																record.comment
+															}
+														</td>
+														<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
+															<Popover content={<><Watch size={15} /> {getDateHoursMinutes(record.createdAt)}</>} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
+																<FormatedDate date={record.createdAt} />
+															</Popover>
+														</td>
+													</tr>
+												)
+											})
+										}
+									</tbody>
+								</table>
+							</div>
 						</div>
 					)}
 				</div>
@@ -3511,13 +3380,13 @@ const UserUI = () => {
 								</div>
 								<Menu menuButton={
 									<MenuButton className="border-0 p-0 bg-transparent">
-										<img src={signedUser?.husbandAvatar} alt="" className='w-2_5rem ratio-1-1 object-fit-cover ms-2 d-none d-md-block border border-3 border-light bg-light rounded-circle ptr' />
+										<PersonAvatar type='man' data={signedUser} size='2_5rem' bordered={false} showAlt={false} className='ms-2 d-none d-md-block border border-3 border-light ptr' />
 									</MenuButton>
 								} transition>
-									{/* <MenuItem onClick={() => { setActiveSection('settings') }}>
-								<Gear weight='fill' className="me-2 opacity-50" /> Settings
-							</MenuItem>
-							<MenuDivider /> */}
+									<MenuItem onClick={() => { setActiveSection('settings') }}>
+										<Gear weight='fill' className="me-2 opacity-50" /> Settings
+									</MenuItem>
+									<MenuDivider />
 									<MenuItem onClick={() => { logout() }}>
 										<SignOut weight='fill' className="me-2 opacity-50" /> Sign out
 									</MenuItem>

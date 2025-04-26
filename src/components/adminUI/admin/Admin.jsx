@@ -33,6 +33,7 @@ import SmallLoader from '../../common/SmallLoader';
 import NextStepInformer from '../../common/NextStepInformer';
 import AbsoluteCloseButton from '../../common/AbsoluteCloseButton';
 import ToogleButton from '../../common/ToogleButton';
+import PersonAvatar from '../../common/PersonAvatar';
 
 const Admin = () => {
 
@@ -1192,13 +1193,18 @@ const Admin = () => {
 										<div className="position-absolute top-0 me-3 d-flex gap-3"
 											style={{ right: 0, translate: "0 -50%" }}
 										>
-											<img src={member.husbandAvatar ? member.husbandAvatar : '/images/man_avatar_image.jpg'} alt=""
-												className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle ptr"
+											<PersonAvatar
+												type='man'
+												data={member}
+												size='5rem'
+												className='ptr'
 												onClick={() => { setSelectedMember(member); setShowMemberInfo(true); setShowPrimaryMemberInfo(true) }}
 											/>
-											<img src={member.wifeAvatar ? member.wifeAvatar : '/images/woman_avatar_image.jpg'}
-												alt={member.wifeFirstName ? `${member.wifeFirstName.slice(0, 1)}.${member.wifeLastName}` : 'Partner image'}
-												className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle ptr"
+											<PersonAvatar
+												type='woman'
+												data={member}
+												size='5rem'
+												className='ptr'
 												onClick={() => {
 													if (member?.wifeFirstName === null) {
 														messageToast({ message: "No information available", selfCloseTimeout: 2000 })
@@ -1642,15 +1648,9 @@ const Admin = () => {
 												</div>
 
 												<div className="flex-align-center gap-3 mb-3">
-													<img src={
-														editHeadOfFamily ? (
-															selectedMember?.husbandAvatar ? selectedMember?.husbandAvatar : '/images/man_avatar_image.jpg'
-														) : (
-															selectedMember?.wifeAvatar ? selectedMember?.wifeAvatar : '/images/woman_avatar_image.jpg'
-														)
-													}
-														alt={`${selectedMember?.husbandFirstName.slice(0, 1)}.${selectedMember?.husbandLastName}`}
-														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
+													<PersonAvatar
+														type={editHeadOfFamily ? 'man' : 'woman'}
+														data={selectedMember}
 													/>
 													<div className='fw-semibold smaller'>
 														Edit {
@@ -1784,10 +1784,7 @@ const Admin = () => {
 											<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
 												<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-700 border-bottom">
 													<div className='flex-align-center'>
-														<img src={selectedMember?.husbandAvatar ? selectedMember?.husbandAvatar : '/images/man_avatar_image.jpg'}
-															alt={`${selectedMember?.husbandFirstName.slice(0, 1)}.${selectedMember?.husbandLastName}`}
-															className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
-														/>
+														<PersonAvatar type='man' data={selectedMember} />
 														<span className='ms-2' style={{ lineHeight: 1 }}>
 															{!showMemberRemoval ? 'Finances of' : 'Remove'} {`${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName}`}
 														</span>
@@ -2444,7 +2441,7 @@ const Admin = () => {
 								{savingsToShow
 									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
 									.map((member, index) => {
-										const { husbandFirstName, husbandLastName, husbandAvatar, shares, cotisation, social } = member;
+										const { husbandFirstName, husbandLastName, shares, cotisation, social } = member;
 
 										return (
 											<div key={index} className='col-lg-6 px-lg-3'>
@@ -2453,10 +2450,7 @@ const Admin = () => {
 													<div className="position-absolute top-0 me-3 d-flex gap-3"
 														style={{ right: 0, translate: "0 -50%" }}
 													>
-														<img src={husbandAvatar ? husbandAvatar : '/images/man_avatar_image.jpg'}
-															alt={`${husbandFirstName.slice(0, 1)}.${husbandLastName}`}
-															className="w-5rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
-														/>
+														<PersonAvatar type='man' data={member} size='5rem' />
 													</div>
 													<div className="px-lg-2">
 														<h5 className="mb-3 fs-4">{`${husbandFirstName} ${husbandLastName}`}</h5>
@@ -2509,10 +2503,7 @@ const Admin = () => {
 													</div>
 												</h6>
 												<div className="flex-align-center gap-3 mb-3">
-													<img src={selectedMember?.husbandAvatar ? selectedMember?.husbandAvatar : '/images/man_avatar_image.jpg'}
-														alt={`${selectedMember?.husbandFirstName.slice(0, 1)}.${selectedMember?.husbandLastName}`}
-														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
-													/>
+													<PersonAvatar type='man' data={selectedMember} />
 													<div className='smaller'>
 														Add savings for {selectedMember?.husbandFirstName} {selectedMember?.husbandLastName}
 													</div>
@@ -2659,10 +2650,7 @@ const Admin = () => {
 													</div>
 												</h6>
 												<div className="flex-align-center gap-3 mb-3">
-													<img src={selectedMember?.husbandAvatar ? selectedMember?.husbandAvatar : '/images/man_avatar_image.jpg'}
-														alt={`${selectedMember?.husbandFirstName.slice(0, 1)}.${selectedMember?.husbandLastName}`}
-														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
-													/>
+													<PersonAvatar type='man' data={selectedMember} />
 													<div className='smaller'>
 														Save multiple shares to {selectedMember?.husbandFirstName} {selectedMember?.husbandLastName}
 													</div>
@@ -3549,10 +3537,7 @@ const Admin = () => {
 											<div className='w-4rem ptr clickDown'
 												onClick={() => { setSelectedMember(member); setShowSelectedMemberCredits(true) }}
 											>
-												<img src={member.husbandAvatar ? member.husbandAvatar : '/images/man_avatar_image.jpg'}
-													alt={`${member.husbandFirstName} ${member.husbandLastName}`}
-													className="w-100 ratio-1-1 object-fit-cover p-1 bg-light rounded-circle"
-												/>
+												<PersonAvatar type='man' data={member} size='4rem' bordered={false} className="w-100 p-1" />
 												<div className="text-truncate fs-70 text-center mt-1">
 													{`${member.husbandFirstName} ${member.husbandLastName}`}
 												</div>
@@ -3711,10 +3696,7 @@ const Admin = () => {
 										<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
 											<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-700 border-bottom">
 												<div className='flex-align-center'>
-													<img src={selectedMember?.husbandAvatar ? selectedMember?.husbandAvatar : '/images/man_avatar_image.jpg'}
-														alt={`${selectedMember?.husbandFirstName.slice(0, 1)}.${selectedMember?.husbandLastName}`}
-														className="w-3rem ratio-1-1 object-fit-cover p-1 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
-													/>
+													<PersonAvatar type='man' data={selectedMember} />
 													<span className='ms-2' style={{ lineHeight: 1 }}>
 														Credits of {`${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName}`}
 													</span>
@@ -4187,13 +4169,12 @@ const Admin = () => {
 																					onClick={
 																						() => {
 																							if (Number(allFigures?.balance) < Number(credit.creditAmount)) {
-																								toast({
+																								warningToast({
 																									message:
 																										<>
 																											<WarningCircle size={22} weight='fill' className='me-1 opacity-50' />
 																											<span className="ms-1">Insufficient balance. <CurrencyText amount={Number(allFigures?.balance)} smallCurrency className="fw-semibold ms-1" />. Credit can not be approved.</span>
 																										</>,
-																									type: "warning",
 																									selfClose: false,
 																								});
 																							} else {
@@ -4467,10 +4448,7 @@ const Admin = () => {
 																{associatedMember[0] && (
 																	<>
 																		<div className='d-flex gap-2 mb-2'>
-																			<img src={associatedMember[0].husbandAvatar ? associatedMember[0].husbandAvatar : '/images/man_avatar_image.jpg'}
-																				alt={`${associatedMember[0].husbandFirstName.slice(0, 1)}.${associatedMember[0].husbandLastName}`}
-																				className="w-3rem h-3rem flex-shrink-0 object-fit-cover p-1 border border-3 border-light border-opacity-25 rounded-circle"
-																			/>
+																			<PersonAvatar type='man' data={associatedMember[0]} size='3rem' className='flex-shrink-0' />
 																			<div className='mt-1 fs-4 text-dark' style={{ lineHeight: 1 }}>
 																				Backfill Plan of {
 																					`${associatedMember[0].husbandFirstName} ${associatedMember[0].husbandLastName}`
@@ -4580,13 +4558,12 @@ const Admin = () => {
 																	onClick={
 																		() => {
 																			if (Number(allFigures?.balance) < Number(selectedCredit.creditAmount)) {
-																				toast({
+																				warningToast({
 																					message:
 																						<>
 																							<WarningCircle size={22} weight='fill' className='me-1 opacity-50' />
 																							<span className="ms-1">Insufficient balance. <CurrencyText amount={Number(allFigures?.balance)} smallCurrency className="fw-semibold ms-1" />. Credit can not be approved.</span>
 																						</>,
-																					type: "warning",
 																					selfClose: false,
 																				});
 																			} else {
@@ -6125,7 +6102,13 @@ const Admin = () => {
 
 													return (
 														<div key={index} className="d-flex mb-2 py-2 border-bottom">
-															<img src={associatedMember.husbandAvatar ? associatedMember.husbandAvatar : '/images/man_avatar_image.jpg'} alt="" className='w-2rem h-2rem flex-grow-0 flex-shrink-0 me-2 object-fit-cover bg-light rounded-circle' />
+															<PersonAvatar
+																type='man'
+																data={associatedMember}
+																size='2rem'
+																bordered={false}
+																className='flex-grow-0 flex-shrink-0 me-2'
+															/>
 															<div>
 																<div className="d-flex align-items-center justify-content-between mb-1 pb-1 border-bottom text-primaryColor small">
 																	<span>Loan request</span>
