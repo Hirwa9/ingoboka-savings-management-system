@@ -5,11 +5,11 @@ const useCustomDialogs = () => {
     // Toast
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('This is a toast message');
-    const [toastType, setToastType] = useState('gray-300');
+    const [toastType, setToastType] = useState('gray-400');
     const [toastSelfClose, setToastSelfClose] = useState(true);
     const [toastSelfCloseTimeout, setToastSelfCloseTimeout] = useState(4000);
 
-    const toast = ({ message, type = 'gray-300', selfClose = true, selfCloseTimeout = 4000 }) => {
+    const toast = ({ message, type = 'gray-400', selfClose = true, selfCloseTimeout = 4000 }) => {
         setShowToast(true);
         setToastMessage(message);
         setToastType(type);
@@ -20,7 +20,7 @@ const useCustomDialogs = () => {
     const resetToast = () => {
         setShowToast(false);
         setToastMessage('');
-        setToastType('gray-300');
+        setToastType('gray-400');
         setToastSelfClose(true);
         setToastSelfCloseTimeout(4000);
     };
@@ -59,7 +59,7 @@ const useCustomDialogs = () => {
     const [confirmDialogActionText, setConfirmDialogActionText] = useState('Yes, continue');
     const [confirmDialogCloseText, setConfirmDialogCloseText] = useState('Cancel');
     const [confirmDialogCloseCallback, setConfirmDialogCloseCallback] = useState(null);
-    const [confirmDialogType, setConfirmDialogType] = useState('gray-800');
+    const [confirmDialogType, setConfirmDialogType] = useState('gray-400');
     const [confirmDialogActionWaiting, setConfirmDialogActionWaiting] = useState(false);
 
     const customConfirmDialog = ({ message, action, actionText, closeText, closeCallback, type }) => {
@@ -69,7 +69,7 @@ const useCustomDialogs = () => {
         setConfirmDialogActionText(actionText || 'Yes, continue');
         setConfirmDialogCloseText(closeText || 'Cancel');
         setConfirmDialogCloseCallback(() => closeCallback);
-        setConfirmDialogType(type || 'gray-800');
+        setConfirmDialogType(type || 'gray-400');
     };
 
     const resetConfirmDialog = () => {
@@ -78,7 +78,7 @@ const useCustomDialogs = () => {
         setConfirmDialogActionText('Yes, continue');
         setConfirmDialogCloseText('Cancel');
         setConfirmDialogCloseCallback(null);
-        setConfirmDialogType('gray-800');
+        setConfirmDialogType('gray-400');
         setConfirmDialogAction(null);
         setConfirmDialogActionWaiting(false);
     };
@@ -86,7 +86,7 @@ const useCustomDialogs = () => {
     // Prompt
     const [showPrompt, setShowPrompt] = useState(false);
     const [promptMessage, setPromptMessage] = useState('');
-    const [promptType, setPromptType] = useState('gray-800');
+    const [promptType, setPromptType] = useState('gray-400');
     const [promptInputType, setPromptInputType] = useState('text');
     const [promptSelectInputOptions, setPromptSelectInputOptions] = useState([]);
     const promptInputValue = useRef('');
@@ -101,13 +101,13 @@ const useCustomDialogs = () => {
         setPromptSelectInputOptions(selectOptions || []);
         setPromptAction(() => action);
         setPromptInputPlaceholder(placeholder || 'Enter value');
-        setPromptType(type || 'gray-800');
+        setPromptType(type || 'gray-400');
     };
 
     const resetPrompt = () => {
         setShowPrompt(false);
         setPromptMessage('');
-        setPromptType('gray-800');
+        setPromptType('gray-400');
         setPromptInputType('text');
         setPromptSelectInputOptions([]);
         promptInputValue.current = '';
