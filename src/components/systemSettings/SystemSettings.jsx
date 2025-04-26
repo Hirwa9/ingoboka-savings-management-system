@@ -8,6 +8,7 @@ import MyToast from '../common/Toast';
 import { Axios, BASE_URL } from '../../api/api';
 import { fncPlaceholder, getNumberWithSuffix, maxInputNumber } from '../../scripts/myScripts';
 import CurrencyText from '../common/CurrencyText';
+import FlexibleList from '../common/FlexibleList';
 
 const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stopLoading }) => {
 
@@ -529,28 +530,28 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                                                     </>
                                                 )}
                                             </p>
-                                            <div class="w-100 d-flex align-items-center mb-2">
-                                                <div class="p-2 d-flex align-items-center justify-content-center rounded-circle me-2 me-sm-3 bg-gray-300">
+                                            <div className="w-100 d-flex align-items-center mb-2">
+                                                <div className="p-2 d-flex align-items-center justify-content-center rounded-circle me-2 me-sm-3 bg-gray-300">
                                                     <Phone size={20} fill='var(--bs-gray-700)' />
                                                 </div>
-                                                <div class="small d-grid">
-                                                    <span class="me-2 fw-bold"> Phone:</span> <span>{systemSettingsInitialValue?.phone}</span>
+                                                <div className="small d-grid">
+                                                    <span className="me-2 fw-bold"> Phone:</span> <span>{systemSettingsInitialValue?.phone}</span>
                                                 </div>
                                             </div>
-                                            <div class="w-100 d-flex align-items-center mb-2">
-                                                <div class="p-2 d-flex align-items-center justify-content-center rounded-circle me-2 me-sm-3 bg-gray-300">
+                                            <div className="w-100 d-flex align-items-center mb-2">
+                                                <div className="p-2 d-flex align-items-center justify-content-center rounded-circle me-2 me-sm-3 bg-gray-300">
                                                     <Envelope size={20} fill='var(--bs-gray-700)' />
                                                 </div>
-                                                <div class="small d-grid">
-                                                    <span class="me-2 fw-bold"> Email:</span> <span>{systemSettingsInitialValue?.email}</span>
+                                                <div className="small d-grid">
+                                                    <span className="me-2 fw-bold"> Email:</span> <span>{systemSettingsInitialValue?.email}</span>
                                                 </div>
                                             </div>
-                                            <div class="w-100 d-flex align-items-center mb-2">
-                                                <div class="p-2 d-flex align-items-center justify-content-center rounded-circle me-2 me-sm-3 bg-gray-300">
+                                            <div className="w-100 d-flex align-items-center mb-2">
+                                                <div className="p-2 d-flex align-items-center justify-content-center rounded-circle me-2 me-sm-3 bg-gray-300">
                                                     <MapPinArea size={20} fill='var(--bs-gray-700)' />
                                                 </div>
-                                                <div class="small d-grid">
-                                                    <span class="me-2 fw-bold"> Location:</span> <span>
+                                                <div className="small d-grid">
+                                                    <span className="me-2 fw-bold"> Location:</span> <span>
                                                         <span className="text-capitalize-first-letter">{systemSettingsInitialValue?.address?.district}</span>, <span className="text-capitalize-first-letter">{systemSettingsInitialValue?.address?.country}</span>
                                                     </span>
                                                 </div>
@@ -574,26 +575,29 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                             <div className="mb-4 p-3 p-xl-4 border-bottom border-secondary text-gray-700">
                                 <h3>Role Settings</h3>
                                 <div className={`${isAdminUser ? 'd-lg-flex' : ''} align-items-start gap-3`}>
-                                    <ul className={`list-unstyled d-flex align-items-start gap-2 flex-wrap ${isAdminUser ? 'col-lg-7 col-xl-8' : ''}`}>
-                                        {memberRoles.map((role, index) => (
-                                            <li key={index} className={`flex-align-center gap-2 ${isAdminUser ? 'ps-3 pe-2' : 'px-3'} py-1 border border-secondary border-opacity-50 rounded-3`}>
-                                                <span className='text-capitalize'>{role}</span> {isAdminUser &&
-                                                    <Menu menuButton={
-                                                        <MenuButton className="border-0 p-0 bg-transparent">
-                                                            <DotsThreeVertical weight='bold' />
-                                                        </MenuButton>
-                                                    } transition>
-                                                        <MenuItem className="smaller" onClick={() => { fncPlaceholder() }}>
-                                                            Edit/rename role
-                                                        </MenuItem>
-                                                        <MenuItem className="smaller text-danger" onClick={() => { fncPlaceholder() }}>
-                                                            Remove role
-                                                        </MenuItem>
-                                                    </Menu>
+                                    <div className={`${isAdminUser ? 'col-lg-7 col-xl-8' : ''}`}>
+                                        <FlexibleList
+                                            list={memberRoles.map(role => (
+                                                {
+                                                    title: role,
+                                                    icon: isAdminUser ? (
+                                                        <Menu menuButton={
+                                                            <MenuButton className="border-0 p-0 bg-transparent">
+                                                                <DotsThreeVertical weight='bold' />
+                                                            </MenuButton>
+                                                        } transition>
+                                                            <MenuItem className="smaller" onClick={() => { fncPlaceholder() }}>
+                                                                Edit/rename role
+                                                            </MenuItem>
+                                                            <MenuItem className="smaller text-danger" onClick={() => { fncPlaceholder() }}>
+                                                                Remove role
+                                                            </MenuItem>
+                                                        </Menu>
+                                                    ) : null
                                                 }
-                                            </li>
-                                        ))}
-                                    </ul>
+                                            ))}
+                                        />
+                                    </div>
                                     {isAdminUser && (
                                         <div className='col'>
                                             <p className='mt-lg-3 mb-1 text-secondary text-center text-uppercase small'>Add a new role</p>
@@ -694,26 +698,29 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                             <div className="mb-4 p-3 p-xl-4 border-bottom border-secondary text-gray-700">
                                 <h3>Expense Types</h3>
                                 <div className={`${isAdminUser ? 'd-lg-flex' : ''} align-items-start gap-3`}>
-                                    <ul className={`list-unstyled d-flex align-items-start gap-2 flex-wrap ${isAdminUser ? 'col-lg-7 col-xl-8' : ''}`}>
-                                        {expenseTypes.map((type, index) => (
-                                            <li key={index} className={`flex-align-center gap-2 ${isAdminUser ? 'ps-3 pe-2' : 'px-3'} py-1 border border-secondary border-opacity-50 rounded-3`}>
-                                                <span className='text-capitalize'>{type}</span> {isAdminUser &&
-                                                    <Menu menuButton={
-                                                        <MenuButton className="border-0 p-0 bg-transparent">
-                                                            <DotsThreeVertical weight='bold' />
-                                                        </MenuButton>
-                                                    } transition>
-                                                        <MenuItem className="smaller" onClick={() => { fncPlaceholder() }}>
-                                                            Edit/rename type
-                                                        </MenuItem>
-                                                        <MenuItem className="smaller text-danger" onClick={() => { fncPlaceholder() }}>
-                                                            Remove type
-                                                        </MenuItem>
-                                                    </Menu>
+                                    <div className={`${isAdminUser ? 'col-lg-7 col-xl-8' : ''}`}>
+                                        <FlexibleList
+                                            list={expenseTypes.map(type => (
+                                                {
+                                                    title: type,
+                                                    icon: isAdminUser ? (
+                                                        <Menu menuButton={
+                                                            <MenuButton className="border-0 p-0 bg-transparent">
+                                                                <DotsThreeVertical weight='bold' />
+                                                            </MenuButton>
+                                                        } transition>
+                                                            <MenuItem className="smaller" onClick={() => { fncPlaceholder() }}>
+                                                                Edit/rename type
+                                                            </MenuItem>
+                                                            <MenuItem className="smaller text-danger" onClick={() => { fncPlaceholder() }}>
+                                                                Remove type
+                                                            </MenuItem>
+                                                        </Menu>
+                                                    ) : null
                                                 }
-                                            </li>
-                                        ))}
-                                    </ul>
+                                            ))}
+                                        />
+                                    </div>
 
                                     {isAdminUser && (
                                         <div className='col'>
