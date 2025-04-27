@@ -5770,7 +5770,7 @@ const Admin = () => {
 														)
 													})
 												}
-												<tr className="small cursor-default general-report-row fw-bold" style={{ borderTopWidth: '2px' }} >
+												<tr className="small cursor-default general-report-row fw-bold opacity-75" style={{ borderTopWidth: '2px' }} >
 													<td className="ps-sm-3 border-end">Total credits</td>
 													<td>
 														<CurrencyText amount={totalCredits} />
@@ -5783,10 +5783,10 @@ const Admin = () => {
 													</td>
 												</tr>
 												<tr className="small cursor-default general-report-row" style={{ borderBottomWidth: '2px' }}>
-													<td className="ps-sm-3 border-end fw-bold">
+													<td className="ps-sm-3 border-end fw-bold opacity-75">
 														Balance
 													</td>
-													<td className="text-nowrap fw-bold">
+													<td className="text-nowrap fw-bold opacity-75">
 														<CurrencyText amount={Number(allFigures?.balance)} />
 													</td>
 													<td className="border-end">
@@ -5796,7 +5796,7 @@ const Admin = () => {
 														<CurrencyText amount={generalTotal - totalCotisationsAndShares} />
 													</td>
 												</tr>
-												<tr className="small cursor-default general-report-row fw-bold fs-5">
+												<tr className="small cursor-default general-report-row fs-5 fw-bold opacity-75">
 													<td className="ps-sm-3">General Total:</td>
 													<td>
 														<CurrencyText amount={generalTotal} /> {/* Must be equal */}
