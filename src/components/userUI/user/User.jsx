@@ -2954,6 +2954,7 @@ const UserUI = () => {
 		const [activeReportSection, setActiveReportSection] = useState('incomeExpenses');
 
 		// Count report values
+		let totalCredits = 0;
 		let totalCotisationsAndShares = 0;
 		let generalTotal = Number(allFigures?.balance);
 
@@ -3095,16 +3096,6 @@ const UserUI = () => {
 												</tr>
 											</thead>
 											<tbody>
-												<tr className="small cursor-default general-report-row">
-													<td className="ps-sm-3 border-bottom-3 border-end fw-bold">
-														Balance
-													</td>
-													<td className="text-nowrap fw-bold">
-														<CurrencyText amount={Number(allFigures?.balance)} />
-													</td>
-													<td></td>
-													<td></td>
-												</tr>
 												{activeMembers
 													.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
 													.map((item, index) => {
@@ -3117,6 +3108,7 @@ const UserUI = () => {
 														const pendingCredit = memberCredits.loanPending;
 														const pendingInterest = memberCredits.interestPending;
 
+														totalCredits += pendingCredit + pendingInterest;
 														totalCotisationsAndShares += memberBalance;
 														generalTotal += pendingCredit + pendingInterest;
 
@@ -3139,22 +3131,28 @@ const UserUI = () => {
 													})
 												}
 												<tr className="small cursor-default general-report-row fw-bold" style={{ borderTopWidth: '2px' }} >
-													<td></td>
-													<td></td>
+													<td className="ps-sm-3 border-end">Total credits</td>
 													<td>
+														<CurrencyText amount={totalCredits} />
+													</td>
+													<td className="border-end">
 														Cotisation + Social
 													</td>
 													<td className="text-nowrap">
 														<CurrencyText amount={totalCotisationsAndShares} />
 													</td>
 												</tr>
-												<tr className="small cursor-default general-report-row text-info-enphasis">
-													<td></td>
-													<td></td>
-													<td>
+												<tr className="small cursor-default general-report-row" style={{ borderBottomWidth: '2px' }}>
+													<td className="ps-sm-3 border-end fw-bold">
+														Balance
+													</td>
+													<td className="text-nowrap fw-bold">
+														<CurrencyText amount={Number(allFigures?.balance)} />
+													</td>
+													<td className="border-end">
 														Verify
 													</td>
-													<td className={`text-nowrap ${generalTotal - totalCotisationsAndShares < 0 ? 'text-danger' : ''}`}>
+													<td className={`text-nowrap ${generalTotal - totalCotisationsAndShares < 0 ? 'text-danger' : 'text-primary'}`}>
 														<CurrencyText amount={generalTotal - totalCotisationsAndShares} />
 													</td>
 												</tr>
