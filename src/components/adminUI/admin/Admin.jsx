@@ -34,6 +34,7 @@ import NextStepInformer from '../../common/NextStepInformer';
 import AbsoluteCloseButton from '../../common/AbsoluteCloseButton';
 import ToogleButton from '../../common/ToogleButton';
 import PersonAvatar from '../../common/PersonAvatar';
+import SearchBar from '../../common/SearchBar';
 
 const Admin = () => {
 
@@ -1174,15 +1175,15 @@ const Admin = () => {
 					{!loadingMembers && !errorLoadingMembers && membersToShow.length && (
 						<>
 							{/* Search bar */}
-							<Form onSubmit={e => e.preventDefault()} className='sticky-top col-lg-6 col-xxl-4 members-search-box'>
-								<Form.Control ref={memberSearcherRef} type="text" placeholder="🔍 Search members..." id='memberSearcher' className="h-2_5rem border border-2 bg-gray-200 rounded-0"
-									value={memberSearchValue} onChange={(e) => setMemberSearchValue(e.target.value)}
-									onKeyUp={e => { (e.key === "Enter") && filterMembersBySearch() }}
-								/>
-								{memberSearchValue !== '' && (
-									<X className='ptr r-middle-m me-1' onClick={() => setMemberSearchValue('')} />
-								)}
-							</Form>
+							<SearchBar
+								placeholder='🔍 Search members...'
+								value={memberSearchValue}
+								setValue={setMemberSearchValue}
+								search={filterMembersBySearch}
+								clearSearchValue={() => setMemberSearchValue('')}
+								className="sticky-top col-lg-6 col-xxl-4 members-search-box"
+								reference={memberSearcherRef}
+							/>
 							{/* Content */}
 							{membersToShow
 								.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
@@ -2427,15 +2428,15 @@ const Admin = () => {
 					{!loadingMembers && !errorLoadingMembers && savingsToShow.length && (
 						<>
 							{/* Search bar */}
-							<Form onSubmit={e => e.preventDefault()} className='sticky-top col-lg-6 col-xxl-4 savings-search-box'>
-								<Form.Control ref={savingSearcherRef} type="text" placeholder="🔍 Search members..." id='savingSearcher' className="h-2_5rem border border-2 bg-gray-200 rounded-0"
-									value={savingSearchValue} onChange={(e) => setSavingSearchValue(e.target.value)}
-									onKeyUp={e => { (e.key === "Enter") && filterSavingsBySearch() }}
-								/>
-								{savingSearchValue !== '' && (
-									<X className='ptr r-middle-m me-1' onClick={() => setSavingSearchValue('')} />
-								)}
-							</Form>
+							<SearchBar
+								placeholder='🔍 Search members...'
+								value={savingSearchValue}
+								setValue={setSavingSearchValue}
+								search={filterSavingsBySearch}
+								clearSearchValue={() => setSavingSearchValue('')}
+								className="sticky-top col-lg-6 col-xxl-4 savings-search-box"
+								reference={savingSearcherRef}
+							/>
 							{/* Content */}
 							<div className="d-lg-flex flex-wrap pb-5">
 								{savingsToShow
@@ -2650,7 +2651,7 @@ const Admin = () => {
 													</div>
 												</h6>
 												<div className="flex-align-center gap-3 mb-3">
-													<PersonAvatar type='man' data={selectedMember} />
+													<PersonAvatar type='man' data={selectedMember} className='flex-shrink-0' />
 													<div className='smaller'>
 														Save multiple shares to {selectedMember?.husbandFirstName} {selectedMember?.husbandLastName}
 													</div>
@@ -3500,17 +3501,17 @@ const Admin = () => {
 		return (
 			<div className="pt-2 pt-md-0 pb-3">
 				<h2 className='text-appColor'><Blueprint weight='fill' className="me-1 opacity-50" /> Credit panel</h2>
-
-				<Form onSubmit={e => e.preventDefault()} className='sticky-top col-lg-6 col-xxl-4 members-search-box'>
-					<Form.Control ref={memberSearcherRef} type="text" placeholder="🔍 Search members..." id='memberSearcher' className="h-2_5rem border border-2 bg-gray-200 rounded-0"
-						value={memberSearchValue} onChange={(e) => setMemberSearchValue(e.target.value)}
-						onKeyUp={e => { (e.key === "Enter") && filterMembersBySearch() }}
-					/>
-					{memberSearchValue !== '' && (
-						<X className='ptr r-middle-m me-1' onClick={() => setMemberSearchValue('')} />
-					)}
-				</Form>
-
+				{/* Search bar */}
+				<SearchBar
+					placeholder='🔍 Search members...'
+					value={memberSearchValue}
+					setValue={setMemberSearchValue}
+					search={filterMembersBySearch}
+					clearSearchValue={() => setMemberSearchValue('')}
+					className="sticky-top col-lg-6 col-xxl-4 members-search-box"
+					reference={memberSearcherRef}
+				/>
+				{/* Content */}
 				{loadingMembers && (<LoadingIndicator icon={<Blueprint size={80} className="loading-skeleton" />} />)}
 				{!loadingMembers && errorLoadingMembers && (
 					<FetchError
@@ -4182,7 +4183,7 @@ const Admin = () => {
 																									message: (
 																										<>
 																											<h5 className='h6 border-bottom mb-3 pb-2 text-uppercase'><HandCoins size={25} weight='fill' className='opacity-50' /> Approve credit request</h5>
-																											<p className='text-warning'>
+																											<p className='bg-dark text-gray-300 p-2 rounded'>
 																												This will approve a credit of <CurrencyText amount={Number(credit.creditAmount)} /> requested by {memberNames}.<br /><br />Are you sure to continue?
 																											</p>
 																										</>
@@ -4571,7 +4572,7 @@ const Admin = () => {
 																					message: (
 																						<>
 																							<h5 className='h6 border-bottom mb-3 pb-2 text-uppercase'><HandCoins size={25} weight='fill' className='opacity-50' /> Approve credit request</h5>
-																							<p className='text-warning'>
+																							<p className='bg-dark text-gray-300 p-2 rounded'>
 																								This will approve a credit of <CurrencyText amount={Number(selectedCredit.creditAmount)} /> requested by {`${associatedMember[0].husbandFirstName} ${associatedMember[0].husbandLastName}`}.<br /><br />Are you sure to continue?
 																							</p>
 																						</>

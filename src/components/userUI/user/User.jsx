@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { Button, Card, Container, Form } from "react-bootstrap";
+import { Button, Card, Container } from "react-bootstrap";
 import './user.css';
 import '../../header/header.css';
 import MyToast from '../../common/Toast';
@@ -30,6 +30,7 @@ import NextStepInformer from '../../common/NextStepInformer';
 import SystemSettings from '../../systemSettings/SystemSettings';
 import ToogleButton from '../../common/ToogleButton';
 import PersonAvatar from '../../common/PersonAvatar';
+import SearchBar from '../../common/SearchBar';
 
 const UserUI = () => {
 
@@ -855,15 +856,15 @@ const UserUI = () => {
 					{!loadingMembers && !errorLoadingMembers && membersToShow.length > 0 && (
 						<>
 							{/* Search bar */}
-							<Form onSubmit={e => e.preventDefault()} className='sticky-top col-lg-6 col-xxl-4 members-search-box'>
-								<Form.Control ref={memberSearcherRef} type="text" placeholder="🔍 Search members..." id='memberSearcher' className="h-2_5rem border border-2 bg-gray-200 rounded-0"
-									value={memberSearchValue} onChange={(e) => setMemberSearchValue(e.target.value)}
-									onKeyUp={e => { (e.key === "Enter") && filterMembersBySearch() }}
-								/>
-								{memberSearchValue !== '' && (
-									<X className='ptr r-middle-m me-1' onClick={() => setMemberSearchValue('')} />
-								)}
-							</Form>
+							<SearchBar
+								placeholder='🔍 Search members...'
+								value={memberSearchValue}
+								setValue={setMemberSearchValue}
+								search={filterMembersBySearch}
+								clearSearchValue={() => setMemberSearchValue('')}
+								className="sticky-top col-lg-6 col-xxl-4 members-search-box"
+								reference={memberSearcherRef}
+							/>
 							{/* Content */}
 							{membersToShow.filter(m => m.id === signedUser.id)
 								.concat(membersToShow.filter(m => m.id !== signedUser.id)
@@ -1242,15 +1243,15 @@ const UserUI = () => {
 					{!loadingMembers && !errorLoadingMembers && savingsToShow.length > 0 && (
 						<>
 							{/* Search bar */}
-							<Form onSubmit={e => e.preventDefault()} className='sticky-top col-lg-6 col-xxl-4 savings-search-box'>
-								<Form.Control ref={savingSearcherRef} type="text" placeholder="🔍 Search members..." id='savingSearcher' className="h-2_5rem border border-2 bg-gray-200 rounded-0"
-									value={savingSearchValue} onChange={(e) => setSavingSearchValue(e.target.value)}
-									onKeyUp={e => { (e.key === "Enter") && filterSavingsBySearch() }}
-								/>
-								{savingSearchValue !== '' && (
-									<X className='ptr r-middle-m me-1' onClick={() => setSavingSearchValue('')} />
-								)}
-							</Form>
+							<SearchBar
+								placeholder='🔍 Search members...'
+								value={savingSearchValue}
+								setValue={setSavingSearchValue}
+								search={filterSavingsBySearch}
+								clearSearchValue={() => setSavingSearchValue('')}
+								className="sticky-top col-lg-6 col-xxl-4 savings-search-box"
+								reference={savingSearcherRef}
+							/>
 							{/* Content */}
 							<div className="d-lg-flex flex-wrap pb-5">
 								{savingsToShow.filter(m => m.id === signedUser.id)
