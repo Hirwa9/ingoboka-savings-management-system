@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Button, Card, Container } from "react-bootstrap";
 import './user.css';
 import '../../header/header.css';

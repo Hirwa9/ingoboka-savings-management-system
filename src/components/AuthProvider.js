@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect, useContext } from "react";
 import LoadingIndicator from "./LoadingIndicator";
 import { Bank, CaretDown } from "@phosphor-icons/react";
 import { Axios } from "../api/api";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import MyToast from "./common/Toast";
 import useCustomDialogs from "./common/hooks/useCustomDialogs";
 
