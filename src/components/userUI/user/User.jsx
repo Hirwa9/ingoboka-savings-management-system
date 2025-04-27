@@ -1480,6 +1480,7 @@ const UserUI = () => {
 													</li>
 												</ul>
 												<DividerText text="Add new shares" type='gray-300' className="mb-4" />
+
 												{/* The form */}
 												<form onSubmit={(e) => e.preventDefault()} className="px-sm-2 pb-5">
 													<div className="mb-3">
@@ -2754,12 +2755,12 @@ const UserUI = () => {
 									</div>
 
 									{/* Submit Button */}
-									<div className="mb-3 px-2 py-3 form-text bg-dark-subtle rounded">
+									<div className="mb-3 p-3 form-text bg-info-subtle rounded">
 										<div className='text-center text-dark-emphasis'>
 											Please verify the details before submiting
 										</div>
 										<hr />
-										<div className="px-3">
+										<div className="px-sm-3">
 											<div className='d-flex cols-2'>
 												<div className="col fw-semibold">Credit:</div>
 												<div className="col"><CurrencyText amount={Number(creditAmount)} smallCurrency /></div>
