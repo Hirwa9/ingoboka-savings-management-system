@@ -45,7 +45,7 @@
 
 .sidebar > div {
     width: 100%;
-    min-width: 13rem;
+    min-width: 10rem;
     background-image: linear-gradient(to bottom, rgba(0, 0, 0, .65), rgba(0, 0, 0, .65)), url('../../../../public/images/saving_illustration_fancy1.webp');
     background-position: 45% 10.6%;
     color: var(--bs-gray-200);
@@ -69,6 +69,24 @@
         z-index: inherit;
     }
 
+    .sidebar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: .3rem;
+        right: .3rem;
+        bottom: .3rem;
+        z-index: -1;
+        border: 1.5px dashed rgba(255, 255, 255, .35);
+        background-color: rgba(255, 255, 255, .1);
+        border-radius: .8rem;
+    }
+
+    .sidebar::-webkit-scrollbar {
+        width: .5rem;
+        height: .5rem;
+    }
+
     .sidebar > div {
         background-color: transparent;
         background-image: none;
@@ -78,7 +96,7 @@
 
 .sidebar .nav-item.active {
     background-color: var(--black2);
-    border: 1.5px solid var(--primaryColor);
+    border: 1.5px solid var(--white2);
     border-radius: .5rem;
 }
 
@@ -96,7 +114,7 @@
 }
 
 .sidebar .nav-item.active::after {
-    background-color: var(--primaryColor);
+    background-color: var(--white2);
     height: 70%;
 }
 

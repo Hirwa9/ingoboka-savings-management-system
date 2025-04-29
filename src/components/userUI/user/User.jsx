@@ -3346,11 +3346,11 @@ const UserUI = () => {
 									<List />
 								</button>
 							</div>
-							<Popover content="Balance" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none bg-appColor text-gray-200 border border-secondary border-opacity-25' arrowColor='var(--appColor)' height='1.9rem'>
-								<div className="position-absolute start-50 top-100 translate-middle flex-align-center gap-1  px-3 py-1 border border-secondary border-opacity-50 rounded-pill fs-50 shadow-sm ptr clickDown balance-indicator"
+							<Popover content="Balance" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none bg-light text-gray-800 border border-light' arrowColor='var(--bs-light)' height='1.9rem'>
+								<div className="position-absolute start-50 top-100 translate-middle flex-align-center gap-1 px-3 py-1 rounded-pill fs-50 shadow-sm ptr clickDown inx-1 balance-indicator"
 									onClick={() => { setActiveSection("dashboard"); }}
 								>
-									<Wallet size={14} weight='fill' /><CurrencyText amount={Number(allFigures?.balance)} />
+									<Wallet size={14} weight='fill' /><CurrencyText amount={Number(allFigures?.balance)} style={{ lineHeight: 1 }} />
 								</div>
 							</Popover>
 						</div>
@@ -3410,7 +3410,7 @@ const UserUI = () => {
 										<button type="button" className='btn text-light' onClick={() => setSideNavbarIsFloated(false)}><X size={25} /></button>
 									</div>
 
-									<ul className="nav flex-column">
+									<ul className="nav flex-column px-md-1">
 										<li className={`nav-item mx-4 mx-sm-5 mx-md-2 mb-2 ${activeSection === 'dashboard' ? 'active blur-bg-2px' : ''}`}
 											onClick={() => { setActiveSection("dashboard"); hideSideNavbar() }}
 										>

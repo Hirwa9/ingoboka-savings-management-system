@@ -228,13 +228,17 @@ body {
   background-color: var(--bs-gray-100);
   color: var(--bs-gray-800);
   font-weight: 600;
+  border: 1.5px dashed var(--bs-gray-400);
 }
 
 @media screen and (min-width: 768px) {
   .balance-indicator {
-    background-color: var(--appColor);
-    color: var(--bs-gray-200);
+    background-color: var(--white3);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    color: var(--bs-gray-100);
     font-weight: normal;
+    border: 1.5px dashed rgba(255, 255, 255, .35);
   }
 }
 
