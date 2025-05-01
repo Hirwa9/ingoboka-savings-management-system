@@ -36,6 +36,9 @@ import PersonAvatar from '../../common/PersonAvatar';
 import SearchBar from '../../common/SearchBar';
 import Overlay from '../../common/Overlay';
 import SectionDescription from '../../common/SectionDescription';
+import LoanStatusTable from '../../common/LoanStatusTable';
+import CapitalStatusTable from '../../common/CapitalStatusTable';
+import PenaltyStatusTable from '../../common/PenaltyStatusTable';
 
 const Admin = () => {
 
@@ -350,8 +353,8 @@ const Admin = () => {
 
 	const membersChartData = useMemo(() => {
 		if (totalMembers > 0) {
-			setMenCount(allMembers.filter(member => member.husbandFirstName !== null).length);
-			setWomenCount(allMembers.filter(member => ![null, 'N', 'N/A', 'NA'].includes(member.wifeFirstName)).length);
+			setMenCount(allMembers.filter(member => member?.husbandFirstName !== null).length);
+			setWomenCount(allMembers.filter(member => ![null, 'N', 'N/A', 'NA'].includes(member?.wifeFirstName)).length);
 
 			return {
 				labels: ['Men', 'Women'],
@@ -1238,7 +1241,7 @@ const Admin = () => {
 																	message: <>
 																		<div>
 																			<h6 className='me-2 pt-1 pb-2 border-bottom border-light border-opacity-50'>
-																				Cannot remove {member.husbandFirstName}
+																				Cannot remove {member?.husbandFirstName}
 																			</h6>
 																			<p>
 																				This member holds accountant privileges and cannot be removed. Please assign the role to another member before proceeding
@@ -1260,7 +1263,7 @@ const Admin = () => {
 										</div>
 
 										<div className="px-lg-2">
-											<h5 className="mb-3 fs-4">{`${member.husbandFirstName} ${member.husbandLastName}`}</h5>
+											<h5 className="mb-3 fs-4">{`${member?.husbandFirstName} ${member?.husbandLastName}`}</h5>
 											<div className="d-lg-flex">
 												<div className="col-lg-6">
 													<h6 className="flex-align-center px-2 py-1 border-bottom border-2 text-primaryColor fw-bolder">
@@ -1268,18 +1271,18 @@ const Admin = () => {
 													</h6>
 													<ul className="list-unstyled text-gray-700 px-2 smaller">
 														<li className="py-1">
-															<b>Names:</b> {`${member.husbandFirstName} ${member.husbandLastName}`}
+															<b>Names:</b> {`${member?.husbandFirstName} ${member?.husbandLastName}`}
 														</li>
 														<li className="py-1">
-															<b>Phone:</b> <a href={`tel:+${member.husbandPhone}`} className='text-decoration-none text-inherit' title={`Call ${member.husbandFirstName}`}>{member.husbandPhone}</a>
+															<b>Phone:</b> <a href={`tel:+${member?.husbandPhone}`} className='text-decoration-none text-inherit' title={`Call ${member?.husbandFirstName}`}>{member?.husbandPhone}</a>
 														</li>
 														<li className="py-1">
-															<b>Email:</b> <a href={`mailto:${member.husbandEmail}`} className='text-decoration-none text-inherit' title={`Send email to ${member.husbandFirstName}`}>{member.husbandEmail}</a>
+															<b>Email:</b> <a href={`mailto:${member?.husbandEmail}`} className='text-decoration-none text-inherit' title={`Send email to ${member?.husbandFirstName}`}>{member?.husbandEmail}</a>
 														</li>
 													</ul>
 												</div>
 												<div className="col-lg-6 px-lg-2">
-													{!member.wifeFirstName ? (
+													{!member?.wifeFirstName ? (
 														<div className="h-100 p-3 border border-2 border-top-0 rounded-0 flex-center">
 															<button className="btn text-primaryColor fw-semibold rounded-0 clickDown flex-center gap-2" onClick={() => { setSelectedMember(member); setShowEditMemberForm(true); setEditHeadOfFamily(false); }}>
 																<Users /> Add a partner
@@ -1292,16 +1295,16 @@ const Admin = () => {
 															</h6>
 															<ul className="list-unstyled text-gray-700 px-2 smaller">
 																<li className="py-1">
-																	<b>Names:</b> {`${member.wifeFirstName} ${member.wifeLastName}`}
+																	<b>Names:</b> {`${member?.wifeFirstName} ${member?.wifeLastName}`}
 																</li>
 																<li className="py-1">
-																	<b>Phone:</b> {member.wifePhone ? (
-																		<a href={`tel:+${member.wifePhone}`} className='text-decoration-none text-inherit' title={`Call ${member.wifeFirstName}`}>{member.wifePhone}</a>
+																	<b>Phone:</b> {member?.wifePhone ? (
+																		<a href={`tel:+${member?.wifePhone}`} className='text-decoration-none text-inherit' title={`Call ${member?.wifeFirstName}`}>{member?.wifePhone}</a>
 																	) : 'Not provided'}
 																</li>
 																<li className="py-1">
-																	<b>Email:</b>  {member.wifeEmail ? (
-																		<a href={`mailto:${member.wifeEmail}`} className='text-decoration-none text-inherit' title={`Send email to ${member.wifeFirstName}`}>{member.wifeEmail}</a>
+																	<b>Email:</b>  {member?.wifeEmail ? (
+																		<a href={`mailto:${member?.wifeEmail}`} className='text-decoration-none text-inherit' title={`Send email to ${member?.wifeFirstName}`}>{member?.wifeEmail}</a>
 
 																	) : 'Not provided'}
 																</li>
@@ -1359,10 +1362,10 @@ const Admin = () => {
 												)}
 											</div>
 											<div className="d-flex gap-2 mb-3">
-												<a href={`tel:+${showPrimaryMemberInfo ? selectedMember.husbandPhone : selectedMember.wifePhone}`} className="btn btn-sm btn-outline-secondary border px-3 border-secondary border-opacity-25 rounded-pill flex-align-center clickDown">
+												<a href={`tel:+${showPrimaryMemberInfo ? selectedMember?.husbandPhone : selectedMember?.wifePhone}`} className="btn btn-sm btn-outline-secondary border px-3 border-secondary border-opacity-25 rounded-pill flex-align-center clickDown">
 													<Phone className='me-2' /> Call
 												</a>
-												<a href={`mailto:${showPrimaryMemberInfo ? selectedMember.husbandEmail : selectedMember.wifeEmail}`} className="btn btn-sm btn-outline-secondary border px-3 border-secondary border-opacity-25 rounded-pill flex-align-center clickDown">
+												<a href={`mailto:${showPrimaryMemberInfo ? selectedMember?.husbandEmail : selectedMember?.wifeEmail}`} className="btn btn-sm btn-outline-secondary border px-3 border-secondary border-opacity-25 rounded-pill flex-align-center clickDown">
 													<EnvelopeSimple className='me-2' /> Email
 												</a>
 											</div>
@@ -1816,59 +1819,7 @@ const Admin = () => {
 													<div className='col col-xl-5 mb-5'>
 														<div className="fs-6 fw-semibold text-primaryColor text-center text-uppercase">Cotisation and social</div>
 														<hr />
-														<div className='overflow-auto'>
-															<table className="table table-hover h-100">
-																<thead className='table-secondary position-sticky top-0 inx-1 text-uppercase small'>
-																	<tr>
-																		<th className='py-3 text-nowrap text-gray-700 fw-normal'>Title</th>
-																		<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
-																	</tr>
-																</thead>
-																<tbody>
-																	<tr className={`small credit-row`}>
-																		<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
-																			Cotisation
-																		</td>
-																		<td className='text-primary-emphasis'>
-																			<CurrencyText amount={selectedMember?.cotisation} />
-																		</td>
-																	</tr>
-																	<tr className={`small credit-row`}>
-																		<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
-																			Social
-																		</td>
-																		<td className='text-primary-emphasis'>
-																			<CurrencyText amount={Number(selectedMember?.social)} />
-																		</td>
-																	</tr>
-																	<tr className={`small credit-row`}>
-																		<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
-																			Total
-																		</td>
-																		<td className='text-primary-emphasis text-decoration-underline'>
-																			<CurrencyText amount={selectedMember?.cotisation + Number(selectedMember?.social)} />
-																		</td>
-																	</tr>
-																</tbody>
-															</table>
-														</div>
-
-														{/* <ul className="list-unstyled text-gray-700 px-2">
-															<li className="py-1 w-100">
-																<span className="flex-align-center">
-																	<b className='fs-5'>{selectedMember?.shares} Shares</b>
-																</span>
-															</li>
-															<li className="py-1 d-table-row">
-																<span className='d-table-cell border-start border-secondary ps-2'>Cotisation:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.cotisation} /></span>
-															</li>
-															<li className="py-1 d-table-row">
-																<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'><CurrencyText amount={Number(selectedMember?.social)} /></span>
-															</li>
-															<li className="py-1 fs-5 d-table-row">
-																<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.cotisation + Number(selectedMember?.social)} /></span>
-															</li>
-														</ul> */}
+														<CapitalStatusTable memberData={selectedMember} />
 													</div>
 													{/* Loan status */}
 													<div className="col mb-5 mb-xl-0">
@@ -1881,62 +1832,7 @@ const Admin = () => {
 																		const selectedLoan = item;
 																		return (
 																			<Fragment key={index} >
-																				<div className='overflow-auto'>
-																					<table className="table table-hover h-100 mb-0">
-																						<thead className='table-secondary position-sticky top-0 inx-1 text-uppercase small'>
-																							<tr>
-																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Title</th>
-																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Taken  <sub className='fs-60'>/RWF</sub></th>
-																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Paid  <sub className='fs-60'>/RWF</sub></th>
-																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Pending  <sub className='fs-60'>/RWF</sub></th>
-																							</tr>
-																						</thead>
-																						<tbody>
-																							<tr className={`small credit-row`}>
-																								<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
-																									Loan
-																								</td>
-																								<td>
-																									<CurrencyText amount={selectedLoan?.loanTaken} />
-																								</td>
-																								<td className='text-primary-emphasis'>
-																									<CurrencyText amount={selectedLoan?.loanPaid} />
-																								</td>
-																								<td className='text-warning-emphasis'>
-																									<CurrencyText amount={selectedLoan?.loanPending} />
-																								</td>
-																							</tr>
-																							<tr className={`small credit-row`}>
-																								<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
-																									Interest
-																								</td>
-																								<td>
-																									<CurrencyText amount={selectedLoan?.interestTaken} />
-																								</td>
-																								<td className='text-primary-emphasis'>
-																									<CurrencyText amount={selectedLoan?.interestPaid} />
-																								</td>
-																								<td className='text-warning-emphasis'>
-																									<CurrencyText amount={selectedLoan?.interestPending} />
-																								</td>
-																							</tr>
-																							<tr className={`small credit-row`}>
-																								<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
-																									Tranches
-																								</td>
-																								<td>
-																									{selectedLoan?.tranchesTaken}
-																								</td>
-																								<td className='text-primary-emphasis'>
-																									{selectedLoan?.tranchesPaid}
-																								</td>
-																								<td className='text-warning-emphasis'>
-																									{selectedLoan?.tranchesPending}
-																								</td>
-																							</tr>
-																						</tbody>
-																					</table>
-																				</div>
+																				<LoanStatusTable loanData={selectedLoan} />
 																			</Fragment>
 																		)
 																	})
@@ -1960,49 +1856,7 @@ const Admin = () => {
 															.filter(cr =>
 																(cr.recordType === 'penalty' && cr.memberId === selectedMember?.id)
 															).length ? (
-															<div className='overflow-auto'>
-																<table className="table table-striped table-hover h-100">
-																	<thead className='table-secondary position-sticky top-0 inx-1 text-uppercase small'>
-																		<tr>
-																			<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
-																			<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
-																			<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
-																			<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
-																			<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date</th>
-																		</tr>
-																	</thead>
-																	<tbody>
-																		{allRecords
-																			.filter(cr => (cr.recordType === 'penalty' && cr.memberId === selectedMember?.id))
-																			.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-																			.map((record, index) => {
-																				const associatedMember = allMembers.find(m => m.id === record.memberId);
-																				const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
-
-																				return (
-																					<tr key={index} className="small cursor-default">
-																						<td className="ps-sm-3 border-bottom-3 border-end">
-																							{index + 1}
-																						</td>
-																						<td className="text-nowrap">
-																							{memberNames}
-																						</td>
-																						<td>
-																							<CurrencyText amount={Number(record.recordAmount)} />
-																						</td>
-																						<td>
-																							{record.comment}
-																						</td>
-																						<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
-																							<FormatedDate date={record.createdAt} showTime={true} />
-																						</td>
-																					</tr>
-																				)
-																			})
-																		}
-																	</tbody>
-																</table>
-															</div>
+															<PenaltyStatusTable records={allRecords} members={allMembers} selectedMember={selectedMember} />
 														) : (
 															<EmptyBox
 																notFoundMessage={`No penalties applied on this member.`}
@@ -2881,7 +2735,7 @@ const Admin = () => {
 							</thead>
 							<tbody>
 								{activeMembers.map((member, index) => {
-									const memberNames = `${member.husbandFirstName} ${member.husbandLastName}`;
+									const memberNames = `${member?.husbandFirstName} ${member?.husbandLastName}`;
 									const progressiveShares = member.progressiveShares;
 									const paidAnnualShares = JSON.parse(member.annualShares).filter(share => share.paid).length;
 									const activeShares = progressiveShares + paidAnnualShares;
@@ -3114,7 +2968,7 @@ const Admin = () => {
 																		{memberStatus
 																			.map((member, index) => {
 																				const associatedMember = activeMembers.find(m => m.id === member.id);
-																				const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+																				const memberNames = `${associatedMember?.husbandFirstName} ${associatedMember?.husbandLastName}`;
 																				return (
 																					<tr key={index} className="small cursor-default interest-row">
 																						<td className="border-bottom-3 border-end">
@@ -3357,7 +3211,6 @@ const Admin = () => {
 		 */
 
 		const [showGlobalPaymentHistory, setShowGlobalPaymentHistory] = useState(false);
-		const [showSelectedMemberPaymentHistory, setShowSelectedMemberPaymentHistory] = useState(false);
 
 		const [payLoanAmount, setPayLoanAmount] = useState('');
 		const [payInterestAmount, setPayInterestAmount] = useState(0);
@@ -3521,13 +3374,13 @@ const Admin = () => {
 								{membersToShow
 									.sort((a, b) => a.husbandFirstName.localeCompare(b.husbandFirstName))
 									.map((member, index) => (
-										<Popover key={index} content={`${member.husbandFirstName} ${member.husbandLastName}`} trigger='hover' placement='bottom' className='d-none d-md-block py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='1.9rem'>
+										<Popover key={index} content={`${member?.husbandFirstName} ${member?.husbandLastName}`} trigger='hover' placement='bottom' className='d-none d-md-block py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='1.9rem'>
 											<div className='w-4rem ptr clickDown'
 												onClick={() => { setSelectedMember(member); setShowSelectedMemberCredits(true) }}
 											>
 												<PersonAvatar type='man' data={member} size='4rem' bordered={false} className="w-100 p-1" />
 												<div className="text-truncate fs-70 text-center mt-1">
-													{`${member.husbandFirstName} ${member.husbandLastName}`}
+													{`${member?.husbandFirstName} ${member?.husbandLastName}`}
 												</div>
 											</div>
 										</Popover>
@@ -3582,8 +3435,8 @@ const Admin = () => {
 																.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 																.map((record, index) => {
 
-																	const associatedMember = allMembers.find(m => m.id === record.memberId);
-																	const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+																	const associatedMember = allMembers?.find(m => m.id === record.memberId);
+																	const memberNames = `${associatedMember?.husbandFirstName} ${associatedMember?.husbandLastName}`;
 																	const transactionInfo = JSON.parse(record.comment);
 																	const loanPaid = transactionInfo.loanPaid;
 																	const interestPaid = transactionInfo.interestPaid;
@@ -3701,62 +3554,7 @@ const Admin = () => {
 																		<div className="col member-loan-status mb-4 mb-xl-0">
 																			<div className="fs-6 fw-semibold text-primaryColor text-center text-uppercase">Loan status</div>
 																			<hr />
-																			<div className='overflow-auto'>
-																				<table className="table table-hover h-100">
-																					<thead className='table-secondary position-sticky top-0 inx-1 text-uppercase small'>
-																						<tr>
-																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Title</th>
-																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Taken  <sub className='fs-60'>/RWF</sub></th>
-																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Paid  <sub className='fs-60'>/RWF</sub></th>
-																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Pending  <sub className='fs-60'>/RWF</sub></th>
-																						</tr>
-																					</thead>
-																					<tbody>
-																						<tr className={`small credit-row`}>
-																							<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
-																								Loan
-																							</td>
-																							<td>
-																								<CurrencyText amount={selectedLoan?.loanTaken} />
-																							</td>
-																							<td className='text-primary-emphasis'>
-																								<CurrencyText amount={selectedLoan?.loanPaid} />
-																							</td>
-																							<td className='text-warning-emphasis'>
-																								<CurrencyText amount={selectedLoan?.loanPending} />
-																							</td>
-																						</tr>
-																						<tr className={`small credit-row`}>
-																							<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
-																								Interest
-																							</td>
-																							<td>
-																								<CurrencyText amount={selectedLoan?.interestTaken} />
-																							</td>
-																							<td className='text-primary-emphasis'>
-																								<CurrencyText amount={selectedLoan?.interestPaid} />
-																							</td>
-																							<td className='text-warning-emphasis'>
-																								<CurrencyText amount={selectedLoan?.interestPending} />
-																							</td>
-																						</tr>
-																						<tr className={`small credit-row`}>
-																							<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
-																								Tranches
-																							</td>
-																							<td>
-																								{selectedLoan?.tranchesTaken}
-																							</td>
-																							<td className='text-primary-emphasis'>
-																								{selectedLoan?.tranchesPaid}
-																							</td>
-																							<td className='text-warning-emphasis'>
-																								{selectedLoan?.tranchesPending}
-																							</td>
-																						</tr>
-																					</tbody>
-																				</table>
-																			</div>
+																			<LoanStatusTable loanData={selectedLoan} />
 
 																			{allCredits.filter(cr => cr.memberId === selectedMember?.id).length > 0 && (
 																				<>
@@ -3926,8 +3724,8 @@ const Admin = () => {
 																						{allCredits.filter(cr => (cr.memberId === selectedMember?.id && cr.status === 'approved'))
 																							.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 																							.map((credit, index) => {
-																								const associatedMember = allMembers.find(m => m.id === credit.memberId);
-																								const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+																								const associatedMember = allMembers?.find(m => m.id === credit.memberId);
+																								const memberNames = `${associatedMember?.husbandFirstName} ${associatedMember?.husbandLastName}`;
 																								const creditInterest = Number(credit.creditAmount) * (5 / 100);
 
 																								return (
@@ -4109,8 +3907,8 @@ const Admin = () => {
 															.filter(cr => cr.status === 'pending')
 															.sort((a, b) => new Date(a.updatedAt) - new Date(b.updatedAt))
 															.map((credit, index) => {
-																const associatedMember = allMembers.find(m => m.id === credit.memberId);
-																const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+																const associatedMember = allMembers?.find(m => m.id === credit.memberId);
+																const memberNames = `${associatedMember?.husbandFirstName} ${associatedMember?.husbandLastName}`;
 																const creditInterest = Number(credit.creditAmount) * (5 / 100);
 
 																return (
@@ -4240,8 +4038,8 @@ const Admin = () => {
 															.filter(cr => cr.status === 'approved')
 															.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 															.map((credit, index) => {
-																const associatedMember = allMembers.find(m => m.id === credit.memberId);
-																const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+																const associatedMember = allMembers?.find(m => m.id === credit.memberId);
+																const memberNames = `${associatedMember?.husbandFirstName} ${associatedMember?.husbandLastName}`;
 																const creditInterest = Number(credit.creditAmount) * (5 / 100);
 
 																return (
@@ -4321,8 +4119,8 @@ const Admin = () => {
 															.filter(cr => cr.status === 'rejected')
 															.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 															.map((credit, index) => {
-																const associatedMember = allMembers.find(m => m.id === credit.memberId);
-																const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+																const associatedMember = allMembers?.find(m => m.id === credit.memberId);
+																const memberNames = `${associatedMember?.husbandFirstName} ${associatedMember?.husbandLastName}`;
 																const creditInterest = Number(credit.creditAmount) * (5 / 100);
 
 																return (
@@ -5284,8 +5082,8 @@ const Admin = () => {
 										<tbody>
 											{transactions.length > 0 ? (transactions
 												.map((record, index) => {
-													const associatedMember = allMembers.find(m => m.id === record.memberId);
-													const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+													const associatedMember = allMembers?.find(m => m.id === record.memberId);
+													const memberNames = `${associatedMember?.husbandFirstName} ${associatedMember?.husbandLastName}`;
 													let interestAmount = null;
 													if (record.recordType === 'loan' && record.recordSecondaryType === 'payment') {
 														interestAmount = Number(JSON.parse(record.comment)?.interestPaid > 0
@@ -5456,8 +5254,8 @@ const Admin = () => {
 										<tbody>
 											{transactions.length > 0 ? (transactions
 												.map((record, index) => {
-													const associatedMember = allMembers.find(m => m.id === record.memberId);
-													const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+													const associatedMember = allMembers?.find(m => m.id === record.memberId);
+													const memberNames = `${associatedMember?.husbandFirstName} ${associatedMember?.husbandLastName}`;
 
 													return (
 														<tr key={index} className="small cursor-default">
@@ -6068,8 +5866,8 @@ const Admin = () => {
 												.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate))
 												.filter(cr => cr.status === 'pending')
 												.map((cr, index) => {
-													const associatedMember = allMembers.find(m => m.id === cr.memberId);
-													const names = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+													const associatedMember = allMembers?.find(m => m.id === cr.memberId);
+													const names = `${associatedMember?.husbandFirstName} ${associatedMember?.husbandLastName}`;
 
 													return (
 														<div key={index} className="d-flex mb-2 py-2 border-bottom">

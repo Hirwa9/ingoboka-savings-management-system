@@ -4,7 +4,7 @@ import { Button, Card, Container } from "react-bootstrap";
 import './user.css';
 import '../../header/header.css';
 import MyToast from '../../common/Toast';
-import { ArrowClockwise, ArrowsClockwise, ArrowsHorizontal, ArrowsVertical, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, EnvelopeSimple, Files, FloppyDisk, Gavel, Gear, List, ListChecks, Pen, Phone, Plus, Receipt, SignOut, User, UserRectangle, Users, Wallet, WarningCircle, Watch, X } from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowsClockwise, ArrowsHorizontal, ArrowsVertical, BellSimple, Blueprint, Calendar, CaretDown, CaretRight, CashRegister, ChartBar, ChartPie, ChartPieSlice, Check, Coin, Coins, CurrencyDollarSimple, EnvelopeSimple, Files, FloppyDisk, Gavel, Gear, HandCoins, List, ListChecks, Pen, Phone, Plus, Receipt, SignOut, User, UserRectangle, Users, Wallet, WarningCircle, Watch, X } from '@phosphor-icons/react';
 import CurrencyText from '../../common/CurrencyText';
 import LoadingIndicator from '../../LoadingIndicator';
 import { cError, fncPlaceholder, getDateHoursMinutes, normalizedLowercaseString, printDatesInterval, maxInputNumber } from '../../../scripts/myScripts';
@@ -19,7 +19,6 @@ import { Menu, MenuButton, MenuDivider, MenuItem } from '@szhsin/react-menu';
 import CountUp from 'react-countup';
 import BarGraph from '../../chartJS/BarGraph';
 import EmptyBox from '../../common/EmptyBox';
-import ContentToggler from '../../common/ContentToggler';
 import DividerText from '../../common/DividerText';
 import { BASE_URL, Axios } from '../../../api/api';
 import { AuthContext } from '../../AuthProvider';
@@ -33,6 +32,7 @@ import PersonAvatar from '../../common/PersonAvatar';
 import SearchBar from '../../common/SearchBar';
 import Overlay from '../../common/Overlay';
 import SectionDescription from '../../common/SectionDescription';
+import LoanStatusTable from '../../common/LoanStatusTable';
 
 const UserUI = () => {
 
@@ -317,8 +317,8 @@ const UserUI = () => {
 
 	const membersChartData = useMemo(() => {
 		if (totalMembers > 0) {
-			setMenCount(allMembers.filter(member => member.husbandFirstName !== null).length);
-			setWomenCount(allMembers.filter(member => ![null, 'N', 'N/A', 'NA'].includes(member.wifeFirstName)).length);
+			setMenCount(allMembers.filter(member => member?.husbandFirstName !== null).length);
+			setWomenCount(allMembers.filter(member => ![null, 'N', 'N/A', 'NA'].includes(member?.wifeFirstName)).length);
 
 			return {
 				labels: ['Men', 'Women'],
@@ -884,7 +884,7 @@ const UserUI = () => {
 												className='ptr'
 												onClick={() => { setSelectedMember(member); setShowMemberInfo(true); setShowPrimaryMemberInfo(true) }}
 											/>
-											{member.wifeFirstName && (
+											{member?.wifeFirstName && (
 												<PersonAvatar
 													type='woman'
 													data={member}
@@ -902,7 +902,7 @@ const UserUI = () => {
 										</div>
 
 										<div className="px-lg-2">
-											<h5 className="mb-3 fs-4">{`${member.husbandFirstName} ${member.husbandLastName}`}</h5>
+											<h5 className="mb-3 fs-4">{`${member?.husbandFirstName} ${member?.husbandLastName}`}</h5>
 											<div className="d-lg-flex">
 												<div className="col-lg-6">
 													<h6 className="flex-align-center px-2 py-1 border-bottom border-2 text-primaryColor fw-bolder">
@@ -910,33 +910,33 @@ const UserUI = () => {
 													</h6>
 													<ul className="list-unstyled text-gray-700 px-2 smaller">
 														<li className="py-1">
-															<b>Names:</b> {`${member.husbandFirstName} ${member.husbandLastName}`}
+															<b>Names:</b> {`${member?.husbandFirstName} ${member?.husbandLastName}`}
 														</li>
 														<li className="py-1">
-															<b>Phone:</b> <a href={`tel:+${member.husbandPhone}`} className='text-decoration-none text-inherit' title={`Call ${member.husbandFirstName}`}>{member.husbandPhone}</a>
+															<b>Phone:</b> <a href={`tel:+${member?.husbandPhone}`} className='text-decoration-none text-inherit' title={`Call ${member?.husbandFirstName}`}>{member?.husbandPhone}</a>
 														</li>
 														<li className="py-1">
-															<b>Email:</b> <a href={`mailto:${member.husbandEmail}`} className='text-decoration-none text-inherit' title={`Send email to ${member.husbandFirstName}`}>{member.husbandEmail}</a>
+															<b>Email:</b> <a href={`mailto:${member?.husbandEmail}`} className='text-decoration-none text-inherit' title={`Send email to ${member?.husbandFirstName}`}>{member?.husbandEmail}</a>
 														</li>
 													</ul>
 												</div>
-												{member.wifeFirstName && (
+												{member?.wifeFirstName && (
 													<div className="col-lg-6 px-lg-2">
 														<h6 className="flex-align-center px-2 py-1 border-bottom border-2 text-primaryColor fw-bolder">
 															<User className="me-1" /> Wife
 														</h6>
 														<ul className="list-unstyled text-gray-700 px-2 smaller">
 															<li className="py-1">
-																<b>Names:</b> {`${member.wifeFirstName} ${member.wifeLastName}`}
+																<b>Names:</b> {`${member?.wifeFirstName} ${member?.wifeLastName}`}
 															</li>
 															<li className="py-1">
-																<b>Phone:</b> {member.wifePhone ? (
-																	<a href={`tel:+${member.wifePhone}`} className='text-decoration-none text-inherit' title={`Call ${member.wifeFirstName}`}>{member.wifePhone}</a>
+																<b>Phone:</b> {member?.wifePhone ? (
+																	<a href={`tel:+${member?.wifePhone}`} className='text-decoration-none text-inherit' title={`Call ${member?.wifeFirstName}`}>{member?.wifePhone}</a>
 																) : 'Not provided'}
 															</li>
 															<li className="py-1">
-																<b>Email:</b>  {member.wifeEmail ? (
-																	<a href={`mailto:${member.wifeEmail}`} className='text-decoration-none text-inherit' title={`Send email to ${member.wifeFirstName}`}>{member.wifeEmail}</a>
+																<b>Email:</b>  {member?.wifeEmail ? (
+																	<a href={`mailto:${member?.wifeEmail}`} className='text-decoration-none text-inherit' title={`Send email to ${member?.wifeFirstName}`}>{member?.wifeEmail}</a>
 
 																) : 'Not provided'}
 															</li>
@@ -969,10 +969,10 @@ const UserUI = () => {
 												</div>
 											</div>
 											<div className="d-flex gap-2 mb-3">
-												<a href={`tel:+${showPrimaryMemberInfo ? selectedMember.husbandPhone : selectedMember.wifePhone}`} className="btn btn-sm btn-outline-secondary border px-3 border-secondary border-opacity-25 rounded-pill flex-align-center clickDown">
+												<a href={`tel:+${showPrimaryMemberInfo ? selectedMember?.husbandPhone : selectedMember?.wifePhone}`} className="btn btn-sm btn-outline-secondary border px-3 border-secondary border-opacity-25 rounded-pill flex-align-center clickDown">
 													<Phone className='me-2' /> Call
 												</a>
-												<a href={`mailto:${showPrimaryMemberInfo ? selectedMember.husbandEmail : selectedMember.wifeEmail}`} className="btn btn-sm btn-outline-secondary border px-3 border-secondary border-opacity-25 rounded-pill flex-align-center clickDown">
+												<a href={`mailto:${showPrimaryMemberInfo ? selectedMember?.husbandEmail : selectedMember?.wifeEmail}`} className="btn btn-sm btn-outline-secondary border px-3 border-secondary border-opacity-25 rounded-pill flex-align-center clickDown">
 													<EnvelopeSimple className='me-2' /> Email
 												</a>
 											</div>
@@ -1609,7 +1609,7 @@ const UserUI = () => {
 						</thead>
 						<tbody>
 							{activeMembers.map((member, index) => {
-								const memberNames = `${member.husbandFirstName} ${member.husbandLastName}`;
+								const memberNames = `${member?.husbandFirstName} ${member?.husbandLastName}`;
 								const progressiveShares = member.progressiveShares;
 								const paidAnnualShares = JSON.parse(member.annualShares).filter(share => share.paid).length;
 								const activeShares = progressiveShares + paidAnnualShares;
@@ -1735,8 +1735,9 @@ const UserUI = () => {
 
 		// Show credits per member
 		const [showSelectedMemberCredits, setShowSelectedMemberCredits] = useState(false);
-		const [selectedMember, setSelectedMember] = useState(null);
-		const [showSelectedMemberCreditRecords, setShowSelectedMemberCreditRecords] = useState(false);
+		const [selectedMember, setSelectedMember] = useState(
+			membersToShow?.filter(m => m.id === signedUser?.id)[0] || {}
+		);
 
 		const [showSelectedMemberPaymentHistory, setShowSelectedMemberPaymentHistory] = useState(false);
 
@@ -1903,304 +1904,151 @@ const UserUI = () => {
 				)}
 				{!loadingMembers && !errorLoadingMembers && membersToShow.length > 0 && (
 					<>
-						<div className="mb-3">
-							<div className="d-flex justify-content-lg-between gap-2 mt-3 overflow-auto">
-								{membersToShow
-									.filter(m => m.id === signedUser?.id)
-									.map((member, index) => (
-										<Popover key={index} content="See summary" placement='right' isOpen={true} className='py-1 px-2 smaller shadow-none border border-secondary border-opacity-25' arrowColor='var(--bs-gray-400)' height='1.9rem'>
-											<div className='w-4rem ms-3 mx-xl-4 ptr clickDown'
-												onClick={() => { setSelectedMember(member); setShowSelectedMemberCredits(true) }}
-											>
-												<PersonAvatar type='man' data={member} size='4rem' bordered={false} showAlt={false} className='w-100 p-1' />
-												<div className="mt-1 fs-70 text-center text-primaryColor fw-semibold">
-													My credits
-												</div>
-											</div>
-										</Popover>
-									))}
-							</div>
+						<SectionDescription
+							content="The credit panel allows you to request credits, manage your credits, and view your credit payment history."
+						/>
+						<div className="mb-4 ms-auto d-flex gap-3">
+							<ToogleButton icon={<HandCoins />} text='Loan status' func={() => setShowSelectedMemberCredits(!showSelectedMemberCredits)} />
+							<ToogleButton icon={<ListChecks />} text='Payment history' func={() => setShowSelectedMemberPaymentHistory(true)} />
 						</div>
 
 						{/* Member Credits */}
-						{showSelectedMemberCredits &&
+						{showSelectedMemberCredits && (
+							<>
+								{allLoans.filter(loan => (loan?.memberId === selectedMember?.id && loan?.loanTaken > 0)).length > 0 ? (
+									<>
+										{allLoans.filter(loan => (loan?.memberId === selectedMember?.id && loan?.loanTaken > 0))
+											.map((item, index) => {
+												const selectedLoan = item;
+												return (
+													<Fragment key={index} >
+														<div className="d-xl-flex gap-3 pb-5">
+															{/* Loan status */}
+															<div className="col member-loan-status mb-4 mb-xl-0">
+																<div className="fs-6 fw-semibold text-primaryColor text-center text-uppercase">Loan status</div>
+																<hr />
+																<LoanStatusTable loanData={selectedLoan} />
+
+																{allCredits.filter(cr => cr?.memberId === selectedMember?.id).length > 0 && (
+																	<>
+																		<div className="d-flex">
+																			<div className='col p-2'>
+																				<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">First loan</span></div>
+																				<div className='text-center bg-gray-300'>
+																					<FormatedDate date={allCredits
+																						.sort((a, b) => new Date(a.requestDate) - new Date(b.requestDate))
+																						.filter(cr => cr?.memberId === selectedMember?.id)[0].requestDate
+																					} />
+																				</div>
+																			</div>
+																			<div className='col p-2'>
+																				<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Recent loan</span></div>
+																				<div className='text-center bg-gray-300'>
+																					<FormatedDate date={allCredits
+																						.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate))
+																						.filter(cr => cr?.memberId === selectedMember?.id)[0].requestDate
+																					} />
+																				</div>
+																			</div>
+																		</div>
+																	</>
+																)}
+															</div>
+														</div>
+													</Fragment>
+												)
+											})
+										}
+									</>
+								) : (
+									<>
+										<EmptyBox
+											notFoundMessage={`No credit records found on your account. Once recorded, the summary of your credits will appear here.`}
+											refreshKeyword="Got it"
+
+											refreshFunction={() => setShowSelectedMemberCredits(false)}
+										/>
+									</>
+								)}
+							</>
+						)}
+
+						{/* Credits Payment History */}
+						{showSelectedMemberPaymentHistory &&
 							<>
 								<Overlay
-									titleIcon={
-										<PersonAvatar type='man' data={selectedMember} className='flex-shrink-0' />
-									}
-									titleText={
-										<>
-											My credits
-										</>
-									}
+									titleText='Credit payment history'
 									uppercaseTitleText
-									onClose={() => { setShowSelectedMemberCredits(false); setShowSelectedMemberCreditRecords(false); }}
+									titleIcon={
+										<ListChecks
+											className="flex-shrink-0 w-3rem h-3rem p-2 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
+										/>
+									}
+									onClose={() => setShowSelectedMemberPaymentHistory(false)}
 									onCloseTitle='Close history'
 									children={
 										<>
-											{allLoans.filter(loan => (loan?.memberId === selectedMember?.id && loan?.loanTaken > 0)).length > 0 ? (
-												<>
-													{allLoans.filter(loan => (loan?.memberId === selectedMember?.id && loan?.loanTaken > 0))
-														.map((item, index) => {
-															const selectedLoan = item;
-															return (
-																<Fragment key={index} >
-																	<div className="d-xl-flex gap-3 pb-5">
-																		{/* Loan status */}
-																		<div className="col member-loan-status mb-4 mb-xl-0">
-																			<div className="fs-6 fw-semibold text-primaryColor text-center text-uppercase">Loan status</div>
-																			<hr />
-																			<div className='overflow-auto'>
-																				<table className="table table-hover h-100">
-																					<thead className='table-secondary position-sticky top-0 inx-1 text-uppercase small'>
-																						<tr>
-																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Title</th>
-																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Taken  <sub className='fs-60'>/RWF</sub></th>
-																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Paid  <sub className='fs-60'>/RWF</sub></th>
-																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Pending  <sub className='fs-60'>/RWF</sub></th>
-																						</tr>
-																					</thead>
-																					<tbody>
-																						<tr className={`small credit-row`}>
-																							<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
-																								Loan
-																							</td>
-																							<td>
-																								<CurrencyText amount={selectedLoan?.loanTaken} />
-																							</td>
-																							<td className='text-primary-emphasis'>
-																								<CurrencyText amount={selectedLoan?.loanPaid} />
-																							</td>
-																							<td className='text-warning-emphasis'>
-																								<CurrencyText amount={selectedLoan?.loanPending} />
-																							</td>
-																						</tr>
-																						<tr className={`small credit-row`}>
-																							<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
-																								Interest
-																							</td>
-																							<td>
-																								<CurrencyText amount={selectedLoan?.interestTaken} />
-																							</td>
-																							<td className='text-primary-emphasis'>
-																								<CurrencyText amount={selectedLoan?.interestPaid} />
-																							</td>
-																							<td className='text-warning-emphasis'>
-																								<CurrencyText amount={selectedLoan?.interestPending} />
-																							</td>
-																						</tr>
-																						<tr className={`small credit-row`}>
-																							<td className={`ps-sm-3 border-bottom-3 border-end fw-bold`}>
-																								Tranches
-																							</td>
-																							<td>
-																								{selectedLoan?.tranchesTaken}
-																							</td>
-																							<td className='text-primary-emphasis'>
-																								{selectedLoan?.tranchesPaid}
-																							</td>
-																							<td className='text-warning-emphasis'>
-																								{selectedLoan?.tranchesPending}
-																							</td>
-																						</tr>
-																					</tbody>
-																				</table>
-																			</div>
+											{allRecords
+												.filter(cr => (cr?.memberId === signedUser?.id && cr?.recordType === 'loan' && cr?.recordSecondaryType === 'payment')).length > 0 ? (
 
-																			{allCredits.filter(cr => cr?.memberId === selectedMember?.id).length > 0 && (
-																				<>
-																					<div className="d-flex">
-																						<div className='col p-2'>
-																							<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">First loan</span></div>
-																							<div className='text-center bg-gray-300'>
-																								<FormatedDate date={allCredits
-																									.sort((a, b) => new Date(a.requestDate) - new Date(b.requestDate))
-																									.filter(cr => cr?.memberId === selectedMember?.id)[0].requestDate
-																								} />
-																							</div>
-																						</div>
-																						<div className='col p-2'>
-																							<div className='flex-align-center text-muted border-bottom smaller'><Calendar className='me-1 opacity-50' /> <span className="text-nowrap">Recent loan</span></div>
-																							<div className='text-center bg-gray-300'>
-																								<FormatedDate date={allCredits
-																									.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate))
-																									.filter(cr => cr?.memberId === selectedMember?.id)[0].requestDate
-																								} />
-																							</div>
-																						</div>
-																					</div>
-																				</>
-																			)}
-																		</div>
-																	</div>
-																	<hr className='mt-0 mb-4' />
+												<div className='overflow-auto'>
+													<table className="table table-striped table-hover h-100">
+														<thead className='table-secondary position-sticky top-0 inx-1 1 text-uppercase small'>
+															<tr>
+																<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
+																<th className='py-3 text-nowrap text-gray-700 fw-normal'>Member</th>
+																<th className='py-3 text-nowrap text-gray-700 fw-normal'>Loan paid  <sub className='fs-60'>/RWF</sub></th>
+																<th className='py-3 text-nowrap text-gray-700 fw-normal'>Interest Paid <sub className='fs-60'>/RWF</sub></th>
+																<th className='py-3 text-nowrap text-gray-700 fw-normal'>Tranches Paid</th>
+																<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date</th>
+															</tr>
+														</thead>
+														<tbody>
+															{allRecords
+																.filter(cr => (cr?.memberId === signedUser?.id && cr?.recordType === 'loan' && cr?.recordSecondaryType === 'payment'))
+																.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+																.map((record, index) => {
 
-																	{/* Toggle Credit Records */}
-																	<ContentToggler
-																		state={showSelectedMemberCreditRecords}
-																		setState={setShowSelectedMemberCreditRecords}
-																		text="Credit records"
-																		className="ms-auto"
-																	/>
+																	const associatedMember = signedUser;
+																	const memberNames = `${associatedMember?.husbandFirstName} ${associatedMember?.husbandLastName}`;
+																	const transactionInfo = JSON.parse(record.comment);
+																	const loanPaid = transactionInfo.loanPaid;
+																	const interestPaid = transactionInfo.interestPaid;
+																	const tranchesPaid = transactionInfo.tranchesPaid;
 
-																	{showSelectedMemberCreditRecords && (
-																		<>
-																			<div className='overflow-auto'>
-																				<table className="table table-hover h-100">
-																					<thead className='table-success position-sticky top-0 inx-1 text-uppercase small'>
-																						<tr>
-																							<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
-																							<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ minWidth: '10rem' }}>Member</th>
-																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Amount  <sub className='fs-60'>/RWF</sub></th>
-																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date & Interval</th>
-																							<th className='py-3 text-nowrap text-gray-700 fw-normal' style={{ maxWidth: '13rem' }} >Comment</th>
-																							<th className='py-3 text-nowrap text-gray-700 fw-normal'>Credit Status</th>
-																						</tr>
-																					</thead>
-																					<tbody>
-																						{allCredits.filter(cr => (cr?.memberId === selectedMember?.id && cr.status === 'approved'))
-																							.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-																							.map((credit, index) => {
-																								const associatedMember = allMembers.find(m => m.id === credit.memberId);
-																								const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
-																								const creditInterest = Number(credit.creditAmount) * (5 / 100);
-
-																								return (
-																									<tr key={index} className={`small loan-row`}>
-																										<td className={`ps-sm-3 border-bottom-3 border-end`}>
-																											{index + 1}
-																										</td>
-																										<td >
-																											{memberNames}
-																										</td>
-																										<td className="d-flex flex-column gap-2 text-muted" >
-																											<div>
-																												<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Loan</h6>
-																												<span>{Number(credit.creditAmount).toLocaleString()}</span>
-																											</div>
-																											<div>
-																												<h6 className='m-0 border-bottom border-2 fs-95 fw-bold'>Interest</h6>
-																												<span>{creditInterest.toLocaleString()}</span>
-																											</div>
-																											<div className='text-primaryColor'>{credit.tranches} tranche{credit.tranches > 1 ? 's' : ''}</div>
-																										</td>
-																										<td className='text-nowrap'>
-																											<div className='d-flex flex-column gap-1 smaller'>
-																												<span>
-																													<FormatedDate date={credit.requestDate} monthFormat='numeric' /> <CaretRight /> <FormatedDate date={credit.dueDate} monthFormat='numeric' />
-																												</span>
-																												<span>{printDatesInterval(credit.requestDate, credit.dueDate)}</span>
-																												<span className="flex-align-center text-primaryColor ptr clickDown"
-																													onClick={() => { setSelectedCredit(credit); setShowBackfillPlanCard(true); }}
-																												><Receipt weight='fill' size={18} className='me-1' /> Tableau d'amortissement</span>
-																											</div>
-																										</td>
-																										<td style={{ maxWidth: '13rem' }}>
-																											{credit.comment}
-																										</td>
-																										<td className='text-nowrap'>
-																											Transfered
-																										</td>
-																									</tr>
-																								)
-																							})
-																						}
-																					</tbody>
-																				</table>
-																			</div>
-																		</>
-																	)}
-
-																	{/* Toggle Credit Payment Records */}
-																	<ContentToggler
-																		state={showSelectedMemberPaymentHistory}
-																		setState={setShowSelectedMemberPaymentHistory}
-																		text="Credit payment history"
-																		className="ms-auto"
-																	/>
-
-																	{showSelectedMemberPaymentHistory &&
-																		<>
-																			{allRecords
-																				.filter(cr => (cr.memberId === selectedMember?.id && cr.recordType === 'loan' && cr.recordSecondaryType === 'payment')).length > 0 ? (
-
-																				<div className='overflow-auto'>
-																					<table className="table table-striped table-hover h-100">
-																						<thead className='table-secondary position-sticky top-0 inx-1 1 text-uppercase small'>
-																							<tr>
-																								<th className='ps-sm-3 py-3 text-nowrap text-gray-700'>N°</th>
-																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Member</th>
-																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Loan paid  <sub className='fs-60'>/RWF</sub></th>
-																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Interest Paid <sub className='fs-60'>/RWF</sub></th>
-																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Tranches Paid</th>
-																								<th className='py-3 text-nowrap text-gray-700 fw-normal'>Date</th>
-																							</tr>
-																						</thead>
-																						<tbody>
-																							{allRecords
-																								.filter(cr => (cr.recordType === 'loan' && cr.recordSecondaryType === 'payment'))
-																								.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-																								.map((record, index) => {
-
-																									const associatedMember = allMembers.find(m => m.id === record.memberId);
-																									const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
-																									const transactionInfo = JSON.parse(record.comment);
-																									const loanPaid = transactionInfo.loanPaid;
-																									const interestPaid = transactionInfo.interestPaid;
-																									const tranchesPaid = transactionInfo.tranchesPaid;
-
-																									return (
-																										<tr key={index} className="small cursor-default expense-row">
-																											<td className="ps-sm-3 border-bottom-3 border-end">
-																												{index + 1}
-																											</td>
-																											<td className="text-nowrap">
-																												{memberNames}
-																											</td>
-																											<td>
-																												<CurrencyText amount={Number(loanPaid)} />
-																											</td>
-																											<td>
-																												<CurrencyText amount={Number(interestPaid)} />
-																											</td>
-																											<td>
-																												{tranchesPaid}
-																											</td>
-																											<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
-																												<Popover content={<><Watch size={15} /> {getDateHoursMinutes(record.createdAt)}</>} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
-																													<FormatedDate date={record.createdAt} />
-																												</Popover>
-																											</td>
-																										</tr>
-																									)
-																								})
-																							}
-																						</tbody>
-																					</table>
-																				</div>
-																			) : (
-																				<EmptyBox
-																					notFoundMessage={`No records available. Credit payment records/history will show up here as loans get paid.`}
-																				/>
-																			)}
-																		</>
-																	}
-
-																</Fragment>
-															)
-														})
-													}
-												</>
+																	return (
+																		<tr key={index} className="small cursor-default">
+																			<td className="ps-sm-3 border-bottom-3 border-end">
+																				{index + 1}
+																			</td>
+																			<td className="text-nowrap">
+																				{memberNames}
+																			</td>
+																			<td>
+																				<CurrencyText amount={Number(loanPaid)} />
+																			</td>
+																			<td>
+																				<CurrencyText amount={Number(interestPaid)} />
+																			</td>
+																			<td>
+																				{tranchesPaid}
+																			</td>
+																			<td className="text-nowrap" style={{ maxWidth: '13rem' }}>
+																				<Popover content={<><Watch size={15} /> {getDateHoursMinutes(record.createdAt)}</>} trigger='hover' placement='top' className='flex-center py-1 px-2 bg-gray-400 text-dark border border-secondary border-opacity-25 text-tuncate smaller shadow-none' arrowColor='var(--bs-gray-400)' height='1.9rem' width='fit-content'>
+																					<FormatedDate date={record.createdAt} />
+																				</Popover>
+																			</td>
+																		</tr>
+																	)
+																})
+															}
+														</tbody>
+													</table>
+												</div>
 											) : (
-												<>
-													<EmptyBox
-														notFoundMessage={`No credit records found on your account. Once recorded, the summary of your credits will appear here.`}
-														refreshKeyword="Got it"
-
-														refreshFunction={() => setShowSelectedMemberCredits(false)}
-													/>
-												</>
+												<EmptyBox
+													notFoundMessage={`No records available. Credit payment records/history will show up here as loans get paid.`}
+												/>
 											)}
 										</>
 									}
@@ -2279,8 +2127,8 @@ const UserUI = () => {
 															.filter(cr => (cr.status === 'pending' && cr.memberId === signedUser?.id))
 															.sort((a, b) => new Date(a.updatedAt) - new Date(b.updatedAt))
 															.map((credit, index) => {
-																const associatedMember = allMembers.find(m => m.id === credit.memberId);
-																const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+																const associatedMember = allMembers?.find(m => m.id === credit.memberId);
+																const memberNames = `${associatedMember?.husbandFirstName} ${associatedMember?.husbandLastName}`;
 																const creditInterest = Number(credit.creditAmount) * (5 / 100);
 
 																return (
@@ -2355,8 +2203,8 @@ const UserUI = () => {
 															.filter(cr => (cr.status === 'approved' && cr.memberId === signedUser?.id))
 															.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 															.map((credit, index) => {
-																const associatedMember = allMembers.find(m => m.id === credit.memberId);
-																const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+																const associatedMember = allMembers?.find(m => m.id === credit.memberId);
+																const memberNames = `${associatedMember?.husbandFirstName} ${associatedMember?.husbandLastName}`;
 																const creditInterest = Number(credit.creditAmount) * (5 / 100);
 
 																return (
@@ -2434,8 +2282,8 @@ const UserUI = () => {
 															.filter(cr => (cr.status === 'rejected' && cr.memberId === signedUser?.id))
 															.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 															.map((credit, index) => {
-																const associatedMember = allMembers.find(m => m.id === credit.memberId);
-																const memberNames = `${associatedMember.husbandFirstName} ${associatedMember.husbandLastName}`;
+																const associatedMember = allMembers?.find(m => m.id === credit.memberId);
+																const memberNames = `${associatedMember?.husbandFirstName} ${associatedMember?.husbandLastName}`;
 																const creditInterest = Number(credit.creditAmount) * (5 / 100);
 
 																return (
