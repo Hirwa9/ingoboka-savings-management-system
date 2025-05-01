@@ -34,6 +34,7 @@ import AbsoluteCloseButton from '../../common/AbsoluteCloseButton';
 import ToogleButton from '../../common/ToogleButton';
 import PersonAvatar from '../../common/PersonAvatar';
 import SearchBar from '../../common/SearchBar';
+import Overlay from '../../common/Overlay';
 
 const Admin = () => {
 
@@ -1398,18 +1399,16 @@ const Admin = () => {
 							{/* Registration */}
 							{showAddMemberForm &&
 								<>
-									<div className='position-fixed fixed-top inset-0 bg-black3 py-3 inx-high'>
-										<div className="container col-md-6 col-lg-5 col-xl-4 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-											<div className="px-3 bg-light text-gray-700">
-												<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
-													<div className='flex-align-center'>
-														<UserCirclePlus weight='fill' className="me-1" />
-														<span style={{ lineHeight: 1 }}>Register a new member </span>
-													</div>
-													<div title="Cancel" onClick={() => { setShowAddMemberForm(false); }}>
-														<X size={25} className='ptr' />
-													</div>
-												</h6>
+									<Overlay
+										isSmall={true}
+										titleIcon={
+											<Users weight='fill' />
+										}
+										titleText="Register a new member"
+										onClose={() => setShowAddMemberForm(false)}
+										onCloseTitle="Cancel"
+										children={
+											<>
 												<NextStepInformer
 													type='light'
 													content="Enter primary details for the new member. You can update their financial details later."
@@ -1610,27 +1609,24 @@ const Admin = () => {
 														Register
 													</button>
 												</form>
-											</div>
-										</div>
-									</div>
+											</>
+										}
+									/>
 								</>
 							}
 
 							{/* Edit member */}
 							{showEditMemberForm &&
 								<>
-									<div className='position-fixed fixed-top inset-0 bg-black3 py-3 inx-high'>
-										<div className="container col-md-6 col-lg-5 col-xl-4 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-											<div className="px-3 bg-light text-gray-700">
-												<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
-													<div className='flex-align-center'>
-														<Users weight='fill' className="me-1" />
-														<span style={{ lineHeight: 1 }}>Edit Member</span>
-													</div>
-													<div title="Cancel" onClick={() => { setShowEditMemberForm(false); }}>
-														<X size={25} className='ptr' />
-													</div>
-												</h6>
+									<Overlay
+										isSmall={true}
+										titleIcon={
+											<Users weight='fill' />
+										}
+										titleText="Edit Member"
+										onClose={() => setShowEditMemberForm(false)}
+										children={
+											<>
 												<div className="mb-4">
 													<NextStepInformer type='light' content="Select whose information to edit and continue." />
 													<ul className="list-unstyled d-flex">
@@ -1647,7 +1643,7 @@ const Admin = () => {
 													</ul>
 												</div>
 
-												<div className="flex-align-center gap-3 mb-3">
+												<div className="flex-align-center gap-2 mb-3">
 													<PersonAvatar
 														type={editHeadOfFamily ? 'man' : 'woman'}
 														data={selectedMember}
@@ -1770,30 +1766,27 @@ const Admin = () => {
 														}
 													</button>
 												</form>
-											</div>
-										</div>
-									</div>
+											</>
+										}
+									/>
 								</>
 							}
 
 							{/* Member Credits */}
 							{showMemberFinances &&
 								<>
-									<div className='position-fixed fixed-top inset-0 bg-white3 inx-high'>
-										<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-											<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
-												<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-700 border-bottom">
-													<div className='flex-align-center'>
-														<PersonAvatar type='man' data={selectedMember} />
-														<span className='ms-2' style={{ lineHeight: 1 }}>
-															{!showMemberRemoval ? 'Finances of' : 'Remove'} {`${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName}`}
-														</span>
-													</div>
-													<div onClick={() => hideMemberFinances()}>
-														<X size={25} className='ptr' />
-													</div>
-												</h6>
-
+									<Overlay
+										titleIcon={
+											<PersonAvatar type='man' data={selectedMember} className='flex-shrink-0' />
+										}
+										titleText={
+											<>
+												{!showMemberRemoval ? 'Finances of' : 'Remove'} {`${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName}`}
+											</>
+										}
+										onClose={() => hideMemberFinances()}
+										children={
+											<>
 												<div className="d-sm-flex mb-3">
 													<div className="position-relative flex-shrink-0 flex-center w-fit h-7rem px-4 fw-bold border border-3 border-secondary border-opacity-25 text-primaryColor rounded-pill" style={{ minWidth: '7rem' }}>
 														<span className="display-3 fw-bold"><CountUp end={selectedMember?.shares} duration={0.6} /> </span> <small className='position-absolute start-50 bottom-0 border border-2 px-2 rounded-pill bg-light'>shares</small>
@@ -2160,9 +2153,9 @@ const Admin = () => {
 														</div>
 													</>
 												)}
-											</div>
-										</div>
-									</div>
+											</>
+										}
+									/>
 								</>
 							}
 						</>
@@ -2490,20 +2483,18 @@ const Admin = () => {
 							{/* Record savings */}
 							{showAddSavingRecord &&
 								<>
-									<div className='position-fixed fixed-top inset-0 flex-center py-3 bg-black3 inx-high'>
-										<div className="container col-md-6 col-lg-5 col-xl-4 my-auto peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-											<div className="px-3 bg-light text-gray-700">
-												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
-													<div className='flex-align-center'>
-														<CashRegister weight='fill' className="me-1" />
-														<span style={{ lineHeight: 1 }}>Add monthly savings</span>
-													</div>
-													<div title="Cancel" onClick={() => { setShowAddSavingRecord(false); setSavingRecordAmount('') }}>
-														<X size={25} className='ptr' />
-													</div>
-												</h6>
-												<div className="flex-align-center gap-3 mb-3">
-													<PersonAvatar type='man' data={selectedMember} />
+									<Overlay
+										isSmall={true}
+										titleIcon={
+											<CashRegister weight='fill' />
+										}
+										titleText="Add monthly savings"
+										onClose={() => { setShowAddSavingRecord(false); setSavingRecordAmount('') }}
+										onCloseTitle='Cancel'
+										children={
+											<>
+												<div className="flex-align-center gap-2 mb-3">
+													<PersonAvatar type='man' data={selectedMember} className='flex-shrink-0' />
 													<div className='smaller'>
 														Add savings for {selectedMember?.husbandFirstName} {selectedMember?.husbandLastName}
 													</div>
@@ -2628,28 +2619,27 @@ const Admin = () => {
 														</button>
 													</div>
 												</form>
-											</div>
-										</div>
-									</div>
+											</>
+										}
+									/>
+
 								</>
 							}
 
 							{/* Record multiple shares */}
 							{showAddMultipleShares &&
 								<>
-									<div className='position-fixed fixed-top inset-0 flex-center py-3 bg-black3 inx-high'>
-										<div className="container col-md-6 col-lg-5 col-xl-4 my-auto peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-											<div className="px-3 bg-light text-gray-700">
-												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
-													<div className='flex-align-center'>
-														<CashRegister weight='fill' className="me-1" />
-														<span style={{ lineHeight: 1 }}>Add multiple shares</span>
-													</div>
-													<div title="Cancel" onClick={() => { setShowAddMultipleShares(false); setMultipleSharesAmount('') }}>
-														<X size={25} className='ptr' />
-													</div>
-												</h6>
-												<div className="flex-align-center gap-3 mb-3">
+									<Overlay
+										isSmall={true}
+										titleIcon={
+											<CashRegister weight='fill' />
+										}
+										titleText="Add multiple shares"
+										onClose={() => { setShowAddMultipleShares(false); setMultipleSharesAmount(''); }}
+										onCloseTitle='Cancel'
+										children={
+											<>
+												<div className="flex-align-center gap-2 mb-3">
 													<PersonAvatar type='man' data={selectedMember} className='flex-shrink-0' />
 													<div className='smaller'>
 														Save multiple shares to {selectedMember?.husbandFirstName} {selectedMember?.husbandLastName}
@@ -2745,9 +2735,9 @@ const Admin = () => {
 														</button>
 													</div>
 												</form>
-											</div>
-										</div>
-									</div>
+											</>
+										}
+									/>
 								</>
 							}
 						</>
@@ -3080,18 +3070,19 @@ const Admin = () => {
 
 						{showSelectedAnnualInterestRecord && (
 							<>
-								<div className='position-fixed fixed-top inset-0 bg-white3 inx-high'>
-									<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-										<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
-											<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
-												<div className='flex-align-center'>
-													<Coins weight='fill' className="me-1" />
-													<span style={{ lineHeight: 1 }}> {selectedAnnualInterestRecord?.year} interest partition </span>
-												</div>
-												<div title="Cancel" onClick={() => { setShowSelectedAnnualInterestRecord(false); }}>
-													<X size={25} className='ptr' />
-												</div>
-											</h6>
+								<Overlay
+									titleText={
+										<>
+											{selectedAnnualInterestRecord?.year} interest partition
+										</>
+									}
+									uppercaseTitleText
+									titleIcon={
+										<Coins weight='fill' className="me-1" />
+									}
+									onClose={() => setShowSelectedAnnualInterestRecord(false)}
+									children={
+										<>
 											<div className='overflow-auto mb-5'>
 												<table className="table table-hover h-100">
 													<thead className='table-success position-sticky top-0 inx-1 1 text-uppercase small'>
@@ -3183,9 +3174,9 @@ const Admin = () => {
 													</tbody>
 												</table>
 											</div>
-										</div>
-									</div>
-								</div>
+										</>
+									}
+								/>
 							</>
 						)}
 					</>
@@ -3559,22 +3550,19 @@ const Admin = () => {
 						{/* Member Credits Payment History */}
 						{showGlobalPaymentHistory &&
 							<>
-								<div className='position-fixed fixed-top inset-0 bg-white3 inx-high'>
-									<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-										<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
-											<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-700 border-bottom">
-												<div className='flex-align-center'>
-													<ListChecks
-														className="flex-shrink-0 w-3rem h-3rem p-2 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
-													/>
-													<span className='ms-2' style={{ lineHeight: 1 }}>
-														Credit payment history
-													</span>
-												</div>
-												<div onClick={() => { setShowGlobalPaymentHistory(false); }}>
-													<X size={25} className='ptr' />
-												</div>
-											</h6>
+								<Overlay
+									titleText='Credit payment history'
+									uppercaseTitleText
+									titleIcon={
+										<ListChecks
+											className="flex-shrink-0 w-3rem h-3rem p-2 border border-3 border-secondary border-opacity-25 bg-light rounded-circle"
+										/>
+									}
+									onClose={() => setShowGlobalPaymentHistory(false)}
+									onCloseTitle='Close history'
+									children={
+										<>
+
 											{allRecords
 												.filter(cr => (cr.recordType === 'loan' && cr.recordSecondaryType === 'payment')).length > 0 ? (
 
@@ -3673,9 +3661,9 @@ const Admin = () => {
 													notFoundMessage={`No records available. Credit payment records/history will show up here as loans get paid.`}
 												/>
 											)}
-										</div>
-									</div>
-								</div>
+										</>
+									}
+								/>
 							</>
 						}
 
@@ -3691,21 +3679,19 @@ const Admin = () => {
 						{/* Member Credits History */}
 						{showSelectedMemberCredits &&
 							<>
-								<div className='position-fixed fixed-top inset-0 bg-white3 inx-high'>
-									<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-										<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
-											<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-700 border-bottom">
-												<div className='flex-align-center'>
-													<PersonAvatar type='man' data={selectedMember} />
-													<span className='ms-2' style={{ lineHeight: 1 }}>
-														Credits of {`${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName}`}
-													</span>
-												</div>
-												<div onClick={() => { setShowSelectedMemberCredits(false); setShowSelectedMemberCreditRecords(false) }}>
-													<X size={25} className='ptr' />
-												</div>
-											</h6>
-
+								<Overlay
+									titleIcon={
+										<PersonAvatar type='man' data={selectedMember} className='flex-shrink-0' />
+									}
+									titleText={
+										<>
+											Credits of {`${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName}`}
+										</>
+									}
+									onClose={() => { setShowSelectedMemberCredits(false); setShowSelectedMemberCreditRecords(false); }}
+									onCloseTitle='Close history'
+									children={
+										<>
 											{allLoans.filter(loan => (loan.memberId === selectedMember?.id && loan.loanTaken > 0)).length ? (
 												<>
 													{allLoans.filter(loan => (loan.memberId === selectedMember?.id && loan.loanTaken > 0))
@@ -4048,9 +4034,9 @@ const Admin = () => {
 													</>
 												)}
 											</div>
-										</div>
-									</div>
-								</div>
+										</>
+									}
+								/>
 							</>
 						}
 					</>
@@ -4430,18 +4416,15 @@ const Admin = () => {
 
 								{showBackfillPlanCard && (
 									<>
-										<div className='position-fixed fixed-top inset-0 bg-white3 inx-high'>
-											<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-												<div className="px-3 bg-light text-gray-700">
-													<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
-														<div className='flex-align-center text-primaryColor'>
-															<Receipt weight='fill' className="me-1" />
-															<span style={{ lineHeight: 1 }}>Tableau d'amortissement</span>
-														</div>
-														<div onClick={() => { setShowBackfillPlanCard(false); }}>
-															<X size={25} className='ptr' />
-														</div>
-													</h6>
+										<Overlay
+											titleIcon={
+												<Receipt weight='fill' className="me-1 flex-shrink-0" />
+											}
+											titleText="Tableau d'amortissement"
+											uppercaseTitleText
+											onClose={() => { setShowBackfillPlanCard(false); }}
+											children={
+												<>
 													<div className="pb-5">
 														<div className='alert d-lg-flex align-items-end gap-3 border-0 rounded-0 shadow-sm'>
 															<div className='fw-light'>
@@ -4587,9 +4570,9 @@ const Admin = () => {
 															</div>
 														)}
 													</div>
-												</div>
-											</div>
-										</div>
+												</>
+											}
+										/>
 									</>
 								)}
 							</div>
@@ -5230,19 +5213,16 @@ const Admin = () => {
 
 									{showAddExpenseRecord &&
 										<>
-											<div className='position-fixed fixed-top inset-0 bg-black3 py-3 inx-high'>
-												<div className="container col-md-6 col-lg-5 col-xl-4 peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-													<div className="h-100 px-3 bg-light text-gray-700">
-														<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
-															<div className='flex-align-center'>
-																<CashRegister weight='fill' className="me-1" />
-																<span style={{ lineHeight: 1 }}>Record an expense</span>
-															</div>
-															<div title="Cancel" onClick={() => { setShowAddExpenseRecord(false); setExpenseRecordAmount('') }}>
-																<X size={25} className='ptr' />
-															</div>
-														</h6>
-
+											<Overlay
+												isSmall={true}
+												titleIcon={
+													<CashRegister weight='fill' />
+												}
+												titleText="Record an expense"
+												onClose={() => { setShowAddExpenseRecord(false); setExpenseRecordAmount('') }}
+												onCloseTitle='Cancel'
+												children={
+													<>
 														{/* The form */}
 														<form onSubmit={(e) => handleAddExpense(e)} className="px-sm-2 pb-5">
 															<div className="mb-3">
@@ -5284,9 +5264,9 @@ const Admin = () => {
 																}
 															</button>
 														</form>
-													</div>
-												</div>
-											</div>
+													</>
+												}
+											/>
 										</>
 									}
 								</>

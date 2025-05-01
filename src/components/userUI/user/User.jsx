@@ -31,6 +31,7 @@ import SystemSettings from '../../systemSettings/SystemSettings';
 import ToogleButton from '../../common/ToogleButton';
 import PersonAvatar from '../../common/PersonAvatar';
 import SearchBar from '../../common/SearchBar';
+import Overlay from '../../common/Overlay';
 
 const UserUI = () => {
 
@@ -1298,26 +1299,16 @@ const UserUI = () => {
 							{/* Record savings */}
 							{showAddSavingRecord &&
 								<>
-									<div className='position-fixed fixed-top inset-0 flex-center py-3 bg-black2 inx-high'>
-										<div className="container col-md-6 col-lg-5 col-xl-4 my-auto peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-											<div className="px-3 bg-light text-gray-700">
-												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
-													<div className='flex-align-center'>
-														<CashRegister weight='fill' className="me-1" />
-														<span style={{ lineHeight: 1 }}>Add monthly savings</span>
-													</div>
-													<div title="Cancel" onClick={() => { setShowAddSavingRecord(false); setSavingRecordAmount('') }}>
-														<X size={25} className='ptr' />
-													</div>
-												</h6>
-												<div className="flex-align-center gap-3 mb-3">
-													<PersonAvatar type='man' data={selectedMember} />
-													<div className='smaller'>
-														Add savings for {selectedMember?.husbandFirstName} {selectedMember?.husbandLastName}
-													</div>
-												</div>
-												<hr />
-
+									<Overlay
+										isSmall={true}
+										titleIcon={
+											<CashRegister weight='fill' />
+										}
+										titleText="Add monthly savings"
+										onClose={() => { setShowAddSavingRecord(false); setSavingRecordAmount('') }}
+										onCloseTitle='Cancel'
+										children={
+											<>
 												{/* The form */}
 												<form onSubmit={(e) => e.preventDefault()} className="px-sm-2 pb-5">
 													<div className="mb-3">
@@ -1436,31 +1427,29 @@ const UserUI = () => {
 														</button>
 													</div>
 												</form>
-											</div>
-										</div>
-									</div>
+											</>
+										}
+									/>
 								</>
 							}
 
 							{/* Record multiple shares */}
 							{showAddMultipleShares &&
 								<>
-									<div className='position-fixed fixed-top inset-0 flex-center py-3 bg-white3 inx-high'>
-										<div className="container col-md-6 col-lg-5 col-xl-4 my-auto peak-borders-b overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-											<div className="px-3 bg-light text-gray-700">
-												<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
-													<div className='flex-align-center'>
-														<CashRegister weight='fill' className="me-1" />
-														<span style={{ lineHeight: 1 }}>Add multiple shares</span>
-													</div>
-													<div title="Cancel" onClick={() => { setShowAddMultipleShares(false); setMultipleSharesAmount('') }}>
-														<X size={25} className='ptr' />
-													</div>
-												</h6>
+									<Overlay
+										isSmall={true}
+										titleIcon={
+											<CashRegister weight='fill' />
+										}
+										titleText="Add multiple shares"
+										onClose={() => { setShowAddMultipleShares(false); setMultipleSharesAmount(''); }}
+										onCloseTitle='Cancel'
+										children={
+											<>
 												<div className="flex-align-center gap-3 mb-3">
 													<PersonAvatar type='man' data={selectedMember} />
 													<div className='smaller'>
-														Save multiple shares to {selectedMember?.husbandFirstName} {selectedMember?.husbandLastName}
+														Save multiple shares
 													</div>
 												</div>
 												<ul className="list-unstyled text-gray-700 px-2 opacity-75 smaller">
@@ -1518,9 +1507,9 @@ const UserUI = () => {
 														</button>
 													</div>
 												</form>
-											</div>
-										</div>
-									</div>
+											</>
+										}
+									/>
 								</>
 							}
 						</>
@@ -1940,20 +1929,20 @@ const UserUI = () => {
 						{/* Member Credits */}
 						{showSelectedMemberCredits &&
 							<>
-								<div className='position-fixed fixed-top inset-0 bg-white3 inx-high'>
-									<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-										<div className="container h-100 overflow-auto px-3 bg-light text-gray-700">
-											<h6 className="sticky-top flex-align-center justify-content-between mb-4 pt-3 pb-2 bg-light text-gray-700 border-bottom">
-												<div className='flex-align-center'>
-													<PersonAvatar type='man' data={selectedMember} />
-													<span className='ms-2' style={{ lineHeight: 1 }}>
-														Credits of {`${selectedMember?.husbandFirstName} ${selectedMember?.husbandLastName}`}
-													</span>
-												</div>
-												<div onClick={() => { setShowSelectedMemberCredits(false); setShowSelectedMemberCreditRecords(false) }}>
-													<X size={25} className='ptr' />
-												</div>
-											</h6>
+								<Overlay
+									titleIcon={
+										<PersonAvatar type='man' data={selectedMember} className='flex-shrink-0' />
+									}
+									titleText={
+										<>
+											My credits
+										</>
+									}
+									uppercaseTitleText
+									onClose={() => { setShowSelectedMemberCredits(false); setShowSelectedMemberCreditRecords(false); }}
+									onCloseTitle='Close history'
+									children={
+										<>
 											{allLoans.filter(loan => (loan?.memberId === selectedMember?.id && loan?.loanTaken > 0)).length > 0 ? (
 												<>
 													{allLoans.filter(loan => (loan?.memberId === selectedMember?.id && loan?.loanTaken > 0))
@@ -2055,7 +2044,7 @@ const UserUI = () => {
 																	<ContentToggler
 																		state={showSelectedMemberCreditRecords}
 																		setState={setShowSelectedMemberCreditRecords}
-																		text="My credit records"
+																		text="Credit records"
 																		className="ms-auto"
 																	/>
 
@@ -2131,7 +2120,7 @@ const UserUI = () => {
 																	<ContentToggler
 																		state={showSelectedMemberPaymentHistory}
 																		setState={setShowSelectedMemberPaymentHistory}
-																		text="My credit payment history"
+																		text="Credit payment history"
 																		className="ms-auto"
 																	/>
 
@@ -2217,9 +2206,9 @@ const UserUI = () => {
 													/>
 												</>
 											)}
-										</div>
-									</div>
-								</div>
+										</>
+									}
+								/>
 							</>
 						}
 					</>
@@ -2533,18 +2522,15 @@ const UserUI = () => {
 
 								{showBackfillPlanCard && (
 									<>
-										<div className='position-fixed fixed-top inset-0 bg-white3 inx-high'>
-											<div className="container h-100 offset-md-3 col-md-9 offset-xl-2 col-xl-10 px-0 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-												<div className="px-3 bg-light text-gray-700">
-													<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
-														<div className='flex-align-center text-primaryColor'>
-															<Receipt weight='fill' className="me-1" />
-															<span style={{ lineHeight: 1 }}>Tableau d'amortissement</span>
-														</div>
-														<div onClick={() => { setShowBackfillPlanCard(false); }}>
-															<X size={25} className='ptr' />
-														</div>
-													</h6>
+										<Overlay
+											titleIcon={
+												<Receipt weight='fill' className="me-1 flex-shrink-0" />
+											}
+											titleText="Tableau d'amortissement"
+											uppercaseTitleText
+											onClose={() => { setShowBackfillPlanCard(false); }}
+											children={
+												<>
 													<div className="pb-5">
 														<div className='alert d-lg-flex align-items-end gap-3 border-0 rounded-0 shadow-sm'>
 															<div className='fw-light'>
@@ -2635,9 +2621,9 @@ const UserUI = () => {
 															</table>
 														</div>
 													</div>
-												</div>
-											</div>
-										</div>
+												</>
+											}
+										/>
 									</>
 								)}
 							</div>
@@ -2646,188 +2632,187 @@ const UserUI = () => {
 				</div>
 
 				{showRequestCreditForm && (
-					<div className="position-fixed fixed-top inset-0 bg-black3 py-3 inx-high add-credit-form">
-						<div className="container col-md-9 col-lg-8 col-xl-6 overflow-auto" style={{ animation: "zoomInBack .2s 1", maxHeight: '100%' }}>
-							<div className="px-3 bg-light text-gray-700">
-								{/* Header */}
-								<h6 className="sticky-top flex-align-center justify-content-between mb-2 pt-3 pb-2 bg-light text-gray-700 border-bottom text-uppercase">
-									<div className="flex-align-center">
-										<span style={{ lineHeight: 1 }}>Request a New Credit</span>
-									</div>
-									<div title="Cancel" onClick={() => setShowRequestCreditForm(false)}>
-										<X size={25} className="ptr" />
-									</div>
-								</h6>
+					<>
+						<Overlay
+							isMedium={true}
+							titleIcon={
+								<Users weight='fill' />
+							}
+							titleText="Request a New Credit"
+							onClose={() => setShowRequestCreditForm(false)}
+							onCloseTitle="Cancel"
+							children={
+								<>
+									{/* Info Message */}
+									<NextStepInformer type='info' content='Fill in the details to request a new credit. Ensure all information is accurate.' />
 
-								{/* Info Message */}
-								<NextStepInformer type='info' content='Fill in the details to request a new credit. Ensure all information is accurate.' />
-
-								{/* Form */}
-								<form onSubmit={handleRequestCredit} className="px-sm-2 pb-5">
-									{/* Credit Amount */}
-									<div className="mb-3">
-										<label className="form-label fw-semibold">
-											Credit Amount {!['', 0].includes(creditAmount) && (
-												<><span>( <CurrencyText amount={Number(creditAmount)} className="ms-1" /> )</span></>
-											)}
-										</label>
-										<input
-											type="number"
-											className="form-control border border-2 border-info border-opacity-50 rounded-0 h-3rem"
-											value={creditAmount}
-											onChange={(e) => setCreditAmount(e.target.value)}
-											min={1}
-											placeholder="Enter credit amount"
-											required
-										/>
-										{!['', 0].includes(creditAmount) && (
-											<div className="form-text px-2 py-1 bg-info-subtle rounded-bottom-3 smaller">
-												With {tranches <= 6 ? creditPrimaryInterest : creditSecondaryInterest}% (<CurrencyText amount={creditAmount * (tranches <= 6 ? creditPrimaryInterestPercentage : creditSecondaryInterestPercentage)} />) Interest
-											</div>
-										)}
-									</div>
-
-									<div className="d-md-flex gap-3 align-items-center">
-										{/* Request Date */}
-										<div className="mb-3 col">
-											<label className="form-label fw-semibold">
-												Request Date {!['', 0].includes(requestDate) && (<FormatedDate date={requestDate} className="ms-1 fw-normal fst-italic" />)}
-											</label>
-											<input
-												type="date"
-												className="form-control border border-2 border-secondary border-opacity-25 rounded-0"
-												value={requestDate}
-												onChange={(e) => setRequestDate(e.target.value)}
-												required
-											/>
-										</div>
-
-										<ArrowsVertical className='d-block d-md-none mx-auto' />
-										<ArrowsHorizontal className='d-none d-md-block mt-3' />
-
-										{/* Due Date */}
-										<div className="mb-3 col">
-											<label className="form-label fw-semibold">
-												Due Date {!['', 0].includes(dueDate) && (<FormatedDate date={dueDate} className="ms-1 fw-normal fst-italic" />)}
-											</label>
-											<input
-												type="date"
-												className="form-control border border-2 border-secondary border-opacity-25 rounded-0"
-												value={dueDate}
-												onChange={(e) => setDueDate(e.target.value)}
-												required
-											/>
-										</div>
-									</div>
-
-									{/* Number of Tranches */}
-									<div className="mb-3 p-2 bg-info-subtle">
+									{/* Form */}
+									<form onSubmit={handleRequestCredit} className="px-sm-2 pb-5">
+										{/* Credit Amount */}
 										<div className="mb-3">
-											<label className="form-label fw-semibold">Number of Tranches (Max: 12)</label>
+											<label className="form-label fw-semibold">
+												Credit Amount {!['', 0].includes(creditAmount) && (
+													<><span>( <CurrencyText amount={Number(creditAmount)} className="ms-1" /> )</span></>
+												)}
+											</label>
 											<input
 												type="number"
-												className="form-control"
-												value={tranches}
-												onChange={(e) => {
-													setTranches(maxInputNumber(e, 12));
-												}}
+												className="form-control border border-2 border-info border-opacity-50 rounded-0 h-3rem"
+												value={creditAmount}
+												onChange={(e) => setCreditAmount(e.target.value)}
 												min={1}
-												max={12}
-												placeholder="Enter number of tranches"
+												placeholder="Enter credit amount"
 												required
 											/>
-										</div>
-										<hr />
-										{renderTrancheInputs()}
-									</div>
-
-									{/* Comment */}
-									<div className="mb-3">
-										<label className="form-label fw-semibold">Comment</label>
-										<textarea
-											className="form-control border border-2 border-secondary border-opacity-25 rounded-0"
-											value={comment}
-											onChange={(e) => setComment(e.target.value)}
-											placeholder="Comment about this request"
-											rows={4}
-											required
-										></textarea>
-									</div>
-
-									{/* Submit Button */}
-									<div className="mb-3 p-3 form-text bg-info-subtle rounded">
-										<div className='text-center text-dark-emphasis'>
-											Please verify the details before submiting
-										</div>
-										<hr />
-										<div className="px-sm-3">
-											<div className='d-flex cols-2'>
-												<div className="col fw-semibold">Credit:</div>
-												<div className="col"><CurrencyText amount={Number(creditAmount)} smallCurrency /></div>
-											</div>
-											<div className='d-flex cols-2'>
-												<div className="col fw-semibold">Interest ({tranches <= 6 ? creditPrimaryInterest : creditSecondaryInterest}%):</div>
-												<div className="col"><CurrencyText amount={Number(creditAmount) * (tranches <= 6 ? creditPrimaryInterestPercentage : creditSecondaryInterestPercentage)} smallCurrency /></div>
-											</div>
-											<div className='d-flex cols-2'>
-												<div className="col fw-semibold">Total:</div>
-												<div className="col"><CurrencyText amount={Number(totalTrancheAmounts)} smallCurrency boldAmount /></div>
-											</div>
-											<hr />
-											<div className='d-flex cols-2'>
-												<div className="col fw-semibold">Request date:</div>
-												<div className="col"><FormatedDate date={requestDate} /></div>
-											</div>
-											<div className='d-flex cols-2'>
-												<div className="col fw-semibold">Due date:</div>
-												<div className="col"><FormatedDate date={dueDate} /></div>
-											</div>
-											{trancheDates.length > 0 && // Ensure trancheDates is not empty
-												new Date(trancheDates[trancheDates.length - 1]) > new Date(dueDate) && (
-													<div className="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller">
-														<WarningCircle size={22} weight='fill' className='me-1 opacity-50' />
-														Last tranche due date can not be after the credit's due date
-													</div>
-												)
-											}
-											{Number(totalTrancheAmounts) !== Number(totalPaymentAmount) && (
-												<div className="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller">
-													<WarningCircle size={22} weight='fill' className='me-1 opacity-50' />
-													{Number(totalTrancheAmounts) > Number(totalPaymentAmount) ? (
-														<>
-															<p>
-																Total tranche payment amount <CurrencyText amount={totalTrancheAmounts} boldAmount={true} /> can not be greater than total payment amount <CurrencyText amount={totalPaymentAmount} boldAmount={true} />. Please adjust tranche payment values to match the total payment.
-															</p>
-															<p>
-																Difference: <CurrencyText amount={totalTrancheAmounts - totalPaymentAmount} boldAmount={true} />
-															</p>
-														</>
-													) : (
-														<>
-															<p>
-																Total tranche payment amount <CurrencyText amount={totalTrancheAmounts} boldAmount={true} /> can not be less than total payment amount <CurrencyText amount={totalPaymentAmount} boldAmount={true} />. Please adjust tranche payment values to match the total payment.
-															</p>
-															<p>
-																Difference: <CurrencyText amount={totalPaymentAmount - totalTrancheAmounts} boldAmount={true} />
-															</p>
-														</>
-													)}
+											{!['', 0].includes(creditAmount) && (
+												<div className="form-text px-2 py-1 bg-info-subtle rounded-bottom-3 smaller">
+													With {tranches <= 6 ? creditPrimaryInterest : creditSecondaryInterest}% (<CurrencyText amount={creditAmount * (tranches <= 6 ? creditPrimaryInterestPercentage : creditSecondaryInterestPercentage)} />) Interest
 												</div>
 											)}
 										</div>
 
-										<button type="submit" className="btn btn-sm btn-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="addSavingBtn" disabled={(new Date(trancheDates[trancheDates.length - 1]) > new Date(dueDate)) || tranches === 0 || (totalTrancheAmounts !== (creditAmount * (1 + creditPrimaryInterestPercentage)))}
-										>
-											{!isWaitingFetchAction ?
-												<>Submit Request <CaretRight size={18} className='ms-2' /></>
-												: <>Submitting... <SmallLoader color='light' /></>
-											}
-										</button>
-									</div>
-								</form>
-							</div>
-						</div>
-					</div>
+										<div className="d-md-flex gap-3 align-items-center">
+											{/* Request Date */}
+											<div className="mb-3 col">
+												<label className="form-label fw-semibold">
+													Request Date {!['', 0].includes(requestDate) && (<FormatedDate date={requestDate} className="ms-1 fw-normal fst-italic" />)}
+												</label>
+												<input
+													type="date"
+													className="form-control border border-2 border-secondary border-opacity-25 rounded-0"
+													value={requestDate}
+													onChange={(e) => setRequestDate(e.target.value)}
+													required
+												/>
+											</div>
+
+											<ArrowsVertical className='d-block d-md-none mx-auto' />
+											<ArrowsHorizontal className='d-none d-md-block mt-3' />
+
+											{/* Due Date */}
+											<div className="mb-3 col">
+												<label className="form-label fw-semibold">
+													Due Date {!['', 0].includes(dueDate) && (<FormatedDate date={dueDate} className="ms-1 fw-normal fst-italic" />)}
+												</label>
+												<input
+													type="date"
+													className="form-control border border-2 border-secondary border-opacity-25 rounded-0"
+													value={dueDate}
+													onChange={(e) => setDueDate(e.target.value)}
+													required
+												/>
+											</div>
+										</div>
+
+										{/* Number of Tranches */}
+										<div className="mb-3 p-2 bg-info-subtle">
+											<div className="mb-3">
+												<label className="form-label fw-semibold">Number of Tranches (Max: 12)</label>
+												<input
+													type="number"
+													className="form-control"
+													value={tranches}
+													onChange={(e) => {
+														setTranches(maxInputNumber(e, 12));
+													}}
+													min={1}
+													max={12}
+													placeholder="Enter number of tranches"
+													required
+												/>
+											</div>
+											<hr />
+											{renderTrancheInputs()}
+										</div>
+
+										{/* Comment */}
+										<div className="mb-3">
+											<label className="form-label fw-semibold">Comment</label>
+											<textarea
+												className="form-control border border-2 border-secondary border-opacity-25 rounded-0"
+												value={comment}
+												onChange={(e) => setComment(e.target.value)}
+												placeholder="Comment about this request"
+												rows={4}
+												required
+											></textarea>
+										</div>
+
+										{/* Submit Button */}
+										<div className="mb-3 p-3 form-text bg-info-subtle rounded">
+											<div className='text-center text-dark-emphasis'>
+												Please verify the details before submiting
+											</div>
+											<hr />
+											<div className="px-sm-3">
+												<div className='d-flex cols-2'>
+													<div className="col fw-semibold">Credit:</div>
+													<div className="col"><CurrencyText amount={Number(creditAmount)} smallCurrency /></div>
+												</div>
+												<div className='d-flex cols-2'>
+													<div className="col fw-semibold">Interest ({tranches <= 6 ? creditPrimaryInterest : creditSecondaryInterest}%):</div>
+													<div className="col"><CurrencyText amount={Number(creditAmount) * (tranches <= 6 ? creditPrimaryInterestPercentage : creditSecondaryInterestPercentage)} smallCurrency /></div>
+												</div>
+												<div className='d-flex cols-2'>
+													<div className="col fw-semibold">Total:</div>
+													<div className="col"><CurrencyText amount={Number(totalTrancheAmounts)} smallCurrency boldAmount /></div>
+												</div>
+												<hr />
+												<div className='d-flex cols-2'>
+													<div className="col fw-semibold">Request date:</div>
+													<div className="col"><FormatedDate date={requestDate} /></div>
+												</div>
+												<div className='d-flex cols-2'>
+													<div className="col fw-semibold">Due date:</div>
+													<div className="col"><FormatedDate date={dueDate} /></div>
+												</div>
+												{trancheDates.length > 0 && // Ensure trancheDates is not empty
+													new Date(trancheDates[trancheDates.length - 1]) > new Date(dueDate) && (
+														<div className="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller">
+															<WarningCircle size={22} weight='fill' className='me-1 opacity-50' />
+															Last tranche due date can not be after the credit's due date
+														</div>
+													)
+												}
+												{Number(totalTrancheAmounts) !== Number(totalPaymentAmount) && (
+													<div className="form-text px-2 py-1 bg-danger-subtle rounded-bottom-3 smaller">
+														<WarningCircle size={22} weight='fill' className='me-1 opacity-50' />
+														{Number(totalTrancheAmounts) > Number(totalPaymentAmount) ? (
+															<>
+																<p>
+																	Total tranche payment amount <CurrencyText amount={totalTrancheAmounts} boldAmount={true} /> can not be greater than total payment amount <CurrencyText amount={totalPaymentAmount} boldAmount={true} />. Please adjust tranche payment values to match the total payment.
+																</p>
+																<p>
+																	Difference: <CurrencyText amount={totalTrancheAmounts - totalPaymentAmount} boldAmount={true} />
+																</p>
+															</>
+														) : (
+															<>
+																<p>
+																	Total tranche payment amount <CurrencyText amount={totalTrancheAmounts} boldAmount={true} /> can not be less than total payment amount <CurrencyText amount={totalPaymentAmount} boldAmount={true} />. Please adjust tranche payment values to match the total payment.
+																</p>
+																<p>
+																	Difference: <CurrencyText amount={totalPaymentAmount - totalTrancheAmounts} boldAmount={true} />
+																</p>
+															</>
+														)}
+													</div>
+												)}
+											</div>
+
+											<button type="submit" className="btn btn-sm btn-dark flex-center w-100 mt-5 py-2 px-4 rounded-pill clickDown" id="addSavingBtn" disabled={(new Date(trancheDates[trancheDates.length - 1]) > new Date(dueDate)) || tranches === 0 || (totalTrancheAmounts !== (creditAmount * (1 + creditPrimaryInterestPercentage)))}
+											>
+												{!isWaitingFetchAction ?
+													<>Submit Request <CaretRight size={18} className='ms-2' /></>
+													: <>Submitting... <SmallLoader color='light' /></>
+												}
+											</button>
+										</div>
+									</form>
+								</>
+							}
+						/>
+					</>
 				)}
 			</div>
 		);
