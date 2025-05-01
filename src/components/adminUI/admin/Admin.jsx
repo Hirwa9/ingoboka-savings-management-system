@@ -35,6 +35,7 @@ import ToogleButton from '../../common/ToogleButton';
 import PersonAvatar from '../../common/PersonAvatar';
 import SearchBar from '../../common/SearchBar';
 import Overlay from '../../common/Overlay';
+import SectionDescription from '../../common/SectionDescription';
 
 const Admin = () => {
 
@@ -2388,12 +2389,10 @@ const Admin = () => {
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="mb-3">
 					<h2 className='text-appColor'><Coin weight='fill' className="me-1 opacity-50" /> Savings panel</h2>
-					<div className="d-lg-flex align-items-center">
-						<img src="/images/savings_visual.png" alt="" className='col-md-5' />
-						<div className='alert mb-4 rounded-0 smaller fw-light'>
-							Below is a comprehensive overview of each member's or family's savings balance, accompanied by the total number of shares they hold. This information provides a clear and organized view of individual contributions and associated ownership stakes, ensuring transparency and easy tracking of savings progress.
-						</div>
-					</div>
+					<SectionDescription
+						imagePath='/images/savings_visual.png'
+						content="Below is a comprehensive overview of each member's or family's savings balance, accompanied by the total number of shares they hold. This information provides a clear and organized view of individual contributions and associated ownership stakes, ensuring transparency and easy tracking of savings progress."
+					/>
 				</div>
 				<hr className='mb-4 d-lg-none' />
 
@@ -2843,12 +2842,10 @@ const Admin = () => {
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="mb-3">
 					<h2 className='text-appColor'><Coins weight='fill' className="me-1 opacity-50" /> Interest panel</h2>
-					<div className="d-lg-flex align-items-center">
-						<img src="/images/interests_visual.png" alt="" className='d-none d-lg-block col-md-5' />
-						<div className='alert mb-4 rounded-0 smaller fw-light'>
-							This panel provides an organized summary of interest earnings distributed to each member or family, based on their ownership shares. It ensures transparency by displaying individual share percentages, monetary interest amounts, and overall totals, offering members a clear understanding of their returns and fostering accountability.
-						</div>
-					</div>
+					<SectionDescription
+						imagePath='/images/interests_visual.png'
+						content="This panel provides an organized summary of interest earnings distributed to each member or family, based on their ownership shares. It ensures transparency by displaying individual share percentages, monetary interest amounts, and overall totals, offering members a clear understanding of their returns and fostering accountability."
+					/>
 				</div>
 				<hr className='mb-4 d-lg-none' />
 				<div ref={interestPartitionViewRef}>
@@ -4958,12 +4955,10 @@ const Admin = () => {
 							<ToogleButton icon={<Plus />} text='Record expenses' func={() => { setActiveTransactionSection('withdrawals'); setShowAddExpenseRecord(true) }} />
 						</div>
 					</div>
-					<div className="d-lg-flex align-items-center">
-						<img src="/images/transactions_visual.png" alt="" className='d-none d-lg-block col-md-5' />
-						<div className='alert mb-4 rounded-0 smaller fw-light'>
-							The transactions panel provides a detailed record of all financial activities, ensuring complete transparency and accountability. Here, you can track and review logs of deposits, withdrawals/expenses, and penalties, offering a comprehensive view of each member's financial transactions for easy monitoring and management.
-						</div>
-					</div>
+					<SectionDescription
+						imagePath='/images/transactions_visual.png'
+						content="The transactions panel provides a detailed record of all financial activities, ensuring complete transparency and accountability. Here, you can track and review logs of deposits, withdrawals/expenses, and penalties, offering a comprehensive view of each member's financial transactions for easy monitoring and management."
+					/>
 				</div>
 				<hr className='mb-4 d-lg-none' />
 				<div className='text-gray-700 selective-options' style={{ backgroundColor: activeTransactionSectionColor }}>
@@ -5621,12 +5616,10 @@ const Admin = () => {
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="mb-3">
 					<h2 className='text-appColor'><Files weight='fill' className="me-1 opacity-50" /> Report panel</h2>
-					<div className="d-lg-flex align-items-center">
-						<img src="/images/reports_visual.png" alt="" className='d-none d-lg-block col-md-5' />
-						<div className='alert mb-4 rounded-0 smaller fw-light'>
-							The reports panel provides detailed insights into financial activities, including breakdowns of income and expenses and an overview of members' financial status. It also offers export options for further analysis and use.
-						</div>
-					</div>
+					<SectionDescription
+						imagePath='/images/reports_visual.png'
+						content="The reports panel provides detailed insights into financial activities, including breakdowns of income and expenses and an overview of members' financial status. It also offers export options for further analysis and use."
+					/>
 				</div>
 				<hr className='mb-4 d-lg-none' />
 

@@ -9,6 +9,7 @@ import { Axios, BASE_URL } from '../../api/api';
 import { fncPlaceholder, getNumberWithSuffix, maxInputNumber } from '../../scripts/myScripts';
 import CurrencyText from '../common/CurrencyText';
 import FlexibleList from '../common/FlexibleList';
+import SectionDescription from '../common/SectionDescription';
 
 const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stopLoading }) => {
 
@@ -349,12 +350,14 @@ const SystemSettings = ({ data, userType = 'member', refresh, startLoading, stop
                     <div className="pt-2 pt-md-0 pb-3">
                         <div className="mb-3">
                             <h2 className='text-appColor'><Gear weight='fill' className="me-1 opacity-50" /> Settings</h2>
-                            <div className="d-lg-flex align-items-center">
-                                <img src="/images/settings_visual.png" alt="" className='d-none d-lg-block col-md-5' />
-                                <div className='alert mb-4 rounded-0 smaller fw-light'>
-                                    This panel provides an organized structure for the system settings, from business preferences and security configurations to application behavior customization. <span className='d-none d-md-inline'>Easily adjust features and certain information to suit your workflow while ensuring optimal performance and accessibility.</span>
-                                </div>
-                            </div>
+                            <SectionDescription
+                                imagePath='/images/settings_visual.png'
+                                content={
+                                    <>
+                                        This panel provides an organized structure for the system settings, from business preferences and security configurations to application behavior customization. <span className='d-none d-md-inline'>Easily adjust features and certain information to suit your workflow while ensuring optimal performance and accessibility.</span>
+                                    </>
+                                }
+                            />
                         </div>
                         <hr className='mb-4 d-lg-none' />
                         <div>

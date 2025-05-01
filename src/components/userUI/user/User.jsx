@@ -32,6 +32,7 @@ import ToogleButton from '../../common/ToogleButton';
 import PersonAvatar from '../../common/PersonAvatar';
 import SearchBar from '../../common/SearchBar';
 import Overlay from '../../common/Overlay';
+import SectionDescription from '../../common/SectionDescription';
 
 const UserUI = () => {
 
@@ -558,12 +559,11 @@ const UserUI = () => {
 						<CurrencyDollarSimple size={45} className='mx-2 p-2 text-gray-500 border border-2 border-secondary border-opacity-25 rounded-circle' />
 						<hr className='flex-grow-1 my-0' />
 					</div>
-					<div className="d-lg-flex align-items-center">
-						<img src="/images/dashboard_visual.png" alt="" className='col-md-5' />
-						<div className='alert mb-4 rounded-0 smaller fw-light'>
-							This numerical report provides a financial status overview for IKIMINA INGOBOKA saving management system. It highlights key metrics, including contributions, social funds, loans disbursed, interest receivables, paid capital, and other financial indicators. The report reflects the financial management system's performance, tracking transactions from stakeholder contributions, savings, investments, and other financial activities, all aligned with the system's saving balance and agreements established among its members.
-						</div>
-					</div>
+					<SectionDescription
+						imagePath='/images/dashboard_visual.png'
+						showImageOnMobile={true}
+						content="This numerical report provides a financial status overview for IKIMINA INGOBOKA saving management system. It highlights key metrics, including contributions, social funds, loans disbursed, interest receivables, paid capital, and other financial indicators. The report reflects the financial management system's performance, tracking transactions from stakeholder contributions, savings, investments, and other financial activities, all aligned with the system's saving balance and agreements established among its members."
+					/>
 					{loadingFigures && (
 						<div className="row gx-3 gy-4 gy-lg-3 pb-3 rounded-4 loading-skeleton">
 							{Array.from({ length: 9 }).map((_, index) => (
@@ -1212,12 +1212,10 @@ const UserUI = () => {
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="mb-3">
 					<h2 className='text-appColor'><Coin weight='fill' className="me-1 opacity-50" /> Savings panel</h2>
-					<div className="d-lg-flex align-items-center">
-						<img src="/images/savings_visual.png" alt="" className='col-md-5' />
-						<div className='alert mb-4 rounded-0 smaller fw-light'>
-							Below is a comprehensive overview of each member's or family's savings balance, accompanied by the total number of shares they hold. This information provides a clear and organized view of individual contributions and associated ownership stakes, ensuring transparency and easy tracking of savings progress.
-						</div>
-					</div>
+					<SectionDescription
+						imagePath='/images/savings_visual.png'
+						content="Below is a comprehensive overview of each member's or family's savings balance, accompanied by the total number of shares they hold. This information provides a clear and organized view of individual contributions and associated ownership stakes, ensuring transparency and easy tracking of savings progress."
+					/>
 				</div>
 				<hr className='mb-4 d-lg-none' />
 
@@ -1573,12 +1571,10 @@ const UserUI = () => {
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="mb-3">
 					<h2 className='text-appColor'><Coins weight='fill' className="me-1 opacity-50" /> Interest panel</h2>
-					<div className="d-lg-flex align-items-center">
-						<img src="/images/interests_visual.png" alt="" className='d-none d-lg-block col-md-5' />
-						<div className='alert mb-4 rounded-0 smaller fw-light'>
-							This panel provides an organized summary of interest earnings distributed to each member or family, based on their ownership shares. It ensures transparency by displaying individual share percentages, monetary interest amounts, and overall totals, offering members a clear understanding of their returns and fostering accountability.
-						</div>
-					</div>
+					<SectionDescription
+						imagePath='/images/interests_visual.png'
+						content="This panel provides an organized summary of interest earnings distributed to each member or family, based on their ownership shares. It ensures transparency by displaying individual share percentages, monetary interest amounts, and overall totals, offering members a clear understanding of their returns and fostering accountability."
+					/>
 				</div>
 				<hr className='mb-4 d-lg-none' />
 				<div className="alert alert-success smaller">
@@ -2839,12 +2835,10 @@ const UserUI = () => {
 					<div className="d-flex flex-wrap justify-content-between align-items-center">
 						<h2 className='text-appColor'><CashRegister weight='fill' className="me-1 opacity-50" /> Expenses panel</h2>
 					</div>
-					<div className="d-lg-flex align-items-center">
-						<img src="/images/transactions_visual.png" alt="" className='d-none d-lg-block col-md-5' />
-						<div className='alert mb-4 rounded-0 smaller fw-light'>
-							The Expenses panel provides a detailed record of all expenses, ensuring complete transparency and accountability. Here, you can review logs of withdrawals and other expenditures, offering a comprehensive view of each group's spending activities for easy comprehension.
-						</div>
-					</div>
+					<SectionDescription
+						imagePath='/images/transactions_visual.png'
+						content="The Expenses panel provides a detailed record of all expenses, ensuring complete transparency and accountability. Here, you can review logs of withdrawals and other expenditures, offering a comprehensive view of each group's spending activities for easy comprehension."
+					/>
 				</div>
 				<hr className='mb-4 d-lg-none' />
 				<div className='text-gray-700 selective-options' style={{ backgroundColor: activeTransactionSectionColor }}>
@@ -2986,12 +2980,10 @@ const UserUI = () => {
 			<div className="pt-2 pt-md-0 pb-3">
 				<div className="mb-3">
 					<h2 className='text-appColor'><Files weight='fill' className="me-1 opacity-50" /> Report panel</h2>
-					<div className="d-lg-flex align-items-center">
-						<img src="/images/reports_visual.png" alt="" className='d-none d-lg-block col-md-5' />
-						<div className='alert mb-4 rounded-0 smaller fw-light'>
-							The reports panel provides detailed insights into financial activities, including breakdowns of income and expenses and an overview of members' financial status. It also offers export options for further analysis and use.
-						</div>
-					</div>
+					<SectionDescription
+						imagePath='/images/reports_visual.png'
+						content="The reports panel provides detailed insights into financial activities, including breakdowns of income and expenses and an overview of members' financial status. It also offers export options for further analysis and use."
+					/>
 				</div>
 				<hr className='mb-4 d-lg-none' />
 
