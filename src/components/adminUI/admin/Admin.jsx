@@ -6005,7 +6005,7 @@ const Admin = () => {
 								</button>
 							</div>
 							<Popover content="Balance" trigger='hover' placement='bottom' className='py-1 px-2 smaller shadow-none bg-light text-gray-800 border border-light' arrowColor='var(--bs-light)' height='1.9rem'>
-								<div className="position-absolute start-50 top-100 translate-middle flex-align-center gap-1 px-3 py-1 rounded-pill fs-50 shadow-sm ptr clickDown inx-1 balance-indicator"
+								<div className="position-absolute start-50 top-100 translate-middle flex-align-center gap-1 mt-md-1 px-3 py-1 rounded-pill fs-50 shadow-sm ptr clickDown inx-1 balance-indicator"
 									onClick={() => { setActiveSection("dashboard"); }}
 								>
 									<Wallet size={14} weight='fill' /><CurrencyText amount={Number(allFigures?.balance)} style={{ lineHeight: 1 }} />
@@ -6115,7 +6115,7 @@ const Admin = () => {
 						<div className="row">
 							{/* Sidebar Navigation */}
 							<nav className={`col-12 col-md-3 col-xl-2 px-3 px-sm-5 px-md-0 d-md-block overflow-y-auto sidebar ${sideNavbarIsFloated ? 'floated' : ''}`} id="sidebarMenu">
-								<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit my-3 my-md-0 py-3 pt-md-4 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded-4' : ''}`}>
+								<div ref={sideNavbarRef} className={`position-sticky top-0 h-fit my-3 mb-md-0 py-3 col-8 col-sm-5 col-md-12 ${sideNavbarIsFloated ? 'rounded-4' : ''}`}>
 									<div className="d-flex align-items-center justify-content-between d-md-none mb-3 px-3 pb-2">
 										<div className="d-flex align-items-center">
 											<img src='/images/man_avatar_image.jpg' alt="" className='w-2_5rem ratio-1-1 object-fit-cover me-2 border border-3 border-secondary bg-gray-600 rounded-circle' />
