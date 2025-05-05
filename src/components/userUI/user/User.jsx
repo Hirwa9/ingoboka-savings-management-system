@@ -33,6 +33,7 @@ import SearchBar from '../../common/SearchBar';
 import Overlay from '../../common/Overlay';
 import SectionDescription from '../../common/SectionDescription';
 import LoanStatusTable from '../../common/LoanStatusTable';
+import CapitalStatusList from '../../common/CapitalStatusList';
 
 const UserUI = () => {
 
@@ -1270,22 +1271,9 @@ const UserUI = () => {
 													</div>
 													<div className="px-lg-2">
 														<h5 className="mb-3 fs-4">{`${husbandFirstName} ${husbandLastName}`}</h5>
-														<ul className="list-unstyled text-gray-700 px-2 smaller">
-															<li className="py-1 w-100">
-																<span className="flex-align-center">
-																	<b className='fs-5'>{shares} Shares</b>
-																</span>
-															</li>
-															<li className="py-1 d-table-row">
-																<span className='d-table-cell border-start border-secondary ps-2'>Cotisation:</span> <span className='d-table-cell ps-2'>{cotisation.toLocaleString()} RWF</span>
-															</li>
-															<li className="py-1 d-table-row">
-																<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'>{Number(social).toLocaleString()} RWF</span>
-															</li>
-															<li className="py-1 fs-5 d-table-row">
-																<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'>{(cotisation + Number(social)).toLocaleString()} RWF</span>
-															</li>
-														</ul>
+														<CapitalStatusList
+															memberData={member}
+														/>
 													</div>
 												</div>
 											</div>
@@ -1450,24 +1438,11 @@ const UserUI = () => {
 														Save multiple shares
 													</div>
 												</div>
-												<ul className="list-unstyled text-gray-700 px-2 opacity-75 smaller">
-													<li className="py-1 w-100">
-														<span className="flex-align-center">
-															<b className='fs-5'>{selectedMember?.shares} Shares</b>
-														</span>
-													</li>
-													<li className="py-1 d-table-row">
-														<span className='d-table-cell border-start border-secondary ps-2'>Cotisation:</span> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.cotisation} /></span>
-													</li>
-													<li className="py-1 d-table-row">
-														<span className='d-table-cell border-start border-secondary ps-2'>Social:</span> <span className='d-table-cell ps-2'><CurrencyText amount={Number(selectedMember?.social)} /></span>
-													</li>
-													<li className="py-1 fs-5 d-table-row">
-														<b className='d-table-cell'>Total:</b> <span className='d-table-cell ps-2'><CurrencyText amount={selectedMember?.cotisation + Number(selectedMember?.social)} /></span>
-													</li>
-												</ul>
+												<CapitalStatusList
+													memberData={selectedMember}
+													className="opacity-75"
+												/>
 												<DividerText text="Add new shares" type='gray-300' className="mb-4" />
-
 												{/* The form */}
 												<form onSubmit={(e) => e.preventDefault()} className="px-sm-2 pb-5">
 													<div className="mb-3">
