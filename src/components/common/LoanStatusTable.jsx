@@ -1,7 +1,7 @@
 import React from 'react';
 import CurrencyText from './CurrencyText';
 
-const LoanStatusTable = ({ loanData }) => {
+const LoanStatusTable = ({ loanData = {} }) => {
     return (
         <div className='overflow-auto'>
             <table className="table table-hover h-100">
